@@ -74,6 +74,7 @@
 # # PyBuilder
 # .pybuilder/
 # target/
+frontend/node_modules/
 
 # # Jupyter Notebook
 # .ipynb_checkpoints
