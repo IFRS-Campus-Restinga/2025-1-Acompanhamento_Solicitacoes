@@ -14,10 +14,12 @@ class App extends React.Component {
   async componentDidMount() {
     try {
       const res = await axios.get('http://localhost:8000/solicitacoes/saudacao/');
+
       this.setState({
         details: res.data,
         isConnected: true,
       });
+      console.log(res)
     } catch (err) {
       console.error('Erro na conexão:', err);
       this.setState({
