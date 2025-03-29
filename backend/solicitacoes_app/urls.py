@@ -12,9 +12,9 @@ urlpatterns = [
 
     path('cursos/', listar_cursos, name='listar_cursos'),
     path('cursos/cadastrar/', cadastrar_curso, name='cadastrar_curso'),
-    path('cursos/<int:curso_codigo>/', obter_curso, name='obter_curso'),
-    path('cursos/<int:curso_codigo>/atualizar/', atualizar_curso, name='atualizar_curso'),
-    path('cursos/<int:curso_codigo>/deletar/', deletar_curso, name='deletar_curso'),
+    path('cursos/<str:curso_codigo>/', obter_curso, name='obter_curso'),
+    path('cursos/<str:curso_codigo>/atualizar/', atualizar_curso, name='atualizar_curso'),
+    path('cursos/<str:curso_codigo>/deletar/', deletar_curso, name='deletar_curso'),
 
     path('ppcs/', listar_ppcs, name='listar_ppcs'),
     path('ppcs/cadastrar/', cadastrar_ppc, name='cadastrar_ppc'),
