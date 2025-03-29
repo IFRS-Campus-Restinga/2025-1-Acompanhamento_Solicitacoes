@@ -5,19 +5,18 @@ from ..models import Curso, Ppc
 from ..serializers.curso_serializer import CursoSerializer
 
 
-# 📌 Criar Curso
 @api_view(['POST'])
-@permission_classes([])  # Defina permissões conforme necessário
+@permission_classes([]) 
 def cadastrar_curso(request):
     data = request.data
-    ppcs = data.pop('ppcs', [])  # PPCs recebidos no JSON
+    ppcs = data.pop('ppcs', [])  
 
     serializer_curso = CursoSerializer(data=data)
 
     if not serializer_curso.is_valid():
         return Response(serializer_curso.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    curso = serializer_curso.save()  # Salva o Curso
+    curso = serializer_curso.save()  
 
     for ppc_codigo in ppcs:
         try:
@@ -30,7 +29,6 @@ def cadastrar_curso(request):
     return Response({'message': 'Curso cadastrado com sucesso!'}, status=status.HTTP_201_CREATED)
 
 
-# 📌 Listar Cursos
 @api_view(['GET'])
 def listar_cursos(request):
     cursos = Curso.objects.all()
@@ -38,7 +36,6 @@ def listar_cursos(request):
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-# 📌 Obter Curso por ID
 @api_view(['GET'])
 def obter_curso(request, curso_codigo):
     try:
@@ -49,9 +46,8 @@ def obter_curso(request, curso_codigo):
         return Response({'mensagem': 'Curso não encontrado'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# 📌 Atualizar Curso
 @api_view(['PUT'])
-@permission_classes([])  # Defina permissões conforme necessário
+@permission_classes([])  
 def atualizar_curso(request, curso_codigo):
     try:
         curso = Curso.objects.get(codigo=curso_codigo)
@@ -67,9 +63,8 @@ def atualizar_curso(request, curso_codigo):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-# 📌 Deletar Curso
 @api_view(['DELETE'])
-@permission_classes([])  # Defina permissões conforme necessário
+@permission_classes([]) 
 def deletar_curso(request, curso_codigo):
     try:
         curso = Curso.objects.get(codigo=curso_codigo)
