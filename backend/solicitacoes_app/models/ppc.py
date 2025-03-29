@@ -7,7 +7,7 @@ class Ppc(BaseModel):
         primary_key=True,
         max_length=30,
         null=False,
-        blank=False,  # obrigatório em formulários
+        blank=False, 
     )
     
     curso = models.ForeignKey(
