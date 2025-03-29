@@ -9,7 +9,7 @@ from ..serializers.curso_serializer import CursoSerializer
 @permission_classes([]) 
 def cadastrar_curso(request):
     data = request.data
-    ppcs = data.pop('ppcs', [])  
+    ppcs = data.get('ppcs', [])  
 
     serializer_curso = CursoSerializer(data=data)
 

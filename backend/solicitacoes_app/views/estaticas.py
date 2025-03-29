@@ -15,4 +15,14 @@ def api_root(request, format=None):
     """
     return Response({
         'saudacao': reverse('solicitacoes_app:saudacao', request=request, format=format),
+        
+        'cursos': {
+            'listar': reverse('solicitacoes_app:listar_cursos', request=request, format=format),
+            'cadastrar': reverse('solicitacoes_app:cadastrar_curso', request=request, format=format)
+        },
+
+        'ppcs': {
+            'listar': reverse('solicitacoes_app:listar_ppcs', request=request, format=format),
+            'cadastrar': reverse('solicitacoes_app:cadastrar_ppc', request=request, format=format)
+        },
     })
