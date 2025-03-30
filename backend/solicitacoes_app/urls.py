@@ -2,6 +2,7 @@ from django.urls import path
 from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
 from .views.ppc_view import *
+from .views.motivo_abono_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -21,4 +22,10 @@ urlpatterns = [
     path('ppcs/<str:ppc_codigo>/', obter_ppc, name='obter_ppc'),
     path('ppcs/<str:ppc_codigo>/atualizar/', atualizar_ppc, name='atualizar_ppc'),
     path('ppcs/<str:ppc_codigo>/deletar/', deletar_ppc, name='deletar_ppc'),
+
+    path('motivo_abono/', listar_motivos_abono, name='motivo_abono_listar'),
+    path('motivo_abono/criar/', criar_motivo_abono, name='motivo_abono_criar'),
+    path('motivo_abono/<int:pk>/', detalhar_motivo_abono, name='motivo_abono_detalhar'),
+    path('motivo_abono/<int:pk>/atualizar/', atualizar_motivo_abono, name='motivo_abono_atualizar'),
+    path('motivo_abono/<int:pk>/deletar/', deletar_motivo_abono, name='motivo_abono_deletar'),
 ]

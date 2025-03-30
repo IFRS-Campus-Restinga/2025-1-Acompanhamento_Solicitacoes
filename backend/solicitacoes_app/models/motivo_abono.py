@@ -5,16 +5,17 @@ from django.core.validators import MinLengthValidator
 
 class MotivoAbono(BaseModel):
     descricao = models.CharField(
-        required=True, 
         max_length=255, 
-        validator=(MinLengthValidator(10)), 
-        blank=False, 
+        validators=[MinLengthValidator(10)], 
+        blank=False,
+        null=False, 
         verbose_name="Descrição"
     )
-    tipo_falta = models.CharField(
-        required=True, 
-        max_length=2, 
-        choices=TipoFalta.choices, 
+    tipo_falta = models.CharField( 
+        max_length=20, 
+        choices=TipoFalta.choices,
+        blank=False,
+        null=False,
         verbose_name="Tipo de Falta"
     )
 
