@@ -27,5 +27,7 @@ def api_root(request, format=None):
         },
 
         'coordenadores': reverse('solicitacoes_app:coordenador-list', request=request, format=format),
-        
+
+        'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),
+
     })

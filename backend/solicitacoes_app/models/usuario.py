@@ -1,6 +1,6 @@
 from .base import BaseModel
 from django.db import models
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, EmailValidator
 
 class Usuario(BaseModel):
     nome = models.CharField(
@@ -11,7 +11,8 @@ class Usuario(BaseModel):
     email = models.EmailField(
         unique=True,
         help_text="Escreva aqui o email",
-        verbose_name="Email:"
+        verbose_name="Email:",
+        validators=EmailValidator,
     )
     cpf = models.CharField(
         max_length=11, 

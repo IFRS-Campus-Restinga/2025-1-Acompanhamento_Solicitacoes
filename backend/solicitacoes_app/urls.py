@@ -4,6 +4,7 @@ from .views.curso_view import *
 from .views.ppc_view import *
 from .views.motivo_dispensa_view import *
 from .views.coordenador_view import CoordenadorListService, CoordenadorService
+from .views.cre_view import CREListService, CREService
 
 app_name = 'solicitacoes_app'
 
@@ -31,4 +32,7 @@ urlpatterns = [
 
     path('coordenadores/', CoordenadorListService.as_view(), name='coordenador-list'),
     path('coordenadores/<int:pk>', CoordenadorService.as_view(), name='coordenador-detail'),
+
+    path('cres/', CREListService.as_view(), name='cre-list'),
+    path('cres/<int:pk>', CREService.as_view(), name='cre-detail'),
 ]
