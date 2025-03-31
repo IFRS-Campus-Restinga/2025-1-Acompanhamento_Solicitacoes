@@ -48,7 +48,6 @@ def atualizar_ppc(request, ppc_codigo):
 
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 @api_view(['DELETE'])
 @permission_classes([]) 
 def deletar_ppc(request, ppc_codigo):
