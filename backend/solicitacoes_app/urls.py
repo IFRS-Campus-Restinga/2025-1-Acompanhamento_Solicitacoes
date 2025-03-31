@@ -3,6 +3,7 @@ from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
 from .views.ppc_view import *
 from .views.motivo_dispensa_view import *
+from .views.coordenador_view import CoordenadorListService, CoordenadorService
 
 app_name = 'solicitacoes_app'
 
@@ -28,4 +29,6 @@ urlpatterns = [
     path('motivo_dispensa/<int:id>/atualizar/', AtualizarMotivoDispensa.as_view(), name="atualizar_motivo_dispensa"),
     path('motivo_dispensa/<int:id>/deletar/', DeletarMotivoDispensa.as_view(), name="excluir_motivo_dispensa"),
 
+    path('coordenadores/', CoordenadorListService.as_view(), name='coordenador-list'),
+    path('coordenadores/<int:pk>', CoordenadorService.as_view(), name='coordenador-detail'),
 ]
