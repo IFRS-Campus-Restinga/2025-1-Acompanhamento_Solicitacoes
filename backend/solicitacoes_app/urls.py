@@ -7,6 +7,7 @@ from .views.motivo_dispensa_view import *
 from .views.motivo_exercicios_view import *
 from .views.coordenador_view import CoordenadorListService, CoordenadorService
 from .views.cre_view import CREListService, CREService
+from .views.aluno_view import *
 
 
 app_name = 'solicitacoes_app'
@@ -49,5 +50,11 @@ urlpatterns = [
 
     path('cres/', CREListService.as_view(), name='cre-list'),
     path('cres/<int:pk>', CREService.as_view(), name='cre-detail'),
+
+    path('alunos/', listar_alunos, name='listar_alunos'),
+    path('alunos/cadastrar/', cadastrar_aluno, name='cadastrar_aluno'),
+    path('alunos/<int:aluno_id>/', obter_aluno, name='obter_aluno'),
+    path('alunos/<int:aluno_id>/atualizar/', atualizar_aluno, name='atualizar_aluno'),
+    path('alunos/<int:aluno_id>/deletar/', deletar_aluno, name='deletar_aluno'),
 
 ]

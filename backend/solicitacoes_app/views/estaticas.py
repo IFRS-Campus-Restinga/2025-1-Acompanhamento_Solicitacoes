@@ -26,6 +26,11 @@ def api_root(request, format=None):
             'cadastrar': reverse('solicitacoes_app:cadastrar_ppc', request=request, format=format)
         },
 
+        'alunos': {
+            'listar': reverse('solicitacoes_app:listar_alunos', request=request, format=format),
+            'cadastrar': reverse('solicitacoes_app:cadastrar_aluno', request=request, format=format)
+        },
+
         'coordenadores': reverse('solicitacoes_app:coordenador-list', request=request, format=format),
 
         'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),

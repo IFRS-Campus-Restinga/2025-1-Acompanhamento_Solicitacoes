@@ -7,3 +7,5 @@ from .motivo_dispensa import *
 from .motivo_exercicios import *
 from .coordenador import *
 from .cre import *
+from .aluno import *
+from .responsavel import *
