@@ -12,7 +12,7 @@ class Usuario(BaseModel):
         unique=True,
         help_text="Escreva aqui o email",
         verbose_name="Email:",
-        validators=[EmailValidator],
+        validators=[EmailValidator], 
     )
     cpf = models.CharField(
         max_length=11, 
