@@ -19,7 +19,7 @@ class CadastrarMotivoExercicios(APIView):
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-class AtualizarMotivosExercicios(APIView):
+class AtualizarMotivoExercicios(APIView):
     def put(self, request, id):
         try:
             motivo_exercicios = MotivoExercicios.objects.get(id=id)
@@ -33,3 +33,12 @@ class AtualizarMotivosExercicios(APIView):
             return Response("Motivo de exercicios domiciliares atualizado com sucesso!", status= HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        
+class DeletarMotivoExercicios(APIView):
+    def delete(self, request, id):
+        try:
+            motivo_exercicios = MotivoExercicios.objects.get(id=id)
+            motivo_exercicios.delete()
+            return Response ("Motivo de exercicios domiciliares excluído com sucesso!", status=HTTP_200_OK)
+        except MotivoExercicios.DoesNotExist:
+            return Response("Motivo de exercicios domiciliares não encontrado", status=HTTP_404_NOT_FOUND)
