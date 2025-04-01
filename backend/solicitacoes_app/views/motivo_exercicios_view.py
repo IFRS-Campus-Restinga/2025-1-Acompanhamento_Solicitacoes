@@ -10,3 +10,11 @@ class ListarMotivoExercicios(APIView):
         serializer = MotivoExerciciosSerializer(MotivoExercicios.objects.all(), many = True, context={"request:", request})
         return Response(serializer.data, status=HTTP_200_OK)
 
+class CadastrarMotivoExercicios(APIView):
+    def post(self, request):
+        serializer = MotivoExerciciosSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Motivo de exercicios domiciliares cadastrado com sucesso!", status=HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
