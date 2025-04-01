@@ -9,3 +9,4 @@ from .coordenador import *
 from .cre import *
 from .aluno import *
 from .responsavel import *
+from .disciplina import *
