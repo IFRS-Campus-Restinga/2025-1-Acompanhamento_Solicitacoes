@@ -4,6 +4,7 @@ from .views.curso_view import *
 from .views.ppc_view import *
 from .views.motivo_abono_view import *
 from .views.motivo_dispensa_view import *
+from .views.motivo_exercicios_view import *
 from .views.coordenador_view import CoordenadorListService, CoordenadorService
 from .views.cre_view import CREListService, CREService
 
@@ -37,6 +38,11 @@ urlpatterns = [
     path('motivo_dispensa/cadastrar/', CadastrarMotivoDispensa.as_view(), name="cadastrar_motivo_dispensa"),
     path('motivo_dispensa/<int:id>/atualizar/', AtualizarMotivoDispensa.as_view(), name="atualizar_motivo_dispensa"),
     path('motivo_dispensa/<int:id>/deletar/', DeletarMotivoDispensa.as_view(), name="excluir_motivo_dispensa"),
+
+    path('motivo_exercicios/', ListarMotivoExercicios.as_view(), name="listar_motivo_exercicios"),
+    path('motivo_exercicios/cadastrar/', CadastrarMotivoExercicios.as_view(), name="cadastrar_motivo_exercicios"),
+    path('motivo_exercicios/<int:id>/atualizar/', AtualizarMotivoExercicios.as_view(), name="atualizar_motivo_exercicios"),
+    path('motivo_exercicios/<int:id>/deletar/', DeletarMotivoExercicios.as_view(), name="excluir_motivo_exercicios"),
 
     path('coordenadores/', CoordenadorListService.as_view(), name='coordenador-list'),
     path('coordenadores/<int:pk>', CoordenadorService.as_view(), name='coordenador-detail'),
