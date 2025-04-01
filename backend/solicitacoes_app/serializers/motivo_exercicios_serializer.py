@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from ..models.motivo_dispensa import MotivoExercicios
+from ..models.motivo_exercicios import MotivoExercicios
 
 class MotivoExerciciosSerializer(ModelSerializer):
 
