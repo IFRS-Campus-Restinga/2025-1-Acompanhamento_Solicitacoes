@@ -7,15 +7,15 @@ from ..serializers.motivo_abono_serializer import MotivoAbonoSerializer
 
 
 class ListarMotivoAbono(APIView):
-    def get(request):
+    def get(self, request):
         motivos_abono = MotivoAbono.objects.all()
-        serializer = MotivoAbonoSerializer(motivos_abono, many=True)
+        serializer = MotivoAbonoSerializer(motivos_abono, many=True, context={"request:", request})
         return Response(serializer.data)
 
 
 
 class CadastrarMotivoAbono(APIView): 
-    def post(request):
+    def post(self, request):
         serializer = MotivoAbonoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -26,16 +26,16 @@ class CadastrarMotivoAbono(APIView):
 
 
 class DetalharMotivoAbono(APIView):
-    def get(request, pk):
-        motivo_abono = get_object_or_404(MotivoAbono, pk=pk)
+    def get(self, request, id):
+        motivo_abono = MotivoAbono.objects.get(id=id)
         serializer = MotivoAbonoSerializer(motivo_abono)
         return Response(serializer.data)
 
 
 
 class AtualizarMotivoAbono(APIView):
-    def atualizar_motivo_abono(request, pk):
-        motivo_abono = get_object_or_404(MotivoAbono, pk=pk)
+    def put(self, request, id):
+        motivo_abono = MotivoAbono.objects.get(id=id)
         serializer = MotivoAbonoSerializer(motivo_abono, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -45,9 +45,9 @@ class AtualizarMotivoAbono(APIView):
 
 
 class DeletarMotivoAbono(APIView):
-    def delete(request, pk):
+    def delete(self, request, id):
         try:
-            motivo_abono = get_object_or_404(MotivoAbono, pk=pk)
+            motivo_abono = MotivoAbono.objects.get(id=id)
             motivo_abono.delete()
             return Response({'message': 'Motivo de Abono excluído com sucesso!'}, status=status.HTTP_204_NO_CONTENT)
         except MotivoAbono.DoesNotExist:
