@@ -25,4 +25,9 @@ def api_root(request, format=None):
             'listar': reverse('solicitacoes_app:listar_ppcs', request=request, format=format),
             'cadastrar': reverse('solicitacoes_app:cadastrar_ppc', request=request, format=format)
         },
+
+        'coordenadores': reverse('solicitacoes_app:coordenador-list', request=request, format=format),
+
+        'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),
+
     })

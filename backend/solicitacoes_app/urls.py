@@ -3,6 +3,10 @@ from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
 from .views.ppc_view import *
 from .views.motivo_abono_view import *
+from .views.motivo_dispensa_view import *
+from .views.coordenador_view import CoordenadorListService, CoordenadorService
+from .views.cre_view import CREListService, CREService
+
 
 app_name = 'solicitacoes_app'
 
@@ -23,9 +27,21 @@ urlpatterns = [
     path('ppcs/<str:ppc_codigo>/atualizar/', atualizar_ppc, name='atualizar_ppc'),
     path('ppcs/<str:ppc_codigo>/deletar/', deletar_ppc, name='deletar_ppc'),
 
-    path('motivo_abono/', listar_motivos_abono, name='motivo_abono_listar'),
-    path('motivo_abono/criar/', criar_motivo_abono, name='motivo_abono_criar'),
-    path('motivo_abono/<int:pk>/', detalhar_motivo_abono, name='motivo_abono_detalhar'),
-    path('motivo_abono/<int:pk>/atualizar/', atualizar_motivo_abono, name='motivo_abono_atualizar'),
-    path('motivo_abono/<int:pk>/deletar/', deletar_motivo_abono, name='motivo_abono_deletar'),
+    path('motivo_abono/', ListarMotivoAbono.as_view(), name='motivo_abono_listar'),
+    path('motivo_abono/criar/', CadastrarMotivoAbono.as_view(), name='motivo_abono_cadastrar'),
+    path('motivo_abono/<int:pk>/', DeletarMotivoAbono.as_view(), name='motivo_abono_detalhar'),
+    path('motivo_abono/<int:pk>/atualizar/', AtualizarMotivoAbono.as_view(), name='motivo_abono_atualizar'),
+    path('motivo_abono/<int:pk>/deletar/', DeletarMotivoAbono.as_view(), name='motivo_abono_deletar'),
+
+    path('motivo_dispensa/', ListarMotivoDispensa.as_view(), name="listar_motivo_dispensa"),
+    path('motivo_dispensa/cadastrar/', CadastrarMotivoDispensa.as_view(), name="cadastrar_motivo_dispensa"),
+    path('motivo_dispensa/<int:id>/atualizar/', AtualizarMotivoDispensa.as_view(), name="atualizar_motivo_dispensa"),
+    path('motivo_dispensa/<int:id>/deletar/', DeletarMotivoDispensa.as_view(), name="excluir_motivo_dispensa"),
+
+    path('coordenadores/', CoordenadorListService.as_view(), name='coordenador-list'),
+    path('coordenadores/<int:pk>', CoordenadorService.as_view(), name='coordenador-detail'),
+
+    path('cres/', CREListService.as_view(), name='cre-list'),
+    path('cres/<int:pk>', CREService.as_view(), name='cre-detail'),
+
 ]
