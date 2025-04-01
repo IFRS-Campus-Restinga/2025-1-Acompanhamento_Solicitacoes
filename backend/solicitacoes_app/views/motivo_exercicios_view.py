@@ -18,3 +18,18 @@ class CadastrarMotivoExercicios(APIView):
             return Response("Motivo de exercicios domiciliares cadastrado com sucesso!", status=HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+class AtualizarMotivosExercicios(APIView):
+    def put(self, request, id):
+        try:
+            motivo_exercicios = MotivoExercicios.objects.get(id=id)
+        except MotivoExercicios.DoesNotExist:
+            return Response("Motivo de exercicios domiciliares não encontrado", HTTP_404_NOT_FOUND)
+        
+        serializer = MotivoExerciciosSerializer(motivo_exercicios, data=request.data, partial=True)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response("Motivo de exercicios domiciliares atualizado com sucesso!", status= HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
