@@ -8,7 +8,7 @@ from .views.motivo_exercicios_view import *
 from .views.coordenador_view import CoordenadorListService, CoordenadorService
 from .views.cre_view import CREListService, CREService
 from .views.aluno_view import *
-
+from .views.disciplina_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -57,4 +57,9 @@ urlpatterns = [
     path('alunos/<int:aluno_id>/atualizar/', atualizar_aluno, name='atualizar_aluno'),
     path('alunos/<int:aluno_id>/deletar/', deletar_aluno, name='deletar_aluno'),
 
+    path('disciplinas/', disciplina_list_create, name='listar_disciplinas'),
+    path('disciplinas/cadastrar/', disciplina_list_create, name='cadastrar_disciplina'),
+    path('disciplinas/<str:pk>/', disciplina_detail, name='obter_disciplina'),
+    path('disciplinas/<str:pk>/atualizar/', disciplina_detail, name='atualizar_disciplina'),
+    path('disciplinas/<str:pk>/deletar/', disciplina_detail, name='deletar_disciplina'),
 ]
