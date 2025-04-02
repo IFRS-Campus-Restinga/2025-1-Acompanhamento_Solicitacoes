@@ -1,0 +1,26 @@
+nav{
+  background-color: var(--verde-escuro);
+  display: flex;
+  padding: 10px;
+}
+
+nav a {
+  color: white;
+  text-decoration: none; /* Remove o sublinhado do link */
+}
+
+nav a:hover {
+  color: var(--verde-oficial); /* Mantém a cor ao passar o mouse */
+}
+
+ul {
+  list-style-type: none;
+
+}
+
+ul li {
+  display: inline;
+  margin-right: 100px; /* espaço entre links*/
+}
+
+
