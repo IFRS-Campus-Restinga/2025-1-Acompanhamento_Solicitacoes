@@ -1,52 +1,52 @@
-import React, { Component } from 'react';
-import axios from 'axios';
+import axios from "axios";
+import React from "react";
+import { Route, BrowserRouter as Router, Routes} from "react-router-dom";
+//import { Link } from "react-router-dom";
+import "./App.css";
+import Alunos from "./pages/alunos/lista_alunos";
+import Home from "./pages/home";
+//import Solicitacoes from "./pages/solicitacoes";
+import "./var.css";
 
-class App extends Component {
+class App extends React.Component {
   state = {
     isConnected: false,
-    courses: [],
-    error: null,
   };
 
-  // Função assíncrona que busca os cursos e retorna os dados
-  async testeCurso() {
-    const res = await axios.get('http://localhost:8000/solicitacoes/cursos/');
-    return res.data;
-  }
-
-  async componentDidMount() {
-    try {
-      // Aguarda a Promise de testeCurso e obtém os dados
-      const courses = await this.testeCurso();
-      // Atualiza o state com os cursos e sinaliza que a conexão foi bem-sucedida
-      this.setState({ courses, isConnected: true });
-    } catch (err) {
-      // Em caso de erro, atualiza o state com a informação do erro
-      this.setState({ isConnected: false, error: err });
-    }
+  componentDidMount() {
+    axios.get("http://localhost:8000/solicitacoes/alunos/")
+      .then(() => this.setState({ isConnected: true }))
+      .catch(err => {
+        console.error("Erro na conexão:", err);
+        this.setState({ isConnected: false });
+      });
   }
 
   render() {
-    const { isConnected, courses, error } = this.state;
     return (
-      <div className="p-4">
-        {isConnected ? (
-          <>
-            <p className="text-green-600 font-semibold">CONEXÃO BEM SUCEDIDA</p>
-            <ul>
-              {courses.map((course) => (
-                <li key={course.codigo}>
-                  {course.nome} (Código: {course.codigo})
-                </li>
-              ))}
-            </ul>
-          </>
+      <Router>
+        {/* Barra de navegação adicionada */}
+         {/*
+        <nav>
+          <Link to="/">Início</Link>
+          <Link to="/alunos">Alunos</Link>
+          <Link to="/home">Home</Link>
+        </nav>
+         */}
+
+        {this.state.isConnected ? (
+          <Routes>
+            <Route path="/" element={<Alunos />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/alunos" element={<Alunos />} />
+          </Routes>
         ) : (
-          <p className="text-red-600">
-            Falha na conexão com a API {error && `- ${error.message}`}
-          </p>
+          <div className="error-container">
+            <h2>Erro de Conexão</h2>
+            <p>Não foi possível conectar ao servidor. Verifique sua conexão com o backend.</p>
+          </div>
         )}
-      </div>
+      </Router>
     );
   }
 }
