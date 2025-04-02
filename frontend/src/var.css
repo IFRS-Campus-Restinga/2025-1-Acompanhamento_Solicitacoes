@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+:root{
+    --cor-branca: white;
+    --cor-preta: black;
+    --verde-oficial:#148229;
+    --verde-escuro:#00420C ;
+    --laranja-lista:#F6C368;
+
+    --fonte-oficial: "Open Sans", sans-serif;
+    --peso-titulo: 700;
+    --peso-paragrafo: 400;
+}
