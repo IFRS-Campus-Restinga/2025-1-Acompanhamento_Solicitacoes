@@ -1,0 +1,17 @@
+
+  footer{
+  background-color:var(--verde-escuro);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  margin-top: 300px;
+  }
+
+  footer p {
+  margin: 5px 0; /* Adiciona margens nas tags de parágrafo */
+  font-size: 14px; /* Ajusta o tamanho da fonte */
+}
+
