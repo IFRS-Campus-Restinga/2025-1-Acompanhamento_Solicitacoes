@@ -1,59 +1,28 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
 from ..models import Ppc
 from ..serializers.ppc_serializer import PpcSerializer
 
-
-@api_view(['POST'])
-@permission_classes([]) 
-def cadastrar_ppc(request):
-    serializer = PpcSerializer(data=request.data)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'PPC cadastrado com sucesso!'}, status=status.HTTP_201_CREATED)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['GET'])
-def listar_ppcs(request):
-    ppcs = Ppc.objects.all()
-    serializer = PpcSerializer(ppcs, many=True, context={'request': request})
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-@api_view(['GET'])
-def obter_ppc(request, ppc_codigo):
-    try:
-        ppc = Ppc.objects.get(codigo=ppc_codigo)
-        serializer = PpcSerializer(ppc, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Ppc.DoesNotExist:
-        return Response({'mensagem': 'PPC não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+class PpcListCreateView(generics.ListCreateAPIView):
+    """
+    View para listar todos os PPCs (GET) e cadastrar um novo PPC (POST).
+    Não precisa de lógica extra pois a criação de PPC é direta.
+    """
+    queryset = Ppc.objects.all()
+    serializer_class = PpcSerializer
+    permission_classes = [AllowAny]
 
 
-@api_view(['PUT'])
-@permission_classes([])  
-def atualizar_ppc(request, ppc_codigo):
-    try:
-        ppc = Ppc.objects.get(codigo=ppc_codigo)
-    except Ppc.DoesNotExist:
-        return Response({'message': 'PPC não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+class PpcRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View para obter (GET), atualizar (PUT/PATCH) ou deletar (DELETE) um PPC específico.
+    Semelhante à view de Curso, mas focada no modelo PPC.
 
-    serializer = PpcSerializer(ppc, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'PPC atualizado com sucesso!'}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-@api_view(['DELETE'])
-@permission_classes([]) 
-def deletar_ppc(request, ppc_codigo):
-    try:
-        ppc = Ppc.objects.get(codigo=ppc_codigo)
-        ppc.delete()
-        return Response({'message': 'PPC deletado com sucesso!'}, status=status.HTTP_204_NO_CONTENT)
-    except Ppc.DoesNotExist:
-        return Response({'message': 'PPC não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+    - GET retorna os dados de um PPC pelo código.
+    - PUT/PATCH atualiza os campos fornecidos.
+    - DELETE remove o PPC do banco de dados.
+    """
+    queryset = Ppc.objects.all()
+    serializer_class = PpcSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'codigo'  # Utiliza 'codigo' ao invés do ID padrão
