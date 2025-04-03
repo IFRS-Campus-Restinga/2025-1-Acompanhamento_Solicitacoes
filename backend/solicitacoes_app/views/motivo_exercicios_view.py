@@ -10,7 +10,7 @@ class ListarMotivoExercicios(APIView):
         serializer = MotivoExerciciosSerializer(MotivoExercicios.objects.all(), many = True, context={"request:", request})
         return Response(serializer.data, status=HTTP_200_OK)
 
-class CadastrarMotivoExercicios(APIView):
+class MotivoExerciciosService(APIView):
     def post(self, request):
         serializer = MotivoExerciciosSerializer(data=request.data)
         if serializer.is_valid():
@@ -19,7 +19,6 @@ class CadastrarMotivoExercicios(APIView):
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-class AtualizarMotivoExercicios(APIView):
     def put(self, request, id):
         try:
             motivo_exercicios = MotivoExercicios.objects.get(id=id)
@@ -33,8 +32,7 @@ class AtualizarMotivoExercicios(APIView):
             return Response("Motivo de exercicios domiciliares atualizado com sucesso!", status= HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-        
-class DeletarMotivoExercicios(APIView):
+
     def delete(self, request, id):
         try:
             motivo_exercicios = MotivoExercicios.objects.get(id=id)
