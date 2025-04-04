@@ -30,10 +30,8 @@ urlpatterns = [
     path('motivo_abono/<int:pk>/atualizar/', AtualizarMotivoAbono.as_view(), name='motivo_abono_atualizar'),
     path('motivo_abono/<int:pk>/deletar/', DeletarMotivoAbono.as_view(), name='motivo_abono_deletar'),
 
-    path('motivo_dispensa/', ListarMotivoDispensa.as_view(), name="listar_motivo_dispensa"),
-    path('motivo_dispensa/cadastrar/', CadastrarMotivoDispensa.as_view(), name="cadastrar_motivo_dispensa"),
-    path('motivo_dispensa/<int:id>/atualizar/', AtualizarMotivoDispensa.as_view(), name="atualizar_motivo_dispensa"),
-    path('motivo_dispensa/<int:id>/deletar/', DeletarMotivoDispensa.as_view(), name="excluir_motivo_dispensa"),
+    path('motivo_dispensa/', MotivoDispensaListService.as_view(), name="listar_motivo_dispensa"),
+    path('motivo_dispensa/<int:id>/', MotivoDispensaService.as_view(), name="gerenciar_motivo_dispensa"),
 
     path('motivo_exercicios/', ListarMotivoExercicios.as_view(), name="listar_motivo_exercicios"),
     path('motivo_exercicios/<int:pk>', MotivoExerciciosService.as_view(), name="detalhes_motivo_exercicios"),
