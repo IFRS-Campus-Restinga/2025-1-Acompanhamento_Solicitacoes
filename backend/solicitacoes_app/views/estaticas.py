@@ -10,9 +10,6 @@ def saudacao(request):
 
 @api_view(['GET'])
 def api_root(request, format=None):
-    """
-     View que permitirá retornar um objeto JSON com todos os endpoints implementados..
-    """
     return Response({
         'saudacao': reverse('solicitacoes_app:saudacao', request=request, format=format),
         

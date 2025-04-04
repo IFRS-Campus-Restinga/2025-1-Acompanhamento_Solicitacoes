@@ -9,7 +9,6 @@ class CursoSerializer(serializers.ModelSerializer):
         fields = '__all__'  
 
     def get_ppcs(self, obj):
-    
         return [ppc.codigo for ppc in obj.ppcs.all()]
 
     def save(self, **kwargs):
