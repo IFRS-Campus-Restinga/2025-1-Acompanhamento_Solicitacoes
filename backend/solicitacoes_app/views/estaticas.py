@@ -15,17 +15,16 @@ def api_root(request, format=None):
     """
     return Response({
         'saudacao': reverse('solicitacoes_app:saudacao', request=request, format=format),
-        
+
         'cursos': {
-            'listar': reverse('solicitacoes_app:listar_cursos', request=request, format=format),
-            'cadastrar': reverse('solicitacoes_app:cadastrar_curso', request=request, format=format)
+            'listar/cadastrar': reverse('solicitacoes_app:curso-list-create', request=request, format=format),
+            'detalhar/editar/deletar': '[cursos/<codigo>/]'
         },
 
         'ppcs': {
-            'listar': reverse('solicitacoes_app:listar_ppcs', request=request, format=format),
-            'cadastrar': reverse('solicitacoes_app:cadastrar_ppc', request=request, format=format)
+            'listar/cadastrar': reverse('solicitacoes_app:ppc-list-create', request=request, format=format),
+            'detalhar/editar/deletar': '[ppcs/<codigo>/]'
         },
-
         'alunos': {
             'listar': reverse('solicitacoes_app:listar_alunos', request=request, format=format),
             'cadastrar': reverse('solicitacoes_app:cadastrar_aluno', request=request, format=format)
