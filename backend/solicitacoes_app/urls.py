@@ -5,8 +5,8 @@ from .views.ppc_view import *
 from .views.motivo_abono_view import *
 from .views.motivo_dispensa_view import *
 from .views.motivo_exercicios_view import *
-from .views.coordenador_view import CoordenadorListService, CoordenadorService
-from .views.cre_view import CREListService, CREService
+from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView
+from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
 from .views.disciplina_view import *
 
@@ -45,11 +45,11 @@ urlpatterns = [
     path('motivo_exercicios/<int:id>/atualizar/', AtualizarMotivoExercicios.as_view(), name="atualizar_motivo_exercicios"),
     path('motivo_exercicios/<int:id>/deletar/', DeletarMotivoExercicios.as_view(), name="excluir_motivo_exercicios"),
 
-    path('coordenadores/', CoordenadorListService.as_view(), name='coordenador-list'),
-    path('coordenadores/<int:pk>', CoordenadorService.as_view(), name='coordenador-detail'),
+    path('coordenadores/', CoordenadorListCreateView.as_view(), name='coordenador-list'),
+    path('coordenadores/<int:pk>', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
 
-    path('cres/', CREListService.as_view(), name='cre-list'),
-    path('cres/<int:pk>', CREService.as_view(), name='cre-detail'),
+    path('cres/', CREListCreateView.as_view(), name='cre-list'),
+    path('cres/<int:pk>', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
 
     path('alunos/', listar_alunos, name='listar_alunos'),
     path('alunos/cadastrar/', cadastrar_aluno, name='cadastrar_aluno'),

@@ -6,3 +6,4 @@ from .motivo_dispensa_view import *
 from .motivo_exercicios_view import *
 from .coordenador_view import *
 from .aluno_view import *
+from .cre_view import *
