@@ -1,5 +1,8 @@
 # # Byte-compiled / optimized / DLL files
 __pycache__/
+*.pyc
+*.sqlite3
+migrations/
 # *.py[cod]
 # *$py.class
 
@@ -75,6 +78,15 @@ db.sqlite3-journal
 # .pybuilder/
 # target/
 frontend/node_modules/
+*.sqlite
+*.sqlite3
+*/migrations/*
+
+*.log
+*.pot
+*.pyc
+*.pyo
+
 
 # # Jupyter Notebook
 # .ipynb_checkpoints
