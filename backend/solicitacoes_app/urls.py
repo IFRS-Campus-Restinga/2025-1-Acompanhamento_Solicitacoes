@@ -41,9 +41,7 @@ urlpatterns = [
     path('motivo_dispensa/<int:id>/deletar/', DeletarMotivoDispensa.as_view(), name="excluir_motivo_dispensa"),
 
     path('motivo_exercicios/', ListarMotivoExercicios.as_view(), name="listar_motivo_exercicios"),
-    path('motivo_exercicios/cadastrar/', CadastrarMotivoExercicios.as_view(), name="cadastrar_motivo_exercicios"),
-    path('motivo_exercicios/<int:pk>/atualizar/', AtualizarMotivoExercicios.as_view(), name="atualizar_motivo_exercicios"),
-    path('motivo_exercicios/<int:pk>/deletar/', DeletarMotivoExercicios.as_view(), name="excluir_motivo_exercicios"),
+    path('motivo_exercicios/<int:pk>/', CRUDMotivoExercicios.as_view(), name="crud_motivo_exercicios"),
 
     path('coordenadores/', CoordenadorListCreateView.as_view(), name='coordenador-list'),
     path('coordenadores/<int:pk>', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
