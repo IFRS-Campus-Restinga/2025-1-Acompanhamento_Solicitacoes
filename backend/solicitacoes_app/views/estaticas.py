@@ -32,4 +32,6 @@ def api_root(request, format=None):
 
         'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),
 
+        'motivo_dispensa' : reverse('solicitacoes_app:listar_motivo_dispensa', request=request, format=format),
+
     })
