@@ -1,6 +1,7 @@
 from .base import BaseModel
 from django.db import models
 from .curso import Curso
+from ..managers.ppc_manager import PpcManager
 
 class Ppc(BaseModel):
     codigo = models.CharField(
@@ -17,6 +18,8 @@ class Ppc(BaseModel):
         null=False,
         blank=False
     )
+
+    objects = PpcManager()
     
     def __str__(self):
         return self.codigo
