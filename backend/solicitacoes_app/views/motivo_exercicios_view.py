@@ -7,16 +7,10 @@ from ..models.motivo_exercicios import MotivoExercicios
 from ..serializers.motivo_exercicios_serializer import MotivoExerciciosSerializer
 
 
-class ListarMotivoExercicios(generics.ListAPIView):
+class MotivoExerciciosListCreateView(generics.ListCreateAPIView):
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
     permission_classes = [AllowAny]
-
-class CRUDMotivoExercicios(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
-    queryset = MotivoExercicios.objects.all()
-    serializer_class = MotivoExerciciosSerializer
-    permission_classes = [AllowAny]
-    lookup_field = 'pk'
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -25,6 +19,12 @@ class CRUDMotivoExercicios(generics.RetrieveUpdateDestroyAPIView, generics.Creat
             return Response({'message': "Motivo de exercicios domiciliares cadastrado com sucesso!"}, status=HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+
+class MotivoExerciciosRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = MotivoExercicios.objects.all()
+    serializer_class = MotivoExerciciosSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
