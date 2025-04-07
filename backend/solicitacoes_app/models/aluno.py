@@ -1,12 +1,22 @@
 from django.db import models
+from .base import BaseModel
 from .usuario import Usuario
 import datetime
-from django.core.validators import *
+from django.core.validators import MinValueValidator, MaxValueValidator
 
-class Aluno(Usuario):
-    matricula = models.CharField(max_length=20, unique=True)
-    turma = models.CharField(max_length=100)
-    ano_ingresso = models.IntegerField(validators=[MinValueValidator(2000),MaxValueValidator(datetime.date.today().year)])
+class Aluno(BaseModel):
+    usuario = models.OneToOneField(
+        Usuario, on_delete=models.CASCADE, related_name="aluno"
+    )
+    matricula = models.CharField(
+        max_length=20, unique=True
+    )
+    turma = models.CharField(
+        max_length=100
+    )
+    ano_ingresso = models.IntegerField(
+        validators=[MinValueValidator(2000),MaxValueValidator(datetime.date.today().year)]
+    )
 
     def __str__(self):
-        return f"{self.nome} ({self.matricula})"
+        return f"{self.usuario.nome} ({self.matricula})"

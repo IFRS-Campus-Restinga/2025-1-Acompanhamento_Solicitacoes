@@ -1,29 +1,27 @@
 from django.db import models
+from .base import BaseModel
 from .usuario import Usuario
 from .curso import Curso
 
-class Coordenador(Usuario):
+
+class Coordenador(BaseModel):
+    
+    usuario = models.OneToOneField(
+        Usuario, on_delete=models.CASCADE, related_name="coordenador"
+    )
     siape = models.IntegerField(
-        unique=True,
-        help_text="Escreva aqui o número do SIAPE.",
-        verbose_name="SIAPE:",
+        unique=True
     )
-    inicio_mandato = models.DateField(
-        help_text="Escreva aqui a data de início do mandato",
-        verbose_name="Inicio Mandato:"
-    )
-    fim_mandato = models.DateField(
-        blank=True, 
-        null=True,
-        help_text="Escreva aqui a data de fim do mandato",
-        verbose_name="Fim Mandato:"
-    )
+    inicio_mandato = models.DateField()
+    fim_mandato = models.DateField(blank=True, null=True)
+
     curso = models.OneToOneField(
         Curso, on_delete=models.CASCADE
     )
 
     def __str__(self):
-        return f"{self.nome}-({self.siape})"
+        return f"{self.usuario.nome} - ({self.siape})"
+
     
     def clean(self):
 
@@ -35,4 +33,3 @@ class Coordenador(Usuario):
     class Meta:
         verbose_name = "Coordenador"
         verbose_name_plural = "Coordenadores"
-        ordering = ("nome",)        
