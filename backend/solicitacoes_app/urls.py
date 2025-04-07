@@ -53,9 +53,6 @@ urlpatterns = [
     path('alunos/<int:aluno_id>/atualizar/', atualizar_aluno, name='atualizar_aluno'),
     path('alunos/<int:aluno_id>/deletar/', deletar_aluno, name='deletar_aluno'),
 
-    path('disciplinas/', disciplina_list_create, name='listar_disciplinas'),
-    path('disciplinas/cadastrar/', disciplina_list_create, name='cadastrar_disciplina'),
-    path('disciplinas/<str:pk>/', disciplina_detail, name='obter_disciplina'),
-    path('disciplinas/<str:pk>/atualizar/', disciplina_detail, name='atualizar_disciplina'),
-    path('disciplinas/<str:pk>/deletar/', disciplina_detail, name='deletar_disciplina'),
+    path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
+    path('disciplinas/<int:pk>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
 ]

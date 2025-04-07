@@ -34,4 +34,6 @@ def api_root(request, format=None):
 
         'motivo_dispensa' : reverse('solicitacoes_app:listar_motivo_dispensa', request=request, format=format),
 
+        'disciplinas': reverse('solicitacoes_app:disciplina-list', request=request, format=format),
+
     })
