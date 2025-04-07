@@ -56,5 +56,5 @@ urlpatterns = [
     path('alunos/<int:aluno_id>/deletar/', deletar_aluno, name='deletar_aluno'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
-    path('disciplinas/<int:pk>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
+    path('disciplinas/<str:pk>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
 ]
