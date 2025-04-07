@@ -32,4 +32,6 @@ def api_root(request, format=None):
 
         'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),
 
+        'disciplinas': reverse('solicitacoes_app:disciplina-list', request=request, format=format),
+
     })
