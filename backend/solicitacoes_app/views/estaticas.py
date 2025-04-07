@@ -32,4 +32,8 @@ def api_root(request, format=None):
 
         'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),
 
+        'motivo_exercicios':{
+            reverse('solicitacoes_app:listar_motivo_exercicios', request=request, format=format),
+        }
+
     })
