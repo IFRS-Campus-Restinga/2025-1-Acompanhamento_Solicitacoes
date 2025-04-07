@@ -185,3 +185,4 @@ frontend/node_modules/
 
 # # PyPI configuration file
 # .pypirc
+/.idea
