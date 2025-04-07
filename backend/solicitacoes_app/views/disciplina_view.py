@@ -1,6 +1,7 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from solicitacoes_app.models import Disciplina
+from ..models import Disciplina
 from ..serializers.disciplina_serializer import DisciplinaSerializer
 
 class DisciplinaListCreateView(generics.ListCreateAPIView):
