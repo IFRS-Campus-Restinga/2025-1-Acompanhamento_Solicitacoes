@@ -3,7 +3,7 @@ from .usuario import Usuario
 from .aluno import Aluno
 
 class Responsavel(Usuario):
-    aluno = models.ForeignKey(
+    aluno = models.OneToOneField(
         Aluno, on_delete=models.CASCADE, unique=True
     )
 
