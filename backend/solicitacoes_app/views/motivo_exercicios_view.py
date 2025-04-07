@@ -1,6 +1,3 @@
-from functools import partial
-
-from django.core.serializers import serialize
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -13,11 +10,13 @@ from ..serializers.motivo_exercicios_serializer import MotivoExerciciosSerialize
 class ListarMotivoExercicios(generics.ListAPIView):
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
+    permission_classes = [AllowAny]
 
-class CadastrarMotivoExercicios(generics.CreateAPIView):
+class CRUDMotivoExercicios(generics.RetrieveUpdateDestroyAPIView, generics.CreateAPIView):
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
     permission_classes = [AllowAny]
+    lookup_field = 'pk'
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -26,12 +25,6 @@ class CadastrarMotivoExercicios(generics.CreateAPIView):
             return Response({'message': "Motivo de exercicios domiciliares cadastrado com sucesso!"}, status=HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-class AtualizarMotivoExercicios(generics.UpdateAPIView):
-    queryset = MotivoExercicios.objects.all()
-    serializer_class = MotivoExerciciosSerializer
-    permission_classes = [AllowAny]
-    lookup_field = 'pk'
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -42,12 +35,6 @@ class AtualizarMotivoExercicios(generics.UpdateAPIView):
             return Response({'message':"Motivo de exercicios domiciliares atualizado com sucesso!"}, status= HTTP_200_OK)
         else:
             return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-class DeletarMotivoExercicios(generics.DestroyAPIView):
-    queryset = MotivoExercicios.objects.all()
-    serializer_class = MotivoExerciciosSerializer
-    permission_classes = [AllowAny]
-    lookup_field = 'pk'
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
