@@ -131,3 +131,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 
 AUTH_USER_MODEL = 'solicitacoes_app.Usuario' # informa ao Django qual modelo deve ser usado como o modelo de usuário do sistema
+
+try:
+    from .local_settings import *
+except ImportError:
+    pass
