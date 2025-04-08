@@ -1,6 +1,7 @@
 from .base import BaseModel
 from django.db import models
 from ..managers.curso_manager import *
+from django.core.validators import MinLengthValidator
 
 
 class Curso(BaseModel):
