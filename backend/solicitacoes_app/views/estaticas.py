@@ -38,7 +38,8 @@ def api_root(request, format=None):
 
         'motivo_exercicios': {
             reverse('solicitacoes_app:listar_motivo_exercicios', request=request, format=format),
-        }
+        },
 
-
-    })
+        'motivo_abono': reverse('solicitacoes_app:motivo_abono_list', request=request, format=format),
+        
+        })

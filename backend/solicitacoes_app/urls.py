@@ -29,11 +29,9 @@ urlpatterns = [
     path('ppcs/<str:ppc_codigo>/atualizar/', atualizar_ppc, name='atualizar_ppc'),
     path('ppcs/<str:ppc_codigo>/deletar/', deletar_ppc, name='deletar_ppc'),
 
-    path('motivo_abono/', ListarMotivoAbono.as_view(), name='motivo_abono_listar'),
-    path('motivo_abono/criar/', CadastrarMotivoAbono.as_view(), name='motivo_abono_cadastrar'),
-    path('motivo_abono/<int:pk>/', DeletarMotivoAbono.as_view(), name='motivo_abono_detalhar'),
-    path('motivo_abono/<int:pk>/atualizar/', AtualizarMotivoAbono.as_view(), name='motivo_abono_atualizar'),
-    path('motivo_abono/<int:pk>/deletar/', DeletarMotivoAbono.as_view(), name='motivo_abono_deletar'),
+    path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
+    path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),
+    
 
     path('motivo_dispensa/', MotivoDispensaListService.as_view(), name="listar_motivo_dispensa"),
     path('motivo_dispensa/<int:pk>/', MotivoDispensaService.as_view(), name="gerenciar_motivo_dispensa"),

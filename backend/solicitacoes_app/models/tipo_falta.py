@@ -1,6 +1,7 @@
 from django.db import models
 
 class TipoFalta(models.TextChoices):
-    FJ = "Falta Justificada"
-    FA = "Falta Abonada"
+    FA = "FA", "Falta Abonada"
+    FJ = "FJ", "Falta Justificada"
+    
 
