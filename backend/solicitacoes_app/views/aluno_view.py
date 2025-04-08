@@ -1,62 +1,47 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework.status import (
+    HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
+)
+
 from ..models import Aluno
 from ..serializers.aluno_serializer import AlunoSerializer
 
 
-@api_view(['POST'])
-@permission_classes([]) 
-def cadastrar_aluno(request):
-    serializer = AlunoSerializer(data=request.data)
+class AlunoListCreateView(generics.ListCreateAPIView):
+    queryset = Aluno.objects.all()
+    serializer_class = AlunoSerializer
+    permission_classes = [AllowAny]
 
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Aluno cadastrado com sucesso!'}, status=status.HTTP_201_CREATED)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['GET'])
-def listar_alunos(request):
-    alunos = Aluno.objects.all()
-    serializer = AlunoSerializer(alunos, many=True, context={'request': request})
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response({'message': 'Aluno cadastrado com sucesso!'}, status=HTTP_201_CREATED)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 
-@api_view(['GET'])
-def obter_aluno(request, aluno_id):
-    try:
-        aluno = Aluno.objects.get(id=aluno_id)
-        serializer = AlunoSerializer(aluno, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Aluno.DoesNotExist:
-        return Response({'mensagem': 'Aluno não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+class AlunoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Aluno.objects.all()
+    serializer_class = AlunoSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
 
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=HTTP_200_OK)
 
-@api_view(['PUT'])
-@permission_classes([])  
-def atualizar_aluno(request, aluno_id):
-    try:
-        aluno = Aluno.objects.get(id=aluno_id)
-    except Aluno.DoesNotExist:
-        return Response({'message': 'Aluno não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({'message': 'Aluno atualizado com sucesso!'}, status=HTTP_200_OK)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
-    serializer = AlunoSerializer(aluno, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Aluno atualizado com sucesso!'}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-@api_view(['DELETE'])
-@permission_classes([]) 
-def deletar_aluno(request, aluno_id):
-    try:
-        aluno = Aluno.objects.get(id=aluno_id)
-        aluno.delete()
-        return Response({'message': 'Aluno deletado com sucesso!'}, status=status.HTTP_204_NO_CONTENT)
-    except Aluno.DoesNotExist:
-        return Response({'message': 'Aluno não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        self.perform_destroy(instance)
+        return Response({'message': 'Aluno deletado com sucesso!'}, status=HTTP_200_OK)

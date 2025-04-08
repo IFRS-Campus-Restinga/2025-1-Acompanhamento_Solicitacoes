@@ -45,11 +45,8 @@ urlpatterns = [
     path('cres/', CREListCreateView.as_view(), name='cre-list'),
     path('cres/<int:pk>', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
 
-    path('alunos/', listar_alunos, name='listar_alunos'),
-    path('alunos/cadastrar/', cadastrar_aluno, name='cadastrar_aluno'),
-    path('alunos/<int:aluno_id>/', obter_aluno, name='obter_aluno'),
-    path('alunos/<int:aluno_id>/atualizar/', atualizar_aluno, name='atualizar_aluno'),
-    path('alunos/<int:aluno_id>/deletar/', deletar_aluno, name='deletar_aluno'),
+    path('alunos/', AlunoListCreateView.as_view(), name='aluno-list'),
+    path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
     path('disciplinas/<str:pk>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
