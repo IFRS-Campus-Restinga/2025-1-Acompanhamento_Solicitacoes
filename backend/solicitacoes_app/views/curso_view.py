@@ -1,74 +1,64 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import generics, status
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from rest_framework import status
 from ..models import Curso, Ppc
 from ..serializers.curso_serializer import CursoSerializer
 
 
-@api_view(['POST'])
-@permission_classes([]) 
-def cadastrar_curso(request):
-    data = request.data
-    ppcs = data.get('ppcs', [])  
+class CursoListCreateView(generics.ListCreateAPIView):
+    """
+    View para listar todos os cursos (GET) e cadastrar um novo curso (POST).
+    Utiliza a view genérica ListCreateAPIView do DRF.
+    """
 
-    serializer_curso = CursoSerializer(data=data)
+    queryset = Curso.objects.all()  # Define a queryset base
+    serializer_class = CursoSerializer  # Define o serializer que será usado
+    permission_classes = [AllowAny]  # Permite acesso público (sem autenticação)
 
-    if not serializer_curso.is_valid():
-        return Response(serializer_curso.errors, status=status.HTTP_400_BAD_REQUEST)
+    def create(self, request, *args, **kwargs):
+        """
+        Sobrescreve o método create para adicionar lógica de vinculação
+        de PPCs ao curso recém-criado.
+        """
+        data = request.data
+        ppcs = data.get('ppcs', [])  # Lista de códigos de PPCs passados no corpo da requisição
 
-    curso = serializer_curso.save()  
+        serializer = self.get_serializer(data=data)
 
-    for ppc_codigo in ppcs:
-        try:
-            ppc = Ppc.objects.get(codigo=ppc_codigo)
-            ppc.curso = curso
-            ppc.save()
-        except Ppc.DoesNotExist:
-            return Response({'message': f'PPC {ppc_codigo} não encontrado'}, status=status.HTTP_400_BAD_REQUEST)
+        # Verifica se os dados são válidos
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    return Response({'message': 'Curso cadastrado com sucesso!'}, status=status.HTTP_201_CREATED)
+        # Salva o curso
+        curso = serializer.save()
 
+        # Para cada código de PPC fornecido, associa o PPC ao curso criado
+        for ppc_codigo in ppcs:
+            try:
+                ppc = Ppc.objects.get(codigo=ppc_codigo)
+                ppc.curso = curso
+                ppc.save()
+            except Ppc.DoesNotExist:
+                # Se algum PPC não for encontrado, retorna erro
+                return Response(
+                    {'message': f'PPC {ppc_codigo} não encontrado'},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
 
-@api_view(['GET'])
-def listar_cursos(request):
-    cursos = Curso.objects.all()
-    serializer = CursoSerializer(cursos, many=True, context={'request': request})
-    return Response(serializer.data, status=status.HTTP_200_OK)
-
-
-@api_view(['GET'])
-def obter_curso(request, curso_codigo):
-    try:
-        curso = Curso.objects.get(codigo=curso_codigo)
-        serializer = CursoSerializer(curso, context={'request': request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    except Curso.DoesNotExist:
-        return Response({'mensagem': 'Curso não encontrado'}, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['PUT'])
-@permission_classes([])  
-def atualizar_curso(request, curso_codigo):
-    try:
-        curso = Curso.objects.get(codigo=curso_codigo)
-    except Curso.DoesNotExist:
-        return Response({'message': 'Curso não encontrado'}, status=status.HTTP_404_NOT_FOUND)
-
-    serializer = CursoSerializer(curso, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response({'message': 'Curso atualizado com sucesso!'}, status=status.HTTP_200_OK)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'message': 'Curso cadastrado com sucesso!'}, status=status.HTTP_201_CREATED)
 
 
-@api_view(['DELETE'])
-@permission_classes([]) 
-def deletar_curso(request, curso_codigo):
-    try:
-        curso = Curso.objects.get(codigo=curso_codigo)
-        curso.delete()
-        return Response({'message': 'Curso deletado com sucesso!'}, status=status.HTTP_204_NO_CONTENT)
-    except Curso.DoesNotExist:
-        return Response({'message': 'Curso não encontrado'}, status=status.HTTP_404_NOT_FOUND)
+class CursoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    View para obter (GET), atualizar (PUT/PATCH) ou deletar (DELETE) um curso específico.
+    Utiliza RetrieveUpdateDestroyAPIView que encapsula essas 3 operações para um único recurso.
+
+    - GET retorna os dados do curso identificado por 'codigo'.
+    - PUT/PATCH atualiza os campos fornecidos.
+    - DELETE remove o curso do banco de dados.
+    """
+
+    queryset = Curso.objects.all()
+    serializer_class = CursoSerializer
+    permission_classes = [AllowAny]
+    lookup_field = 'codigo'  # Define que a busca será feita pelo campo 'codigo' ao invés do ID padrão
