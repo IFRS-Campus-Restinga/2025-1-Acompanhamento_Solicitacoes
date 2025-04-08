@@ -1,51 +1,196 @@
 from django.core.management.base import BaseCommand
-from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina
+from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno
 from ...models.tipo_falta import TipoFalta
+from ...models.usuario import Usuario
+from ...models.coordenador import Coordenador
+from ...models.cre import CRE
 
 class Command(BaseCommand):
-    help = 'Popula o banco com cursos, PPCs e motivos iniciais'
-
     def handle(self, *args, **kwargs):
-        # Cursos
-        curso1 = Curso.objects.create(nome="Análise e Desenvolvimento de Sistemas", codigo="ads")
-        curso2 = Curso.objects.create(nome="Gestão Desportiva e Lazer", codigo="gdl")
-        curso3 = Curso.objects.create(nome="Turismo", codigo="tur")
-        curso4 = Curso.objects.create(nome="Engenharia de Software", codigo="esw")
-        curso5 = Curso.objects.create(nome="Ciência da Computação", codigo="cc")
+        curso1, _ = Curso.objects.get_or_create(
+            codigo="ads",
+            defaults={"nome": "Análise e Desenvolvimento de Sistemas"}
+        )
+        curso2, _ = Curso.objects.get_or_create(
+            codigo="gdl",
+            defaults={"nome": "Gestão Desportiva e Lazer"}
+        )
+        curso3, _ = Curso.objects.get_or_create(
+            codigo="tur",
+            defaults={"nome": "Turismo"}
+        )
+        curso4, _ = Curso.objects.get_or_create(
+            codigo="esw",
+            defaults={"nome": "Engenharia de Software"}
+        )
+        curso5, _ = Curso.objects.get_or_create(
+            codigo="cc",
+            defaults={"nome": "Ciência da Computação"}
+        )
 
-        # PPCs
-        Ppc.objects.create(codigo="ads/101.2018", curso=curso1)
-        Ppc.objects.create(codigo="gdl/202.2020", curso=curso2)
-        Ppc.objects.create(codigo="tur/303.2022", curso=curso3)
-        Ppc.objects.create(codigo="esw/404.2021", curso=curso4)
-        Ppc.objects.create(codigo="cc/505.2019", curso=curso5)
 
-        # Motivos de Abono
-        MotivoAbono.objects.create(descricao="Doença com atestado médico válido", tipo_falta=TipoFalta.FJ)
-        MotivoAbono.objects.create(descricao="Atividade acadêmica oficial da instituição", tipo_falta=TipoFalta.FA)
-        MotivoAbono.objects.create(descricao="Compromissos religiosos previamente informados", tipo_falta=TipoFalta.FJ)
-        MotivoAbono.objects.create(descricao="Falecimento de parente de primeiro grau", tipo_falta=TipoFalta.FA)
-        MotivoAbono.objects.create(descricao="Comparecimento em audiências judiciais", tipo_falta=TipoFalta.FJ)
+        Ppc.objects.get_or_create(
+            codigo="ads/101.2018",
+            defaults={"curso": curso1}
+        )
+        Ppc.objects.get_or_create(
+            codigo="gdl/202.2020",
+            defaults={"curso": curso2}
+        )
+        Ppc.objects.get_or_create(
+            codigo="tur/303.2022",
+            defaults={"curso": curso3}
+        )
+        Ppc.objects.get_or_create(
+            codigo="esw/404.2021",
+            defaults={"curso": curso4}
+        )
+        Ppc.objects.get_or_create(
+            codigo="cc/505.2019",
+            defaults={"curso": curso5}
+        )
 
-        # Motivos de Dispensa
-        MotivoDispensa.objects.create(descricao="Prática esportiva federada reconhecida")
-        MotivoDispensa.objects.create(descricao="Limitação física ou recomendação médica")
-        MotivoDispensa.objects.create(descricao="Emprego formal em horário conflitante")
-        MotivoDispensa.objects.create(descricao="Responsabilidades familiares ou domésticas")
-        MotivoDispensa.objects.create(descricao="Distância excessiva entre residência e campus")
 
-        # Motivos de Exercícios
-        MotivoExercicios.objects.create(descricao="Atividade profissional de tempo integral")
-        MotivoExercicios.objects.create(descricao="Estágio supervisionado obrigatório")
-        MotivoExercicios.objects.create(descricao="Serviço militar obrigatório")
-        MotivoExercicios.objects.create(descricao="Treinamento esportivo intensivo")
-        MotivoExercicios.objects.create(descricao="Participação em programa de intercâmbio acadêmico")
+        MotivoAbono.objects.get_or_create(
+            descricao="Doença com atestado médico válido",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Atividade acadêmica oficial da instituição",
+            defaults={"tipo_falta": TipoFalta.FA}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Compromissos religiosos previamente informados",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Falecimento de parente de primeiro grau",
+            defaults={"tipo_falta": TipoFalta.FA}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Comparecimento em audiências judiciais",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
 
-        # Disciplinas
-        Disciplina.objects.create(nome="Desenvolvimento de Sistemas 2", codigo="DEVII")
-        Disciplina.objects.create(nome="Banco de Dados 1", codigo="BD1")
-        Disciplina.objects.create(nome="Engenharia de Software", codigo="ESW10")
-        Disciplina.objects.create(nome="Gestão de Projetos", codigo="GDP20")
-        Disciplina.objects.create(nome="Turismo Sustentável", codigo="TURS1")
+
+        MotivoDispensa.objects.get_or_create(
+            descricao="Prática esportiva federada reconhecida"
+        )
+        MotivoDispensa.objects.get_or_create(
+            descricao="Limitação física ou recomendação médica"
+        )
+        MotivoDispensa.objects.get_or_create(
+            descricao="Emprego formal em horário conflitante"
+        )
+        MotivoDispensa.objects.get_or_create(
+            descricao="Responsabilidades familiares ou domésticas"
+        )
+        MotivoDispensa.objects.get_or_create(
+            descricao="Distância excessiva entre residência e campus"
+        )
+
+
+        MotivoExercicios.objects.get_or_create(
+            descricao="Atividade profissional de tempo integral"
+        )
+        MotivoExercicios.objects.get_or_create(
+            descricao="Estágio supervisionado obrigatório"
+        )
+        MotivoExercicios.objects.get_or_create(
+            descricao="Serviço militar obrigatório"
+        )
+        MotivoExercicios.objects.get_or_create(
+            descricao="Treinamento esportivo intensivo"
+        )
+        MotivoExercicios.objects.get_or_create(
+            descricao="Participação em programa de intercâmbio acadêmico"
+        )
+
+
+        Disciplina.objects.get_or_create(
+            nome="Desenvolvimento de Sistemas 2",
+            codigo="DEVII"
+        )
+        Disciplina.objects.get_or_create(
+            nome="Banco de Dados 1",
+            codigo="BD1"
+        )
+        Disciplina.objects.get_or_create(
+            nome="Engenharia de Software",
+            codigo="ESW10"
+        )
+        Disciplina.objects.get_or_create(
+            nome="Gestão de Projetos",
+            codigo="GDP20"
+        )
+        Disciplina.objects.get_or_create(
+            nome="Turismo Sustentável",
+            codigo="TURS1"
+        )
+
+
+        usuario_coord, created = Usuario.objects.get_or_create(
+            cpf="12345678901",  
+            defaults={
+                "email": "joao.silva@example.com",
+                "nome": "João Silva",
+                "telefone": "11987654321",
+                "data_nascimento": "1990-01-01",
+            }
+        )
+        if created:
+            usuario_coord.set_password("senha123")
+            usuario_coord.save()
+
+        usuario_cre, created = Usuario.objects.get_or_create(
+            cpf="10987654321", 
+            defaults={
+                "email": "maria.souza@example.com",
+                "nome": "Maria Souza",
+                "telefone": "21987654321",
+                "data_nascimento": "1995-05-20",
+            }
+        )
+        if created:
+            usuario_cre.set_password("senha456")
+            usuario_cre.save()
+
+        Coordenador.objects.get_or_create(
+            usuario=usuario_coord,
+            defaults={
+                "siape": 123456,
+                "inicio_mandato": "2025-01-01",
+                "fim_mandato": "2026-01-01",
+                "curso": curso1,
+            }
+        )
+
+        CRE.objects.get_or_create(
+            usuario=usuario_cre,
+            defaults={"siape": 654321}
+        )
+                
+        usuario_aluno, created = Usuario.objects.get_or_create(
+            cpf="11122233344",  # CPF com 11 dígitos (único)
+            defaults={
+                "email": "aluno.exemplo@example.com",
+                "nome": "Aluno Exemplo",
+                "telefone": "11955556666",
+                "data_nascimento": "2000-01-01",
+            }
+        )
+        if created:
+            usuario_aluno.set_password("alunosenha")
+            usuario_aluno.save()
+
+        # Criação ou obtenção do registro de Aluno
+        Aluno.objects.get_or_create(
+            usuario=usuario_aluno,
+            defaults={
+                "matricula": "2023123456",
+                "turma": "Turma A",
+                "ano_ingresso": 2023,
+            }
+        )
 
         self.stdout.write(self.style.SUCCESS("Dados cadastrados com sucesso!"))
