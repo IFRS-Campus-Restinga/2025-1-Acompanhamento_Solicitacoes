@@ -186,3 +186,4 @@ frontend/node_modules/
 # # PyPI configuration file
 # .pypirc
 /.idea
+backend/backend/local_settings.py
