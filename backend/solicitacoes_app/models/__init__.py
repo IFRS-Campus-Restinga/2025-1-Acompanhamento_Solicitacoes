@@ -11,3 +11,4 @@ from .aluno import *
 from .responsavel import *
 from .disciplina import *
 from .tipo_falta import *
+from .turma import *
