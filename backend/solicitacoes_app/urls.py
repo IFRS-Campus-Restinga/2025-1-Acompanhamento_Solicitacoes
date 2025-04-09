@@ -9,6 +9,7 @@ from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrie
 from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
 from .views.disciplina_view import *
+from .views.tipo_falta_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -26,7 +27,7 @@ urlpatterns = [
 
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
     path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),
-    
+    path('motivo_abono/tipos/', TipoFaltaView.as_view(), name='tipo_faltas'),
 
     path('motivo_dispensa/', MotivoDispensaListService.as_view(), name="listar_motivo_dispensa"),
     path('motivo_dispensa/<int:pk>/', MotivoDispensaService.as_view(), name="gerenciar_motivo_dispensa"),
