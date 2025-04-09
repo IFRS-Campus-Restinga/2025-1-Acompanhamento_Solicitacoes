@@ -10,6 +10,7 @@ from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
 from .views.disciplina_view import *
 from .views.tipo_falta_view import *
+from .views.grupo_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -46,4 +47,7 @@ urlpatterns = [
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
     path('disciplinas/<str:codigo>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
+
+    path('grupos/', GrupoListCreateView.as_view(), name='grupo-list'),
+    path('grupos/<int:pk>/', GrupoRetrieveUpdateDestroyView.as_view(), name='grupo-detail'),
 ]
