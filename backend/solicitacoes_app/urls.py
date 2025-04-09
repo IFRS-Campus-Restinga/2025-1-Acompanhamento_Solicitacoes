@@ -44,5 +44,5 @@ urlpatterns = [
     path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
-    path('disciplinas/<str:pk>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
+    path('disciplinas/<str:codigo>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
 ]
