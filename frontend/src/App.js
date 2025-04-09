@@ -7,6 +7,9 @@ import Alunos from "./pages/alunos/lista_alunos";
 import Home from "./pages/home";
 //import Solicitacoes from "./pages/solicitacoes";
 import "./var.css";
+import ListarMotivosAbono from "./pages/motivos/abono/lista_abono";
+import CadastrarMotivoAbono from "./pages/motivos/abono/cadastrar_abono";
+import DetalharMotivoAbono from "./pages/motivos/abono/detalhar_abono";
 
 class App extends React.Component {
   state = {
@@ -39,6 +42,11 @@ class App extends React.Component {
             <Route path="/" element={<Alunos />} />
             <Route path="/home" element={<Home />} />
             <Route path="/alunos" element={<Alunos />} />
+
+            {/* Motivos de Abono */}
+            <Route path="/motivo_abono/" element={<ListarMotivosAbono />} />
+            <Route path="/motivo_abono/cadastrar" element={<CadastrarMotivoAbono />} />
+            <Route path="/motivo_abono/:id" element={<DetalharMotivoAbono />} />
           </Routes>
         ) : (
           <div className="error-container">
