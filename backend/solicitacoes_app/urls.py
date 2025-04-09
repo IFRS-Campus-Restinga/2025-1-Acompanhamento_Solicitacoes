@@ -11,6 +11,7 @@ from .views.aluno_view import *
 from .views.disciplina_view import *
 from .views.tipo_falta_view import *
 from .views.grupo_view import *
+from solicitacoes_app.views.turma_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -50,4 +51,7 @@ urlpatterns = [
 
     path('grupos/', GrupoListCreateView.as_view(), name='grupo-list'),
     path('grupos/<int:pk>/', GrupoRetrieveUpdateDestroyView.as_view(), name='grupo-detail'),
+
+    path('turmas/', TurmaListCreateView.as_view(), name='turma-list'),
+    path('turmas/<int:id>/', TurmaRetrieveUpdateDestroyView.as_view(), name='turma-detail'),
 ]

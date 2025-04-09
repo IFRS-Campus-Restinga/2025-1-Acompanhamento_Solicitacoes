@@ -32,5 +32,7 @@ def api_root(request, format=None):
         },
 
         'motivo_abono': reverse('solicitacoes_app:motivo_abono_list', request=request, format=format),
+
+        'turmas': reverse('solicitacoes_app:turma-list', request=request, format=format),
         
         })
