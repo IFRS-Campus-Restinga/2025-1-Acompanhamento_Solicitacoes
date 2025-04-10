@@ -1,157 +1,148 @@
-/*Formulário criar novo motivo abono*/
+/* ================= FORMULÁRIO: Criar/Editar Motivo ================= */
 
 .form-container {
-    padding: 2rem;
-    max-width: 600px;
-    margin: auto;
-  }
-  
-  .form-box {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
+  padding: 2rem;
+  max-width: 600px;
+  margin: auto;
+}
 
-  
-  .input-area {
-    padding: 0.5rem;
-    resize: vertical;
-    font-size: 1rem;
-  }
-  
-  .input-select {
-    padding: 0.5rem;
-    font-size: 1rem;
-  }
-  
-  .submit-button {
-    background-color: #1976d2;
-    color: white;
-    border: none;
-    padding: 0.75rem;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .submit-button:hover {
-    background-color: #115293;
-  }
+.form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
 
-  .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem;
-  }
-  
-  h2 {
-    margin-bottom: 2rem;
-    text-align: center;
-    color: #333;
-  }
-  
-  .form-group {
-    margin-bottom: 1.5rem;
-  }
-  
-  textarea,
-  select {
-    width: 100%;
-    padding: 0.75rem;
-    font-size: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    box-sizing: border-box;
-    resize: vertical;
-  }
-  
-  button[type="submit"] {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  button[type="submit"]:hover {
-    background-color: #0056b3;
-  }
-  
-  
-  
-  /*Botão editar da lista*/
-  
-  .botao-editar {
-    background-color: #007bff;
-    color: white;
-    padding: 6px 12px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .botao-editar:hover {
-    background-color: #0056b3;
-  }
-  
-  
-  /*Tabela com todos motivos cadastrados*/
-  
-  .tabela-motivos {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-  }
-  
-  .tabela-motivos th,
-  .tabela-motivos td {
-    border: 1px solid #ccc;
-    padding: 10px;
-    text-align: left;
-  }
-  
-  .linha-par {
-    background-color: #f9f9f9;
-  }
-  
-  .linha-impar {
-    background-color: #ffffff;
-  }
-  
-  .tabela-motivos th {
-    background-color: #e0e0e0;
-  }
+.input-area,
+.input-select {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
 
+textarea,
+select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+  resize: vertical;
+}
 
-  /*Botão de cadastro na tela lista*/
+.submit-button,
+button[type="submit"] {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
 
-  .botao-cadastrar-wrapper {
-    margin-top: 1.5rem;
-    text-align: right;
-  }
-  
-  .botao-cadastrar {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 0.6rem 1.2rem;
-    border-radius: 6px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  
-  .botao-cadastrar:hover {
-    background-color: #218838;
-  }
-  
-  
+.submit-button:hover,
+button[type="submit"]:hover {
+  background-color: #0056b3;
+}
 
-  /***Popupfeedback***/
+.form-group {
+  margin-bottom: 20px;
+}
 
-  /* Estilo do fundo com blur */
+.botoes-acoes {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+/* ================= LISTA DE MOTIVOS ================= */
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+h2 {
+  margin-bottom: 2rem;
+  text-align: center;
+  color: #333;
+}
+
+/* Tabela */
+.tabela-motivos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabela-motivos th,
+.tabela-motivos td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: left;
+}
+
+.tabela-motivos th {
+  background-color: #e0e0e0;
+}
+
+.linha-par {
+  background-color: #f9f9f9;
+}
+
+.linha-impar {
+  background-color: #ffffff;
+}
+
+/* Botão de cadastro */
+.botao-cadastrar-wrapper {
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+
+.botao-cadastrar {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.botao-cadastrar:hover {
+  background-color: #218838;
+}
+
+/* Ícones de ação (editar e excluir) */
+.acoes-icones {
+  display: flex;
+  gap: 10px;
+}
+
+.icone-acao {
+  cursor: pointer;
+  transition: transform 0.2s;
+  color: #333;
+}
+
+.icone-acao:hover {
+  transform: scale(1.1);
+}
+
+.icone-editar:hover {
+  color: #007bff;
+}
+
+.icone-excluir:hover {
+  color: #dc3545;
+}
+
+/* ================= POPUP: Feedback ================= */
+
 .popup-overlay {
   position: fixed;
   top: 0;
@@ -166,14 +157,13 @@
   z-index: 1000;
 }
 
-/* Estilo da caixinha do popup */
 .popup-box {
   background: white;
   padding: 2rem;
   border-radius: 10px;
   width: 400px;
   max-width: 90%;
-  box-shadow: 0 0 10px rgba(0,0,0,0.25);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
   text-align: center;
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -186,7 +176,6 @@
   border-left: 6px solid #dc3545;
 }
 
-/* Botão de fechar */
 .popup-box button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
@@ -201,31 +190,7 @@
   background: #0056b3;
 }
 
-/* Animação de entrada */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-
-.botoes-acoes {
-  margin-top: 20px;
-  display: flex;
-  gap: 10px; /* espaço entre os botões */
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-
-/*Popup de Confirmação*/
+/* ================= POPUP: Confirmação de Exclusão ================= */
 
 .popup-backdrop {
   position: fixed;
@@ -240,18 +205,10 @@
   z-index: 999;
 }
 
-.popup-box {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  text-align: center;
-  max-width: 300px;
-}
-
 .popup-actions {
   display: flex;
   justify-content: center;
-  gap: 1rem; /* Espaçamento entre os botões */
+  gap: 1rem;
   margin-top: 1rem;
 }
 
@@ -273,6 +230,15 @@
   color: #ffffff;
 }
 
+/* ================= ANIMAÇÕES ================= */
 
-  
-  
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

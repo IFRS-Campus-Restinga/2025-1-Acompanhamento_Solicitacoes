@@ -1,15 +1,15 @@
 import React from "react";
+import "./abono.css";
 
-export default function PopupFeedback({ show, message, isError, onClose }) {
+export default function PopupFeedback({ show, mensagem, tipo, onClose }) {
   if (!show) return null;
 
   return (
     <div className="popup-overlay">
-      <div className={`popup-box ${isError ? "error" : "success"}`}>
-        <p>{message}</p>
+      <div className={`popup-box ${tipo === "erro" ? "error" : "success"}`}>
+        <p>{mensagem}</p>
         <button onClick={onClose}>Fechar</button>
       </div>
     </div>
   );
 }
-
