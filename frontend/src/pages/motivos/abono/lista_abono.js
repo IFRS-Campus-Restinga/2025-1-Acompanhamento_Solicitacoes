@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Footer from "../../../components/footer";
 import Header from "../../../components/header";
 import Navbar from "../../../components/navbar";
-import Footer from "../../../components/footer";
+import "./abono.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
-import "./abono.css";
 
 export default function ListarMotivosAbono() {
   const [motivos, setMotivos] = useState([]);
@@ -54,7 +54,10 @@ export default function ListarMotivosAbono() {
 
         <div className="botao-cadastrar-wrapper">
           <Link to="/motivo_abono/cadastrar">
-            <button className="botao-cadastrar">Cadastrar novo motivo</button>
+            <button className="botao-cadastrar">
+            <i class="bi bi-plus-square-fill icone"></i>
+            Cadastrar novo motivo
+            </button>
           </Link>
         </div>
 
@@ -75,7 +78,7 @@ export default function ListarMotivosAbono() {
                 <td>
                   <div className="botoes-acoes">
                     <Link to={`/motivo_abono/${motivo.id}`} title="Editar">
-                      <i className="bi bi-pencil-fill icone-acao"></i>
+                      <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
                       onClick={() => {
@@ -83,9 +86,8 @@ export default function ListarMotivosAbono() {
                         setMostrarPopup(true);
                       }}
                       title="Excluir"
-                      className="icone-botao"
-                    >
-                      <i className="bi bi-trash-fill icone-acao"></i>
+                      className="icone-botao">
+                        <i className="bi bi-trash3-fill icone-excluir"></i>
                     </button>
                   </div>
                 </td>
