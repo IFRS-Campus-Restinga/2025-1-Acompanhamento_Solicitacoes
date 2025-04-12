@@ -31,7 +31,7 @@ select {
 
 .submit-button,
 button[type="submit"] {
-  background-color: #007bff;
+  background-color:  var(--botao-criar);
   color: white;
   border: none;
   padding: 0.6rem 1.2rem;
@@ -43,7 +43,7 @@ button[type="submit"] {
 
 .submit-button:hover,
 button[type="submit"]:hover {
-  background-color: #0056b3;
+  background-color: var(--verde-escuro);
 }
 
 .form-group {
@@ -79,7 +79,7 @@ h2 {
 
 .tabela-motivos th,
 .tabela-motivos td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--cabecalho-lista);
   padding: 10px;
   text-align: left;
 }
@@ -103,8 +103,8 @@ h2 {
 }
 
 .botao-cadastrar {
-  background-color: #28a745;
-  color: white;
+  background-color: var(--botao-criar);
+  color: var(--cor-branca);
   border: none;
   padding: 0.6rem 1.2rem;
   border-radius: 6px;
@@ -114,7 +114,18 @@ h2 {
 }
 
 .botao-cadastrar:hover {
-  background-color: #218838;
+  background-color: var(--verde-escuro);
+}
+
+.icone{
+  margin-right: 8px;
+}
+
+.icone-botao {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* Ícones de ação (editar e excluir) */
@@ -134,11 +145,11 @@ h2 {
 }
 
 .icone-editar:hover {
-  color: #007bff;
+  color: var(--botao-editar);
 }
 
 .icone-excluir:hover {
-  color: #dc3545;
+  color: var(--botao-deletar);
 }
 
 /* ================= POPUP: Feedback ================= */
@@ -169,26 +180,23 @@ h2 {
 }
 
 .popup-box.success {
-  border-left: 6px solid #28a745;
+  border-top: 6px solid #148229;
 }
 
 .popup-box.error {
-  border-left: 6px solid #dc3545;
+  border-top: 6px solid #c01627;
 }
 
 .popup-box button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
-  background: #007bff;
+  background: var(--verde-escuro);
   border: none;
   color: white;
   border-radius: 6px;
   cursor: pointer;
 }
 
-.popup-box button:hover {
-  background: #0056b3;
-}
 
 /* ================= POPUP: Confirmação de Exclusão ================= */
 
@@ -221,12 +229,12 @@ h2 {
 }
 
 .btn.btn-confirm {
-  background-color: #dc3545;
+  background-color: var(--botao-deletar);
   color: #ffffff;
 }
 
 .btn.btn-cancel {
-  background-color: #6c757d;
+  background-color: var(--botao-cancelar);
   color: #ffffff;
 }
 
