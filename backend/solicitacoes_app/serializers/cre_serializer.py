@@ -1,24 +1,26 @@
 from rest_framework import serializers
-from .usuario_serializer import UsuarioSerializer
-from ..models import CRE
+from ..models import CRE, Usuario
 
 class CRESerializer(serializers.ModelSerializer):
     
-    usuario = UsuarioSerializer()
+    depth = 1
 
     class Meta:
         model = CRE
         fields = ['id', 'usuario', 'siape']
-
+        
+        
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')
-        usuario, created = Usuario.objects.get_or_create(
-            cpf=usuario_data['cpf'],
-            defaults=usuario_data
-        )
-        if not created:
-            for attr, value in usuario_data.items():
-                setattr(usuario, attr, value)
-            usuario.save()
 
+        # Cria ou recupera o usuário
+        usuario = Usuario.objects.get(id=usuario_data.id)  # Assume que o ID do Usuario está sendo passado
+
+        # Cria o Coordenador com o Usuario existente
         return CRE.objects.create(usuario=usuario, **validated_data)
+
+    def validate(self, data):
+        # Executa as validações do model
+        instance = self.instance or self.Meta.model(**data)
+        instance.full_clean() 
+        return data

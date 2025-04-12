@@ -7,3 +7,4 @@ from .motivo_exercicios_view import *
 from .coordenador_view import *
 from .aluno_view import *
 from .cre_view import *
+from .usuario_view import *

@@ -12,6 +12,7 @@ from .views.disciplina_view import *
 from .views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
+from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView
 
 app_name = 'solicitacoes_app'
 
@@ -54,4 +55,7 @@ urlpatterns = [
 
     path('turmas/', TurmaListCreateView.as_view(), name='turma-list'),
     path('turmas/<int:id>/', TurmaRetrieveUpdateDestroyView.as_view(), name='turma-detail'),
+    
+    path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
+    path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
 ]
