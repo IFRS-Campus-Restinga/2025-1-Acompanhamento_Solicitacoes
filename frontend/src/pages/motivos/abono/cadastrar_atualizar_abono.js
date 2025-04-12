@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Header from "../../../components/header";
-import Navbar from "../../../components/navbar";
 import Footer from "../../../components/footer";
-import PopupFeedback from "./popup_feedback";
+import Header from "../../../components/header";
 import "./abono.css";
+import PopupFeedback from "./popup_feedback";
 
 export default function CadastrarAtualizarAbono() {
   const [descricao, setDescricao] = useState("");
@@ -64,7 +63,6 @@ export default function CadastrarAtualizarAbono() {
   return (
     <div>
       <Header />
-      <Navbar />
       <main className="container form-container">
         <h2>{id ? "Editar Motivo de Abono" : "Cadastrar Novo Motivo de Abono"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>

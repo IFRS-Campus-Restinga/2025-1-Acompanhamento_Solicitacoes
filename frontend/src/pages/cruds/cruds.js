@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
-import Navbar from "../../components/navbar";
 import "./cruds.css";
 
 const Cruds = () => {
@@ -18,7 +17,6 @@ const Cruds = () => {
   return (
     <div>
       <Header />
-      <Navbar />
         <main className="container">
             <h2>CRUDs Disponíveis</h2>
             <div className="grid-cruds">

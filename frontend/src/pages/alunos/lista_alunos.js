@@ -2,8 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
-import Navbar from "../../components/navbar";
-import Main from "../../components/main";
 import "./lista_alunos.css";
 
 const Alunos = () => {
@@ -27,7 +25,6 @@ const Alunos = () => {
   return (
     <div>
       <Header />
-      <Navbar />
       <main>
         <h2>Lista de Alunos</h2>
 

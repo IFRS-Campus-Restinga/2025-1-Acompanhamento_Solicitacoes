@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
-import Navbar from "../../../components/navbar";
 import "./motivo_exercicios.css";
 import PopupFeedback from "./popup_feedback";
 
@@ -54,7 +53,6 @@ export default function CadastrarAtualizarExercicios() {
   return (
     <div>
       <Header />
-      <Navbar />
       <main className="container form-container">
         <h2>{id ? "Editar Motivo de Exercicios" : "Cadastrar Novo Motivo de Exercicios"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>

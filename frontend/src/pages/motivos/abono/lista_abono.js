@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
-import Navbar from "../../../components/navbar";
 import "./abono.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
@@ -51,7 +50,6 @@ export default function ListarMotivosAbono() {
   return (
     <div>
       <Header />
-      <Navbar />
       <main className="container">
         <h2>Motivos de Abono</h2>
 

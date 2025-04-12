@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Footer from "../components/footer";
 import Header from "../components/header";
-import Navbar from "../components/navbar";
+
 
 const Cursos = () => {
   const [cursos, setCursos] = useState([]);
@@ -16,7 +16,6 @@ const Cursos = () => {
   return (
     <div>
       <Header />
-      <Navbar />
       <main>
         <h2>Lista de Cursos</h2>
         <ul>
