@@ -97,28 +97,39 @@ h2 {
 }
 
 /* Botão de cadastro */
+
 .botao-cadastrar-wrapper {
   margin-bottom: 1.5rem;
   text-align: right;
 }
 
 .botao-cadastrar {
-  background-color: var(--botao-criar);
-  color: var(--cor-branca);
-  border: none;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  font-size: 1rem;
+  background-color: var(--verde-oficial);      
+  color: var(--cor-branca);                   
+  border: none;        
+  border-radius: 50px;           
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;  /* Tamanho do ícone */
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;        
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  padding: 0.6rem;
 }
 
 .botao-cadastrar:hover {
-  background-color: var(--verde-escuro);
+  background-color: var(--verde-escuro);      
+  transform: scale(1.05);
 }
 
-.icone{
-  margin-right: 8px;
+botao-link {
+  display: inline-block;
+  width: 50px;
+  height: 50px;
+  text-decoration: none;
 }
 
 .icone-botao {
@@ -150,6 +161,30 @@ h2 {
 
 .icone-excluir:hover {
   color: var(--botao-deletar);
+}
+
+.botao-voltar-wrapper {
+  margin-top: 2rem;
+  text-align: left; /* ou right se preferir */
+}
+
+.botao-voltar {
+  background-color: var(--verde-oficial);
+  color: var(--cor-branca); /* ou verde direto: #0b722b */
+  border: 2px solid var(--verde-oficial);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.botao-voltar:hover {
+  background-color: var(--verde-escuro);
+  color: white;
 }
 
 /* ================= POPUP: Feedback ================= */
