@@ -8,7 +8,10 @@ import "./abono.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
 
+import { useNavigate } from "react-router-dom";
+
 export default function ListarMotivosAbono() {
+  const navigate = useNavigate();
   const [motivos, setMotivos] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [motivoSelecionado, setMotivoSelecionado] = useState(null);
@@ -53,10 +56,9 @@ export default function ListarMotivosAbono() {
         <h2>Motivos de Abono</h2>
 
         <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_abono/cadastrar">
+          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
             <button className="botao-cadastrar">
-            <i class="bi bi-plus-square-fill icone"></i>
-            Cadastrar novo motivo
+              <i className="bi bi-plus-circle-fill"></i>
             </button>
           </Link>
         </div>
@@ -109,6 +111,13 @@ export default function ListarMotivosAbono() {
           tipo={tipoMensagem}
           onClose={() => setMostrarFeedback(false)}
         />
+
+        <div className="botao-voltar-wrapper">
+            <button className="botao-voltar" onClick={() => navigate(-1)}>
+              <i className="bi bi-arrow-left-circle"></i> Voltar
+            </button>
+        </div>
+        
       </main>
       <Footer />
     </div>
