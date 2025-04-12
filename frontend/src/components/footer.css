@@ -1,5 +1,8 @@
 
   footer{
+  position: fixed;
+  bottom: 0;
+  width: 100%;
   background-color:var(--verde-escuro);
   color: white;
   display: flex;
@@ -7,11 +10,13 @@
   align-items: center;
   justify-content: center;
   padding: 20px;
-  margin-top: 300px;
+  margin-top: auto;
   }
 
   footer p {
   margin: 5px 0; /* Adiciona margens nas tags de parágrafo */
   font-size: 14px; /* Ajusta o tamanho da fonte */
 }
+
+
 
