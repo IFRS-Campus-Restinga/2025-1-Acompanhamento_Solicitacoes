@@ -6,7 +6,6 @@ import Navbar from "../../../components/navbar";
 import Footer from "../../../components/footer";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
-import { Pencil, Trash2 } from "lucide-react";
 import "./abono.css";
 
 export default function ListarMotivosAbono() {
@@ -72,10 +71,11 @@ export default function ListarMotivosAbono() {
               <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{motivo.descricao}</td>
                 <td>{motivo.tipo_falta}</td>
+
                 <td>
                   <div className="botoes-acoes">
                     <Link to={`/motivo_abono/${motivo.id}`} title="Editar">
-                      <Pencil className="icone-acao" />
+                      <i className="bi bi-pencil-fill icone-acao"></i>
                     </Link>
                     <button
                       onClick={() => {
@@ -85,10 +85,11 @@ export default function ListarMotivosAbono() {
                       title="Excluir"
                       className="icone-botao"
                     >
-                      <Trash2 className="icone-acao" />
+                      <i className="bi bi-trash-fill icone-acao"></i>
                     </button>
                   </div>
                 </td>
+
               </tr>
             ))}
           </tbody>
