@@ -3,6 +3,7 @@ import React from "react";
 import { Route, BrowserRouter as Router, Routes} from "react-router-dom";
 //import { Link } from "react-router-dom";
 import "./App.css";
+import 'bootstrap-icons/font/bootstrap-icons.css';
 import Alunos from "./pages/alunos/lista_alunos";
 import Home from "./pages/home";
 //import Solicitacoes from "./pages/solicitacoes";
