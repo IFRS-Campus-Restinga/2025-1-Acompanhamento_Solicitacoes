@@ -10,6 +10,7 @@ import "./var.css";
 import ListarMotivosAbono from "./pages/motivos/abono/lista_abono";
 import CadastrarMotivoAbono from "./pages/motivos/abono/cadastrar_abono";
 import DetalharMotivoAbono from "./pages/motivos/abono/detalhar_abono";
+import ListarMotivoDispensa from "./pages/motivos/dispensa_ed_fisica/lista_motivo";
 
 class App extends React.Component {
   state = {
@@ -47,6 +48,9 @@ class App extends React.Component {
             <Route path="/motivo_abono/" element={<ListarMotivosAbono />} />
             <Route path="/motivo_abono/cadastrar" element={<CadastrarMotivoAbono />} />
             <Route path="/motivo_abono/:id" element={<DetalharMotivoAbono />} />
+
+            {/* Motivos de Dispensa de Educação Física */}
+            <Route path="/motivo_dispensa/" element={<ListarMotivoDispensa />} />
           </Routes>
         ) : (
           <div className="error-container">
