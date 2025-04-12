@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
 import axios from "axios";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import Footer from "../../../components/footer";
 import Header from "../../../components/header";
 import Navbar from "../../../components/navbar";
-import Footer from "../../../components/footer";
+import "./motivo_exercicios.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
-import "./motivo_exercicios.css";
 
-export default function ListarMotivosExerciciosDomiciliares() {
+import { useNavigate } from "react-router-dom";
+
+export default function ListarMotivosExercicios() {
+  const navigate = useNavigate();
   const [motivos, setMotivos] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [motivoSelecionado, setMotivoSelecionado] = useState(null);
-  //const [tipoFalta, setTipoFalta] = useState("");
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
@@ -50,11 +52,13 @@ export default function ListarMotivosExerciciosDomiciliares() {
       <Header />
       <Navbar />
       <main className="container">
-        <h2>Motivos de Exercicios Domiciliares</h2>
+        <h2>Motivos de Exercicios</h2>
 
         <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_exercicios/cadastrar">
-            <button className="botao-cadastrar">Cadastrar novo motivo</button>
+          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
+            <button className="botao-cadastrar">
+              <i className="bi bi-plus-circle-fill"></i>
+            </button>
           </Link>
         </div>
 
@@ -73,7 +77,7 @@ export default function ListarMotivosExerciciosDomiciliares() {
                 <td>
                   <div className="botoes-acoes">
                     <Link to={`/motivo_exercicios/${motivo.id}`} title="Editar">
-                      <i className="bi bi-pencil-fill icone-acao"></i>
+                      <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
                       onClick={() => {
@@ -81,9 +85,8 @@ export default function ListarMotivosExerciciosDomiciliares() {
                         setMostrarPopup(true);
                       }}
                       title="Excluir"
-                      className="icone-botao"
-                    >
-                      <i className="bi bi-trash-fill icone-acao"></i>
+                      className="icone-botao">
+                        <i className="bi bi-trash3-fill icone-excluir"></i>
                     </button>
                   </div>
                 </td>
@@ -105,7 +108,14 @@ export default function ListarMotivosExerciciosDomiciliares() {
           tipo={tipoMensagem}
           onClose={() => setMostrarFeedback(false)}
         />
+        <div className="botao-voltar-wrapper">
+            <button className="botao-voltar" onClick={() => navigate(-1)}>
+              <i className="bi bi-arrow-left-circle"></i> Voltar
+            </button>
+        </div>
+
       </main>
+
       <Footer />
     </div>
   );
