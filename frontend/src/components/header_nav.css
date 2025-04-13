@@ -92,7 +92,7 @@
   cursor: pointer;
 }
 
-p{
+.mensagem-usuario{
   padding-top: 12px;
   color:var(--cor-branca);
 }
