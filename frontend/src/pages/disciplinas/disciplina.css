@@ -1,0 +1,287 @@
+/* ================= FORMULÁRIO: Criar/Editar Disciplina ================= */
+
+.form-container {
+    padding: 2rem;
+    max-width: 600px;
+    margin: auto;
+  }
+  
+  .form-box {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  
+  .input-area,
+  .input-select {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  textarea,
+  select {
+    width: 100%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    resize: vertical;
+  }
+  
+  .submit-button,
+  button[type="submit"] {
+    background-color: var(--botao-criar);
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submit-button:hover,
+  button[type="submit"]:hover {
+    background-color: var(--verde-escuro);
+  }
+  
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .botoes-acoes {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  /* ================= LISTA DE DISCIPLINAS ================= */
+  
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+  
+  h2 {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: #333;
+  }
+  
+  /* Tabela */
+  .tabela-disciplinas {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .tabela-disciplinas th,
+  .tabela-disciplinas td {
+    border: 1px solid var(--cabecalho-lista);
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .tabela-disciplinas th {
+    background-color: #e0e0e0;
+  }
+  
+  .linha-par {
+    background-color: #f9f9f9;
+  }
+  
+  .linha-impar {
+    background-color: #ffffff;
+  }
+  
+  /* Botão de cadastro */
+  
+  .botao-cadastrar-wrapper {
+    margin-bottom: 1.5rem;
+    text-align: right;
+  }
+  
+  .botao-cadastrar {
+    background-color: var(--verde-oficial);      
+    color: var(--cor-branca);                   
+    border: none;        
+    border-radius: 50px;           
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;  /* Tamanho do ícone */
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;        
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    padding: 0.6rem;
+  }
+  
+  .botao-cadastrar:hover {
+    background-color: var(--verde-escuro);      
+    transform: scale(1.05);
+  }
+  
+  botao-link {
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    text-decoration: none;
+  }
+  
+  .icone-botao {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+  /* Ícones de ação (editar e excluir) */
+  .acoes-icones {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .icone-acao {
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: #333;
+  }
+  
+  .icone-acao:hover {
+    transform: scale(1.1);
+  }
+  
+  .icone-editar:hover {
+    color: var(--botao-editar);
+  }
+  
+  .icone-excluir:hover {
+    color: var(--botao-deletar);
+  }
+  
+  .botao-voltar-wrapper {
+    margin-top: 2rem;
+    text-align: left; /* ou right se preferir */
+  }
+  
+  .botao-voltar {
+    background-color: var(--verde-oficial);
+    color: var(--cor-branca); /* ou verde direto: #0b722b */
+    border: 2px solid var(--verde-oficial);
+    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  .botao-voltar:hover {
+    background-color: var(--verde-escuro);
+    color: white;
+  }
+  
+  /* ================= POPUP: Feedback ================= */
+  
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    backdrop-filter: blur(4px);
+    background-color: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  .popup-box {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
+    text-align: center;
+    animation: fadeIn 0.3s ease-in-out;
+  }
+  
+  .popup-box.success {
+    border-top: 6px solid #148229;
+  }
+  
+  .popup-box.error {
+    border-top: 6px solid #c01627;
+  }
+  
+  .popup-box button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    background: var(--verde-escuro);
+    border: none;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  
+  
+  /* ================= POPUP: Confirmação de Exclusão ================= */
+  
+  .popup-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .popup-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+  
+  .btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .btn.btn-confirm {
+    background-color: var(--botao-deletar);
+    color: #ffffff;
+  }
+  
+  .btn.btn-cancel {
+    background-color: var(--botao-cancelar);
+    color: #ffffff;
+  }
+  
+  /* ================= ANIMAÇÕES ================= */
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }

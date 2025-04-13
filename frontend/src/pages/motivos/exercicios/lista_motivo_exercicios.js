@@ -107,7 +107,7 @@ export default function ListarMotivosExercicios() {
           onClose={() => setMostrarFeedback(false)}
         />
         <div className="botao-voltar-wrapper">
-            <button className="botao-voltar" onClick={() => navigate(-1)}>
+            <button className="botao-voltar" onClick={() => navigate('/')}>
               <i className="bi bi-arrow-left-circle"></i> Voltar
             </button>
         </div>

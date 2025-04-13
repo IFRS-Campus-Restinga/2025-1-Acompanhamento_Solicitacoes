@@ -1,49 +1,46 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Footer from "../../../components/footer";
-import Header from "../../../components/header";
-import "./abono.css";
-import PopupConfirmacao from "./popup_confirmacao";
-import PopupFeedback from "./popup_feedback";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../../components/footer"; // Caminho corrigido
+import Header from "../../components/header"; // Caminho corrigido
+import "./disciplina.css";
+import PopupConfirmacao from "./popup_confirmacao"; // Caminho corrigido
+import PopupFeedback from "./popup_feedback"; // Caminho corrigido
 
-import { useNavigate } from "react-router-dom";
-
-export default function ListarMotivosAbono() {
+export default function ListarDisciplinas() {
   const navigate = useNavigate();
-  const [motivos, setMotivos] = useState([]);
+  const [disciplinas, setDisciplinas] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [motivoSelecionado, setMotivoSelecionado] = useState(null);
-  const [tipoFalta, setTipoFalta] = useState("");
+  const [disciplinaSelecionada, setDisciplinaSelecionada] = useState(null);
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
 
   useEffect(() => {
-    axios.get("http://localhost:8000/solicitacoes/motivo_abono/")
-      .then((res) => setMotivos(res.data))
+    axios.get("http://localhost:8000/solicitacoes/disciplinas/")  // Corrigido para "solicitacoes"
+      .then((res) => setDisciplinas(res.data))
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar motivos."}`);
+        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar disciplinas."}`);
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
   }, []);
 
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/motivo_abono/${motivoSelecionado}/`)
+    axios.delete(`http://localhost:8000/solicitacoes/disciplinas/${disciplinaSelecionada}/`)  // Corrigido para "solicitacoes"
       .then(() => {
-        setMensagemPopup("Motivo excluído com sucesso.");
+        setMensagemPopup("Disciplina excluída com sucesso.");
         setTipoMensagem("sucesso");
-        setMotivos(motivos.filter((m) => m.id !== motivoSelecionado));
+        setDisciplinas(disciplinas.filter((d) => d.codigo !== disciplinaSelecionada));
       })
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
+        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir disciplina."}`);
         setTipoMensagem("erro");
       })
       .finally(() => {
         setMostrarPopup(false);
         setMostrarFeedback(true);
-        setMotivoSelecionado(null);
+        setDisciplinaSelecionada(null);
       });
   };
 
@@ -51,38 +48,37 @@ export default function ListarMotivosAbono() {
     <div>
       <Header />
       <main className="container">
-        <h2>Motivos de Abono</h2>
+        <h2>Disciplinas</h2>
 
         <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
+          <Link to="/disciplinas/cadastrar" className="botao-link" title="Criar Nova Disciplina">
             <button className="botao-cadastrar">
               <i className="bi bi-plus-circle-fill"></i>
             </button>
           </Link>
         </div>
 
-        <table className="tabela-motivos">
+        <table className="tabela-disciplinas">
           <thead>
             <tr>
-              <th>Descrição</th>
-              <th>Tipo de Falta</th>
+              <th>Código</th>
+              <th>Nome</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {motivos.map((motivo, index) => (
-              <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                <td>{motivo.descricao}</td>
-                <td>{motivo.tipo_falta}</td>
-
+            {disciplinas.map((disciplina, index) => (
+              <tr key={disciplina.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                <td>{disciplina.codigo}</td>
+                <td>{disciplina.nome}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/motivo_abono/${motivo.id}`} title="Editar">
+                    <Link to={`/disciplinas/${disciplina.codigo}`} title="Editar">
                       <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
                       onClick={() => {
-                        setMotivoSelecionado(motivo.id);
+                        setDisciplinaSelecionada(disciplina.codigo);
                         setMostrarPopup(true);
                       }}
                       title="Excluir"
@@ -91,7 +87,6 @@ export default function ListarMotivosAbono() {
                     </button>
                   </div>
                 </td>
-
               </tr>
             ))}
           </tbody>
@@ -111,9 +106,9 @@ export default function ListarMotivosAbono() {
         />
 
         <div className="botao-voltar-wrapper">
-            <button className="botao-voltar" onClick={() => navigate('/')}>
-              <i className="bi bi-arrow-left-circle"></i> Voltar
-            </button>
+          <button className="botao-voltar" onClick={() => navigate('/')}>
+            <i className="bi bi-arrow-left-circle"></i> Voltar
+          </button>
         </div>
         
       </main>

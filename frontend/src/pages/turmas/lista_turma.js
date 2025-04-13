@@ -1,49 +1,46 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Footer from "../../../components/footer";
-import Header from "../../../components/header";
-import "./abono.css";
+import { Link, useNavigate } from "react-router-dom";
+import Footer from "../../components/footer";
+import Header from "../../components/header";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
+import "./turma.css";
 
-import { useNavigate } from "react-router-dom";
-
-export default function ListarMotivosAbono() {
+export default function ListarTurmas() {
   const navigate = useNavigate();
-  const [motivos, setMotivos] = useState([]);
+  const [turmas, setTurmas] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [motivoSelecionado, setMotivoSelecionado] = useState(null);
-  const [tipoFalta, setTipoFalta] = useState("");
+  const [turmaSelecionada, setTurmaSelecionada] = useState(null);
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
 
   useEffect(() => {
-    axios.get("http://localhost:8000/solicitacoes/motivo_abono/")
-      .then((res) => setMotivos(res.data))
+    axios.get("http://localhost:8000/solicitacoes/turmas/")
+      .then((res) => setTurmas(res.data))
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar motivos."}`);
+        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar turmas."}`);
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
   }, []);
 
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/motivo_abono/${motivoSelecionado}/`)
+    axios.delete(`http://localhost:8000/solicitacoes/turmas/${turmaSelecionada}/`)
       .then(() => {
-        setMensagemPopup("Motivo excluído com sucesso.");
+        setMensagemPopup("Turma excluída com sucesso.");
         setTipoMensagem("sucesso");
-        setMotivos(motivos.filter((m) => m.id !== motivoSelecionado));
+        setTurmas(turmas.filter((t) => t.id !== turmaSelecionada));
       })
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
+        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir turma."}`);
         setTipoMensagem("erro");
       })
       .finally(() => {
         setMostrarPopup(false);
         setMostrarFeedback(true);
-        setMotivoSelecionado(null);
+        setTurmaSelecionada(null);
       });
   };
 
@@ -51,38 +48,37 @@ export default function ListarMotivosAbono() {
     <div>
       <Header />
       <main className="container">
-        <h2>Motivos de Abono</h2>
+        <h2>Turmas</h2>
 
         <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
+          <Link to="/turmas/cadastrar" className="botao-link" title="Criar Nova Turma">
             <button className="botao-cadastrar">
               <i className="bi bi-plus-circle-fill"></i>
             </button>
           </Link>
         </div>
 
-        <table className="tabela-motivos">
+        <table className="tabela-turmas">
           <thead>
             <tr>
-              <th>Descrição</th>
-              <th>Tipo de Falta</th>
+              <th>ID</th>
+              <th>Nome</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {motivos.map((motivo, index) => (
-              <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                <td>{motivo.descricao}</td>
-                <td>{motivo.tipo_falta}</td>
-
+            {turmas.map((turma, index) => (
+              <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                <td>{turma.id}</td>
+                <td>{turma.nome}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/motivo_abono/${motivo.id}`} title="Editar">
+                    <Link to={`/turmas/${turma.id}`} title="Editar">
                       <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
                       onClick={() => {
-                        setMotivoSelecionado(motivo.id);
+                        setTurmaSelecionada(turma.id);
                         setMostrarPopup(true);
                       }}
                       title="Excluir"
@@ -91,7 +87,6 @@ export default function ListarMotivosAbono() {
                     </button>
                   </div>
                 </td>
-
               </tr>
             ))}
           </tbody>
@@ -111,11 +106,10 @@ export default function ListarMotivosAbono() {
         />
 
         <div className="botao-voltar-wrapper">
-            <button className="botao-voltar" onClick={() => navigate('/')}>
-              <i className="bi bi-arrow-left-circle"></i> Voltar
-            </button>
+          <button className="botao-voltar" onClick={() => navigate('/')}>
+            <i className="bi bi-arrow-left-circle"></i> Voltar
+          </button>
         </div>
-        
       </main>
       <Footer />
     </div>

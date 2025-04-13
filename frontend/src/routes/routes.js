@@ -30,7 +30,16 @@ const routes = [
   <Route path="/motivo_exercicios/:id" element={<CadastrarAtualizarExercicios />} key="editar-exercicios" />,
 
   // Motivo Dispensa de Educação Física
-  <Route path="/motivo_dispensa" element={<ListaMotivosDispensa />} key="listar-dispensa" />
+  <Route path="/motivo_dispensa" element={<ListaMotivosDispensa />} key="listar-dispensa" />,
+  // Disciplinas
+  <Route path="/disciplinas" element={<ListarDisciplinas />} key="listar-disciplinas" />,
+  <Route path="/disciplinas/cadastrar" element={<CadastrarAtualizarDisciplina />} key="cadastrar-disciplinas" />,
+  <Route path="/disciplinas/:id" element={<CadastrarAtualizarDisciplina />} key="editar-disciplinas" />,
+
+  // Turmas
+  <Route path="/turmas" element={<ListarTurmas />} key="listar-turmas" />,
+  <Route path="/turmas/cadastrar" element={<CadastrarAtualizarTurma />} key="cadastrar-turmas" />,
+  <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />
 ];
 
 export default routes;
