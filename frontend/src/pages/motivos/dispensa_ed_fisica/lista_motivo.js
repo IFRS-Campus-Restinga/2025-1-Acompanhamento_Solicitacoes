@@ -11,6 +11,37 @@ import Popup from '../../../components/popup';
 export default function Cadastrar_motivo() {
 
     const [lista_motivo, setMotivo] = useState([]);
+    const [popupIsOpen, setPopup] = useState(false);
+    const [idAtual, setId] = useState(null)
+
+    const abrirPopup = (id) => {
+        setPopup(true);
+        setId(id)
+    }
+    const fecharPopup = () => setPopup(false);
+
+    const excluirMotivo = (id) => useEffect(() => {
+        axios.delete(`http://localhost:8000/solicitacoes/motivo_dispensa/${id}`
+        ).then ((response) => 
+            setMotivo(response.data)
+        ).catch ((error) =>
+            console.log(error)
+        )
+}, [])
+
+
+    const popupActions = [
+        {
+          label: "Confirmar",
+          className: "btn btn-confirm",
+          onClick: () => excluirMotivo(id)
+        },
+        {
+          label: "Cancelar",
+          className: "btn btn-cancel",
+          onClick: () => alert("Cancelado."),
+        },
+      ];
 
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/"
@@ -43,7 +74,14 @@ export default function Cadastrar_motivo() {
                         <button className='botao-editar' onClick={editar_motivo(lista_motivo.id)}>Editar</button>
                     </td>
                     <td>
-                        <button className='botao-excluir' onClick={excluir_motivo(lista_motivo.id)}>Excluir</button>
+                        <button className='botao-excluir' onClick={() => abrirPopup(lista_motivo.id)}>Excluir</button>
+                        {popupIsOpen && (
+                            <Popup
+                                message="Deseja excluir esse motivo?"
+                                actions={popupActions}
+                                onClose={fecharPopup}
+                                />
+                        )}
                     </td>
                     </tr>
                 ))}
@@ -56,24 +94,6 @@ export default function Cadastrar_motivo() {
     );
 }
 
-function excluir_motivo(motivo_id) {
-    const btnConfirmar = {Popup}.document.getElementById("btnConfirmar");
-    const btnCancelar = document.getElementById("btnCancelar");
-    const popup = {Popup}.document.getElementById("popup");
 
-    popup.show();
 
-    btnConfirmar.addEventListener("click", () => {
-            axios.delete("http//:localhost:8000/solicitacoes/motivo_dispensa/" + motivo_id
-            ).then(
-                console.log("Motivo excluído com sucesso!!")
-            ).catch((error) => console.log(error)
-            ).finally(popup.close())
-    });
-
-    btnCancelar.addEventListener("click", () => {
-        popup.close();
-    });
-
-}
 

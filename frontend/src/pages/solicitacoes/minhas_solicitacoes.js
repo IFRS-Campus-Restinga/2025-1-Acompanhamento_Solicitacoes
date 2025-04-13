@@ -2,7 +2,6 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Footer from "../components/footer";
 import Header from "../components/header";
-import Navbar from "../components/navbar";
 
 const Solicitacoes = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
@@ -16,7 +15,6 @@ const Solicitacoes = () => {
   return (
     <div>
       <Header />
-      <Navbar />
       <main>
         <h2>Solicitações de Alunos</h2>
         <ul>

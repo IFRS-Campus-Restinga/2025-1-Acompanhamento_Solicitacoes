@@ -187,3 +187,4 @@ frontend/node_modules/
 # .pypirc
 /.idea
 backend/backend/local_settings.py
+/.idea

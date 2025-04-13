@@ -1,0 +1,98 @@
+
+.header {
+  background-color: var(--verde-oficial);
+  padding: 10px 20px;
+}
+
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Logo à esquerda */
+.left {
+  flex: 0 0 auto;
+}
+
+.logo {
+  width: 220px;
+  height: auto;
+}
+
+.nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+/* Links centralizados */
+.center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.nav-links {
+  display: flex;
+  list-style: none;
+  gap: 30px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-links li a {
+  text-decoration: none;
+  font-size: 16px;
+  color: white;
+  font-weight: 500;
+  padding: 8px 12px;
+}
+
+.nav-links li a:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Perfil à direita */
+.right {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.profile-pic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.settings-link {
+  text-decoration: none;
+  color: white;
+  font-size: 14px;
+}
+
+.settings-link:hover {
+  text-decoration: underline;
+}
+
+.icone{
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+p{
+  padding-top: 12px;
+  color:var(--cor-branca);
+}

@@ -35,4 +35,6 @@ def api_root(request, format=None):
 
         'turmas': reverse('solicitacoes_app:turma-list', request=request, format=format),
         
+        'usuarios': reverse('solicitacoes_app:usuario-list', request=request, format=format),
+        
         })

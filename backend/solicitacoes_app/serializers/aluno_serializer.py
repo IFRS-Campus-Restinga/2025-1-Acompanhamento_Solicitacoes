@@ -1,12 +1,10 @@
 from rest_framework import serializers
-from .usuario_serializer import UsuarioSerializer
-from ..models import Aluno
+from ..models import Aluno, Usuario
 
 class AlunoSerializer(serializers.ModelSerializer):
     
-    usuario = UsuarioSerializer()
+    depth=1
     
-
     class Meta:
         model = Aluno
         fields = ['id', 'usuario', 'matricula', 'turma', 'ano_ingresso']
@@ -14,13 +12,9 @@ class AlunoSerializer(serializers.ModelSerializer):
     
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')
-        usuario, created = Usuario.objects.get_or_create(
-            cpf=usuario_data['cpf'],
-            defaults=usuario_data
-        )
-        if not created:
-            for attr, value in usuario_data.items():
-                setattr(usuario, attr, value)
-            usuario.save()
 
+        # Cria ou recupera o usuário
+        usuario = Usuario.objects.get(id=usuario_data.id)  # Assume que o ID do Usuario está sendo passado
+
+        # Cria o Coordenador com o Usuario existente
         return Aluno.objects.create(usuario=usuario, **validated_data)

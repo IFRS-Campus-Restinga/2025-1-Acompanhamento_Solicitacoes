@@ -130,7 +130,7 @@ class Command(BaseCommand):
 
 
         usuario_coord, created = Usuario.objects.get_or_create(
-            cpf="12345678901",  
+            cpf="42244866017",  
             defaults={
                 "email": "joao.silva@example.com",
                 "nome": "João Silva",
@@ -143,7 +143,7 @@ class Command(BaseCommand):
             usuario_coord.save()
 
         usuario_cre, created = Usuario.objects.get_or_create(
-            cpf="10987654321", 
+            cpf="88887783063", 
             defaults={
                 "email": "maria.souza@example.com",
                 "nome": "Maria Souza",
@@ -171,7 +171,7 @@ class Command(BaseCommand):
         )
                 
         usuario_aluno, created = Usuario.objects.get_or_create(
-            cpf="11122233344",  # CPF com 11 dígitos (único)
+            cpf="32707706000",  # CPF com 11 dígitos (único)
             defaults={
                 "email": "aluno.exemplo@example.com",
                 "nome": "Aluno Exemplo",

@@ -1,5 +1,5 @@
 import React from "react";
-import "./abono.css";
+import "./motivo_exercicios.css";
 
 export default function PopupFeedback({ show, mensagem, tipo, onClose }) {
   if (!show) return null;

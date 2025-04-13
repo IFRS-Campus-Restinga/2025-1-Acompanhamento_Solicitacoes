@@ -4,9 +4,21 @@
     --cor-preta: black;
     --verde-oficial:#148229;
     --verde-escuro:#00420C ;
-    --laranja-lista:#F6C368;
 
     --fonte-oficial: "Open Sans", sans-serif;
     --peso-titulo: 700;
     --peso-paragrafo: 400;
+
+    /* BOTÕES CORES*/
+
+    --botao-deletar: #c01627;
+    --botao-criar: #148229;
+    --botao-editar: rgb(29, 92, 169);
+
+    --botao-cancelar:#6c757d;
+
+    /* LISTA */
+
+    --laranja-lista:#F6C368;
+    --cabecalho-lista:#ccc;
 }

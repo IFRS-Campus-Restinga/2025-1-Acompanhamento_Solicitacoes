@@ -1,17 +1,26 @@
 import React from "react";
 import "./popup_confirmacao.css";
 
-export default function Popup() {
-
+const Popup = ({message, actions = [], onClose }) => {
 
   return (
     <dialog id="popup">
       <div className="popup-backdrop">
       <div className="popup-box">
-        <p id="message"></p>
+        <p id={message}></p>
         <div className="popup-actions">
-          <button className="btn btn-confirm" id="btnConfirmar">Confirmar</button>
-          <button className="btn btn-cancel" id="btnCancelar">Cancelar</button>
+          {actions.map(({label, onClick}, idx) => (
+            <button 
+              key={idx}
+              onClick={() =>{
+                onClick();
+                onClose();
+              }
+            }
+            >
+              {label}
+              </button>
+          ))}
         </div>
       </div>
     </div>
@@ -19,3 +28,5 @@ export default function Popup() {
     
   );
 }
+
+export default Popup;

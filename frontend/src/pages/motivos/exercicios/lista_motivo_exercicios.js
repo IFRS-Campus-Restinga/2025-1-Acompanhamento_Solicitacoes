@@ -3,24 +3,23 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
-import "./abono.css";
+import "./motivo_exercicios.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
 
 import { useNavigate } from "react-router-dom";
 
-export default function ListarMotivosAbono() {
+export default function ListarMotivosExercicios() {
   const navigate = useNavigate();
   const [motivos, setMotivos] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [motivoSelecionado, setMotivoSelecionado] = useState(null);
-  const [tipoFalta, setTipoFalta] = useState("");
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
 
   useEffect(() => {
-    axios.get("http://localhost:8000/solicitacoes/motivo_abono/")
+    axios.get("http://localhost:8000/solicitacoes/motivo_exercicios/")
       .then((res) => setMotivos(res.data))
       .catch((err) => {
         setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar motivos."}`);
@@ -30,7 +29,7 @@ export default function ListarMotivosAbono() {
   }, []);
 
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/motivo_abono/${motivoSelecionado}/`)
+    axios.delete(`http://localhost:8000/solicitacoes/motivo_exercicios/${motivoSelecionado}/`)
       .then(() => {
         setMensagemPopup("Motivo excluído com sucesso.");
         setTipoMensagem("sucesso");
@@ -51,7 +50,7 @@ export default function ListarMotivosAbono() {
     <div>
       <Header />
       <main className="container">
-        <h2>Motivos de Abono</h2>
+        <h2>Motivos de Exercicios</h2>
 
         <div className="botao-cadastrar-wrapper">
           <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
@@ -65,7 +64,6 @@ export default function ListarMotivosAbono() {
           <thead>
             <tr>
               <th>Descrição</th>
-              <th>Tipo de Falta</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -73,11 +71,10 @@ export default function ListarMotivosAbono() {
             {motivos.map((motivo, index) => (
               <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{motivo.descricao}</td>
-                <td>{motivo.tipo_falta}</td>
 
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/motivo_abono/${motivo.id}`} title="Editar">
+                    <Link to={`/motivo_exercicios/${motivo.id}`} title="Editar">
                       <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
@@ -109,14 +106,14 @@ export default function ListarMotivosAbono() {
           tipo={tipoMensagem}
           onClose={() => setMostrarFeedback(false)}
         />
-
         <div className="botao-voltar-wrapper">
             <button className="botao-voltar" onClick={() => navigate(-1)}>
               <i className="bi bi-arrow-left-circle"></i> Voltar
             </button>
         </div>
-        
+
       </main>
+
       <Footer />
     </div>
   );
