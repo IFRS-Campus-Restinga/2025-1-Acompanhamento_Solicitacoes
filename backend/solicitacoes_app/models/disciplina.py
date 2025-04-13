@@ -1,6 +1,7 @@
 from .base import BaseModel
 from django.db import models
 from django.core.validators import MinLengthValidator
+from .ppc import Ppc  # Importa o modelo PPC
 
 class Disciplina(BaseModel):
     nome = models.CharField(
@@ -15,6 +16,12 @@ class Disciplina(BaseModel):
         validators=[MinLengthValidator(1)],
         verbose_name="Codigo",
         help_text="Digitar o código da disciplina:"
+    )
+    ppcs = models.ManyToManyField(
+        Ppc,
+        related_name='disciplinas',
+        verbose_name="PPCs",
+        help_text="Selecionar os PPCs aos quais a disciplina pertence:"
     )
     
     def __str__(self):
