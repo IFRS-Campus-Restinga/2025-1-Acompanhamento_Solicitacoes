@@ -12,6 +12,14 @@ import ListarMotivosAbono from "../pages/motivos/abono/lista_abono";
 import CadastrarAtualizarExercicios from "../pages/motivos/exercicios/cadastrar_atualizar_exercicios";
 import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_exercicios";
 
+// Disciplinas
+import CadastrarAtualizarDisciplina from "../pages/disciplinas/cadastrar_atualizar_disciplina";
+import ListarDisciplinas from "../pages/disciplinas/lista_disciplina";
+
+// Turmas
+import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma";
+import ListarTurmas from "../pages/turmas/lista_turma";
+
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
@@ -24,6 +32,16 @@ const routes = [
   <Route path="/motivo_exercicios" element={<ListarMotivosExercicios />} key="listar-exercicios" />,
   <Route path="/motivo_exercicios/cadastrar" element={<CadastrarAtualizarExercicios />} key="cadastrar-exercicios" />,
   <Route path="/motivo_exercicios/:id" element={<CadastrarAtualizarExercicios />} key="editar-exercicios" />,
+
+  // Disciplinas
+  <Route path="/disciplinas" element={<ListarDisciplinas />} key="listar-disciplinas" />,
+  <Route path="/disciplinas/cadastrar" element={<CadastrarAtualizarDisciplina />} key="cadastrar-disciplinas" />,
+  <Route path="/disciplinas/:id" element={<CadastrarAtualizarDisciplina />} key="editar-disciplinas" />,
+
+  // Turmas
+  <Route path="/turmas" element={<ListarTurmas />} key="listar-turmas" />,
+  <Route path="/turmas/cadastrar" element={<CadastrarAtualizarTurma />} key="cadastrar-turmas" />,
+  <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />
 ];
 
 export default routes;
