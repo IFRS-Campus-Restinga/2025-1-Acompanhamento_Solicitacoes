@@ -15,12 +15,12 @@ import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_ex
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
-  // Abono
+  // Motivo Abono
   <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
   <Route path="/motivo_abono/cadastrar" element={<CadastrarAtualizarAbono />} key="cadastrar-abono" />,
   <Route path="/motivo_abono/:id" element={<CadastrarAtualizarAbono />} key="editar-abono" />,
 
-  // Exercícios
+  // Motivo Exercícios
   <Route path="/motivo_exercicios" element={<ListarMotivosExercicios />} key="listar-exercicios" />,
   <Route path="/motivo_exercicios/cadastrar" element={<CadastrarAtualizarExercicios />} key="cadastrar-exercicios" />,
   <Route path="/motivo_exercicios/:id" element={<CadastrarAtualizarExercicios />} key="editar-exercicios" />,
