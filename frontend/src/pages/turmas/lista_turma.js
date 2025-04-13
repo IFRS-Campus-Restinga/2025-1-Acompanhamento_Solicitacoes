@@ -3,9 +3,9 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
-import "./turma.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
+import "./turma.css";
 
 export default function ListarTurmas() {
   const navigate = useNavigate();
@@ -106,7 +106,7 @@ export default function ListarTurmas() {
         />
 
         <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate(-1)}>
+          <button className="botao-voltar" onClick={() => navigate('/')}>
             <i className="bi bi-arrow-left-circle"></i> Voltar
           </button>
         </div>

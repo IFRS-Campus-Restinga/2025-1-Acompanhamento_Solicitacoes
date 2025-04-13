@@ -1,11 +1,11 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Footer from "../../components/footer";  // Caminho corrigido
-import Header from "../../components/header";  // Caminho corrigido
+import Footer from "../../components/footer"; // Caminho corrigido
+import Header from "../../components/header"; // Caminho corrigido
 import "./disciplina.css";
-import PopupConfirmacao from "./popup_confirmacao";  // Caminho corrigido
-import PopupFeedback from "./popup_feedback";  // Caminho corrigido
+import PopupConfirmacao from "./popup_confirmacao"; // Caminho corrigido
+import PopupFeedback from "./popup_feedback"; // Caminho corrigido
 
 export default function ListarDisciplinas() {
   const navigate = useNavigate();
@@ -106,7 +106,7 @@ export default function ListarDisciplinas() {
         />
 
         <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate(-1)}>
+          <button className="botao-voltar" onClick={() => navigate('/')}>
             <i className="bi bi-arrow-left-circle"></i> Voltar
           </button>
         </div>
