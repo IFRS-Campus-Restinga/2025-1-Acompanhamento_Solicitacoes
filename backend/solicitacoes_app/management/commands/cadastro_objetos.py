@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno
+from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma
 from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
@@ -128,6 +128,21 @@ class Command(BaseCommand):
             codigo="TURS1"
         )
 
+        Turma.objects.get_or_create(
+            nome="Primeiro ano"
+        )
+        Turma.objects.get_or_create(
+            nome="Segundo ano"
+        )
+        Turma.objects.get_or_create(
+            nome="Terceiro ano"
+        )
+        Turma.objects.get_or_create(
+            nome="Quarto ano"
+        )
+        Turma.objects.get_or_create(
+            nome="Quinto ano"
+        )
 
         usuario_coord, created = Usuario.objects.get_or_create(
             cpf="42244866017",  
