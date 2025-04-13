@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "./header_nav.css";
 
-const header = () => {
+const Header = () => {
   return (
     <header className="header">
       <div className="header-container">
@@ -18,7 +18,7 @@ const header = () => {
         </nav>
 
         <div className="right user-info">
-          <p>Bem-vinde, Karolina Dean</p>
+          <p className="mensagem-usuario">Bem-vinde, Karolina Dean</p>
           <img src="img/profile-pic.jpg" alt="Perfil" className="profile-pic"/>
           <Link to="/settings" className="settings-link">
           <i class="bi bi-gear-fill icone" title="Configurações"></i>
@@ -29,4 +29,4 @@ const header = () => {
   );
 };
 
-export default header;
+export default Header;
