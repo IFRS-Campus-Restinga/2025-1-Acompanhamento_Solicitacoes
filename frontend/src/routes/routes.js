@@ -12,6 +12,10 @@ import ListarMotivosAbono from "../pages/motivos/abono/lista_abono";
 import CadastrarAtualizarExercicios from "../pages/motivos/exercicios/cadastrar_atualizar_exercicios";
 import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_exercicios";
 
+// Motivos de Dispensa de Educação Física
+
+import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/lista_motivo.js"
+
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
@@ -24,6 +28,9 @@ const routes = [
   <Route path="/motivo_exercicios" element={<ListarMotivosExercicios />} key="listar-exercicios" />,
   <Route path="/motivo_exercicios/cadastrar" element={<CadastrarAtualizarExercicios />} key="cadastrar-exercicios" />,
   <Route path="/motivo_exercicios/:id" element={<CadastrarAtualizarExercicios />} key="editar-exercicios" />,
+
+  // Motivo Dispensa de Educação Física
+  <Route path="/motivo_dispensa" element={<ListaMotivosDispensa />} key="listar-dispensa" />
 ];
 
 export default routes;

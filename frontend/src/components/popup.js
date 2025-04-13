@@ -1,17 +1,17 @@
 import React from "react";
-import "./popup_confirmacao.css";
+import "./popup.css";
 
 const Popup = ({message, actions = [], onClose }) => {
 
   return (
-    <dialog id="popup">
       <div className="popup-backdrop">
       <div className="popup-box">
-        <p id={message}></p>
+        <p>{message}</p>
         <div className="popup-actions">
-          {actions.map(({label, onClick}, idx) => (
+          {actions.map(({label, onClick, className}, idx) => (
             <button 
               key={idx}
+              className={className}
               onClick={() =>{
                 onClick();
                 onClose();
@@ -24,7 +24,6 @@ const Popup = ({message, actions = [], onClose }) => {
         </div>
       </div>
     </div>
-    </dialog>
     
   );
 }
