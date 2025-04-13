@@ -32,6 +32,9 @@ const Cruds = () => {
                 <Link className="crud-link" to="/turmas">
                 <i className="bi bi-people"></i> Turma
                 </Link>
+                <Link className="crud-link" to="/motivo_dispensa">
+                <i className="bi bi-person-arms-up"></i> Dispensa de Educação Física
+                </Link>
                 {/* Adicione mais se quiser */}
             </div>
         </main>

@@ -5,8 +5,9 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Popup from '../../../components/popup';
 import Feedback from '../../../components/feedback';
+import { Link } from 'react-router-dom';
 
-export default function Cadastrar_motivo() {
+export default function ListarMotivoDispensa() {
 
     const [lista_motivo, setMotivo] = useState([]);
     const [popupIsOpen, setPopupIsOpen] = useState(false);
@@ -26,15 +27,16 @@ export default function Cadastrar_motivo() {
 
     const excluirMotivo = (id) => {
         axios.delete(`http://localhost:8000/solicitacoes/motivo_dispensa/${id}`
-        ).then ((res) => 
-            setMotivo(res.data),
-            setFeedbackMessage("Motivo excluído com sucesso!"),
-            setFeedbackType("success"),
-        ).catch ((err) =>
-            setFeedbackMessage(`Erro ${err.response?.status} || "": ${err.response?.data?.detail || "Erro ao excluir motivo."}`),
-            setFeedbackType("error"),
-        ).finally(() => {
-            setFeedbackIsOpen(true)
+        ).then ((res) => {
+            setMotivo(res.data);
+            setFeedbackMessage("Motivo excluído com sucesso!");
+            setFeedbackType("success");
+        }     
+        ).catch ((err) => {
+            setFeedbackMessage(`Erro ${err.response?.status} || "": ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
+            setFeedbackType("error");
+        }).finally(() => {
+            setFeedbackIsOpen(true);
         })
 
     };
@@ -68,11 +70,18 @@ export default function Cadastrar_motivo() {
             <Header />
             <main className='container'>
                 <h2>Motivos de dispensa de educação física</h2>
+                <div className="botao-cadastrar-wrapper">
+          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
+            <button className="botao-cadastrar">
+              <i className="bi bi-plus-circle-fill"></i>
+            </button>
+          </Link>
+        </div>
             <table className='tabela-motivos'>
                 <thead>
                 <tr>
                     <th>Descrição</th>
-                    <th>Ações</th>
+                    <th colSpan="2">Ações</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -80,10 +89,11 @@ export default function Cadastrar_motivo() {
                     <tr key={lista_motivo.id}> 
                     <td>{lista_motivo.descricao}</td>
                     <td>
-                        <button className='botao-editar'>Editar</button>
+                        <button className='botao-editar'><i className="bi bi-pencil-square icone-editar"></i> Editar</button>
                     </td>
                     <td>
-                        <button className='botao-excluir' onClick={() => abrirPopup(lista_motivo.id)}>Excluir</button>
+                        <button className='botao-excluir' onClick={() => abrirPopup(lista_motivo.id)}>
+                        <i className="bi bi-trash3-fill icone-excluir"></i> Excluir</button>
                         
                     </td>
                     </tr>

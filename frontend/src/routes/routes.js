@@ -16,6 +16,16 @@ import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_ex
 
 import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/lista_motivo.js"
 
+// Disciplinas
+
+import ListarDisciplinas from "../pages/disciplinas/lista_disciplina.js"
+import CadastrarAtualizarDisciplina from "../pages/disciplinas/cadastrar_atualizar_disciplina.js"
+
+// Turmas
+
+import ListarTurmas from "../pages/turmas/lista_turma.js"
+import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma.js"
+
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
