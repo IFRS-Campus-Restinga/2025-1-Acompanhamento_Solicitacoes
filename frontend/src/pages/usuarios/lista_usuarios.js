@@ -8,6 +8,7 @@ import PopupConfirmacao from "./popup_confirmacao"; // Caminho corrigido
 import PopupFeedback from "./popup_feedback"; // Caminho corrigido
 
 export default function ListarUsuarios() {
+  const [usuariosDetalhesVisiveis, setUsuariosDetalhesVisiveis] = useState([]);
   const [usuariosComOlhoFechado, setUsuariosComOlhoFechado] = useState([]);
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
@@ -34,6 +35,12 @@ export default function ListarUsuarios() {
         : [...prev, id]
     );
   };  
+
+  const toggleDetalhesUsuario = (id) => {
+    setUsuariosDetalhesVisiveis((prev) =>
+      prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
+    );
+  };
 
   const confirmarExclusao = () => {
     axios.delete(`http://localhost:8000/solicitacoes/usuarios/${usuarioSelecionado}/`)  
@@ -89,20 +96,55 @@ export default function ListarUsuarios() {
                       {usuario.is_active ? 'Ativo' : 'Inativo'}
                       </span>
                   </td>
+                  
+                  {usuariosDetalhesVisiveis.includes(usuario.id) && (
+                  <tr className="linha-detalhes">
+                    <td colSpan="9">
+                      <table className="tabela-detalhes">
+                        <tbody>
+                          {usuario.papel === "Coordenador" && (
+                            <>
+                              <tr><td><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</td></tr>
+                              <tr><td><strong>Início do Mandato:</strong> {usuario.papel_detalhes?.inicio_mandato}</td></tr>
+                              <tr><td><strong>Fim do Mandato:</strong> {usuario.papel_detalhes?.fim_mandato}</td></tr>
+                              <tr><td><strong>Curso:</strong> {usuario.papel_detalhes?.curso}</td></tr>
+                            </>
+                          )}
+                
+                          {usuario.papel === "CRE" && (
+                            <tr><td><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</td></tr>
+                          )}
+                
+                          {usuario.papel === "Aluno" && (
+                            <>
+                              <tr><td><strong>Matrícula:</strong> {usuario.papel_detalhes?.matricula}</td></tr>
+                              <tr><td><strong>Turma:</strong> {usuario.papel_detalhes?.turma}</td></tr>
+                              <tr><td><strong>Ano de Ingresso:</strong> {usuario.papel_detalhes?.ano_ingresso}</td></tr>
+                            </>
+                          )}
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                )}                
+
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/usuarios/${usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
-                      <i
-                      className={`bi ${usuariosComOlhoFechado.includes(usuario.id) ? 'bi-eye-slash' : 'bi-eye'} icone-olho`}
-                      title="Visualizar" onClick={() => alternarOlho(usuario.id)} 
-                      style={{ cursor: 'pointer', marginLeft: '8px' }}>
-                      </i>
+                      <button
+                        title={usuariosDetalhesVisiveis.includes(usuario.id) ? "Fechar detalhes" : "Ver detalhes"}
+                        onClick={() => toggleDetalhesUsuario(usuario.id)}
+                        className="botao-icone">
+                        <i className={`bi ${usuariosDetalhesVisiveis.includes(usuario.id) ? "bi-eye-slash" : "bi-eye"}`}></i>
+                      </button>
 
                     </div>
                   </td>
                 </tr>
+               
+                
               ))}
             </tbody>
           </table>
