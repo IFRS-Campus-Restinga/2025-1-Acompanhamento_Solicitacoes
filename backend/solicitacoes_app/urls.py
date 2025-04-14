@@ -26,7 +26,7 @@ urlpatterns = [
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
 
     path('ppcs/', PpcListCreateView.as_view(), name='listar_cadastrar_ppcs'),
-    path('ppcs/<str:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
+    path('ppcs/<path:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
 
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
     path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),

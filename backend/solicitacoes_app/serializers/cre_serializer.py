@@ -7,7 +7,7 @@ class CRESerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CRE
-        fields = ['id', 'usuario', 'siape']
+        fields = ['siape']
         
         
     def create(self, validated_data):

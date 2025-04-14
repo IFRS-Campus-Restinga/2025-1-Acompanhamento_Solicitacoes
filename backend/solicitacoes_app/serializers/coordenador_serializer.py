@@ -9,7 +9,7 @@ class CoordenadorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coordenador
-        fields = ['id', 'usuario', 'siape', 'inicio_mandato', 'fim_mandato', 'curso']
+        fields = ['siape', 'inicio_mandato', 'fim_mandato', 'curso']
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')

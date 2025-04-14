@@ -27,6 +27,17 @@ import CadastrarAtualizarDisciplina from "../pages/disciplinas/cadastrar_atualiz
 import ListarTurmas from "../pages/turmas/lista_turma.js"
 import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma.js"
 
+// Cursos
+import ListarCursos from "../pages/cursos/lista_cursos";                 // página para listar cursos
+import CadastrarAtualizarCursos from "../pages/cursos/cadastrar_atualizar_cursos"; // página para cadastrar/atualizar cursos
+
+// // PPC
+import ListarPpc from "../pages/ppcs/lista_ppc";                           // página para listar PPCs
+import CadastrarAtualizarPpc from "../pages/ppcs/cadastrar_atualizar_ppc"; // página para cadastrar/atualizar PPCs
+
+// Usuarios
+import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
+
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
@@ -53,7 +64,20 @@ const routes = [
   // Turmas
   <Route path="/turmas" element={<ListarTurmas />} key="listar-turmas" />,
   <Route path="/turmas/cadastrar" element={<CadastrarAtualizarTurma />} key="cadastrar-turmas" />,
-  <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />
+  <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />,
+
+  // Cursos
+  <Route path="/cursos" element={<ListarCursos />} key="listar-cursos" />,
+  <Route path="/cursos/cadastrar" element={<CadastrarAtualizarCursos />} key="cadastrar-cursos" />,
+  <Route path="/cursos/:codigo" element={<CadastrarAtualizarCursos />} key="editar-cursos" />,
+
+  // // PPC
+  <Route path="/ppcs" element={<ListarPpc />} key="listar-ppc" />,
+  <Route path="/ppcs/cadastrar" element={<CadastrarAtualizarPpc />} key="cadastrar-ppc" />,
+  <Route path="/ppcs/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />,
+
+  // Usuarios
+  <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
 ];
 
 export default routes;

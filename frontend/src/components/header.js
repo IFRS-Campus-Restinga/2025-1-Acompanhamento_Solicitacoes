@@ -7,7 +7,7 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="left">
-          <img src="/img/logo-ifrs-branco.png" alt="logotipo do ifrs campus restinga" className="logo"/>
+          <Link to='/'><img src="/img/logo-ifrs-branco.png" alt="logotipo do ifrs campus restinga" className="logo"/></Link>
         </div>
 
         <nav className="center">
@@ -21,7 +21,7 @@ const Header = () => {
           <p className="mensagem-usuario">Bem-vinde, Karolina Dean</p>
           <img src="img/profile-pic.jpg" alt="Perfil" className="profile-pic"/>
           <Link to="/settings" className="settings-link">
-          <i class="bi bi-gear-fill icone" title="Configurações"></i>
+          <i className="bi bi-gear-fill icone" title="Configurações"></i>
           </Link>
         </div>
       </div>

@@ -3,26 +3,28 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/header";
 import Footer from "../../components/footer";
-import "./curso.css";
+import "./ppc.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
 
-export default function ListarCursos() {
+export default function ListarPpc() {
   const navigate = useNavigate();
-  const [cursos, setCursos] = useState([]);
+  const [ppcs, setPpcs] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [cursoSelecionado, setCursoSelecionado] = useState(null);
+  const [ppcSelecionado, setPpcSelecionado] = useState(null);
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/solicitacoes/cursos/")
-      .then((res) => setCursos(res.data))
+      .get("http://localhost:8000/solicitacoes/ppcs/")
+      .then((res) => setPpcs(res.data))
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar cursos."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao carregar PPCs."
+          }`
         );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
@@ -31,22 +33,24 @@ export default function ListarCursos() {
 
   const confirmarExclusao = () => {
     axios
-      .delete(`http://localhost:8000/solicitacoes/cursos/${cursoSelecionado}/`)
+      .delete(`http://localhost:8000/solicitacoes/ppcs/${ppcSelecionado}/`)
       .then(() => {
-        setMensagemPopup("Curso excluído com sucesso.");
+        setMensagemPopup("PPC excluído com sucesso.");
         setTipoMensagem("sucesso");
-        setCursos(cursos.filter((c) => c.codigo !== cursoSelecionado));
+        setPpcs(ppcs.filter((p) => p.codigo !== ppcSelecionado));
       })
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir curso."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao excluir PPC."
+          }`
         );
         setTipoMensagem("erro");
       })
       .finally(() => {
         setMostrarPopup(false);
         setMostrarFeedback(true);
-        setCursoSelecionado(null);
+        setPpcSelecionado(null);
       });
   };
 
@@ -54,37 +58,41 @@ export default function ListarCursos() {
     <div>
       <Header />
       <main className="container">
-        <h2>Cursos</h2>
+        <h2>PPCs</h2>
 
         <div className="botao-cadastrar-wrapper">
-          <Link to="/cursos/cadastrar" className="botao-link" title="Criar Novo Curso">
+          <Link to="/ppcs/cadastrar" className="botao-link" title="Criar Novo PPC">
             <button className="botao-cadastrar">
               <i className="bi bi-plus-circle-fill"></i>
             </button>
           </Link>
         </div>
 
-        <table className="tabela-cursos">
+        <table className="tabela-ppc">
           <thead>
             <tr>
-              <th>Nome</th>
-              <th>PPCs</th>
+              <th>Código</th>
+              <th>Curso</th>
               <th>Ações</th>
             </tr>
           </thead>
           <tbody>
-            {cursos.map((curso, index) => (
-              <tr key={curso.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                <td>{curso.nome}</td>
-                <td>{curso.ppcs ? curso.ppcs.join(", ") : ""}</td>
+            {ppcs.map((ppc, index) => (
+              <tr key={ppc.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                <td>{ppc.codigo}</td>
+                {/* Exibe o código do curso associado – você pode ajustar para exibir o nome, se o serializer retornar */}
+                <td>{ppc.curso}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/cursos/${curso.codigo}`} title="Editar">
+                    <Link
+                      to={`/ppcs/${encodeURIComponent(ppc.codigo)}`}
+                      title="Editar"
+                    >
                       <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
                       onClick={() => {
-                        setCursoSelecionado(curso.codigo);
+                        setPpcSelecionado(ppc.codigo);
                         setMostrarPopup(true);
                       }}
                       title="Excluir"
