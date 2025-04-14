@@ -33,7 +33,7 @@ const Cruds = () => {
             <i className="bi bi-people"></i> Turma
           </Link>
           <Link className="crud-link" to="/cursos">
-            <i className="bi bi-mortar-board"></i> Cursos
+            <i className="bi bi-mortarboard"></i> Cursos
           </Link>
           <Link className="crud-link" to="/ppcs">
             <i className="bi bi-layout-text-window-reverse"></i> PPC
