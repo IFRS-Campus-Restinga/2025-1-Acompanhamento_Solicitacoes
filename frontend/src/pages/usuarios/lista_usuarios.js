@@ -48,53 +48,55 @@ export default function ListarUsuarios() {
     <div>
       <Header />
       <main className="container">
-        <h2>Usuarios</h2>
+        <div className="conteudo-tabela">
+          <h2>Usuarios</h2>
 
-        <table className="tabela-usuarios">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome</th>
-              <th>CPF</th>
-              <th>Email</th>
-              <th>Telefone</th>
-              <th>Data de Nascimento</th>
-              <th>Papel</th>
-              <th>Está ativo?</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {usuarios.map((usuario, index) => (
-              <tr key={usuario.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                <td>{usuario.id}</td>
-                <td>{usuario.nome}</td>
-                <td>{usuario.cpf}</td>
-                <td>{usuario.email}</td>
-                <td>{usuario.telefone}</td>
-                <td>{usuario.data_nascimento}</td>
-                <td>{usuario.papel}</td>
-                <td>{usuario.is_active}</td>
-                <td>
-                  <div className="botoes-acoes">
-                    <Link to={`/usuarios/${usuario.id}`} title="Editar">
-                      <i className="bi bi-pencil-square icone-editar"></i>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setUsuarioSelecionado(usuario.codigo);
-                        setMostrarPopup(true);
-                      }}
-                      title="Excluir"
-                      className="icone-botao">
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                    </button>
-                  </div>
-                </td>
+          <table className="tabela-usuarios">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>CPF</th>
+                <th>Email</th>
+                <th>Telefone</th>
+                <th>Data de Nascimento</th>
+                <th>Papel</th>
+                <th>Está ativo?</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {usuarios.map((usuario, index) => (
+                <tr key={usuario.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                  <td>{usuario.id}</td>
+                  <td>{usuario.nome}</td>
+                  <td>{usuario.cpf}</td>
+                  <td>{usuario.email}</td>
+                  <td>{usuario.telefone}</td>
+                  <td>{usuario.data_nascimento}</td>
+                  <td>{usuario.papel}</td>
+                  <td>{usuario.is_active}</td>
+                  <td>
+                    <div className="botoes-acoes">
+                      <Link to={`/usuarios/${usuario.id}`} title="Editar">
+                        <i className="bi bi-pencil-square icone-editar"></i>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setUsuarioSelecionado(usuario.codigo);
+                          setMostrarPopup(true);
+                        }}
+                        title="Excluir"
+                        className="icone-botao">
+                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
 
         <PopupConfirmacao
           show={mostrarPopup}

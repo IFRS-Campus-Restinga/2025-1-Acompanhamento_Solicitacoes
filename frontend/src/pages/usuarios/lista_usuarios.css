@@ -63,6 +63,14 @@
     margin: 0 auto;
     padding: 2rem;
   }
+
+  .conteudo-tabela{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+  }
   
   h2 {
     margin-bottom: 2rem;
@@ -72,6 +80,7 @@
   
   /* Tabela */
   .tabela-usuarios {
+
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
