@@ -20,13 +20,13 @@ import ListarDisciplinas from "../pages/disciplinas/lista_disciplina";
 import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma";
 import ListarTurmas from "../pages/turmas/lista_turma";
 
-// Cursos
-import ListarCursos from "../pages/cursos/lista_cursos";                 // página para listar cursos
-import CadastrarAtualizarCursos from "../pages/cursos/cadastrar_atualizar_cursos"; // página para cadastrar/atualizar cursos
+// // Cursos
+// import ListarCursos from "../pages/cursos/lista_cursos";                 // página para listar cursos
+// import CadastrarAtualizarCursos from "../pages/cursos/cadastrar_atualizar_cursos"; // página para cadastrar/atualizar cursos
 
-// PPC
-import ListarPpc from "../pages/ppc/lista_ppc";                           // página para listar PPCs
-import CadastrarAtualizarPpc from "../pages/ppc/cadastrar_atualizar_ppc"; // página para cadastrar/atualizar PPCs
+// // PPC
+// import ListarPpc from "../pages/ppc/lista_ppc";                           // página para listar PPCs
+// import CadastrarAtualizarPpc from "../pages/ppc/cadastrar_atualizar_ppc"; // página para cadastrar/atualizar PPCs
 
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
@@ -52,14 +52,14 @@ const routes = [
   <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />,
 
   // Cursos
-  <Route path="/cursos" element={<ListarCursos />} key="listar-cursos" />,
-  <Route path="/cursos/cadastrar" element={<CadastrarAtualizarCursos />} key="cadastrar-cursos" />,
-  <Route path="/cursos/:codigo" element={<CadastrarAtualizarCursos />} key="editar-cursos" />,
+  // <Route path="/cursos" element={<ListarCursos />} key="listar-cursos" />,
+  // <Route path="/cursos/cadastrar" element={<CadastrarAtualizarCursos />} key="cadastrar-cursos" />,
+  // <Route path="/cursos/:codigo" element={<CadastrarAtualizarCursos />} key="editar-cursos" />,
 
-  // PPC
-  <Route path="/ppc" element={<ListarPpc />} key="listar-ppc" />,
-  <Route path="/ppc/cadastrar" element={<CadastrarAtualizarPpc />} key="cadastrar-ppc" />,
-  <Route path="/ppc/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />
+  // // PPC
+  // <Route path="/ppc" element={<ListarPpc />} key="listar-ppc" />,
+  // <Route path="/ppc/cadastrar" element={<CadastrarAtualizarPpc />} key="cadastrar-ppc" />,
+  // <Route path="/ppc/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />
 ];
 
 export default routes;
