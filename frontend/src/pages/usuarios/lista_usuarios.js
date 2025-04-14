@@ -61,7 +61,7 @@ export default function ListarUsuarios() {
                 <th>Telefone</th>
                 <th>Data de Nascimento</th>
                 <th>Papel</th>
-                <th>Está ativo?</th>
+                <th>Estado</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -75,7 +75,11 @@ export default function ListarUsuarios() {
                   <td>{usuario.telefone}</td>
                   <td>{usuario.data_nascimento}</td>
                   <td>{usuario.papel}</td>
-                  <td>{usuario.is_active}</td>
+                  <td>{usuario.is_active}
+                      <span style={{ color: usuario.is_active ? 'green' : 'red', fontWeight: 'bold' }}>
+                      {usuario.is_active ? 'Ativo' : 'Inativo'}
+                      </span>
+                  </td>
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/usuarios/${usuario.id}`} title="Editar">
@@ -86,9 +90,8 @@ export default function ListarUsuarios() {
                           setUsuarioSelecionado(usuario.codigo);
                           setMostrarPopup(true);
                         }}
-                        title="Excluir"
-                        className="icone-botao">
-                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                        title="Detalhes">
+                          <i className="bi bi-eye"></i>
                       </button>
                     </div>
                   </td>
