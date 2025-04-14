@@ -17,25 +17,29 @@ const Cruds = () => {
   return (
     <div>
       <Header />
-        <main className="container">
-            <h2>CRUDs Disponíveis</h2>
-            <div className="grid-cruds">
-                <Link className="crud-link" to="/motivo_exercicios">
-                <i className="bi bi-journal-text"></i> Exercícios Domiciliares
-                </Link>
-                <Link className="crud-link" to="/motivo_abono">
-                <i className="bi bi-calendar-x-fill"></i> Abono de Falta
-                </Link>
-                <Link className="crud-link" to="/disciplinas">
-                <i className="bi bi-book"></i> Disciplina
-                </Link>
-                <Link className="crud-link" to="/turmas">
-                <i className="bi bi-people"></i> Turma
-                </Link>
-                {/* Adicione mais se quiser */}
-            </div>
-        </main>
-
+      <main className="container">
+        <h2>CRUDs Disponíveis</h2>
+        <div className="grid-cruds">
+          <Link className="crud-link" to="/motivo_exercicios">
+            <i className="bi bi-journal-text"></i> Exercícios Domiciliares
+          </Link>
+          <Link className="crud-link" to="/motivo_abono">
+            <i className="bi bi-calendar-x-fill"></i> Abono de Falta
+          </Link>
+          <Link className="crud-link" to="/disciplinas">
+            <i className="bi bi-book"></i> Disciplina
+          </Link>
+          <Link className="crud-link" to="/turmas">
+            <i className="bi bi-people"></i> Turma
+          </Link>
+          <Link className="crud-link" to="/cursos">
+            <i className="bi bi-mortar-board"></i> Cursos
+          </Link>
+          <Link className="crud-link" to="/ppcs">
+            <i className="bi bi-layout-text-window-reverse"></i> PPC
+          </Link>
+        </div>
+      </main>
       <Footer />
     </div>
   );

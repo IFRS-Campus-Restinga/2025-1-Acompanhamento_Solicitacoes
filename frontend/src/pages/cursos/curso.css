@@ -1,0 +1,123 @@
+/* ================= FORMULÁRIO PARA CURSOS ================= */
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.form-container {
+  padding: 2rem;
+  max-width: 600px;
+  margin: auto;
+}
+
+.form-box {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.input-text,
+.input-area,
+.input-select {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  box-sizing: border-box;
+}
+
+.submit-button {
+  background-color: var(--botao-criar);
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: var(--verde-escuro);
+}
+
+/* ================= TABELA DE CURSOS ================= */
+.tabela-cursos {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.tabela-cursos th,
+.tabela-cursos td {
+  border: 1px solid var(--cabecalho-lista);
+  padding: 10px;
+  text-align: left;
+}
+
+.tabela-cursos th {
+  background-color: #e0e0e0;
+}
+
+.linha-par {
+  background-color: #f9f9f9;
+}
+
+.linha-impar {
+  background-color: #ffffff;
+}
+
+/* ================= BOTÕES ================= */
+.botao-cadastrar-wrapper {
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+
+.botao-cadastrar {
+  background-color: var(--verde-oficial);
+  color: var(--cor-branca);
+  border: none;
+  border-radius: 50px;
+  width: 50px;
+  height: 50px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.botao-cadastrar:hover {
+  background-color: var(--verde-escuro);
+  transform: scale(1.05);
+}
+
+.botao-voltar-wrapper {
+  margin-top: 2rem;
+  text-align: left;
+}
+
+.botao-voltar {
+  background-color: var(--verde-oficial);
+  color: var(--cor-branca);
+  border: 2px solid var(--verde-oficial);
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.botao-voltar:hover {
+  background-color: var(--verde-escuro);
+  color: white;
+}
+
+/* ================= AÇÕES NA TABELA ================= */
+.botoes-acoes {
+  display: flex;
+  gap: 10px;
+}
