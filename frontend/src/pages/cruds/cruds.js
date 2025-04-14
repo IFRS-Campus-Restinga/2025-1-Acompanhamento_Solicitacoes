@@ -38,6 +38,9 @@ const Cruds = () => {
           <Link className="crud-link" to="/ppcs">
             <i className="bi bi-layout-text-window-reverse"></i> PPC
           </Link>
+          <Link className="crud-link" to="/usuarios">
+            <i className="bi bi-person-circle"></i> Usuarios
+          </Link>
         </div>
       </main>
       <Footer />
