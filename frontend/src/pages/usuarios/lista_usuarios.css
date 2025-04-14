@@ -282,6 +282,9 @@
     color: #ffffff;
   }
   
+  .icone-olho{
+    color: purple;
+  }
   /* ================= ANIMAÇÕES ================= */
   
   @keyframes fadeIn {

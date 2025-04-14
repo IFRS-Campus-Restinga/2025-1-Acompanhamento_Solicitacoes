@@ -85,14 +85,9 @@ export default function ListarUsuarios() {
                       <Link to={`/usuarios/${usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
-                      <button
-                        onClick={() => {
-                          setUsuarioSelecionado(usuario.codigo);
-                          setMostrarPopup(true);
-                        }}
-                        title="Detalhes">
-                          <i className="bi bi-eye"></i>
-                      </button>
+                      <Link to={`/usuarios/${usuario.id}`} title="Detalhar">
+                        <i className="bi bi-eye icone-olho"></i>
+                      </Link>
                     </div>
                   </td>
                 </tr>
