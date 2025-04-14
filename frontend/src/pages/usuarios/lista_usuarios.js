@@ -8,6 +8,7 @@ import PopupConfirmacao from "./popup_confirmacao"; // Caminho corrigido
 import PopupFeedback from "./popup_feedback"; // Caminho corrigido
 
 export default function ListarUsuarios() {
+  const [usuariosComOlhoFechado, setUsuariosComOlhoFechado] = useState([]);
   const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -25,6 +26,14 @@ export default function ListarUsuarios() {
         setMostrarFeedback(true);
       });
   }, []);
+
+  const alternarOlho = (id) => {
+    setUsuariosComOlhoFechado((prev) =>
+      prev.includes(id)
+        ? prev.filter((usuarioId) => usuarioId !== id)
+        : [...prev, id]
+    );
+  };  
 
   const confirmarExclusao = () => {
     axios.delete(`http://localhost:8000/solicitacoes/usuarios/${usuarioSelecionado}/`)  
@@ -85,9 +94,12 @@ export default function ListarUsuarios() {
                       <Link to={`/usuarios/${usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
-                      <Link to={`/usuarios/${usuario.id}`} title="Detalhar">
-                        <i className="bi bi-eye icone-olho"></i>
-                      </Link>
+                      <i
+                      className={`bi ${usuariosComOlhoFechado.includes(usuario.id) ? 'bi-eye-slash' : 'bi-eye'} icone-olho`}
+                      title="Visualizar" onClick={() => alternarOlho(usuario.id)} 
+                      style={{ cursor: 'pointer', marginLeft: '8px' }}>
+                      </i>
+
                     </div>
                   </td>
                 </tr>
