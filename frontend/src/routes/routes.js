@@ -15,6 +15,7 @@ import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_ex
 // Motivos de Dispensa de Educação Física
 
 import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/lista_motivo.js"
+import CadastrarAtualizarMotivoDispensa from "../pages/motivos/dispensa_ed_fisica/cadastrar_atualizar_motivo.js";
 
 // Disciplinas
 
@@ -41,6 +42,9 @@ const routes = [
 
   // Motivo Dispensa de Educação Física
   <Route path="/motivo_dispensa" element={<ListaMotivosDispensa />} key="listar-dispensa" />,
+  <Route path="/motivo_dispensa/cadastrar" element={<CadastrarAtualizarMotivoDispensa />} key="cadastrar-motivos-dispensa" />,
+  <Route path="/motivo_dispensa/:id" element={<CadastrarAtualizarMotivoDispensa />} key="atualizar-motivos-dispensa" />,
+
   // Disciplinas
   <Route path="/disciplinas" element={<ListarDisciplinas />} key="listar-disciplinas" />,
   <Route path="/disciplinas/cadastrar" element={<CadastrarAtualizarDisciplina />} key="cadastrar-disciplinas" />,

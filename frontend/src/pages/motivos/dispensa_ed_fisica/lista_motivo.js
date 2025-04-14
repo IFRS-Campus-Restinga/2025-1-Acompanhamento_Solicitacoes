@@ -5,7 +5,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import Popup from '../../../components/popup';
 import Feedback from '../../../components/feedback';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function ListarMotivoDispensa() {
 
@@ -15,6 +15,7 @@ export default function ListarMotivoDispensa() {
     const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
     const [feedbackMessage, setFeedbackMessage] = useState(null);
     const [feedbackType, setFeedbackType] = useState(null);
+    const navigate = useNavigate();
 
     const abrirPopup = (id) => {
         setPopupIsOpen(true);
@@ -71,7 +72,7 @@ export default function ListarMotivoDispensa() {
             <main className='container'>
                 <h2>Motivos de dispensa de educação física</h2>
                 <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
+          <Link to="/motivo_dispensa/cadastrar" className="botao-link" title="Criar Novo Motivo">
             <button className="botao-cadastrar">
               <i className="bi bi-plus-circle-fill"></i>
             </button>
@@ -89,7 +90,10 @@ export default function ListarMotivoDispensa() {
                     <tr key={lista_motivo.id}> 
                     <td>{lista_motivo.descricao}</td>
                     <td>
+                        <Link to={`/motivo_dispensa/${lista_motivo.id}`}>
                         <button className='botao-editar'><i className="bi bi-pencil-square icone-editar"></i> Editar</button>
+                        </Link>
+                        
                     </td>
                     <td>
                         <button className='botao-excluir' onClick={() => abrirPopup(lista_motivo.id)}>
@@ -112,12 +116,15 @@ export default function ListarMotivoDispensa() {
                             onClose={() => setFeedbackIsOpen(false)}
                           />
                         )}
-                        
+                <div className="botao-voltar-wrapper">
+                    <button className="botao-voltar" onClick={() => navigate('/')}>
+                    <i className="bi bi-arrow-left-circle"></i> Voltar
+                    </button>
+                </div>
                 </tbody>
             </table>
             </main>
             <Footer />
-            
         </div>
     );
 }
