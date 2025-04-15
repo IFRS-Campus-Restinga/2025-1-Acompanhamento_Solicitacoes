@@ -22,7 +22,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             return 'CRE'
         elif hasattr(obj, 'responsavel') and obj.responsavel:
             return 'Responsável'
-        return 'Desconhecido'
+        return '-'
     
     
     def get_papel_detalhes(self, obj):
