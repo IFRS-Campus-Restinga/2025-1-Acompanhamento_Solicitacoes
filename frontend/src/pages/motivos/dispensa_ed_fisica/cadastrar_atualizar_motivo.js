@@ -63,6 +63,8 @@ export default function CadastrarAtualizarMotivoDispensa() {
                   value={descricao}
                   onChange={(e) => setDescricao(e.target.value)}
                   required
+                  maxlength="200"
+                  minlength="9"
                 />
               </div>
               <button type="submit" className="submit-button">
