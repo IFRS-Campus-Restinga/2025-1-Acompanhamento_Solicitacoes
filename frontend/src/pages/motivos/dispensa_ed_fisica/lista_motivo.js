@@ -26,15 +26,15 @@ export default function ListarMotivoDispensa() {
         setIdAtual(null);
     }
 
-    const excluirMotivo = (id) => {
-        axios.delete(`http://localhost:8000/solicitacoes/motivo_dispensa/${id}`
-        ).then ((res) => {
-            setMotivo(res.data);
+    const excluirMotivo = () => {
+        axios.delete(`http://localhost:8000/solicitacoes/motivo_dispensa/${idAtual}/`
+        ).then (() => {
+            setMotivo(lista_motivo.filter((m) => m.id !== idAtual));
             setFeedbackMessage("Motivo excluído com sucesso!");
             setFeedbackType("success");
         }     
         ).catch ((err) => {
-            setFeedbackMessage(`Erro ${err.response?.status} || "": ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
+            setFeedbackMessage(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
             setFeedbackType("error");
         }).finally(() => {
             setFeedbackIsOpen(true);
@@ -82,24 +82,23 @@ export default function ListarMotivoDispensa() {
                 <thead>
                 <tr>
                     <th>Descrição</th>
-                    <th colSpan="2">Ações</th>
+                    <th>Ações</th>
                 </tr>
                 </thead>
                 <tbody>
-                {lista_motivo.map((lista_motivo) => (
-                    <tr key={lista_motivo.id}> 
+                {lista_motivo.map((lista_motivo, index) => (
+                    <tr key={lista_motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}> 
                     <td>{lista_motivo.descricao}</td>
                     <td>
+                        <div className="botoes-acoes">
                         <Link to={`/motivo_dispensa/${lista_motivo.id}`}>
-                        <button className='botao-editar'><i className="bi bi-pencil-square icone-editar"></i> Editar</button>
+                        <i className="bi bi-pencil-square icone-editar" title='Editar'></i>
                         </Link>
-                        
+                        <button className='icone-botao' title='Excluir' onClick={() => abrirPopup(lista_motivo.id)}>
+                        <i className="bi bi-trash3-fill icone-excluir"></i></button>
+                        </div>
                     </td>
-                    <td>
-                        <button className='botao-excluir' onClick={() => abrirPopup(lista_motivo.id)}>
-                        <i className="bi bi-trash3-fill icone-excluir"></i> Excluir</button>
-                        
-                    </td>
+
                     </tr>
                 ))}
                 {popupIsOpen && (
