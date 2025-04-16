@@ -32,7 +32,7 @@ export default function CadastrarAtualizarGrupo() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const dados = { nome };
+    const dados = { name: nome };
 
     const requisicao = id
       ? axios.put(`http://localhost:8000/solicitacoes/grupos/${id}/`, dados)

@@ -21,7 +21,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         elif hasattr(obj, 'cre') and obj.cre:
             return 'CRE'
         elif hasattr(obj, 'responsavel') and obj.responsavel:
-            return 'Responsável'
+            return 'Responsavel'
         return '-'
     
     

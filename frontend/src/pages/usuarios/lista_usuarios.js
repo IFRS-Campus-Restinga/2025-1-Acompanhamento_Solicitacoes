@@ -153,6 +153,9 @@ export default function ListarUsuarios() {
                                 <tr><td><strong>Ano de Ingresso:</strong> {usuario.papel_detalhes?.ano_ingresso}</td></tr>
                               </>
                             )}
+                            {usuario.papel === "Responsavel" && (
+                              <tr><td><strong>Responsavel de:</strong> {usuario.papel_detalhes?.aluno}</td></tr>
+                            )}
                           </tbody>
                         </table>
                       </td>
