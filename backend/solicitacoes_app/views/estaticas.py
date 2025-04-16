@@ -19,6 +19,8 @@ def api_root(request, format=None):
 
         'alunos': reverse('solicitacoes_app:aluno-list', request=request, format=format),
 
+        'responsaveis': reverse('solicitacoes_app:responsavel-list', request=request, format=format),
+
         'coordenadores': reverse('solicitacoes_app:coordenador-list', request=request, format=format),
 
         'cres': reverse('solicitacoes_app:cre-list', request=request, format=format),

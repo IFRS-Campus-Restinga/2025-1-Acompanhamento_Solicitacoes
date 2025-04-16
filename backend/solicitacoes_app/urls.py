@@ -13,6 +13,7 @@ from .views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
 from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView
+from .views.responsavel_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -58,4 +59,7 @@ urlpatterns = [
     
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
+
+    path('responsaveis/', ResponsavelListCreateView.as_view(), name='responsavel-list'),
+    path('responsaveis/<int:pk>/', ResponsavelRetrieveUpdateDestroyView.as_view(), name='responsavel-detail'),
 ]
