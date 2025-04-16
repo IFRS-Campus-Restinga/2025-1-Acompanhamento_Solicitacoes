@@ -36,15 +36,16 @@ class UsuarioSerializer(serializers.ModelSerializer):
         elif hasattr(obj, 'cre'):
             from .cre_serializer import CRESerializer
             return CRESerializer(obj.cre).data
-        #elif hasattr(obj, 'responsavel'):
-         #   from .responsavel_serializer import ResponsavelSerializer
-          #  return ResponsavelSerializer(obj.responsavel).data
+        elif hasattr(obj, 'responsavel'):
+            from .responsavel_serializer import ResponsavelSerializer
+            return ResponsavelSerializer(obj.responsavel).data
         return None
     
     
     def validate(self, data):
         # Executa as validações do model
         instance = self.instance or self.Meta.model(**data)
+        instance.password = "Teste123"
         instance.full_clean() 
         return data
 

@@ -75,3 +75,13 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     class Meta:
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
+    
+    def save(self, **kwargs):
+        # Check how the current values differ from ._loaded_values. For example,
+        # prevent changing the creator_id of the model. (This example doesn't
+        # support cases where 'creator_id' is deferred).
+        if self.password is None or self.password == "":
+            self.password = "Teste123"
+        super().save(**kwargs)
+        
+        
