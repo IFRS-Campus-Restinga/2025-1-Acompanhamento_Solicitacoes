@@ -4,6 +4,7 @@ from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
 from ...models.cre import CRE
+from django.contrib.auth.models import Group
  
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
@@ -143,7 +144,21 @@ class Command(BaseCommand):
         Turma.objects.get_or_create(
             nome="Quinto ano"
         )
+        
+        Group.objects.get_or_create(
+            nome="Usuários"
+        )
+        Group.objects.get_or_create(
+            nome="CRE"
+        )
+        Group.objects.get_or_create(
+            nome="Coordenador"
+        )
+        Group.objects.get_or_create(
+            nome="Aluno"
+        )
 
+        
         usuario_coord, created = Usuario.objects.get_or_create(
             cpf="42244866017",  
             defaults={
