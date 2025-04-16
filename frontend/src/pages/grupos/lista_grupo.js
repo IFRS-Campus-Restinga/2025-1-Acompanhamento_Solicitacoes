@@ -70,7 +70,7 @@ export default function ListarGrupos() {
             {grupos.map((grupo, index) => (
               <tr key={grupo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{grupo.id}</td>
-                <td>{grupo.nome}</td>
+                <td>{grupo.name}</td>
                 <td>
                   <div className="botoes-acoes">
                     <Link to={`/grupos/${grupo.id}`} title="Editar">
