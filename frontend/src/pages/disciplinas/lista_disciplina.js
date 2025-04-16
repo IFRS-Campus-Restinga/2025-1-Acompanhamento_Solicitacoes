@@ -15,6 +15,11 @@ export default function ListarDisciplinas() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+  const [termoBusca, setTermoBusca] = useState(""); // ADICIONADO
+
+  const handleBusca = (e) => { // ADICIONADO
+    setTermoBusca(e.target.value);
+  };
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/disciplinas/")  // Corrigido para "solicitacoes"
@@ -25,6 +30,14 @@ export default function ListarDisciplinas() {
         setMostrarFeedback(true);
       });
   }, []);
+
+  const filtrarDisciplinas = () => {
+    const termo = termoBusca.toLowerCase(); // USA O TERMO DE BUSCA
+    return disciplinas.filter((disciplina) =>
+      disciplina.nome.toLowerCase().includes(termo) ||
+      disciplina.codigo.toLowerCase().includes(termo)
+    );
+  };
 
   const confirmarExclusao = () => {
     axios.delete(`http://localhost:8000/solicitacoes/disciplinas/${disciplinaSelecionada}/`)  // Corrigido para "solicitacoes"
@@ -44,6 +57,8 @@ export default function ListarDisciplinas() {
       });
   };
 
+  const disciplinasFiltradas = filtrarDisciplinas(); // USA A LISTA FILTRADA
+
   return (
     <div>
       <Header />
@@ -58,39 +73,56 @@ export default function ListarDisciplinas() {
           </Link>
         </div>
 
-        <table className="tabela-disciplinas">
-          <thead>
-            <tr>
-              <th>Código</th>
-              <th>Nome</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {disciplinas.map((disciplina, index) => (
-              <tr key={disciplina.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                <td>{disciplina.codigo}</td>
-                <td>{disciplina.nome}</td>
-                <td>
-                  <div className="botoes-acoes">
-                    <Link to={`/disciplinas/${disciplina.codigo}`} title="Editar">
-                      <i className="bi bi-pencil-square icone-editar"></i>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setDisciplinaSelecionada(disciplina.codigo);
-                        setMostrarPopup(true);
-                      }}
-                      title="Excluir"
-                      className="icone-botao">
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                    </button>
-                  </div>
-                </td>
+        {/* CAMPO DE BUSCA ADICIONADO */}
+        <div className="campo-busca">
+          <i className="bi bi-search icone-lupa"></i>
+          <input
+            type="text"
+            className="input-busca"
+            placeholder="Buscar"
+            value={termoBusca}
+            onChange={handleBusca}
+          />
+        </div>
+
+        {/* MOSTRA TABELA OU MENSAGEM SE VAZIA */}
+        {disciplinasFiltradas.length === 0 ? (
+          <p><br />Nenhuma disciplina encontrada!</p>
+        ) : (
+          <table className="tabela-disciplinas">
+            <thead>
+              <tr>
+                <th>Código</th>
+                <th>Nome</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {disciplinasFiltradas.map((disciplina, index) => (
+                <tr key={disciplina.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                  <td>{disciplina.codigo}</td>
+                  <td>{disciplina.nome}</td>
+                  <td>
+                    <div className="botoes-acoes">
+                      <Link to={`/disciplinas/${disciplina.codigo}`} title="Editar">
+                        <i className="bi bi-pencil-square icone-editar"></i>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setDisciplinaSelecionada(disciplina.codigo);
+                          setMostrarPopup(true);
+                        }}
+                        title="Excluir"
+                        className="icone-botao">
+                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
         <PopupConfirmacao
           show={mostrarPopup}
@@ -110,7 +142,6 @@ export default function ListarDisciplinas() {
             <i className="bi bi-arrow-left-circle"></i> Voltar
           </button>
         </div>
-        
       </main>
       <Footer />
     </div>

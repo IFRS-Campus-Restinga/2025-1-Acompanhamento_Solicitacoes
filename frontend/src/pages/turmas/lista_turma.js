@@ -15,6 +15,7 @@ export default function ListarTurmas() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+  const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/turmas/")
@@ -44,6 +45,11 @@ export default function ListarTurmas() {
       });
   };
 
+  // Filtrando as turmas
+  const turmasFiltradas = turmas.filter((turma) =>
+    turma.nome.toLowerCase().includes(filtro.toLowerCase())
+  );
+
   return (
     <div>
       <Header />
@@ -58,39 +64,56 @@ export default function ListarTurmas() {
           </Link>
         </div>
 
-        <table className="tabela-turmas">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {turmas.map((turma, index) => (
-              <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                <td>{turma.id}</td>
-                <td>{turma.nome}</td>
-                <td>
-                  <div className="botoes-acoes">
-                    <Link to={`/turmas/${turma.id}`} title="Editar">
-                      <i className="bi bi-pencil-square icone-editar"></i>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setTurmaSelecionada(turma.id);
-                        setMostrarPopup(true);
-                      }}
-                      title="Excluir"
-                      className="icone-botao">
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                    </button>
-                  </div>
-                </td>
+        {/* Barra de pesquisa */}
+        <div className="barra-pesquisa">
+          <i className="bi bi-search icone-pesquisa"></i>
+          <input
+            type="text"
+            placeholder="Buscar"
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="input-pesquisa"
+          />
+        </div>
+
+        {/* Exibe a mensagem se não encontrar turmas após o filtro */}
+        {turmasFiltradas.length === 0 ? (
+          <p><br />Nenhuma turma encontrada!</p>
+        ) : (
+          <table className="tabela-turmas">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Nome</th>
+                <th>Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {turmasFiltradas.map((turma, index) => (
+                <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                  <td>{turma.id}</td>
+                  <td>{turma.nome}</td>
+                  <td>
+                    <div className="botoes-acoes">
+                      <Link to={`/turmas/${turma.id}`} title="Editar">
+                        <i className="bi bi-pencil-square icone-editar"></i>
+                      </Link>
+                      <button
+                        onClick={() => {
+                          setTurmaSelecionada(turma.id);
+                          setMostrarPopup(true);
+                        }}
+                        title="Excluir"
+                        className="icone-botao">
+                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
 
         <PopupConfirmacao
           show={mostrarPopup}

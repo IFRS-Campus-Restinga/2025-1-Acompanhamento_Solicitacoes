@@ -285,3 +285,32 @@
       transform: scale(1);
     }
   }
+
+  .campo-busca {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px; /* espaço inferior entre a barra de busca e outros elementos */
+  }
+  
+  .icone-lupa {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 1rem;
+  }
+  
+  .input-busca {
+    width: 100%;
+    padding: 8px 12px 8px 35px; /* espaço para o ícone da lupa */
+    border: 1px solid #0d6efd;
+    border-radius: 20px; /* borda arredondada */
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .input-busca:focus {
+    border-color: #0d6efd; /* cor azul para o foco */
+  }
