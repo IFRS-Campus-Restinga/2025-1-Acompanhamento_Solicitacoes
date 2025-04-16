@@ -3,5 +3,5 @@ from django.contrib.auth.models import Group
 
 class GrupoSerializer(serializers.ModelSerializer):
     class Meta:
-        model: Group
+        model = Group
         fields = ['id','name']
