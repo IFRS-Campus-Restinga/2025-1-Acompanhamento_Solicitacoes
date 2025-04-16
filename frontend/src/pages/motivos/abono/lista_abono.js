@@ -54,7 +54,7 @@ export default function ListarMotivosAbono() {
         <h2>Motivos de Abono</h2>
 
         <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title="Criar Novo Motivo">
+          <Link to="/motivo_abono/cadastrar" className="botao-link" title="Criar Novo Motivo">
             <button className="botao-cadastrar">
               <i className="bi bi-plus-circle-fill"></i>
             </button>
