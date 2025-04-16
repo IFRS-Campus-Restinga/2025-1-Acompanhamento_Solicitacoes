@@ -4,4 +4,4 @@ from django.contrib.auth.models import Group
 class GrupoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
-        fields = ['id','name']
+        fields = '__all__'
