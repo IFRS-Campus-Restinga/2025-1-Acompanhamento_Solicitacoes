@@ -20,7 +20,7 @@ export default function CadastrarAtualizarGrupo() {
     if (id) {
       axios.get(`http://localhost:8000/solicitacoes/grupos/${id}/`)
         .then((res) => {
-          setNome(res.data.nome);
+          setNome(res.data.name);
         })
         .catch((err) => {
           setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar grupo."}`);
