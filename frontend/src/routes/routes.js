@@ -38,6 +38,10 @@ import CadastrarAtualizarPpc from "../pages/ppcs/cadastrar_atualizar_ppc"; // p√
 // Usuarios
 import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
 
+//Grupos
+import ListarGrupos from "../pages/grupos/lista_grupo.js";
+import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
+
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
@@ -78,6 +82,11 @@ const routes = [
 
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
-];
+
+  // Grupos
+  <Route path="/grupos" element={<ListarGrupos />} />,
+  <Route path="/grupos/cadastrar" element={<CadastrarAtualizarGrupo />} key="cadastrar-grupos" />,
+  <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
+ ];
 
 export default routes;

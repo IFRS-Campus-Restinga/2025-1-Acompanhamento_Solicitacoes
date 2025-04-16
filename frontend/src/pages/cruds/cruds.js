@@ -44,6 +44,9 @@ const Cruds = () => {
           <Link className="crud-link" to="/usuarios">
             <i className="bi bi-person-circle"></i> Usuarios
           </Link>
+          <Link className="crud-link" to="/grupos">
+            <i className="bi bi-people"></i> Grupos
+          </Link>
         </div>
       </main>
       <Footer />

@@ -18,3 +18,4 @@ class GrupoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Group.objects.all()
     serializer_class = GrupoSerializer
     permission_classes = [AllowAny]
+
