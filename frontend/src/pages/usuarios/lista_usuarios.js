@@ -9,7 +9,6 @@ import PopupFeedback from "./popup_feedback";
 
 export default function ListarUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
-  const [usuariosDetalhesVisiveis, setUsuariosDetalhesVisiveis] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
@@ -43,12 +42,7 @@ export default function ListarUsuarios() {
     );
   };
 
-  const toggleDetalhesUsuario = (id) => {
-    setUsuariosDetalhesVisiveis((prev) =>
-      prev.includes(id) ? prev.filter((uid) => uid !== id) : [...prev, id]
-    );
-  };
-
+  
   const confirmarExclusao = () => {
     axios.delete(`http://localhost:8000/solicitacoes/usuarios/${usuarioSelecionado}/`)
       .then(() => {
@@ -91,21 +85,18 @@ export default function ListarUsuarios() {
             <table className="tabela-usuarios">
               <thead>
                 <tr>
-                  <th>ID</th>
                   <th>Nome</th>
                   <th>CPF</th>
                   <th>Email</th>
                   <th>Telefone</th>
                   <th>Data de Nascimento</th>
-                  <th>Papel</th>
-                  <th>Estado</th>
+                  <th>Tipo Usuario</th>
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {usuariosFiltrados.map((usuario, index) => [
                   <tr key={`usuario-${usuario.id}`} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                    <td>{usuario.id}</td>
                     <td>{usuario.nome}</td>
                     <td>{usuario.cpf}</td>
                     <td>{usuario.email}</td>
@@ -113,54 +104,13 @@ export default function ListarUsuarios() {
                     <td>{usuario.data_nascimento}</td>
                     <td>{usuario.papel}</td>
                     <td>
-                      <span style={{ color: usuario.is_active ? 'green' : 'red', fontWeight: 'bold' }}>
-                        {usuario.is_active ? 'Ativo' : 'Inativo'}
-                      </span>
-                    </td>
-                    <td>
                       <div className="botoes-acoes">
-                        <button
-                          title={usuariosDetalhesVisiveis.includes(usuario.id) ? "Fechar detalhes" : "Ver detalhes"}
-                          onClick={() => toggleDetalhesUsuario(usuario.id)}
-                          className="botao-icone"
-                        >
-                          <i className={`bi ${usuariosDetalhesVisiveis.includes(usuario.id) ? "bi-eye-slash" : "bi-eye"}`}></i>
-                        </button>
+                      <Link to={`/usuarios/${usuario.id}`} className="botao-icone" title="Ver detalhes">
+                        <i className="bi bi-eye"></i>
+                      </Link>
                       </div>
                     </td>
-                  </tr>,
-
-                  usuariosDetalhesVisiveis.includes(usuario.id) && (
-                    <tr key={`detalhes-${usuario.id}`} className="linha-detalhes">
-                      <td colSpan="9">
-                        <table className="tabela-detalhes">
-                          <tbody>
-                            {usuario.papel === "Coordenador" && (
-                              <>
-                                <tr><td><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</td></tr>
-                                <tr><td><strong>Início do Mandato:</strong> {usuario.papel_detalhes?.inicio_mandato}</td></tr>
-                                <tr><td><strong>Fim do Mandato:</strong> {usuario.papel_detalhes?.fim_mandato}</td></tr>
-                                <tr><td><strong>Curso:</strong> {usuario.papel_detalhes?.curso}</td></tr>
-                              </>
-                            )}
-                            {usuario.papel === "CRE" && (
-                              <tr><td><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</td></tr>
-                            )}
-                            {usuario.papel === "Aluno" && (
-                              <>
-                                <tr><td><strong>Matrícula:</strong> {usuario.papel_detalhes?.matricula}</td></tr>
-                                <tr><td><strong>Turma:</strong> {usuario.papel_detalhes?.turma}</td></tr>
-                                <tr><td><strong>Ano de Ingresso:</strong> {usuario.papel_detalhes?.ano_ingresso}</td></tr>
-                              </>
-                            )}
-                            {usuario.papel === "Responsavel" && (
-                              <tr><td><strong>Responsavel de:</strong> {usuario.papel_detalhes?.aluno}</td></tr>
-                            )}
-                          </tbody>
-                        </table>
-                      </td>
-                    </tr>
-                  )
+                  </tr>
                 ])}
               </tbody>
             </table>

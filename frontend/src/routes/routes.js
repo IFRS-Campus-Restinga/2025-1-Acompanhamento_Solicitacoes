@@ -37,6 +37,7 @@ import CadastrarAtualizarPpc from "../pages/ppcs/cadastrar_atualizar_ppc"; // p√
 
 // Usuarios
 import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
+import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 
 //Grupos
 import ListarGrupos from "../pages/grupos/lista_grupo.js";
@@ -82,6 +83,7 @@ const routes = [
 
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
+  <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
 
   // Grupos
   <Route path="/grupos" element={<ListarGrupos />} />,

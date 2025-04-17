@@ -7,7 +7,7 @@ export default function PopupConfirmacao({ show, onConfirm, onCancel }) {
   return (
     <div className="popup-backdrop">
       <div className="popup-box">
-        <p>Tem certeza que deseja excluir esta disciplina?</p>
+        <p>Tem certeza que deseja excluir este usuario?</p>
         <div className="popup-actions">
           <button className="btn btn-confirm" onClick={onConfirm}>Confirmar</button>
           <button className="btn btn-cancel" onClick={onCancel}>Cancelar</button>
