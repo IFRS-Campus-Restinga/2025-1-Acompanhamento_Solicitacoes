@@ -7,7 +7,7 @@ class CRESerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CRE
-        fields = ['siape']
+        fields = ['usuario', 'siape']
         
         
     def create(self, validated_data):
@@ -16,7 +16,7 @@ class CRESerializer(serializers.ModelSerializer):
         # Cria ou recupera o usuário
         usuario = Usuario.objects.get(id=usuario_data.id)  # Assume que o ID do Usuario está sendo passado
 
-        # Cria o Coordenador com o Usuario existente
+        # Cria a CRE com o Usuario existente
         return CRE.objects.create(usuario=usuario, **validated_data)
 
     def validate(self, data):
