@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
-import "./lista_usuarios.css";
+import "./usuarios.css";
 import PopupConfirmacao from "./popup_confirmacao";
 import PopupFeedback from "./popup_feedback";
 
@@ -15,7 +15,6 @@ export default function ListarUsuarios() {
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [termoBusca, setTermoBusca] = useState("");
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -54,11 +53,6 @@ export default function ListarUsuarios() {
         setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`);
         setTipoMensagem("erro");
       })
-      .finally(() => {
-        setMostrarPopup(false);
-        setMostrarFeedback(true);
-        setUsuarioSelecionado(null);
-      });
   };
 
   const usuariosFiltrados = filtrarUsuarios();
@@ -77,6 +71,13 @@ export default function ListarUsuarios() {
               value={termoBusca}
               onChange={handleBusca}
             />
+          </div>
+          <div className="botao-cadastrar-wrapper">
+            <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuario">
+              <button className="botao-cadastrar">
+                <i className="bi bi-plus-circle-fill"></i>
+              </button>
+            </Link>
           </div>
 
           {usuariosFiltrados.length === 0 ? (

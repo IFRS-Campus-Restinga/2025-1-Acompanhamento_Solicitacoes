@@ -6,6 +6,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
     
     papel = serializers.SerializerMethodField()
     papel_detalhes = serializers.SerializerMethodField()
+    data_nascimento = serializers.DateField(format="%d-%m-%Y", input_formats=["%Y-%m-%d", "%d-%m-%Y"])
     
     class Meta:
         model = Usuario

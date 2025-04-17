@@ -109,9 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'pt-br' # mudei de 'en-us' para 'pt-br' para que as mensagens de erro sejam emitidas em português aos usuários no momento da validação dos formulários
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Sao_Paulo' # mudei de 'UTC' para 'America/Sao_Paulo' pelo motivo acima
 
 USE_I18N = True
 

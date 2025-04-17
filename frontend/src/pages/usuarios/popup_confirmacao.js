@@ -1,5 +1,5 @@
 import React from "react";
-import "./lista_usuarios.css";
+import "./usuarios.css";
 
 export default function PopupConfirmacao({ show, onConfirm, onCancel }) {
   if (!show) return null;
