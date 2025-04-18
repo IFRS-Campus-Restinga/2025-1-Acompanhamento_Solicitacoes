@@ -83,7 +83,6 @@ export default function ListarTurmas() {
           <table className="tabela-turmas">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Nome</th>
                 <th>Ações</th>
               </tr>
@@ -91,7 +90,6 @@ export default function ListarTurmas() {
             <tbody>
               {turmasFiltradas.map((turma, index) => (
                 <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                  <td>{turma.id}</td>
                   <td>{turma.nome}</td>
                   <td>
                     <div className="botoes-acoes">
