@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
-import PopupConfirmacao from "./popup_confirmacao";
-import PopupFeedback from "./popup_feedback";
 import "./turma.css";
+
+//POP-UPS IMPORTAÇÃO
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function ListarTurmas() {
   const navigate = useNavigate();

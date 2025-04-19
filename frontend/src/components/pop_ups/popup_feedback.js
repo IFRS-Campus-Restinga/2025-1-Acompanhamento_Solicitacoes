@@ -1,5 +1,5 @@
 import React from "react";
-import "./turma.css";
+import "./popup.css";
 
 export default function PopupFeedback({ show, mensagem, tipo, onClose }) {
   if (!show) return null;

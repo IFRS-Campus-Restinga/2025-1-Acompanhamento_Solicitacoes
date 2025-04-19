@@ -4,7 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
 import "./motivo_exercicios.css";
-import PopupFeedback from "./popup_feedback";
+
+//POP-UPS IMPORTAÇÃO
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
 export default function CadastrarAtualizarExercicios() {
   const [descricao, setDescricao] = useState("");

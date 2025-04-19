@@ -1,11 +1,13 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Header from "../../components/header";
 import Footer from "../../components/footer";
+import Header from "../../components/header";
 import "./curso.css";
-import PopupConfirmacao from "./popup_confirmacao";
-import PopupFeedback from "./popup_feedback";
+
+//POP-UPS IMPORTAÇÃO
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function ListarCursos() {
   const navigate = useNavigate();

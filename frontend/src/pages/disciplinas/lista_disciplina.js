@@ -4,8 +4,10 @@ import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/footer"; // Caminho corrigido
 import Header from "../../components/header"; // Caminho corrigido
 import "./disciplina.css";
-import PopupConfirmacao from "./popup_confirmacao"; // Caminho corrigido
-import PopupFeedback from "./popup_feedback"; // Caminho corrigido
+
+//POP-UPS IMPORTAÇÃO
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function ListarDisciplinas() {
   const navigate = useNavigate();

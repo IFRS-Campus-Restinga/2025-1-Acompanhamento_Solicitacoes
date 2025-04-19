@@ -4,7 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
 import "./turma.css";
-import PopupFeedback from "./popup_feedback";
+
+//POP-UPS IMPORTAÇÃO
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function CadastrarAtualizarTurma() {
   const [nome, setNome] = useState("");

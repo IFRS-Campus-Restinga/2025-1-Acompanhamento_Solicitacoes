@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
 import "./motivo_exercicios.css";
-import PopupConfirmacao from "./popup_confirmacao";
-import PopupFeedback from "./popup_feedback";
+
+//POP-UPS IMPORTAÇÃO
+import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+
 
 import { useNavigate } from "react-router-dom";
 
