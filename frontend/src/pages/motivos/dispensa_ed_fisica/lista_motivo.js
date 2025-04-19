@@ -1,11 +1,13 @@
-import './cadastrar_motivo.css';
-import Header from '../../../components/header';
-import Footer from '../../../components/footer';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import Popup from '../../../components/popup';
-import Feedback from '../../../components/feedback';
 import { Link, useNavigate } from 'react-router-dom';
+import Footer from '../../../components/footer';
+import Header from '../../../components/header';
+import './cadastrar_motivo.css';
+
+//POP-UPS IMPORTAÇÃO
+import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
 export default function ListarMotivoDispensa() {
 
@@ -102,18 +104,19 @@ export default function ListarMotivoDispensa() {
                     </tr>
                 ))}
                 {popupIsOpen && (
-                            <Popup
+                            <PopupConfirmacao
                                 message="Deseja excluir esse motivo?"
                                 actions={popupActions}
                                 onClose={fecharPopup}
                                 />
                         )}
                         {feedbackIsOpen && (
-                            <Feedback
+                            <PopupFeedback
                             message={feedbackMessage}
                             type={feedbackType}
                             onClose={() => setFeedbackIsOpen(false)}
                           />
+                          
                         )}
                 <div className="botao-voltar-wrapper">
                     <button className="botao-voltar" onClick={() => navigate('/')}>
