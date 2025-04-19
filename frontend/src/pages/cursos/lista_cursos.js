@@ -6,8 +6,8 @@ import Header from "../../components/header";
 import "./curso.css";
 
 //POP-UPS IMPORTAÇÃO
-import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
-import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function ListarCursos() {
   const navigate = useNavigate();
