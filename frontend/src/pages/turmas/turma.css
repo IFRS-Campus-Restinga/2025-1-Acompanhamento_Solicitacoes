@@ -311,6 +311,75 @@
     transition: border-color 0.3s ease;
   }
   
+  .input-select {
+    height: 200px; /* Aumenta a altura da caixa */
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    overflow-y: auto; /* Permite rolagem se houver muitas disciplinas */
+  }
+  
   .input-pesquisa:focus {
     border-color: #0d6efd;
   }
+  /* Estilo para o botão de remover disciplina */
+ .remove-btn {
+   background-color: #e74c3c; /* vermelho suave */
+   color: white;
+   border: none;
+   border-radius: 5px;
+   margin-left: 10px;
+   padding: 4px 8px;
+   cursor: pointer;
+   font-size: 0.9rem;
+   transition: background-color 0.3s;
+ }
+
+ .remove-btn:hover {
+   background-color: #c0392b; /* vermelho mais escuro no hover */
+ }
+
+ /* Estilo para o campo de busca de disciplinas */
+ .search-input {
+   margin-top: 5px;
+   margin-bottom: 10px;
+   padding: 8px;
+   width: 100%;
+   border: 1px solid #ccc;
+   border-radius: 5px;
+   font-size: 1rem;
+   box-sizing: border-box;
+ }
+
+ .caixa-disciplinas {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  padding: 10px;
+  background-color: #f5f5f5;
+  max-height: 800px;
+  overflow-y: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.disciplina-nome {
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  background-color: transparent;
+  transition: background 0.2s;
+}
+
+.disciplina-nome:hover {
+  background-color: #dce4ff;
+}
+
+.disciplina-nome.ja-selecionada {
+  pointer-events: none;
+  color: #777;
+  font-style: italic;
+}

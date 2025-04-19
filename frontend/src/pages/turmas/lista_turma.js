@@ -45,7 +45,6 @@ export default function ListarTurmas() {
       });
   };
 
-  // Filtrando as turmas
   const turmasFiltradas = turmas.filter((turma) =>
     turma.nome.toLowerCase().includes(filtro.toLowerCase())
   );
@@ -64,19 +63,17 @@ export default function ListarTurmas() {
           </Link>
         </div>
 
-        {/* Barra de pesquisa */}
         <div className="barra-pesquisa">
           <i className="bi bi-search icone-pesquisa"></i>
           <input
             type="text"
-            placeholder="Buscar"
+            placeholder="Buscar..."
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
             className="input-pesquisa"
           />
         </div>
 
-        {/* Exibe a mensagem se não encontrar turmas após o filtro */}
         {turmasFiltradas.length === 0 ? (
           <p><br />Nenhuma turma encontrada!</p>
         ) : (
@@ -84,6 +81,7 @@ export default function ListarTurmas() {
             <thead>
               <tr>
                 <th>Nome</th>
+                <th>Disciplinas</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -91,6 +89,11 @@ export default function ListarTurmas() {
               {turmasFiltradas.map((turma, index) => (
                 <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                   <td>{turma.nome}</td>
+                  <td>
+                    {turma.disciplinas?.length
+                      ? turma.disciplinas.map(d => d.nome).join(", ")
+                      : "Nenhuma disciplina atribuída"}
+                  </td>
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/turmas/${turma.id}`} title="Editar">
@@ -103,7 +106,7 @@ export default function ListarTurmas() {
                         }}
                         title="Excluir"
                         className="icone-botao">
-                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                        <i className="bi bi-trash3-fill icone-excluir"></i>
                       </button>
                     </div>
                   </td>
