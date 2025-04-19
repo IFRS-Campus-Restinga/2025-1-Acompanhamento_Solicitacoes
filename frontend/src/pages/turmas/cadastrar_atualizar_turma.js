@@ -134,7 +134,7 @@ export default function CadastrarAtualizarTurma() {
                   value={disciplina.codigo}
                   className={selectedDisciplinas.includes(disciplina.codigo) ? "option-selected" : ""}
                 >
-                  {disciplina.nome}
+                  {disciplina.nome} - {disciplina.codigo}
                 </option>
               ))}
             </select>
@@ -148,7 +148,7 @@ export default function CadastrarAtualizarTurma() {
                 const disciplina = availableDisciplinas.find(d => d.codigo === codigo);
                 return (
                   <li key={codigo}>
-                    {disciplina ? disciplina.nome : 'Desconhecido'}
+                    {disciplina ? `${disciplina.nome} - ${disciplina.codigo}` : 'Desconhecido'}
                     <button type="button" onClick={() => handleRemoveDisciplina(codigo)} className="remove-btn">X</button>
                   </li>
                 );

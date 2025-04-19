@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Footer from "../../components/footer"; // Caminho corrigido
-import Header from "../../components/header"; // Caminho corrigido
+import Footer from "../../components/footer";
+import Header from "../../components/header";
 import "./disciplina.css";
 
 //POP-UPS IMPORTAÇÃO
@@ -17,14 +17,10 @@ export default function ListarDisciplinas() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [termoBusca, setTermoBusca] = useState(""); // ADICIONADO
-
-  const handleBusca = (e) => { // ADICIONADO
-    setTermoBusca(e.target.value);
-  };
+  const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
-    axios.get("http://localhost:8000/solicitacoes/disciplinas/")  // Corrigido para "solicitacoes"
+    axios.get("http://localhost:8000/solicitacoes/disciplinas/")
       .then((res) => setDisciplinas(res.data))
       .catch((err) => {
         setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar disciplinas."}`);
@@ -33,20 +29,12 @@ export default function ListarDisciplinas() {
       });
   }, []);
 
-  const filtrarDisciplinas = () => {
-    const termo = termoBusca.toLowerCase(); // USA O TERMO DE BUSCA
-    return disciplinas.filter((disciplina) =>
-      disciplina.nome.toLowerCase().includes(termo) ||
-      disciplina.codigo.toLowerCase().includes(termo)
-    );
-  };
-
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/disciplinas/${disciplinaSelecionada}/`)  // Corrigido para "solicitacoes"
+    axios.delete(`http://localhost:8000/solicitacoes/disciplinas/${disciplinaSelecionada}/`)
       .then(() => {
         setMensagemPopup("Disciplina excluída com sucesso.");
         setTipoMensagem("sucesso");
-        setDisciplinas(disciplinas.filter((d) => d.codigo !== disciplinaSelecionada));
+        setDisciplinas(disciplinas.filter((d) => d.codigo !== disciplinaSelecionada)); // Exclui pela disciplinaSelecionada.codigo
       })
       .catch((err) => {
         setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir disciplina."}`);
@@ -59,7 +47,9 @@ export default function ListarDisciplinas() {
       });
   };
 
-  const disciplinasFiltradas = filtrarDisciplinas(); // USA A LISTA FILTRADA
+  const disciplinasFiltradas = disciplinas.filter((disciplina) =>
+    disciplina.nome.toLowerCase().includes(filtro.toLowerCase())
+  );
 
   return (
     <div>
@@ -75,19 +65,17 @@ export default function ListarDisciplinas() {
           </Link>
         </div>
 
-        {/* CAMPO DE BUSCA ADICIONADO */}
-        <div className="campo-busca">
-          <i className="bi bi-search icone-lupa"></i>
+        <div className="barra-pesquisa">
+          <i className="bi bi-search icone-pesquisa"></i>
           <input
             type="text"
-            className="input-busca"
-            placeholder="Buscar"
-            value={termoBusca}
-            onChange={handleBusca}
+            placeholder="Buscar..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="input-pesquisa"
           />
         </div>
 
-        {/* MOSTRA TABELA OU MENSAGEM SE VAZIA */}
         {disciplinasFiltradas.length === 0 ? (
           <p><br />Nenhuma disciplina encontrada!</p>
         ) : (
@@ -96,6 +84,7 @@ export default function ListarDisciplinas() {
               <tr>
                 <th>Código</th>
                 <th>Nome</th>
+                <th>PPCs</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -105,18 +94,23 @@ export default function ListarDisciplinas() {
                   <td>{disciplina.codigo}</td>
                   <td>{disciplina.nome}</td>
                   <td>
+                    {disciplina.ppcs?.length
+                      ? disciplina.ppcs.map(ppc => ppc.codigo).join(", ")
+                      : "Nenhum PPC atribuído"}
+                  </td>
+                  <td>
                     <div className="botoes-acoes">
                       <Link to={`/disciplinas/${disciplina.codigo}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button
                         onClick={() => {
-                          setDisciplinaSelecionada(disciplina.codigo);
+                          setDisciplinaSelecionada(disciplina.codigo); // Armazenando o código da disciplina
                           setMostrarPopup(true);
                         }}
                         title="Excluir"
                         className="icone-botao">
-                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                        <i className="bi bi-trash3-fill icone-excluir"></i>
                       </button>
                     </div>
                   </td>
