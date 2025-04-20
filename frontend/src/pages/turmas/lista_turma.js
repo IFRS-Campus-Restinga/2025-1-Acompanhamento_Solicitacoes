@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/footer";
 import Header from "../../components/header";
-import PopupConfirmacao from "./popup_confirmacao";
-import PopupFeedback from "./popup_feedback";
 import "./turma.css";
+
+//POP-UPS IMPORTAÇÃO
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function ListarTurmas() {
   const navigate = useNavigate();
@@ -45,7 +47,6 @@ export default function ListarTurmas() {
       });
   };
 
-  // Filtrando as turmas
   const turmasFiltradas = turmas.filter((turma) =>
     turma.nome.toLowerCase().includes(filtro.toLowerCase())
   );
@@ -64,35 +65,37 @@ export default function ListarTurmas() {
           </Link>
         </div>
 
-        {/* Barra de pesquisa */}
         <div className="barra-pesquisa">
           <i className="bi bi-search icone-pesquisa"></i>
           <input
             type="text"
-            placeholder="Buscar"
+            placeholder="Buscar..."
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
             className="input-pesquisa"
           />
         </div>
 
-        {/* Exibe a mensagem se não encontrar turmas após o filtro */}
         {turmasFiltradas.length === 0 ? (
           <p><br />Nenhuma turma encontrada!</p>
         ) : (
           <table className="tabela-turmas">
             <thead>
               <tr>
-                <th>ID</th>
                 <th>Nome</th>
+                <th>Disciplinas</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
               {turmasFiltradas.map((turma, index) => (
                 <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                  <td>{turma.id}</td>
                   <td>{turma.nome}</td>
+                  <td>
+                    {turma.disciplinas?.length
+                      ? turma.disciplinas.map(d => d.nome).join(", ")
+                      : "Nenhuma disciplina atribuída"}
+                  </td>
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/turmas/${turma.id}`} title="Editar">
@@ -105,7 +108,7 @@ export default function ListarTurmas() {
                         }}
                         title="Excluir"
                         className="icone-botao">
-                          <i className="bi bi-trash3-fill icone-excluir"></i>
+                        <i className="bi bi-trash3-fill icone-excluir"></i>
                       </button>
                     </div>
                   </td>

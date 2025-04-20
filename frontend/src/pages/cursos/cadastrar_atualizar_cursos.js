@@ -1,10 +1,12 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Header from "../../components/header";
 import Footer from "../../components/footer";
-import "./curso.css"; 
-import PopupFeedback from "./popup_feedback";
+import Header from "../../components/header";
+import "./curso.css";
+
+//POP-UPS IMPORTAÇÃO
+import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function CadastrarAtualizarCursos() {
   const [codigoInput, setCodigoInput] = useState("");

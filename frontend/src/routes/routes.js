@@ -65,7 +65,7 @@ const routes = [
   // Disciplinas
   <Route path="/disciplinas" element={<ListarDisciplinas />} key="listar-disciplinas" />,
   <Route path="/disciplinas/cadastrar" element={<CadastrarAtualizarDisciplina />} key="cadastrar-disciplinas" />,
-  <Route path="/disciplinas/:id" element={<CadastrarAtualizarDisciplina />} key="editar-disciplinas" />,
+  <Route path="/disciplinas/:codigo" element={<CadastrarAtualizarDisciplina />} key="editar-disciplinas" />,
 
   // Turmas
   <Route path="/turmas" element={<ListarTurmas />} key="listar-turmas" />,

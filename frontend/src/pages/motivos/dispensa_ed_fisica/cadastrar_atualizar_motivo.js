@@ -1,7 +1,10 @@
-import { useState, useEffect } from "react";
-import Header from "../../../components/header";
+import { useEffect, useState } from "react";
 import Footer from "../../../components/footer";
-import Feedback from "../../../components/feedback";
+import Header from "../../../components/header";
+
+//POP-UPS IMPORTAÇÃO
+import Feedback from "../../../components/pop_ups/popup_feedback";
+
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import Popup from "../../../components/popup";

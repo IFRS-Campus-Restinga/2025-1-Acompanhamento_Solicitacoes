@@ -1,11 +1,10 @@
-import './cadastrar_motivo.css';
-import Header from '../../../components/header';
-import Footer from '../../../components/footer';
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import Popup from '../../../components/popup';
-import Feedback from '../../../components/feedback';
 import { Link, useNavigate } from 'react-router-dom';
+import Footer from '../../../components/footer';
+import Header from '../../../components/header';
+import './cadastrar_motivo.css';
+import Popup from '../../../components/popup';
 
 export default function ListarMotivoDispensa() {
 
@@ -23,6 +22,7 @@ export default function ListarMotivoDispensa() {
     const fecharPopup = () => {
         setPopupIsOpen(false);
         setIdAtual(null);
+        bsModal.current.hide();
     }
 
     const excluirMotivo = () => {
