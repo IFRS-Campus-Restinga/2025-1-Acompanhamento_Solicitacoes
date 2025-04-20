@@ -9,6 +9,9 @@ import "./curso.css";
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
+// PAGINAÇÃO
+import Paginacao from "../../components/UI/paginacao";
+
 export default function ListarCursos() {
   const navigate = useNavigate();
   const [cursos, setCursos] = useState([]);
@@ -17,6 +20,9 @@ export default function ListarCursos() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [cursosPaginados, setMotivosPaginados] = useState([]);
 
   useEffect(() => {
     axios
@@ -75,7 +81,7 @@ export default function ListarCursos() {
             </tr>
           </thead>
           <tbody>
-            {cursos.map((curso, index) => (
+            {cursosPaginados.map((curso, index) => (
               <tr key={curso.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{curso.nome}</td>
                 <td>{curso.ppcs ? curso.ppcs.join(", ") : ""}</td>
@@ -100,6 +106,14 @@ export default function ListarCursos() {
             ))}
           </tbody>
         </table>
+
+        <Paginacao
+          dados={cursos}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={5}
+          onDadosPaginados={setMotivosPaginados}
+        />
 
         <PopupConfirmacao
           show={mostrarPopup}

@@ -9,6 +9,9 @@ import "./grupo.css";
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
+// PAGINAÇÃO
+import Paginacao from "../../components/UI/paginacao";
+
 export default function ListarGrupos() {
   const navigate = useNavigate();
   const [grupos, setGrupos] = useState([]);
@@ -17,6 +20,9 @@ export default function ListarGrupos() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [gruposPaginados, setMotivosPaginados] = useState([]);
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/grupos/")
@@ -69,7 +75,7 @@ export default function ListarGrupos() {
             </tr>
           </thead>
           <tbody>
-            {grupos.map((grupo, index) => (
+            {gruposPaginados.map((grupo, index) => (
               <tr key={grupo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{grupo.id}</td>
                 <td>{grupo.name}</td>
@@ -93,6 +99,14 @@ export default function ListarGrupos() {
             ))}
           </tbody>
         </table>
+
+        <Paginacao
+          dados={grupos}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={5}
+          onDadosPaginados={setMotivosPaginados}
+        />
 
         <PopupConfirmacao
           show={mostrarPopup}

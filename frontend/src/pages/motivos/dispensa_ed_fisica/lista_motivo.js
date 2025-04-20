@@ -6,13 +6,20 @@ import Header from '../../../components/header';
 import './cadastrar_motivo.css';
 import Popup from '../../../components/popup';
 
+// PAGINAÇÃO
+import Paginacao from "../../../components/UI/paginacao";
+
 export default function ListarMotivoDispensa() {
 
     const [lista_motivo, setMotivo] = useState([]);
-    const [popupIsOpen, setPopupIsOpen] = useState(false);
-    const [idAtual, setIdAtual] = useState(null);
     const [popupMsg, setPopupMsg] = useState(null);
     const [popupType, setPopupType] = useState(null);
+    const [popupIsOpen, setPopupIsOpen] = useState(false);
+    const [idAtual, setIdAtual] = useState(null);
+
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [motivosPaginados, setMotivosPaginados] = useState([]);
+    
     const navigate = useNavigate();
 
     const abrirPopup = (id) => {
@@ -22,7 +29,6 @@ export default function ListarMotivoDispensa() {
     const fecharPopup = () => {
         setPopupIsOpen(false);
         setIdAtual(null);
-        bsModal.current.hide();
     }
 
     const excluirMotivo = () => {
@@ -82,7 +88,7 @@ export default function ListarMotivoDispensa() {
                 </tr>
                 </thead>
                 <tbody>
-                {lista_motivo.map((lista_motivo, index) => (
+                {motivosPaginados.map((lista_motivo, index) => (
                     <tr key={lista_motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}> 
                     <td>{lista_motivo.descricao}</td>
                     <td>
@@ -97,6 +103,7 @@ export default function ListarMotivoDispensa() {
 
                     </tr>
                 ))}
+                
                 {popupIsOpen && (
                             <Popup
                                 title="Excluir motivo"
@@ -112,6 +119,14 @@ export default function ListarMotivoDispensa() {
                 </div>
                 </tbody>
             </table>
+            <Paginacao
+                dados={lista_motivo}
+                paginaAtual={paginaAtual}
+                setPaginaAtual={setPaginaAtual}
+                itensPorPagina={5}
+                onDadosPaginados={setMotivosPaginados}
+            />
+            
             </main>
             <Footer />
         </div>

@@ -9,6 +9,8 @@ import "./motivo_exercicios.css";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
+// PAGINAÇÃO
+import Paginacao from "../../../components/UI/paginacao";
 
 import { useNavigate } from "react-router-dom";
 
@@ -20,6 +22,9 @@ export default function ListarMotivosExercicios() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+  
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [motivosPaginados, setMotivosPaginados] = useState([]);
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/motivo_exercicios/")
@@ -71,7 +76,8 @@ export default function ListarMotivosExercicios() {
             </tr>
           </thead>
           <tbody>
-            {motivos.map((motivo, index) => (
+            {/*PAGINAÇÃO NO MAP*/}
+            {motivosPaginados.map((motivo, index) => (
               <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{motivo.descricao}</td>
 
@@ -93,9 +99,19 @@ export default function ListarMotivosExercicios() {
                 </td>
 
               </tr>
+              
             ))}
           </tbody>
         </table>
+
+        <Paginacao
+          dados={motivos}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={5}
+          onDadosPaginados={setMotivosPaginados}
+        />
+
 
         <PopupConfirmacao
           show={mostrarPopup}
@@ -109,6 +125,7 @@ export default function ListarMotivosExercicios() {
           tipo={tipoMensagem}
           onClose={() => setMostrarFeedback(false)}
         />
+
         <div className="botao-voltar-wrapper">
             <button className="botao-voltar" onClick={() => navigate('/')}>
               <i className="bi bi-arrow-left-circle"></i> Voltar

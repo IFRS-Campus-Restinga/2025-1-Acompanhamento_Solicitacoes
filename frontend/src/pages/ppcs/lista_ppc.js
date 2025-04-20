@@ -9,6 +9,9 @@ import "./ppc.css";
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
+// PAGINAÇÃO
+import Paginacao from "../../components/UI/paginacao";
+
 export default function ListarPpc() {
   const navigate = useNavigate();
   const [ppcs, setPpcs] = useState([]);
@@ -17,6 +20,9 @@ export default function ListarPpc() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const [ppcsPaginados, setMotivosPaginados] = useState([]);
 
   useEffect(() => {
     axios
@@ -79,7 +85,7 @@ export default function ListarPpc() {
             </tr>
           </thead>
           <tbody>
-            {ppcs.map((ppc, index) => (
+            {ppcsPaginados.map((ppc, index) => (
               <tr key={ppc.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{ppc.codigo}</td>
                 {/* Exibe o código do curso associado – você pode ajustar para exibir o nome, se o serializer retornar */}
@@ -108,6 +114,14 @@ export default function ListarPpc() {
             ))}
           </tbody>
         </table>
+         <Paginacao
+            dados={ppcs}
+            paginaAtual={paginaAtual}
+            setPaginaAtual={setPaginaAtual}
+            itensPorPagina={5}
+            onDadosPaginados={setMotivosPaginados}
+          />
+
 
         <PopupConfirmacao
           show={mostrarPopup}

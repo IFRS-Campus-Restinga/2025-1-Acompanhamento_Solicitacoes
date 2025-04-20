@@ -1,0 +1,21 @@
+/*  =================  PAGINAÇÃO  =================  */
+
+.paginacao{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+  }
+  
+  .paginacao span{
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  
+  .paginacao button{
+    border-radius: 20px;
+    border-style: none;
+    color: var(--cor-branca); 
+    border: 3px solid var(--verde-oficial);
+    background-color: var(--verde-oficial);
+  }

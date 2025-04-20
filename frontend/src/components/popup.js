@@ -21,6 +21,7 @@ const Popup = ({ title = "Aviso", message, actions = [], msgType = "popup" }) =>
         document.body.classList.remove("modal-open");
         const backdrops = document.querySelectorAll(".modal-backdrop");
         backdrops.forEach(el => el.remove());
+        document.body.style.overflow = "auto";
       };
     }
   }, [msgType]);
@@ -36,7 +37,10 @@ const Popup = ({ title = "Aviso", message, actions = [], msgType = "popup" }) =>
                 <button
                   type="button"
                   className="btn-close"
-                  onClick={() => bsModal.current.hide()}
+                  onClick={() => {bsModal.current.hide();
+                    document.body.style.overflow = "auto";
+                  }
+                }
                   aria-label="Close"
                 ></button>
               </div>
@@ -55,6 +59,7 @@ const Popup = ({ title = "Aviso", message, actions = [], msgType = "popup" }) =>
                       document.body.classList.remove("modal-open");
                       const backdrops = document.querySelectorAll(".modal-backdrop");
                       backdrops.forEach(el => el.remove());
+                      document.body.style.overflow = "auto";
                     }}
                   >
                     {label}
