@@ -12,9 +12,8 @@ export default function ListarMotivoDispensa() {
     const [lista_motivo, setMotivo] = useState([]);
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [idAtual, setIdAtual] = useState(null);
-    const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
-    const [feedbackMessage, setFeedbackMessage] = useState(null);
-    const [feedbackType, setFeedbackType] = useState(null);
+    const [popupMsg, setPopupMsg] = useState(null);
+    const [popupType, setPopupType] = useState(null);
     const navigate = useNavigate();
 
     const abrirPopup = (id) => {
@@ -30,14 +29,11 @@ export default function ListarMotivoDispensa() {
         axios.delete(`http://localhost:8000/solicitacoes/motivo_dispensa/${idAtual}/`
         ).then (() => {
             setMotivo(lista_motivo.filter((m) => m.id !== idAtual));
-            setFeedbackMessage("Motivo excluído com sucesso!");
-            setFeedbackType("success");
         }     
         ).catch ((err) => {
-            setFeedbackMessage(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
-            setFeedbackType("error");
-        }).finally(() => {
-            setFeedbackIsOpen(true);
+            setPopupMsg(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
+            setPopupType("error");
+            setPopupIsOpen(true);
         })
 
     };
@@ -103,17 +99,11 @@ export default function ListarMotivoDispensa() {
                 ))}
                 {popupIsOpen && (
                             <Popup
+                                title="Excluir motivo"
                                 message="Deseja excluir esse motivo?"
                                 actions={popupActions}
-                                onClose={fecharPopup}
+                                msgType="popup"
                                 />
-                        )}
-                        {feedbackIsOpen && (
-                            <Feedback
-                            message={feedbackMessage}
-                            type={feedbackType}
-                            onClose={() => setFeedbackIsOpen(false)}
-                          />
                         )}
                 <div className="botao-voltar-wrapper">
                     <button className="botao-voltar" onClick={() => navigate('/')}>
