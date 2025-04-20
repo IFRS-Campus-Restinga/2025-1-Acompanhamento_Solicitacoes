@@ -9,6 +9,9 @@ import './cadastrar_motivo.css';
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
+// PAGINAÇÃO
+import Paginacao from "../../../components/UI/paginacao";
+
 export default function ListarMotivoDispensa() {
 
     const [lista_motivo, setMotivo] = useState([]);
@@ -17,6 +20,10 @@ export default function ListarMotivoDispensa() {
     const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
     const [feedbackMessage, setFeedbackMessage] = useState(null);
     const [feedbackType, setFeedbackType] = useState(null);
+
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [motivosPaginados, setMotivosPaginados] = useState([]);
+    
     const navigate = useNavigate();
 
     const abrirPopup = (id) => {
@@ -88,7 +95,7 @@ export default function ListarMotivoDispensa() {
                 </tr>
                 </thead>
                 <tbody>
-                {lista_motivo.map((lista_motivo, index) => (
+                {motivosPaginados.map((lista_motivo, index) => (
                     <tr key={lista_motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}> 
                     <td>{lista_motivo.descricao}</td>
                     <td>
@@ -103,6 +110,7 @@ export default function ListarMotivoDispensa() {
 
                     </tr>
                 ))}
+                
                 {popupIsOpen && (
                             <PopupConfirmacao
                                 message="Deseja excluir esse motivo?"
@@ -125,6 +133,14 @@ export default function ListarMotivoDispensa() {
                 </div>
                 </tbody>
             </table>
+            <Paginacao
+                dados={lista_motivo}
+                paginaAtual={paginaAtual}
+                setPaginaAtual={setPaginaAtual}
+                itensPorPagina={5}
+                onDadosPaginados={setMotivosPaginados}
+            />
+            
             </main>
             <Footer />
         </div>
