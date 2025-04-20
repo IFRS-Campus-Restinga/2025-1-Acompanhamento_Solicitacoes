@@ -1,9 +1,17 @@
 body {
   font-family: var(--fonte-oficial);
   width: 100vw;
-  min-height: 100vh;
+  height: 100%;
   margin: 0;
 }
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+
 
 div {
   color: rgb(0, 0, 0);
