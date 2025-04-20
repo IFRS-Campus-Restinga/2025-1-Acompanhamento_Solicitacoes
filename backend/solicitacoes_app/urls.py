@@ -14,6 +14,7 @@ from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
 from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView
 from .views.responsavel_view import *
+from .views.form_tranc_matricula_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -62,4 +63,7 @@ urlpatterns = [
 
     path('responsaveis/', ResponsavelListCreateView.as_view(), name='responsavel-list'),
     path('responsaveis/<int:pk>/', ResponsavelRetrieveUpdateDestroyView.as_view(), name='responsavel-detail'),
+    
+    path("formularios-trancamento/",FormTrancamentoListCreate.as_view(),name="listar_cadastrar_form_trancamento",),
+    path("formularios-trancamento/<int:id>/",FormTrancamentoDetail.as_view(),name="detalhar_atualizar_deletar_form_trancamento",),
 ]
