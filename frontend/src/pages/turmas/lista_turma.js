@@ -8,6 +8,7 @@ import "./turma.css";
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import Paginacao from "../../components/UI/paginacao";
 
 export default function ListarTurmas() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function ListarTurmas() {
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [filtro, setFiltro] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1); // Estado da página
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/turmas/")
@@ -49,6 +51,14 @@ export default function ListarTurmas() {
 
   const turmasFiltradas = turmas.filter((turma) =>
     turma.nome.toLowerCase().includes(filtro.toLowerCase())
+  );
+
+  const itensPorPagina = 5;
+  const totalPaginas = Math.ceil(turmasFiltradas.length / itensPorPagina);
+
+  const dadosPaginados = turmasFiltradas.slice(
+    (paginaAtual - 1) * itensPorPagina,
+    paginaAtual * itensPorPagina
   );
 
   return (
@@ -88,7 +98,7 @@ export default function ListarTurmas() {
               </tr>
             </thead>
             <tbody>
-              {turmasFiltradas.map((turma, index) => (
+              {dadosPaginados.map((turma, index) => (
                 <tr key={turma.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                   <td>{turma.nome}</td>
                   <td>
@@ -107,7 +117,8 @@ export default function ListarTurmas() {
                           setMostrarPopup(true);
                         }}
                         title="Excluir"
-                        className="icone-botao">
+                        className="icone-botao"
+                      >
                         <i className="bi bi-trash3-fill icone-excluir"></i>
                       </button>
                     </div>
@@ -136,6 +147,14 @@ export default function ListarTurmas() {
             <i className="bi bi-arrow-left-circle"></i> Voltar
           </button>
         </div>
+
+        <Paginacao
+          dados={turmasFiltradas}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={itensPorPagina}
+          onDadosPaginados={() => {}} // Apenas para compatibilidade
+        />
       </main>
       <Footer />
     </div>
