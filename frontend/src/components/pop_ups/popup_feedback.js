@@ -6,7 +6,7 @@ export default function PopupFeedback({ show, mensagem, tipo, onClose }) {
     if (show) {
       const timer = setTimeout(() => {
         onClose();
-      }, 4000); // 4 segundos
+      }, 1500); // 2 segundos
       return () => clearTimeout(timer);
     }
   }, [show, onClose]);
