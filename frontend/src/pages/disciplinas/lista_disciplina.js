@@ -8,6 +8,7 @@ import "./disciplina.css";
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import Paginacao from "../../components/UI/paginacao";
 
 export default function ListarDisciplinas() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function ListarDisciplinas() {
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [filtro, setFiltro] = useState("");
+  const [paginaAtual, setPaginaAtual] = useState(1); // Estado para controlar a página atual
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/disciplinas/")
@@ -49,6 +51,15 @@ export default function ListarDisciplinas() {
 
   const disciplinasFiltradas = disciplinas.filter((disciplina) =>
     disciplina.nome.toLowerCase().includes(filtro.toLowerCase())
+  );
+
+  const itensPorPagina = 5; // Número de itens por página
+  const totalPaginas = Math.ceil(disciplinasFiltradas.length / itensPorPagina);
+
+  // Dados paginados
+  const dadosPaginados = disciplinasFiltradas.slice(
+    (paginaAtual - 1) * itensPorPagina,
+    paginaAtual * itensPorPagina
   );
 
   return (
@@ -89,7 +100,7 @@ export default function ListarDisciplinas() {
               </tr>
             </thead>
             <tbody>
-              {disciplinasFiltradas.map((disciplina, index) => (
+              {dadosPaginados.map((disciplina, index) => (
                 <tr key={disciplina.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                   <td>{disciplina.codigo}</td>
                   <td>{disciplina.nome}</td>
@@ -138,6 +149,14 @@ export default function ListarDisciplinas() {
             <i className="bi bi-arrow-left-circle"></i> Voltar
           </button>
         </div>
+
+        <Paginacao
+          dados={disciplinasFiltradas}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={itensPorPagina}
+          onDadosPaginados={() => {}}
+        />
       </main>
       <Footer />
     </div>

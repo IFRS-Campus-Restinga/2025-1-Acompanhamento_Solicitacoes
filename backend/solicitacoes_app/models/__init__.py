@@ -13,3 +13,4 @@ from .disciplina import *
 from .tipo_falta import *
 from .turma import *
 from .solicitacao import *
+from .form_tranc_matricula import *
