@@ -56,6 +56,13 @@
   padding: 10px;
   text-align: left;
 }
+.tabela-cursos td {
+  padding: 2px 6px;
+  line-height: 1.5;
+  height: auto;
+  min-height: 0;
+  vertical-align: middle;
+}
 
 .tabela-cursos th {
   background-color: #e0e0e0;

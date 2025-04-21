@@ -83,6 +83,13 @@
     padding: 10px;
     text-align: left;
   }
+  .tabela-grupos td {
+    padding: 2px 6px;
+    line-height: 1.1;
+    height: auto;
+    min-height: 0;
+    vertical-align: middle;
+  }
   
   .tabela-grupos th {
     background-color: #e0e0e0;
