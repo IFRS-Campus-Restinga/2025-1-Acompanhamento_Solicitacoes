@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Curso, Ppc, CRE, Coordenador, Aluno, Responsavel, Disciplina, Usuario, Turma, FormularioTrancamentoMatricula
+from .models import Curso, Ppc, CRE, Coordenador, Aluno, Responsavel, Disciplina, Usuario, Turma, FormularioTrancamentoMatricula, FormDispensaEdFisica
 
 # Registro padrão dos outros modelos
 admin.site.register(Curso)
@@ -12,6 +12,7 @@ admin.site.register(Responsavel)
 admin.site.register(Disciplina)
 admin.site.register(Turma)
 admin.site.register(FormularioTrancamentoMatricula)
+admin.site.register(FormDispensaEdFisica)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)

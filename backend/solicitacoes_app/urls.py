@@ -15,6 +15,7 @@ from solicitacoes_app.views.turma_view import *
 from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView
 from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
+from .views.form_disp_ed_fisica_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -66,4 +67,7 @@ urlpatterns = [
     
     path("formularios-trancamento/",FormTrancamentoListCreate.as_view(),name="listar_cadastrar_form_trancamento",),
     path("formularios-trancamento/<int:id>/",FormTrancamentoDetail.as_view(),name="detalhar_atualizar_deletar_form_trancamento",),
+
+    path("dispensa_ed_fisica/", FormDispEdFisicaViewListCreate.as_view(), name='dispensa_ed_fisica_list_create'),
+    path("dispensa_ed_fisica/<int:id>/", FormDispEdFisicaViewUpdateDelete.as_view(), name='dispensa_ed_fisica_update_delete'),
 ]
