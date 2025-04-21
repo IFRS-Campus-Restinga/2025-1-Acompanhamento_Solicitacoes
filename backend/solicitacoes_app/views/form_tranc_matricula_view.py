@@ -1,19 +1,17 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
 
-from ..models import FormularioTrancamento
-from ..serializers.form_tranc_matricula_serializar import (
-    FormularioTrancamentoSerializer,
-)
+from ..models.form_tranc_matricula import FormularioTrancamentoMatricula
+from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
 
 class FormTrancamentoListCreate(generics.ListCreateAPIView):
-    queryset           = FormularioTrancamento.objects.all()
-    serializer_class   = FormularioTrancamentoSerializer
+    queryset           = FormularioTrancamentoMatricula.objects.all()
+    serializer_class   = FormularioTrancamentoMatriculaSerializer
     permission_classes = [AllowAny]
 
 
 class FormTrancamentoDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset           = FormularioTrancamento.objects.all()
-    serializer_class   = FormularioTrancamentoSerializer
+    queryset           = FormularioTrancamentoMatricula.objects.all()
+    serializer_class   = FormularioTrancamentoMatriculaSerializer
     permission_classes = [AllowAny]
     lookup_field       = "id"          # inteiro gerado automaticamente

@@ -27,7 +27,6 @@ class FormularioBase(BaseModel):
         blank=True
     )
     observacoes = models.TextField(
-        blank=True,
         blank=True
     )
     
