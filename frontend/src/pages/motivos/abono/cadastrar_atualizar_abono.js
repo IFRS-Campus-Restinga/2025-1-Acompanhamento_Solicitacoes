@@ -19,6 +19,23 @@ export default function CadastrarAtualizarAbono() {
   const { id } = useParams();
 
 
+  const extrairMensagemErro = (erroData) => {
+    if (typeof erroData === "string") return erroData;
+    if (erroData?.mensagem) return erroData.mensagem;
+    if (erroData?.detail) return erroData.detail;
+
+    if (typeof erroData === "object") {
+      const primeiraChave = Object.keys(erroData)[0];
+      const mensagens = erroData[primeiraChave];
+      if (Array.isArray(mensagens)) {
+        return mensagens[0];
+      }
+    }
+
+    return "Erro desconhecido.";
+  };
+
+
   useEffect(() => {
     axios
       .get("http://localhost:8000/solicitacoes/motivo_abono/tipos/")
@@ -34,7 +51,8 @@ export default function CadastrarAtualizarAbono() {
           setTipoFalta(res.data.tipo_falta);
         })
         .catch((err) => {
-          setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar motivo."}`);
+          const erroServidor = extrairMensagemErro(err.response?.data);
+          setMensagem(`Erro ${err.response?.status || ""}: ${erroServidor}`);
           setTipoMensagem("erro");
           setShowFeedback(true);
         });
@@ -56,7 +74,8 @@ export default function CadastrarAtualizarAbono() {
         setShowFeedback(true);
       })
       .catch((err) => {
-        setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao salvar motivo."}`);
+        const erroServidor = extrairMensagemErro(err.response?.data);
+        setMensagem(`Erro ${err.response?.status || ""}: ${erroServidor}`);
         setTipoMensagem("erro");
         setShowFeedback(true);
       });
@@ -75,6 +94,8 @@ export default function CadastrarAtualizarAbono() {
               value={descricao}
               onChange={(e) => setDescricao(e.target.value)}
               required
+              maxlength="200"
+              minlength="10"
             />
           </div>
           <div className="form-group">
@@ -104,7 +125,10 @@ export default function CadastrarAtualizarAbono() {
           tipo={tipoMensagem}
           onClose={() => {
             setShowFeedback(false);
-            navigate("/motivo_abono"); 
+            if(tipoMensagem === "sucesso"){
+              navigate("/motivo_abono"); 
+            }
+            
           }}
         />
       </main>

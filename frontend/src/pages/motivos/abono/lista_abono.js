@@ -93,7 +93,7 @@ export default function ListarMotivosAbono() {
             <tbody>
               {motivosFiltrados.map((motivo, index) => (
                 <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                  <td>{motivo.descricao}</td>
+                  <td className="descricao">{motivo.descricao}</td>
                   <td>{motivo.tipo_falta}</td>
                   <td>
                     <div className="botoes-acoes">

@@ -12,10 +12,15 @@
   gap: 1.5rem;
 }
 
-.input-area,
+.input-area {
+  padding: 0.5rem;
+  font-size: 1rem;
+}
+
 .input-select {
   padding: 0.5rem;
   font-size: 1rem;
+  height: 40px !important;
 }
 
 textarea,
@@ -94,6 +99,14 @@ h2 {
 
 .linha-impar {
   background-color: #ffffff;
+}
+
+/* Ajuste apenas para a célula de Descrição */
+.tabela-motivos td.descricao {
+  max-width: 300px; /* Limita a largura da coluna de descrição */
+  overflow-wrap: break-word; /* Quebra o texto automaticamente quando atinge a largura máxima */
+  word-wrap: break-word; /* Quebra de palavras longas */
+  word-break: break-word; /* Quebra forçada de palavras longas */
 }
 
 /* Botão de cadastro */
