@@ -53,26 +53,57 @@ class Command(BaseCommand):
 
 
         MotivoAbono.objects.get_or_create(
-            descricao="Doença com atestado médico válido",
+            descricao="Problema de saúde, através de documento oficial, carimbado e assinado",
             defaults={"tipo_falta": TipoFalta.FJ}
         )
         MotivoAbono.objects.get_or_create(
-            descricao="Atividade acadêmica oficial da instituição",
+            descricao="Obrigações com o Serviço Militar",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Falecimento de parente em até 2º grau",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Convocação pelo Poder Judiciário",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Nascimento de filho ou adoção",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Atividades laborais em dia de verificação de aprendizagem, " \
+            "quando for realizada fora do turno/dia regular do curso",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Situação de risco social evidenciada por meio de parecer social original, " \
+            "emitido por Assistente Social de órgão oficial, preferencialmente proveniente da " \
+            "Coordenadoria de Assistência Estudantil do Campus",
+            defaults={"tipo_falta": TipoFalta.FJ}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Exercício ou Manobra a serviço de Órgão de Formação de Reserva",
             defaults={"tipo_falta": TipoFalta.FA}
         )
         MotivoAbono.objects.get_or_create(
-            descricao="Compromissos religiosos previamente informados",
-            defaults={"tipo_falta": TipoFalta.FJ}
-        )
-        MotivoAbono.objects.get_or_create(
-            descricao="Falecimento de parente de primeiro grau",
+            descricao="Quando o estudante representar oficialmente o IFRS em eventos",
             defaults={"tipo_falta": TipoFalta.FA}
         )
         MotivoAbono.objects.get_or_create(
-            descricao="Comparecimento em audiências judiciais",
-            defaults={"tipo_falta": TipoFalta.FJ}
+            descricao="Participação em atividade institucional, convocado pelo IFRS",
+            defaults={"tipo_falta": TipoFalta.FA}
         )
-
+        MotivoAbono.objects.get_or_create(
+            descricao="Representação desportiva nacional, conforme Art. 85 da Lei n° 9.615/98",
+            defaults={"tipo_falta": TipoFalta.FA}
+        )
+        MotivoAbono.objects.get_or_create(
+            descricao="Convocação para Audiência Judicial",
+            defaults={"tipo_falta": TipoFalta.FA}
+        )
+       
 
         MotivoDispensa.objects.get_or_create(
             descricao="Prática esportiva federada reconhecida"
@@ -146,16 +177,16 @@ class Command(BaseCommand):
         )
         
         Group.objects.get_or_create(
-            nome="Usuários"
+            name="Usuários"
         )
         Group.objects.get_or_create(
-            nome="CRE"
+            name="CRE"
         )
         Group.objects.get_or_create(
-            nome="Coordenador"
+            name="Coordenador"
         )
         Group.objects.get_or_create(
-            nome="Aluno"
+            name="Aluno"
         )
 
         

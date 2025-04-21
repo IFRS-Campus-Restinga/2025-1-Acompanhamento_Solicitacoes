@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../components/footer";
 import Header from "../../../components/header";
@@ -9,6 +9,9 @@ import "./abono.css";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
+// PAGINAÇÃO
+import Paginacao from "../../../components/UI/paginacao";
+
 export default function ListarMotivosAbono() {
   const navigate = useNavigate();
   const [motivos, setMotivos] = useState([]);
@@ -17,7 +20,10 @@ export default function ListarMotivosAbono() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [termoBusca, setTermoBusca] = useState("");
+  const [filtro, setFiltro] = useState("");
+
+  const [paginaAtual, setPaginaAtual] = useState(1);
+  const itensPorPagina = 5;
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/motivo_abono/")
@@ -29,12 +35,24 @@ export default function ListarMotivosAbono() {
       });
   }, []);
 
-  const handleBusca = (e) => setTermoBusca(e.target.value);
+  // Resetar página quando filtro muda
+  useEffect(() => {
+    setPaginaAtual(1);
+  }, [filtro]);
 
-  const motivosFiltrados = motivos.filter((motivo) =>
-    motivo.descricao.toLowerCase().includes(termoBusca.toLowerCase()) ||
-    motivo.tipo_falta.toLowerCase().includes(termoBusca.toLowerCase())
-  );
+  // Filtrar motivos com useMemo
+  const motivosFiltrados = useMemo(() =>
+    motivos.filter((motivo) =>
+      motivo.descricao.toLowerCase().includes(filtro.toLowerCase()) ||
+      motivo.tipo_falta.toLowerCase().includes(filtro.toLowerCase())
+    ), [motivos, filtro]);
+
+  // Dados da página atual com useMemo
+  const dadosPaginados = useMemo(() =>
+    motivosFiltrados.slice(
+      (paginaAtual - 1) * itensPorPagina,
+      paginaAtual * itensPorPagina
+    ), [motivosFiltrados, paginaAtual, itensPorPagina]);
 
   const confirmarExclusao = () => {
     axios.delete(`http://localhost:8000/solicitacoes/motivo_abono/${motivoSelecionado}/`)
@@ -59,17 +77,7 @@ export default function ListarMotivosAbono() {
       <Header />
       <main className="container">
         <h2>Motivos de Abono</h2>
-        <div className="conteudo-tabela">
-          <div className="input-group w-50">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Buscar por descrição ou tipo de falta"
-              value={termoBusca}
-              onChange={handleBusca}
-            />
-          </div>
-        </div>
+
         <div className="botao-cadastrar-wrapper">
           <Link to="/motivo_abono/cadastrar" className="botao-link" title="Criar Novo Motivo">
             <button className="botao-cadastrar">
@@ -77,7 +85,17 @@ export default function ListarMotivosAbono() {
             </button>
           </Link>
         </div>
-        
+
+        <div className="barra-pesquisa">
+          <i className="bi bi-search icone-pesquisa"></i>
+          <input
+            type="text"
+            placeholder="Buscar..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="input-pesquisa"
+          />
+        </div>
 
         {motivosFiltrados.length === 0 ? (
           <p className="mt-4">Nenhum motivo encontrado.</p>
@@ -91,7 +109,7 @@ export default function ListarMotivosAbono() {
               </tr>
             </thead>
             <tbody>
-              {motivosFiltrados.map((motivo, index) => (
+              {dadosPaginados.map((motivo, index) => (
                 <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                   <td className="descricao">{motivo.descricao}</td>
                   <td>{motivo.tipo_falta}</td>
@@ -117,7 +135,16 @@ export default function ListarMotivosAbono() {
             </tbody>
           </table>
         )}
-        
+
+        {motivosFiltrados.length > itensPorPagina && (
+          <Paginacao
+            dados={motivosFiltrados}
+            paginaAtual={paginaAtual}
+            setPaginaAtual={setPaginaAtual}
+            itensPorPagina={itensPorPagina}
+            onDadosPaginados={() => {}}
+          />
+        )}
 
         <PopupConfirmacao
           show={mostrarPopup}
