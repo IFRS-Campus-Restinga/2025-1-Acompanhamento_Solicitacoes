@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
-import "./curso.css";
+import "../..";
 
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -72,7 +72,7 @@ export default function ListarCursos() {
           </Link>
         </div>
 
-        <table className="tabela-cursos">
+        <table className="tabela-cruds">
           <thead>
             <tr>
               <th>Nome</th>

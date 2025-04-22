@@ -90,7 +90,7 @@ export default function ListarDisciplinas() {
         {disciplinasFiltradas.length === 0 ? (
           <p><br />Nenhuma disciplina encontrada!</p>
         ) : (
-          <table className="tabela-disciplinas">
+          <table className="tabela-cruds">
             <thead>
               <tr>
                 <th>Código</th>

@@ -7,7 +7,7 @@ import routes from "./routes/routes";
 import "./var.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
+import './index.css'
 class App extends React.Component {
   state = {
     isConnected: false,

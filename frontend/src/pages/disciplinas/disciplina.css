@@ -71,26 +71,26 @@
   }
   
   /* Tabela */
-  .tabela-disciplinas {
+  .tabela-cruds {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
   }
   
-  .tabela-disciplinas th,
-  .tabela-disciplinas td {
+  .tabela-cruds th,
+  .tabela-cruds td {
     border: 1px solid var(--cabecalho-lista);
     padding: 10px;
     text-align: left;
   }
-  .tabela-disciplinas td {
+  .tabela-cruds td {
     padding: 2px 6px;
     line-height: 1.1;
     height: auto;
     min-height: 0;
     vertical-align: middle;
   }
-  .tabela-disciplinas th {
+  .tabela-cruds th {
     background-color: #e0e0e0;
   }
   

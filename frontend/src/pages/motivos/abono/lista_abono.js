@@ -3,7 +3,6 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import Header from "../../../components/base/header";
-import "./abono.css";
 
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
@@ -100,7 +99,7 @@ export default function ListarMotivosAbono() {
         {motivosFiltrados.length === 0 ? (
           <p className="mt-4">Nenhum motivo encontrado.</p>
         ) : (
-          <table className="tabela-motivos">
+          <table className="tabela-cruds">
             <thead>
               <tr>
                 <th>Descrição</th>
