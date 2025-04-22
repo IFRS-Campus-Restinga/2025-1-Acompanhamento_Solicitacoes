@@ -1,4 +1,4 @@
-    .container {
+.container {
     max-width: 800px;
     margin: 0 auto;
     padding: 2rem;
@@ -9,9 +9,6 @@
     text-align: center;
     color: #333;
   }
-
-  
-
 
 
   .form-container {
@@ -91,5 +88,184 @@
   .botao-voltar:hover {
     background-color: var(--verde-escuro);
     color: white;
+  }
+  
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+  
+  .botoes-acoes {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  
+  .botao-cadastrar-wrapper {
+    margin-bottom: 1.5rem;
+    text-align: right;
+  }
+  
+  .botao-voltar-wrapper {
+    margin-top: 2rem;
+    text-align: left;
+  }
+  
+  .acoes-icones {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .icone-acao {
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: #333;
+  }
+  
+  .icone-acao:hover {
+    transform: scale(1.1);
+  }
+  
+  .icone-editar:hover {
+    color: var(--botao-editar);
+  }
+  
+  .icone-excluir:hover {
+    color: var(--botao-deletar);
+  }
+  
+  .tabela-cruds td.descricao {
+    max-width: 300px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+  
+  .campo-busca {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .icone-lupa {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 1rem;
+  }
+  
+  .input-busca {
+    width: 100%;
+    padding: 8px 12px 8px 35px;
+    border: 1px solid #0d6efd;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .input-busca:focus {
+    border-color: #0d6efd;
+  }
+  
+
+  .remove-btn {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+  }
+  
+  .remove-btn:hover {
+    background-color: #c0392b;
+  }
+  
+  .search-input {
+    margin-top: 5px;
+    margin-bottom: 10px;
+    padding: 8px;
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    box-sizing: border-box;
+  }
+  
+  .caixa-disciplinas {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    background-color: #f5f5f5;
+    max-height: 800px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .disciplina-nome {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    background-color: transparent;
+    transition: background 0.2s;
+  }
+  
+  .disciplina-nome:hover {
+    background-color: #dce4ff;
+  }
+  
+  .disciplina-nome.ja-selecionada {
+    pointer-events: none;
+    color: #777;
+    font-style: italic;
+  }
+
+  
+
+  .barra-pesquisa {
+    position: relative;
+    width: 100%;
+    max-width: 300px;
+    margin-bottom: 20px;
+  }
+  
+  .icone-pesquisa {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 1rem;
+  }
+  
+  .input-pesquisa {
+    width: 100%;
+    padding: 8px 12px 8px 35px;
+    border: 1px solid #0d6efd;
+    border-radius: 20px;
+    outline: none;
+    transition: border-color 0.3s ease;
+  }
+  
+  .input-pesquisa:focus {
+    border-color: #0d6efd;
+  }
+
+  
+  .botao-cadastrar-wrapper {
+    margin-bottom: 1.5rem;
+    text-align: right;
+  }
+  
+  .botao-voltar-wrapper {
+    margin-top: 2rem;
+    text-align: left;
   }
   
