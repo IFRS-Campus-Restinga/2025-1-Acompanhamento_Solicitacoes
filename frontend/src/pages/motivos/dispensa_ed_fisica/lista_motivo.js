@@ -1,10 +1,10 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../../../components/footer';
-import Header from '../../../components/header';
-import './cadastrar_motivo.css';
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/header";
 import Popup from '../../../components/popup';
+import './cadastrar_motivo.css';
 
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";

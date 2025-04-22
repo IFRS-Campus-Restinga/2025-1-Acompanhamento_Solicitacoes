@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "../../components/header";
-import Footer from "../../components/footer";
+import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../components/base/footer";
+import Header from "../../components/base/header";
 
 export default function DetalhesUsuario() {
   const { id } = useParams();

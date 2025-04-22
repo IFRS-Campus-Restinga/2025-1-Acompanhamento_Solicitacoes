@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
-import Footer from "../../../components/footer";
-import Header from "../../../components/header";
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/header";
 
 //POP-UPS IMPORTAÇÃO
-import Feedback from "../../../components/pop_ups/popup_feedback";
 
 import axios from "axios";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Popup from "../../../components/popup";
 
 export default function CadastrarAtualizarMotivoDispensa() {
