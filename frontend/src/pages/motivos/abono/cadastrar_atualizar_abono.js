@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import Header from "../../../components/base/header";
-import "./abono.css";
 
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";

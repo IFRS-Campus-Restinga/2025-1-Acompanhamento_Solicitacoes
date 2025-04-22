@@ -44,19 +44,19 @@
 }
 
 /* ================= TABELA DE CURSOS ================= */
-.tabela-cursos {
+.tabela-cruds {
   width: 100%;
   border-collapse: collapse;
   margin-top: 20px;
 }
 
-.tabela-cursos th,
-.tabela-cursos td {
+.tabela-cruds th,
+.tabela-cruds td {
   border: 1px solid var(--cabecalho-lista);
   padding: 10px;
   text-align: left;
 }
-.tabela-cursos td {
+.tabela-cruds td {
   padding: 2px 6px;
   line-height: 1.5;
   height: auto;
@@ -64,7 +64,7 @@
   vertical-align: middle;
 }
 
-.tabela-cursos th {
+.tabela-cruds th {
   background-color: #e0e0e0;
 }
 

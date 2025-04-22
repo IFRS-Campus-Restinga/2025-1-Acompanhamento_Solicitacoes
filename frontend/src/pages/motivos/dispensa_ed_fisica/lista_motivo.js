@@ -4,7 +4,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import Footer from "../../../components/base/footer";
 import Header from "../../../components/base/header";
 import Popup from '../../../components/popup';
-import './cadastrar_motivo.css';
 
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";
@@ -80,7 +79,7 @@ export default function ListarMotivoDispensa() {
             </button>
           </Link>
         </div>
-            <table className='tabela-motivos'>
+            <table className='tabela-cruds'>
                 <thead>
                 <tr>
                     <th>Descrição</th>

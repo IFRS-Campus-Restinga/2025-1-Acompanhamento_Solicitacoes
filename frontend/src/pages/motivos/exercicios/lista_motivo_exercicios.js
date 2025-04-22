@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import Header from "../../../components/base/header";
-import "./motivo_exercicios.css";
 
 // POPUPS
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
@@ -105,7 +104,7 @@ export default function ListarMotivosExercicios() {
         {motivosFiltrados.length === 0 ? (
           <p><br />Nenhum motivo encontrado!</p>
         ) : (
-          <table className="tabela-motivos">
+          <table className="tabela-cruds">
             <thead>
               <tr>
                 <th>Descrição</th>
