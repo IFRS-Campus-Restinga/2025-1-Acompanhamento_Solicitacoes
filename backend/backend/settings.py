@@ -135,10 +135,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 AUTH_USER_MODEL = 'solicitacoes_app.Usuario' # informa ao Django qual modelo deve ser usado como o modelo de usuário do sistema
 
 #deixar secret, id e path aqui
-
-
-
-
+GOOGLE_OAUTH2_CLIENT_ID = "195922033885-iq1i3anqbev62qksdv1mvb541dhpu0l1.apps.googleusercontent.com" 
+GOOGLE_OAUTH2_CLIENT_SECRET = "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"
+GOOGLE_OAUTH2_REDIRECT_URI = "http://localhost:8000/auth/callback/"
 
 try:
     from .local_settings import *
