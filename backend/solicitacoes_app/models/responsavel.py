@@ -6,7 +6,7 @@ from ..managers.responsavel_manager import ResponsavelManager
 
 class Responsavel(BaseModel):
     usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, related_name="responsavel"
+        Usuario, on_delete=models.PROTECT, related_name="responsavel"
     )
     aluno = models.OneToOneField(
         Aluno, on_delete=models.CASCADE, unique=True

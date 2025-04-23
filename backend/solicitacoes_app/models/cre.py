@@ -5,11 +5,18 @@ from .usuario import Usuario
 
 class CRE(BaseModel):
     usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, related_name="cre"
+        Usuario, on_delete=models.PROTECT, related_name="cre"
     )
     siape = models.IntegerField(
         unique=True
     )
+    
+    ativo = models.BooleanField(default=True)
+    
+    def delete(self, using=None, keep_parents=False):
+        self.ativo = False
+        self.save()
+    
     
     def clean(self):
         # Verifica se o siape é realmente um inteiro
@@ -27,3 +34,4 @@ class CRE(BaseModel):
     class Meta:
         verbose_name = "CRE"
         verbose_name_plural = "CREs"   
+    

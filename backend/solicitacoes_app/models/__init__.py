@@ -17,3 +17,4 @@ from .form_tranc_matricula import *
 from .form_dispensa_ed_fisica import *
 from .anexo import *
 from .form_abono_falta import *
+from .status_usuario import *

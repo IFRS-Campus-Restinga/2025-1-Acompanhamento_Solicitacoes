@@ -2,8 +2,10 @@ from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin
 from django.db import models
 from django.core.validators import RegexValidator, EmailValidator
 from django.forms import ValidationError
+from ..models.status_usuario import StatusUsuario
 from ..managers.usuario_manager import UsuarioManager
 from .validators import *
+from django.apps import apps
 
 
 class Usuario(AbstractBaseUser, PermissionsMixin):
@@ -39,6 +41,14 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         validators=[validar_idade]
     )
     
+    status_usuario = models.CharField( 
+        max_length=20, 
+        choices=StatusUsuario.choices,
+        blank=False,
+        null=False,
+        default=StatusUsuario.ATIVO,
+        verbose_name="Status do Usuario"
+    )
    
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False) #os usuários não terão acesso ao django-admin
@@ -48,6 +58,32 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['nome', 'cpf', 'telefone', 'data_nascimento']
+    
+    
+    def delete(self, using=None, keep_parents=False):
+        """
+        Se o usuário tiver registros associados em qualquer um dos modelos 
+        (mesmo que não estejam ativos no momento), realiza deleção lógica.
+        Caso contrário, exclui definitivamente.
+        """
+        Aluno = apps.get_model('solicitacoes_app', 'Aluno')
+        Coordenador = apps.get_model('solicitacoes_app', 'Coordenador')
+        CRE = apps.get_model('solicitacoes_app', 'CRE')
+        Responsavel = apps.get_model('solicitacoes_app', 'Responsavel')
+
+        tem_vinculo = (
+            Aluno.objects.filter(usuario=self).exists() or
+            Coordenador.objects.filter(usuario=self).exists() or
+            CRE.objects.filter(usuario=self).exists() or
+            Responsavel.objects.filter(usuario=self).exists()
+        )
+
+        if tem_vinculo:
+            self.status_usuario = StatusUsuario.INATIVO
+            self.is_active = False  # Desativa autenticação no sistema
+            self.save()
+        else:
+            super().delete(using=using, keep_parents=keep_parents)
         
         
     def clean(self):
@@ -61,9 +97,9 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
     
-    def save(self, **kwargs):
+    def save(self, **kwargs):      
         if self.password is None or self.password == "":
             self.password = "Teste123"
+            
         super().save(**kwargs)
-        
         

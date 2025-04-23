@@ -7,7 +7,7 @@ from .curso import Curso
 class Coordenador(BaseModel):
     
     usuario = models.OneToOneField(
-        Usuario, on_delete=models.CASCADE, related_name="coordenador"
+        Usuario, on_delete=models.PROTECT, related_name="coordenador"
     )
     siape = models.IntegerField(
         unique=True
@@ -18,6 +18,12 @@ class Coordenador(BaseModel):
     curso = models.OneToOneField(
         Curso, on_delete=models.CASCADE
     )
+    
+    ativo = models.BooleanField(default=True)
+    
+    def delete(self, using=None, keep_parents=False):
+        self.ativo = False
+        self.save()
 
     def __str__(self):
         return f"{self.usuario.nome} - ({self.siape})"
