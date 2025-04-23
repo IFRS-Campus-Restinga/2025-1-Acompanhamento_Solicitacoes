@@ -5,7 +5,9 @@ import Footer from "../../../components/base/footer";
 
 export default function Formulario() {
     const [options, setOptions] = useState({});
-    const [motivosDispensa, setMotivosDispensa] = useState([]);
+    const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
+    const [anexos, setAnexos] = useState([]);
+    const [dados, setDados] = useState([]);
 
     useEffect(() => {
         axios.options('http://localhost:8000/solicitacoes/dispensa_ed_fisica/')
@@ -13,15 +15,33 @@ export default function Formulario() {
             .catch((err) => console.error(err));
 
         axios.get('http://localhost:8000/solicitacoes/motivo_dispensa/')
-            .then((response) => setMotivosDispensa(response.data))
+            .then((response) => setPopularMotivosDispensa(response.data))
             .catch((err) => console.error(err));
     }, []); // adiciona o array de dependências vazio para evitar loop infinito
+
+    const handleSubmit = () => {
+        {Object.entries(options.actions.POST).map(([key]) => {
+            setDados([
+                ...dados,
+                document.getElementById(`${key}`).value
+            ]) 
+        })}
+        alert(dados)
+    
+            axios.post("http://localhost:8000/solicitacoes/dispensa_ed_fisica/", dados)
+          .then(() => {
+
+          })
+          .catch((err) => {
+            alert(err)
+          });
+      };
 
     return (
         <div>
             <Header />
             <main className="container form-container">
-                <form className="form-box">
+                <form className="form-box" onSubmit={handleSubmit}>
                     <div className="form-group">
                         {options.actions && options.actions.POST &&
                             Object.entries(options.actions.POST).map(([key, value]) => {
@@ -36,6 +56,12 @@ export default function Formulario() {
                                                 required={value.required}
                                                 minLength={value.min_length ?? undefined}
                                                 maxLength={value.max_length ?? undefined}
+                                                //onChange={(e) => setDados(
+                                                //    [
+                                                //        ...dados,
+                                                //        e.target.value
+                                                //    ]
+                                                //)}
                                             />
                                         </div>
                                     );
@@ -43,8 +69,11 @@ export default function Formulario() {
                                     return (
                                         <div key={key}>
                                             <label htmlFor={key}>{value.label}</label>
-                                            <select name={key} id={key} required={value.required}>
-                                                {motivosDispensa.map((motivo) => (
+                                            <select name={key} 
+                                            id={key} 
+                                            required={value.required}
+                                            >
+                                                {popularMotivosDispensa.map((motivo) => (
                                                     <option key={motivo.id} value={motivo.id}>
                                                         {motivo.descricao}
                                                     </option>
@@ -57,7 +86,9 @@ export default function Formulario() {
                                 }
                             })
                         }
+                        
                     </div>
+                    <button type="submit" className="submit-button">Enviar</button>
                 </form>
             </main>
             <Footer />
