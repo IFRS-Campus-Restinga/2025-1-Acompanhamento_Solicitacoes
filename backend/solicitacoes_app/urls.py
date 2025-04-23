@@ -16,6 +16,7 @@ from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDest
 from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
+from .views.form_abono_falta_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -70,4 +71,8 @@ urlpatterns = [
 
     path("dispensa_ed_fisica/", FormDispEdFisicaViewListCreate.as_view(), name='dispensa_ed_fisica_list_create'),
     path("dispensa_ed_fisica/<int:id>/", FormDispEdFisicaViewUpdateDelete.as_view(), name='dispensa_ed_fisica_update_delete'),
+
+    path("formulario_abono_falta/", FormAbonoFaltaViewListCreate.as_view(), name='abono_falta_list_create'),
+    path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaViewUpdateDelete.as_view(), name='abono_falta_update_delete'),
+
 ]

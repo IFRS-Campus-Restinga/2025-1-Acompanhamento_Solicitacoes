@@ -28,4 +28,4 @@ class MotivoAbono(BaseModel):
             raise ValidationError({'descricao': 'Já existe um motivo com esta descrição.'})
         
     def __str__(self):
-        return self.descricao
+        return f'{self.descricao} - ({self.tipo_falta})'
