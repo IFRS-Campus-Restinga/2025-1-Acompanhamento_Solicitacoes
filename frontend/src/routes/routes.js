@@ -44,6 +44,9 @@ import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usu
 import ListarGrupos from "../pages/grupos/lista_grupo.js";
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
 
+//Dispensa Educação Física
+import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
+
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
 
@@ -91,6 +94,9 @@ const routes = [
   <Route path="/grupos" element={<ListarGrupos />} />,
   <Route path="/grupos/cadastrar" element={<CadastrarAtualizarGrupo />} key="cadastrar-grupos" />,
   <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
+
+  // Formulário de Dispensa de Educação Física
+  <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> 
  ];
 
 export default routes;

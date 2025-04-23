@@ -1,8 +1,8 @@
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import ModelSerializer
 from ..models.form_dispensa_ed_fisica import FormDispensaEdFisica
 
-class FormDispEdFisicaSerializer(Serializer):
+class FormDispEdFisicaSerializer(ModelSerializer):
 
     class Meta:
-        fields = ["id", "motivo_dispensa"]
         model = FormDispensaEdFisica
+        fields = ["id", "nome", "motivo_solicitacao"]

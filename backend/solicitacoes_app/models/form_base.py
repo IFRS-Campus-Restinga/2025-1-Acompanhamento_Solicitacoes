@@ -29,12 +29,6 @@ class FormularioBase(BaseModel):
     observacoes = models.TextField(
         blank=True
     )
-    
-    # anexos = models.ManyToManyField(
-    #     'Anexo',
-    #     blank=True,
-    #     related_name='formularios',
-    # )
 
     class Meta:
         abstract = True
