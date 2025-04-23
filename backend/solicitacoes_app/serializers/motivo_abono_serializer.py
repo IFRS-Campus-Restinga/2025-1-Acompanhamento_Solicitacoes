@@ -4,7 +4,7 @@ from ..models import MotivoAbono
 class MotivoAbonoSerializer(serializers.ModelSerializer):
     class Meta:
         model = MotivoAbono
-        fields = '__all__'
+        fields = ['id', 'descricao', 'tipo_falta']
 
 
     def validate_descricao(self, value):

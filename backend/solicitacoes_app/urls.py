@@ -17,6 +17,7 @@ from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
+from .views.form_abono_falta_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -74,4 +75,8 @@ urlpatterns = [
 
     path("anexos/", AnexoViewGetOrCreate.as_view(), name='anexos_listar_cadastrar'),
     path("anexos/<int:id>/", AnexoViewUpdateOrDelete.as_view(), name='anexo_atualizar_deletar'),
+    
+    path("formulario_abono_falta/", FormAbonoFaltaViewListCreate.as_view(), name='abono_falta_list_create'),
+    path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaViewUpdateDelete.as_view(), name='abono_falta_update_delete'),
+
 ]
