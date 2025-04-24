@@ -4,11 +4,10 @@ from django.db import models
 
 class FormularioBase(BaseModel):
     descricao = models.TextField() #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
-
     motivo_solicitacao = models.CharField(
         max_length=255
     )
-    
+
 
     class Meta:
         abstract = True
