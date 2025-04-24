@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
-import "./usuarios.css";
 
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
@@ -29,7 +28,17 @@ export default function CadastrarAtualizarUsuario() {
   useEffect(() => {
     if (id) {
       axios.get(`http://localhost:8000/solicitacoes/usuarios/${id}/`)
-        .then(res => setFormData(res.data))
+        .then(res => {
+          const usuario = res.data;
+  
+          // Se data_nascimento existir, formatar apenas a parte da data
+          if (usuario.data_nascimento) {
+            const data = new Date(usuario.data_nascimento);
+            usuario.data_nascimento = data.toISOString().split("T")[0]; // Garante o formato YYYY-MM-DD
+          }
+  
+          setFormData(usuario);
+        })
         .catch(err => {
           setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuário."}`);
           setTipoMensagem("erro");
@@ -102,7 +111,7 @@ export default function CadastrarAtualizarUsuario() {
               <input
                 type={field === "email" ? "email" : field === "data_nascimento" ? "date" : "text"}
                 name={field}
-                className="input-text"
+                className={`input-text ${errors[field] ? "input-error" : ""}`} //aplica o css da classe input-error, se há erro
                 value={formData[field] || ""}
                 onChange={handleChange}
                 onBlur={handleBlur}
@@ -111,20 +120,6 @@ export default function CadastrarAtualizarUsuario() {
               {errors[field] && <div className="error-text">{errors[field]}</div>}
             </div>
           ))}
-
-          <div className="form-group">
-            <label>Ativo:</label>
-            <select
-              className="input-select"
-              name="is_active"
-              value={formData.is_active ? "true" : "false"}
-              onChange={(e) => setFormData(prev => ({ ...prev, is_active: e.target.value === "true" }))}
-              onBlur={handleBlur}
-            >
-              <option value="true">Sim</option>
-              <option value="false">Não</option>
-            </select>
-          </div>
 
           <button type="submit" className="submit-button">
             {id ? "Atualizar" : "Cadastrar"}

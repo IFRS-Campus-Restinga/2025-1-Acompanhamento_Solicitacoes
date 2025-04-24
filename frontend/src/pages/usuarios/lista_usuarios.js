@@ -3,7 +3,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
-import "./usuarios.css";
 
 // POPUPS
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -131,7 +130,7 @@ export default function ListarUsuarios() {
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/${usuario.id}`} title="Editar">
+                      <Link to={`/usuarios/editar/${usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button

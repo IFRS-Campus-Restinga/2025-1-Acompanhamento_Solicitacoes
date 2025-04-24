@@ -88,7 +88,8 @@ const routes = [
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
-  <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
+  <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
+  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
 
   // Grupos
   <Route path="/grupos" element={<ListarGrupos />} />,
