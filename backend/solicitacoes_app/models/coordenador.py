@@ -19,12 +19,6 @@ class Coordenador(BaseModel):
         Curso, on_delete=models.CASCADE
     )
     
-    ativo = models.BooleanField(default=True)
-    
-    def delete(self, using=None, keep_parents=False):
-        self.ativo = False
-        self.save()
-
     def __str__(self):
         return f"{self.usuario.nome} - ({self.siape})"
 
