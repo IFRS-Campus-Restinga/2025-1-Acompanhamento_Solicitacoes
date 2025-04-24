@@ -74,7 +74,8 @@ urlpatterns = [
     path("dispensa_ed_fisica/<int:id>/", FormDispEdFisicaViewUpdateDelete.as_view(), name='dispensa_ed_fisica_update_delete'),
 
     path("anexos/", AnexoViewGetOrCreate.as_view(), name='anexos_listar_cadastrar'),
-    path("anexos/<int:id>/", AnexoViewUpdateOrDelete.as_view(), name='anexo_atualizar_deletar'),
+    path("anexos/<int:pk>/", AnexoViewUpdateOrDelete.as_view(), name='anexo_atualizar_deletar'),
+    path("anexos/forms/<int:pk>/", AnexoGetFormDispensa.as_view(), name='listar_anexos_por-formulario'),
     
     path("formulario_abono_falta/", FormAbonoFaltaViewListCreate.as_view(), name='abono_falta_list_create'),
     path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaViewUpdateDelete.as_view(), name='abono_falta_update_delete'),
