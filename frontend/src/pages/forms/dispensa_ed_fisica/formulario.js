@@ -7,7 +7,7 @@ export default function Formulario() {
     const [options, setOptions] = useState({});
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
     const [anexos, setAnexos] = useState([]);
-    const [dados, setDados] = useState([]);
+    const [dados, setDados] = useState({});
 
     useEffect(() => {
         axios.options('http://localhost:8000/solicitacoes/dispensa_ed_fisica/')
@@ -19,23 +19,22 @@ export default function Formulario() {
             .catch((err) => console.error(err));
     }, []); // adiciona o array de dependências vazio para evitar loop infinito
 
-    const handleSubmit = () => {
-        {Object.entries(options.actions.POST).map(([key]) => {
-            setDados([
-                ...dados,
-                document.getElementById(`${key}`).value
-            ]) 
-        })}
-        alert(dados)
-    
-            axios.post("http://localhost:8000/solicitacoes/dispensa_ed_fisica/", dados)
-          .then(() => {
-
-          })
-          .catch((err) => {
-            alert(err)
-          });
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+        axios.post('http://localhost:8000/solicitacoes/dispensa_ed_fisica/', dados)
+        .then(() => alert("Dados enviados"))
+        .catch((err) => alert(err))
       };
+
+      const handleChange = (e) => {
+        const {name, value} = e.target;
+        setDados((x) => ({
+            ...x,
+            [name]: value,
+        }))
+      }
+
+      
 
     return (
         <div>
@@ -56,12 +55,7 @@ export default function Formulario() {
                                                 required={value.required}
                                                 minLength={value.min_length ?? undefined}
                                                 maxLength={value.max_length ?? undefined}
-                                                //onChange={(e) => setDados(
-                                                //    [
-                                                //        ...dados,
-                                                //        e.target.value
-                                                //    ]
-                                                //)}
+                                                onChange={handleChange}
                                             />
                                         </div>
                                     );
@@ -72,6 +66,7 @@ export default function Formulario() {
                                             <select name={key} 
                                             id={key} 
                                             required={value.required}
+                                            onChange={handleChange}
                                             >
                                                 {popularMotivosDispensa.map((motivo) => (
                                                     <option key={motivo.id} value={motivo.id}>
