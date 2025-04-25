@@ -2,39 +2,53 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
+import Options from "../../../components/options";
+import Popup from "../../../components/popup"
+import { useNavigate } from "react-router-dom";
 
 export default function Formulario() {
-    const [options, setOptions] = useState({});
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
-    const [anexos, setAnexos] = useState([]);
     const [dados, setDados] = useState({});
+    const [popupIsOpen, setPopupIsOpen] = useState(false);
+    const [msgErro, setMsgErro] = useState([]);
+
+    const popupActions = [
+        {
+          label: "Fechar",
+          className: "btn btn-cancel",
+          onClick: () => {
+            setPopupIsOpen(false);
+            navigate('/solicitacoes');
+          }
+        }
+      ];
+
+    const navigate = useNavigate();
 
     useEffect(() => {
-        axios.options('http://localhost:8000/solicitacoes/dispensa_ed_fisica/')
-            .then((response) => setOptions(response.data))
-            .catch((err) => console.error(err));
-
-        axios.get('http://localhost:8000/solicitacoes/motivo_dispensa/')
+        axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/")
             .then((response) => setPopularMotivosDispensa(response.data))
-            .catch((err) => console.error(err));
-    }, []); // adiciona o array de dependências vazio para evitar loop infinito
+            .catch((err) => console.error("Erro ao buscar motivos:", err));
+    }, []);
 
     const handleSubmit = async (e) => {
-        e.preventDefault()
-        axios.post('http://localhost:8000/solicitacoes/dispensa_ed_fisica/', dados)
-        .then(() => alert("Dados enviados"))
-        .catch((err) => alert(err))
-      };
+        e.preventDefault();
+            await axios.post(
+                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+                dados
+            )
+            .then(() => {
+                navigate("/solicitacoes");
+            })
+            .catch((err) => {
+                setMsgErro(err);
+                setPopupIsOpen(true);
+            })
+    };
 
-      const handleChange = (e) => {
-        const {name, value} = e.target;
-        setDados((x) => ({
-            ...x,
-            [name]: value,
-        }))
-      }
-
-      
+    const handleFormChange = (dadosAtualizados) => {
+        setDados(dadosAtualizados);
+    };
 
     return (
         <div>
@@ -42,50 +56,23 @@ export default function Formulario() {
             <main className="container form-container">
                 <form className="form-box" onSubmit={handleSubmit}>
                     <div className="form-group">
-                        {options.actions && options.actions.POST &&
-                            Object.entries(options.actions.POST).map(([key, value]) => {
-                                if (value.type === "string") {
-                                    return (
-                                        <div key={key}>
-                                            <label htmlFor={key}>{value.label}</label>
-                                            <input
-                                                id={key}
-                                                name={key}
-                                                type="text"
-                                                required={value.required}
-                                                minLength={value.min_length ?? undefined}
-                                                maxLength={value.max_length ?? undefined}
-                                                onChange={handleChange}
-                                            />
-                                        </div>
-                                    );
-                                } else if (value.type === "field") {
-                                    return (
-                                        <div key={key}>
-                                            <label htmlFor={key}>{value.label}</label>
-                                            <select name={key} 
-                                            id={key} 
-                                            required={value.required}
-                                            onChange={handleChange}
-                                            >
-                                                {popularMotivosDispensa.map((motivo) => (
-                                                    <option key={motivo.id} value={motivo.id}>
-                                                        {motivo.descricao}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    );
-                                } else {
-                                    return null;
-                                }
-                            })
-                        }
-                        
+                        <Options
+                            url="http://localhost:8000/solicitacoes/dispensa_ed_fisica/"
+                            popularCampo={popularMotivosDispensa}
+                            onChange={handleFormChange}
+                            ignoreFields={["id"]}
+                        />
                     </div>
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
             </main>
+            {popupIsOpen && (
+                <Popup 
+                message={msgErro.response?.data?.motivo_solicitacao}
+                isError={true}
+                actions={popupActions}
+            />
+            )}
             <Footer />
         </div>
     );

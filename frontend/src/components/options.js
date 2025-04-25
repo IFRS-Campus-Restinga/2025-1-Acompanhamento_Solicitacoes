@@ -61,7 +61,7 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
             return null;
           }
 
-          if (value.type === "string") {
+          if ((value.type === "string") && (value.max_length < 60)) {
             return (
               <div key={key}>
                 <label htmlFor={key}>{value.label}</label>
@@ -74,6 +74,40 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                   maxLength={value.max_length ?? undefined}
                   onChange={handleChange}
                   value={dados[key] ?? ""}
+                />
+              </div>
+            );
+          }
+
+          if ((value.type === "string") && (value.max_length > 60)) {
+            return (
+              <div key={key}>
+                <label htmlFor={key}>{value.label}</label>
+                <textarea
+                  id={key}
+                  name={key}
+                  required={value.required}
+                  minLength={value.min_length ?? undefined}
+                  maxLength={value.max_length ?? undefined}
+                  onChange={handleChange}
+                  value={dados[key] ?? ""}
+                />
+              </div>
+            );
+          }
+
+          if ((value.type === "string") && (value.max_length == null)) {
+            return (
+              <div key={key}>
+                <label htmlFor={key}>{value.label}</label>
+                <textarea
+                  id={key}
+                  name={key}
+                  required={value.required}
+                  minLength={value.min_length ?? undefined}
+                  onChange={handleChange}
+                  value={dados[key] ?? ""}
+                  className="form-control"
                 />
               </div>
             );
@@ -105,6 +139,7 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                   required={value.required}
                   onChange={handleChange}
                   value={dados[key] ?? ""}
+                  className="form-select"
                 >
                   <option value="">Selecione</option>
                   {popularCampo.map((campo) => (
@@ -127,6 +162,7 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                     type="checkbox"
                     onChange={handleChange}
                     checked={!!dados[key]}
+                    className="form-check-input"
                   />
                   {value.label}
                 </label>

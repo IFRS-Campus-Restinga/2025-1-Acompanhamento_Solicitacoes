@@ -2,12 +2,12 @@ import React, { useEffect, useRef } from "react";
 import { Modal } from "bootstrap";
 import "./popup.css";
 
-const Popup = ({ title = "Aviso", message, actions = [], msgType = "popup" }) => {
+const Popup = ({ title = "Aviso", message, actions = [], isError}) => {
   const modalRef = useRef(null);
   const bsModal = useRef(null);
 
   useEffect(() => {
-    if (msgType === "popup" && modalRef.current) {
+    if (!isError && modalRef.current) {
       // Inicializa modal Bootstrap
       bsModal.current = new Modal(modalRef.current, {
         backdrop: 'static', // Impede fechar clicando fora
@@ -24,11 +24,11 @@ const Popup = ({ title = "Aviso", message, actions = [], msgType = "popup" }) =>
         document.body.style.overflow = "auto";
       };
     }
-  }, [msgType]);
+  }, [isError]);
 
   return (
     <>
-      {msgType === "popup" ? (
+      {!isError ? (
         <div className="modal fade" ref={modalRef} tabIndex="-1" aria-hidden="true">
           <div className="modal-dialog">
             <div className="modal-content">
@@ -70,16 +70,9 @@ const Popup = ({ title = "Aviso", message, actions = [], msgType = "popup" }) =>
           </div>
         </div>
       ) : (
-        <div className="popup-overlay">
+        <div className="popup-feedback-top">
           <p>{message}</p>
-          <div className="popup-actions">
-            {actions.map(({ label, onClick, className }, idx) => (
-              <button key={idx} className={className} onClick={onClick}>
-                {label}
-              </button>
-            ))}
-          </div>
-        </div>
+        </div>      
       )}
     </>
   );

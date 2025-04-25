@@ -45,7 +45,7 @@ import ListarGrupos from "../pages/grupos/lista_grupo.js";
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
 
 //Dispensa Educação Física
-import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/teste.js";
+import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
 
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,

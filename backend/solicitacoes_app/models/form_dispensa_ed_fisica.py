@@ -1,9 +1,9 @@
 from ..models.motivo_dispensa import MotivoDispensa
 from .form_base import FormularioBase
-from django.db.models import OneToOneField, RESTRICT
+from django.db.models import ForeignKey, RESTRICT
 
 class FormDispensaEdFisica(FormularioBase):
-    motivo_solicitacao = OneToOneField(MotivoDispensa, 
+    motivo_solicitacao = ForeignKey(MotivoDispensa, 
                                        on_delete=RESTRICT, 
                                        help_text="Escolha seu motivo da solicitação", 
                                        verbose_name="Motivo da Solicitação")

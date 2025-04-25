@@ -5,4 +5,4 @@ class FormDispEdFisicaSerializer(ModelSerializer):
 
     class Meta:
         model = FormDispensaEdFisica
-        fields = ["id", "nome", "motivo_solicitacao"]
+        fields = "__all__"
