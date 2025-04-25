@@ -129,9 +129,9 @@ export default function ListarUsuarios() {
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
-                        <i className="bi bi-eye-fill"></i>
+                        <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/${usuario.id}/editar`} title="Editar">
+                      <Link to={`/usuarios/${usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button

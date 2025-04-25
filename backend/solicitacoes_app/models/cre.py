@@ -10,13 +10,7 @@ class CRE(BaseModel):
     siape = models.IntegerField(
         unique=True
     )
-    
-    ativo = models.BooleanField(default=True)
-    
-    def delete(self, using=None, keep_parents=False):
-        self.ativo = False
-        self.save()
-    
+     
     
     def clean(self):
         # Verifica se o siape é realmente um inteiro

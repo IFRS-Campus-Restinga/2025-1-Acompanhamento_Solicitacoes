@@ -133,6 +133,10 @@
   .icone-excluir:hover {
     color: var(--botao-deletar);
   }
+
+  .icone-excluir {
+    color: darkred;
+  }
   
   .tabela-cruds td.descricao {
     max-width: 300px;
@@ -269,3 +273,6 @@
     text-align: left;
   }
   
+  .icone-olho {
+    color: black;
+  }
