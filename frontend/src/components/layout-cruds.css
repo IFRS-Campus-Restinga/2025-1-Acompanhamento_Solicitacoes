@@ -276,3 +276,15 @@
   .icone-olho {
     color: black;
   }
+
+  .input-error {
+    border: 2px solid red;
+    outline: none;
+  }
+
+  .error-text {
+    color: red;
+    font-weight: bold;
+    margin-top: 4px;
+  }
+  
