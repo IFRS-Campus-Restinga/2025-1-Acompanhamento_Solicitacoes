@@ -40,5 +40,7 @@ def api_root(request, format=None):
         'usuarios': reverse('solicitacoes_app:usuario-list', request=request, format=format),
         
         'mandato': reverse('solicitacoes_app:mandato-list', request=request, format=format),
+
+        'form_tranc_disciplina': reverse('solicitacoes_app:form-tranc-disciplina-list-create', request=request, format=format),
         
         })
