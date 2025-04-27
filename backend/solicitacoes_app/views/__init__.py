@@ -9,3 +9,4 @@ from .aluno_view import *
 from .cre_view import *
 from .usuario_view import *
 from .form_tranc_matricula_view import *
+from .mandato_view import *
