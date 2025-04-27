@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import FormTrancDisciplina, Curso, Disciplina
+from ..models import FormTrancDisciplina, Curso, Disciplina, Ppc
 
 class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
     aluno = serializers.CharField(max_length=100)
@@ -54,3 +54,20 @@ class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
         formTrancamento.full_clean()
         formTrancamento.save()
         return formTrancamento
+    
+    def to_representation(self, instance):
+        # Filtra as disciplinas para exibir apenas as que pertencem ao curso selecionado
+        representation = super().to_representation(instance)
+        curso = instance.curso
+
+        # Obtém os PPCs associados ao curso
+        ppcs = Ppc.objects.filter(curso=curso)
+
+        # Obtém as disciplinas associadas a esses PPCs
+        disciplinas_disponiveis = Disciplina.objects.filter(ppcs__in=ppcs)
+
+        # Atualiza as opções de disciplinas no serializer
+        representation['disciplinas'] = [
+            disciplina.codigo for disciplina in disciplinas_disponiveis
+        ]
+        return representation
