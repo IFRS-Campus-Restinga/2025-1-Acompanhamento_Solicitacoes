@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
 import Options from "../../../components/options";
@@ -11,6 +11,11 @@ export default function Formulario() {
     const [dados, setDados] = useState({});
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
+
+    const urls = useMemo(() => [
+        "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+        "http://localhost:8000/solicitacoes/anexos/"
+    ], []);
 
     const popupActions = [
         {
@@ -31,7 +36,7 @@ export default function Formulario() {
             .catch((err) => console.error("Erro ao buscar motivos:", err));
     }, []);
 
-    const handleSubmit = async (e) => {
+    const postDispensaEdFisica = async (e) => {
         e.preventDefault();
             await axios.post(
                 "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
@@ -54,13 +59,13 @@ export default function Formulario() {
         <div>
             <Header />
             <main className="container form-container">
-                <form className="form-box" onSubmit={handleSubmit}>
+                <form className="form-box" onSubmit={postDispensaEdFisica}>
                     <div className="form-group">
                         <Options
-                            url="http://localhost:8000/solicitacoes/dispensa_ed_fisica/"
+                            url={urls}
                             popularCampo={popularMotivosDispensa}
                             onChange={handleFormChange}
-                            ignoreFields={["id"]}
+                            ignoreFields={["id", "form_dispensa_ed_fisica"]}
                         />
                     </div>
                     <button type="submit" className="submit-button">Enviar</button>

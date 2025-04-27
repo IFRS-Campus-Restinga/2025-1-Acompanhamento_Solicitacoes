@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function Options({ url, popularCampo = [], onChange, ignoreFields = [] }) {
+export default function Options({ url = [], popularCampo = [], onChange, ignoreFields = [] }) {
   const [options, setOptions] = useState({});
   const [dados, setDados] = useState({});
 
@@ -27,11 +27,23 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
   };
 
   useEffect(() => {
-    axios
-      .options(url)
+    url.forEach(popularForm);
+
+    function popularForm(item) {
+      axios
+      .options(item)
       .then((response) => {
         const fields = response.data.actions.POST;
-        setOptions(response.data);
+
+        setOptions((prevOptions) => ({
+          ...prevOptions,
+          actions: {
+            POST: {
+              ...prevOptions.actions?.POST,
+              ...fields,
+            }
+          }
+        }));
 
         const camposIniciais = {};
         Object.entries(fields).forEach(([key, value]) => {
@@ -46,10 +58,20 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
           }
         });
 
-        setDados(camposIniciais);
-        onChange?.(camposIniciais); // Inicializa o form no componente pai
+        setDados((prevDados) => ({
+          ...prevDados,
+          ...camposIniciais
+        }));
+
+        onChange?.({
+          ...dados,
+          ...camposIniciais
+        });
+
       })
       .catch((err) => console.error(err));
+    }
+
   }, [url]);
 
   return (
@@ -61,10 +83,10 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
             return null;
           }
 
-          if ((value.type === "string") && (value.max_length < 60)) {
+          else if ((value.type === "string") && (value.max_length < 60)) {
             return (
               <div key={key}>
-                <label htmlFor={key}>{value.label}</label>
+                <label htmlFor={key}>{value.label + ":"}</label>
                 <input
                   id={key}
                   name={key}
@@ -75,14 +97,15 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                   onChange={handleChange}
                   value={dados[key] ?? ""}
                 />
+                <br></br>
               </div>
             );
           }
 
-          if ((value.type === "string") && (value.max_length > 60)) {
+          else if ((value.type === "string") && (value.max_length > 60)) {
             return (
               <div key={key}>
-                <label htmlFor={key}>{value.label}</label>
+                <label htmlFor={key}>{value.label + ":"}</label>
                 <textarea
                   id={key}
                   name={key}
@@ -92,14 +115,15 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                   onChange={handleChange}
                   value={dados[key] ?? ""}
                 />
+                <br></br>
               </div>
             );
           }
 
-          if ((value.type === "string") && (value.max_length == null)) {
+          else if ((value.type === "string") && (value.max_length == null)) {
             return (
               <div key={key}>
-                <label htmlFor={key}>{value.label}</label>
+                <label htmlFor={key}>{value.label + ":"}</label>
                 <textarea
                   id={key}
                   name={key}
@@ -109,14 +133,15 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                   value={dados[key] ?? ""}
                   className="form-control"
                 />
+                <br></br>
               </div>
             );
           }
 
-          if (value.type === "integer") {
+          else if (value.type === "integer") {
             return (
               <div key={key}>
-                <label htmlFor={key}>{value.label}</label>
+                <label htmlFor={key}>{value.label + ":"}</label>
                 <input
                   id={key}
                   name={key}
@@ -125,14 +150,15 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                   onChange={handleChange}
                   value={dados[key] ?? ""}
                 />
+                <br></br>
               </div>
             );
           }
 
-          if (value.type === "field") {
+          else if (value.type === "field") {
             return (
               <div key={key}>
-                <label htmlFor={key}>{value.label}</label>
+                <label htmlFor={key}>{value.label + ":"}</label>
                 <select
                   id={key}
                   name={key}
@@ -148,14 +174,15 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                     </option>
                   ))}
                 </select>
+                <br></br>
               </div>
             );
           }
 
-          if (value.type === "bool") {
+          else if (value.type === "bool") {
             return (
               <div key={key}>
-                <label htmlFor={key}>
+                <label htmlFor={key}>{value.label + ":"}</label>
                   <input
                     id={key}
                     name={key}
@@ -164,13 +191,30 @@ export default function Options({ url, popularCampo = [], onChange, ignoreFields
                     checked={!!dados[key]}
                     className="form-check-input"
                   />
-                  {value.label}
-                </label>
+                <br></br>
               </div>
             );
           }
 
-          return null;
+          else if (value.type === "file upload") {
+            return (
+              <div key={key}>
+                <label htmlFor={key}>{value.label + ": "}</label>
+                  <input
+                    id={key}
+                    name={key}
+                    type="file"
+                    onChange={handleChange}
+                    className="form-control-file"
+                    multiple
+                  />
+                  <br></br>
+              </div>
+            );
+            
+          } else {
+            return null;
+          }
         })}
     </>
   );
