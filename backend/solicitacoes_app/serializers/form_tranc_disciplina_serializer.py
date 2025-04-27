@@ -13,10 +13,16 @@ class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
     
     # Serializa o campo booleano 'ingressante'
     ingressante = serializers.BooleanField(default=False)
+
+    # Serializa o campo 'descricao' como TextField
+    descricao = serializers.CharField(style={'base_template': 'textarea.html'}, required=True)
+    
+    # Serializa o campo 'motivo_solicitacao' como CharField
+    motivo_solicitacao = serializers.CharField(max_length=255, required=True)
     
     class Meta:
         model = FormTrancDisciplina
-        fields = ['aluno', 'curso', 'disciplinas', 'ingressante']
+        fields = ['aluno', 'curso', 'disciplinas', 'ingressante', 'descricao', 'motivo_solicitacao']
     
     def validate(self, data):
         # Validação para garantir que o nome do aluno não está vazio
