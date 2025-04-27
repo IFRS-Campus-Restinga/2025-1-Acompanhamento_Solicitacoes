@@ -1,7 +1,7 @@
 import React from "react";
 import "./barra_pesquisa.css";
 
-export default function BotaoCadastrar({ value, onChange}) {
+export default function BarraPesquisa({ value, onChange}) {
   return (
 
 <div className="barra-pesquisa">
@@ -9,7 +9,8 @@ export default function BotaoCadastrar({ value, onChange}) {
           <input
             type="text"
             placeholder="Buscar..."
-            value={onChange}            
+            value={value}   
+            onChange = {onChange}         
             className="input-pesquisa"
           />
         </div>
