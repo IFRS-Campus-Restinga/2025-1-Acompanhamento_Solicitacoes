@@ -19,3 +19,4 @@ from .anexo import *
 from .form_abono_falta import *
 from .status_usuario import *
 from .mandato import *
+from .form_tranc_disciplina import *
