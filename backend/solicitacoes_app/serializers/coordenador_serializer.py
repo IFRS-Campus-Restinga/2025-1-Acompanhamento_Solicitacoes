@@ -35,3 +35,9 @@ class CoordenadorSerializer(serializers.ModelSerializer):
         )
 
         return coordenador
+    
+    def validate(self, data):
+        # Executa as validações do model
+        instance = self.instance or self.Meta.model(**data)
+        instance.full_clean() 
+        return data
