@@ -12,6 +12,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = ['id', 'email', 'nome', 'cpf', 'telefone', 'data_nascimento', 'is_active', 'papel', 'papel_detalhes']
         read_only_fields = ['id']
+        
     
     def get_papel(self, obj):
         # Verificando os papéis baseados nos campos relacionados do usuário

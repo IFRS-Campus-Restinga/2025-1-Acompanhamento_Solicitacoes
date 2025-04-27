@@ -1,21 +1,43 @@
 from rest_framework import serializers
-from ..models import Coordenador, Curso, Usuario
+from ..models import Coordenador, Mandato, Usuario
+from .mandato_serializer import MandatoSerializer
+from .usuario_serializer import UsuarioSerializer
+from django.db import transaction
 
 
 class CoordenadorSerializer(serializers.ModelSerializer):
-    
-    depth = 1
-    curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
+    mandato = MandatoSerializer(source='mandatos_coordenador.first', many=False)  # Ajuste para buscar os mandatos relacionados
 
     class Meta:
         model = Coordenador
-        fields = ['usuario', 'siape', 'inicio_mandato', 'fim_mandato', 'curso']
+        fields = ['usuario', 'siape', 'mandato']
 
+    @transaction.atomic
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')
+        mandato_data = validated_data.pop('mandato')
 
-        # Cria ou recupera o usuário
-        usuario = Usuario.objects.get(id=usuario_data.id)  # Assume que o ID do Usuario está sendo passado
+        # 1. Cria o Usuario
+        usuario = Usuario.objects.create(**usuario_data)
 
-        # Cria o Coordenador com o Usuario existente
-        return Coordenador.objects.create(usuario=usuario, **validated_data)
+        # 2. Cria o Coordenador
+        coordenador = Coordenador.objects.create(
+            usuario=usuario,
+            siape=validated_data['siape']
+        )
+
+        # 3. Cria o Mandato
+        Mandato.objects.create(
+            coordenador=coordenador,
+            curso=mandato_data['curso'],  # aqui assumimos que vem o ID do curso
+            inicio_mandato=mandato_data['inicio_mandato'],
+            fim_mandato=mandato_data.get('fim_mandato') 
+        )
+
+        return coordenador
+    
+    def validate(self, data):
+        # Executa as validações do model
+        instance = self.instance or self.Meta.model(**data)
+        instance.full_clean() 
+        return data

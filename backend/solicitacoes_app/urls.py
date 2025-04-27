@@ -18,6 +18,8 @@ from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
 from .views.form_abono_falta_view import *
+from .views.mandato_view import MandatoListCreateView, MandatoRetrieveUpdateDestroyView
+from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, FormTrancDisciplinaDetail
 
 app_name = 'solicitacoes_app'
 
@@ -79,5 +81,10 @@ urlpatterns = [
     
     path("formulario_abono_falta/", FormAbonoFaltaViewListCreate.as_view(), name='abono_falta_list_create'),
     path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaViewUpdateDelete.as_view(), name='abono_falta_update_delete'),
+    
+    path("mandato/", MandatoListCreateView.as_view(), name='mandato-list'),
+    path("mandato/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
 
+    path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),
+    path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
 ]
