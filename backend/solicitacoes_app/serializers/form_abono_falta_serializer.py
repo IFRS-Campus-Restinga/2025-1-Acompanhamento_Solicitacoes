@@ -24,6 +24,9 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
         model = FormAbonoFalta
         fields = [
             'id',
+            'aluno_nome',
+            'email',
+            'matricula',
             'motivo_solicitacao',
             'motivo_solicitacao_id',
             'anexos',

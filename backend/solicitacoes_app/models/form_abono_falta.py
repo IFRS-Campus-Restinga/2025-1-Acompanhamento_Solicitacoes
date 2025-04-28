@@ -4,14 +4,23 @@ from .motivo_abono import MotivoAbono
 from django.core.exceptions import ValidationError
 from .form_base import FormularioBase
 from django.db.models import RESTRICT
-from django.core.validators import MinLengthValidator
+from django.core.validators import MinLengthValidator, EmailValidator
 
 class FormAbonoFalta(FormularioBase):
-    aluno = models.CharField(
+    aluno_nome = models.CharField(
         max_length=100,
         validators=[MinLengthValidator(1)],
         verbose_name="Nome do Aluno",  
         help_text="Digite o nome do aluno",
+    )
+
+    email = models.EmailField(
+        validators=[EmailValidator()]
+    )
+
+    matricula = models.CharField(
+        max_length=20, 
+        validators=[MinLengthValidator(1)]
     )
 
     motivo_solicitacao = models.ForeignKey(

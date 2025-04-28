@@ -56,9 +56,13 @@ const Cruds = () => {
           </Link>
           {/* FORMULARIO EXERCICIOS DOMICILIARES */}
 
-         <Link className="crud-link" to="/exercicio_domiciliar">
-          <i className="bi bi-house-check-fill"></i> Solicitação de Exercício Domiciliar
-        </Link>
+          <Link className="crud-link" to="/exercicio_domiciliar">
+            <i className="bi bi-house-check-fill"></i> Solicitação de Exercício Domiciliar
+          </Link>
+          
+          <Link className="crud-link" to="/abono_falta">
+            <i className="bi bi-calendar-x-fill"></i> Solicitação de Abono de Falta
+          </Link>
 
         </div>
       </main>
