@@ -1,0 +1,94 @@
+/* Base para todos os formulários */
+.formulario {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  /* Agrupamento de cada campo */
+  .formulario .form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1.5rem;
+  }
+  
+  /* Label dos campos */
+  .formulario .form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  /* Inputs, Selects e Textareas */
+  .formulario .form-group input[type="text"],
+  .formulario .form-group input[type="email"],
+  .formulario .form-group input[type="file"],
+  .formulario .form-group select,
+  .formulario .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 1rem;
+    background-color: #fff;
+    transition: border-color 0.3s;
+  }
+  
+  .formulario .form-group input:focus,
+  .formulario .form-group select:focus,
+  .formulario .form-group textarea:focus {
+    border-color: #007bff;
+    outline: none;
+  }
+  
+  /* Área dos botões de rádio */
+  .formulario .form-group div {
+    display: flex;
+    gap: 2rem;
+    margin-top: 0.5rem;
+  }
+  
+  /* Estilo dos botões de rádio */
+  .formulario .form-group input[type="radio"] {
+    margin-right: 0.5rem;
+  }
+  
+  /* Botão de envio */
+  .submit-button {
+    background-color: #007bff;
+    color: white;
+    padding: 0.9rem 2rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: block;
+    margin: 2rem auto 0 auto;
+  }
+  
+  .submit-button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Títulos */
+  main.container h2 {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--verde-escuro);
+  }
+  
+  /* Responsividade */
+  @media (max-width: 600px) {
+    .formulario {
+      padding: 1rem;
+    }
+  
+    .formulario .form-group {
+      margin-bottom: 1rem;
+    }
+  }
+  
