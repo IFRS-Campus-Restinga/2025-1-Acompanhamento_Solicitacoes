@@ -220,9 +220,9 @@ class Command(BaseCommand):
             usuario=usuario_coord,
             defaults={
                 "siape": 123456,
-                "inicio_mandato": "2025-01-01",
-                "fim_mandato": "2026-01-01",
-                "curso": curso1,
+               #"inicio_mandato": "2025-01-01",
+               #"fim_mandato": "2026-01-01",
+               #"curso": curso1,
             }
         )
 

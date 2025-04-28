@@ -3,9 +3,17 @@ from django.db import models
 from .motivo_abono import MotivoAbono
 from django.core.exceptions import ValidationError
 from .form_base import FormularioBase
-from django.db.models import OneToOneField, RESTRICT
+from django.db.models import RESTRICT
+from django.core.validators import MinLengthValidator
 
 class FormAbonoFalta(FormularioBase):
+    aluno = models.CharField(
+        max_length=100,
+        validators=[MinLengthValidator(1)],
+        verbose_name="Nome do Aluno",  
+        help_text="Digite o nome do aluno",
+    )
+
     motivo_solicitacao = models.ForeignKey(
         MotivoAbono, 
         on_delete=RESTRICT, 
@@ -23,6 +31,11 @@ class FormAbonoFalta(FormularioBase):
         verbose_name="Data de fim do afastamento"
     )
 
+    acesso_moodle = models.BooleanField(
+        default=False,
+        blank=True
+    )
+
     perdeu_atividades = models.BooleanField(
         default=False,
         blank=True
@@ -32,7 +45,7 @@ class FormAbonoFalta(FormularioBase):
         verbose_name = "Formulário de Abono de Faltas"
     
     def __str__(self):
-        return self.nome
+        return self.descricao
     
     def clean(self):
         if self.data_fim_afastamento < self.data_inicio_afastamento:
