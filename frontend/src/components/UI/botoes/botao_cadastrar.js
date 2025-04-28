@@ -6,7 +6,7 @@ export default function BotaoCadastrar({ to, title = "Criar Novo"}) {
   return (
 
 <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_exercicios/cadastrar" className="botao-link" title={title}>
+          <Link to={to} className="botao-link" title={title}>
             <button className="botao-cadastrar">
               <i className="bi bi-plus-circle-fill"></i>
             </button>
