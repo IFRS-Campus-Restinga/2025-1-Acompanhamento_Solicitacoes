@@ -1,13 +1,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/header";
+import "../../../components/formulario.css";
 
 export default function FormularioExercicioDomiciliar() {
+  const { curso_codigo } = useParams();
   const [cursos, setCursos] = useState([]);
   const [formData, setFormData] = useState({
     aluno_nome: "",
     email: "",
     matricula: "",
-    curso: "",
+    curso:  curso_codigo || "",
     componentes_curriculares: "",
     motivo_solicitacao: "",
     outro_motivo: "",
@@ -17,11 +22,28 @@ export default function FormularioExercicioDomiciliar() {
     arquivos: [],
     consegue_realizar_atividades: "",
   });
+  
+  const [popupIsOpen, setPopupIsOpen] = useState(false);
+    const [msgErro, setMsgErro] = useState([]);
+    const [mensagemErro, setMensagemErro] = useState("");
+
+    const popupActions = [
+        {
+            label: "Fechar",
+            className: "btn btn-cancel",
+            onClick: () => {
+                setPopupIsOpen(false);
+                navigate("/solicitacoes");
+            }
+        }
+    ];
+
+    const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get("http://localhost:8000/cursos/")
+    axios.get("http://localhost:8000/solicitacoes/cursos/")
       .then(res => setCursos(res.data))
-      .catch(err => console.error(err));
+      .catch((err) => console.error("Erro ao buscar cursos:", err));
   }, []);
 
   const handleChange = (e) => {
@@ -61,7 +83,9 @@ export default function FormularioExercicioDomiciliar() {
   };
 
   return (
-    <div className="container">
+    <div>
+      <Header />
+      <main className="container">
       <h2>Solicitação de Exercícios Domiciliares</h2>
 
       <form onSubmit={handleSubmit} className="formulario" encType="multipart/form-data">
@@ -80,15 +104,18 @@ export default function FormularioExercicioDomiciliar() {
           <input type="text" name="matricula" value={formData.matricula} onChange={handleChange} required />
         </div>
 
+
         <div className="form-group">
-          <label>Curso:</label>
-          <select name="curso" value={formData.curso} onChange={handleChange} required>
-            <option value="">Selecione um curso</option>
-            {cursos.map(curso => (
-              <option key={curso.id} value={curso.id}>{curso.nome}</option>
-            ))}
-          </select>
-        </div>
+                        <label>Curso:</label>
+                        <select name="curso" value={formData.curso} onChange={handleChange} required>
+                            <option value="">Selecione o curso</option>
+                            {cursos.map((curso) => (
+                                <option key={curso.codigo} value={curso.codigo}>
+                                    {curso.nome}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
 
         <div className="form-group">
           <label>Componentes curriculares e respectivos docentes:</label>
@@ -157,11 +184,10 @@ export default function FormularioExercicioDomiciliar() {
             </label>
           </div>
         </div>
-
-        <button type="submit" className="botao-enviar">
-          Enviar Solicitação
-        </button>
+        <button type="submit" className="submit-button">Enviar</button>
       </form>
+      </main>
+      <Footer />
     </div>
   );
 }
