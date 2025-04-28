@@ -36,24 +36,70 @@ export default function Formulario() {
             .catch((err) => console.error("Erro ao buscar motivos:", err));
     }, []);
 
-    const postDispensaEdFisica = async (e) => {
-        e.preventDefault();
-            await axios.post(
-                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
-                dados
-            )
-            .then(() => {
-                navigate("/solicitacoes");
-            })
-            .catch((err) => {
-                setMsgErro(err);
-                setPopupIsOpen(true);
-            })
-    };
-
     const handleFormChange = (dadosAtualizados) => {
         setDados(dadosAtualizados);
     };
+
+    const postDispensaEdFisica = async (e) => {
+        e.preventDefault();
+    
+        try {
+            // Primeiro envia a solicitação de dispensa
+            const responseDispensa = await axios.post(
+                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+                {
+                    descricao: dados.descricao,
+                    motivo_solicitacao: dados.motivo_solicitacao
+                }
+            );
+    
+            const formDispensaId = responseDispensa.data.id;
+    
+            // Agora envia os anexos, um a um
+            if (dados.anexo instanceof FileList) {
+                const promises = Array.from(dados.anexo).map((file) => {
+                    const formData = new FormData();
+                    formData.append("form_dispensa_ed_fisica", formDispensaId);
+                    formData.append("anexo", file);
+    
+                    return axios.post(
+                        "http://localhost:8000/solicitacoes/anexos/",
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                });
+    
+                await Promise.all(promises); // Aguarda todos enviarem
+            } else if (dados.anexo instanceof File) {
+                const formData = new FormData();
+                formData.append("form_dispensa_ed_fisica", formDispensaId);
+                formData.append("anexo", dados.anexo);
+    
+                await axios.post(
+                    "http://localhost:8000/solicitacoes/anexos/",
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+            }
+    
+            navigate("/solicitacoes");
+    
+        } catch (err) {
+            console.error(err);
+            setMsgErro(err);
+            setPopupIsOpen(true);
+        }
+    };
+    
+    
 
     return (
         <div>
@@ -73,7 +119,7 @@ export default function Formulario() {
             </main>
             {popupIsOpen && (
                 <Popup 
-                message={msgErro.response?.data?.motivo_solicitacao}
+                message={JSON.stringify(msgErro)}
                 isError={true}
                 actions={popupActions}
             />

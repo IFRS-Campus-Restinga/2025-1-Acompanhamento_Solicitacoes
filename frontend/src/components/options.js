@@ -6,25 +6,28 @@ export default function Options({ url = [], popularCampo = [], onChange, ignoreF
   const [dados, setDados] = useState({});
 
   const handleChange = (e) => {
-    const { name, type, checked, value } = e.target;
-
+    const { name, type, checked, value, files } = e.target;
+  
     let newValue;
     if (type === "checkbox") {
       newValue = checked;
+    } else if (type === "file") {
+      newValue = files.length > 1 ? files : files[0]; // Se múltiplos arquivos
     } else if (type === "number") {
       newValue = value === "" ? null : parseInt(value);
     } else {
       newValue = value;
     }
-
+  
     const novosDados = {
       ...dados,
       [name]: newValue,
     };
-
+  
     setDados(novosDados);
-    onChange?.(novosDados); // Envia os dados atualizados ao componente pai
+    onChange?.(novosDados);
   };
+  
 
   useEffect(() => {
     url.forEach(popularForm);
