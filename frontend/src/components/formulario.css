@@ -54,6 +54,11 @@
   .formulario .form-group input[type="radio"] {
     margin-right: 0.5rem;
   }
+
+  /* Estilo dos botões de rádio */
+  .formulario .form-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+  }
   
   /* Botão de envio */
   .submit-button {
