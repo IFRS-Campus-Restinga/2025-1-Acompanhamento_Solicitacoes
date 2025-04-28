@@ -34,3 +34,8 @@ class UsuarioManager(BaseUserManager):
                 StatusUsuario.EM_ANALISE
             ]
         )
+        
+    def inativos(self):
+        return super().get_queryset().filter(
+            is_active=False  
+        ) 
