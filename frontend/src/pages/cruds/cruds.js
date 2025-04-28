@@ -54,6 +54,12 @@ const Cruds = () => {
           <Link className="crud-link" to="/trancamento_disciplina">
             <i className="bi bi-x-circle"></i> Solicitação de Trancamento de Componente Curricular
           </Link>
+          {/* FORMULARIO EXERCICIOS DOMICILIARES */}
+
+         <Link className="crud-link" to="/exercicio_domiciliar">
+          <i className="bi bi-house-check-fill"></i> Solicitação de Exercício Domiciliar
+        </Link>
+
         </div>
       </main>
       <Footer />
