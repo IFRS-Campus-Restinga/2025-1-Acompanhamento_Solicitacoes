@@ -11,6 +11,10 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 // PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
 
+//BOTÕES
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+
 export default function ListarPpc() {
   const navigate = useNavigate();
   const [ppcs, setPpcs] = useState([]);
@@ -67,13 +71,8 @@ export default function ListarPpc() {
       <main className="container">
         <h2>PPCs</h2>
 
-        <div className="botao-cadastrar-wrapper">
-          <Link to="/ppcs/cadastrar" className="botao-link" title="Criar Novo PPC">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
-            </button>
-          </Link>
-        </div>
+        {/* Botão de cadastrar */}
+        <BotaoCadastrar to="/ppcs/cadastrar" title="Criar Novo PPC" />
 
         <table className="tabela-cruds">
           <thead>
@@ -135,11 +134,8 @@ export default function ListarPpc() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate("/")}>
-            <i className="bi bi-arrow-left-circle"></i> Voltar
-          </button>
-        </div>
+        <BotaoVoltar onClick={() => navigate("/")} />
+
       </main>
       <Footer />
     </div>

@@ -11,6 +11,10 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 // PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
 
+//BOTÕES
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+
 export default function ListarCursos() {
   const navigate = useNavigate();
   const [cursos, setCursos] = useState([]);
@@ -63,13 +67,8 @@ export default function ListarCursos() {
       <main className="container">
         <h2>Cursos</h2>
 
-        <div className="botao-cadastrar-wrapper">
-          <Link to="/cursos/cadastrar" className="botao-link" title="Criar Novo Curso">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
-            </button>
-          </Link>
-        </div>
+        {/* Botão de cadastrar */}
+        <BotaoCadastrar to="/cursos/cadastrar" title="Criar Novo Curso" />
 
         <table className="tabela-cruds">
           <thead>
@@ -127,11 +126,8 @@ export default function ListarCursos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate("/")}>
-            <i className="bi bi-arrow-left-circle"></i> Voltar
-          </button>
-        </div>
+        <BotaoVoltar onClick={() => navigate("/")} />
+
       </main>
       <Footer />
     </div>
