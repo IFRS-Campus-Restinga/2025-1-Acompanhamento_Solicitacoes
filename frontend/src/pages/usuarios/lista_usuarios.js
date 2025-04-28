@@ -11,9 +11,7 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 // PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
 
-//BARRA PESQUISA
-import BarraPesquisa from "../../components/UI/barra_pesquisa";
-//BOTÕES
+// BOTÕES
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
@@ -25,8 +23,8 @@ export default function ListarUsuarios() {
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [termoBusca, setTermoBusca] = useState("");
-  const navigate = useNavigate();
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [exibirInativos, setExibirInativos] = useState(false);
   const navigate = useNavigate();
   const itensPorPagina = 10;
 
@@ -39,7 +37,7 @@ export default function ListarUsuarios() {
       .get(url)
       .then((res) => {
         setUsuarios(res.data);
-        setPaginaAtual(1); // Resetar para a primeira página ao mudar a lista
+        setPaginaAtual(1);
       })
       .catch((err) => {
         setMensagemPopup(
@@ -51,7 +49,7 @@ export default function ListarUsuarios() {
   }, [exibirInativos]);
 
   const filtrarUsuarios = () => {
-    const termo = filtro.toLowerCase();
+    const termo = termoBusca.toLowerCase();
     return usuarios.filter((usuario) =>
       usuario.nome.toLowerCase().includes(termo) ||
       usuario.email.toLowerCase().includes(termo) ||
@@ -95,12 +93,23 @@ export default function ListarUsuarios() {
       <main className="container">
         <h2>Usuários</h2>
 
-        <div className="botao-cadastrar-wrapper">
-          <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuário">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
+        <div className="botoes-wrapper">
+          <div className="botao-cadastrar-wrapper">
+            <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuário">
+              <button className="botao-cadastrar">
+                <i className="bi bi-plus-circle-fill"></i>
+              </button>
+            </Link>
+          </div>
+
+          <div className="botao-inativos-wrapper">
+            <button
+              onClick={() => setExibirInativos(!exibirInativos)}
+              className="btn btn-secondary"
+            >
+              {exibirInativos ? "Mostrar Ativos" : "Mostrar Inativos"}
             </button>
-          </Link>
+          </div>
         </div>
 
         <div className="barra-pesquisa">
@@ -189,7 +198,6 @@ export default function ListarUsuarios() {
         />
 
         <BotaoVoltar onClick={() => navigate("/")} />
-
       </main>
       <Footer />
     </div>
