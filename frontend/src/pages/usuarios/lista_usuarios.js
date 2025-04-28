@@ -15,6 +15,9 @@ import Paginacao from "../../components/UI/paginacao";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
+//BARRA PESQUISA
+import BarraPesquisa from "../../components/UI/barra_pesquisa";
+
 export default function ListarUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -22,7 +25,7 @@ export default function ListarUsuarios() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [termoBusca, setTermoBusca] = useState("");
+  const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [exibirInativos, setExibirInativos] = useState(false);
   const navigate = useNavigate();
@@ -49,7 +52,7 @@ export default function ListarUsuarios() {
   }, [exibirInativos]);
 
   const filtrarUsuarios = () => {
-    const termo = termoBusca.toLowerCase();
+    const termo = filtro.toLowerCase();
     return usuarios.filter((usuario) =>
       usuario.nome.toLowerCase().includes(termo) ||
       usuario.email.toLowerCase().includes(termo) ||
@@ -94,14 +97,8 @@ export default function ListarUsuarios() {
         <h2>Usuários</h2>
 
         <div className="botoes-wrapper">
-          <div className="botao-cadastrar-wrapper">
-            <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuário">
-              <button className="botao-cadastrar">
-                <i className="bi bi-plus-circle-fill"></i>
-              </button>
-            </Link>
-          </div>
 
+        <BotaoCadastrar to="/usuarios/cadastrar" title="Criar Novo Usuário" />
           <div className="botao-inativos-wrapper">
             <button
               onClick={() => setExibirInativos(!exibirInativos)}
@@ -112,19 +109,13 @@ export default function ListarUsuarios() {
           </div>
         </div>
 
-        <div className="barra-pesquisa">
-          <i className="bi bi-search icone-pesquisa"></i>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={termoBusca}
-            onChange={(e) => {
-              setTermoBusca(e.target.value);
-              setPaginaAtual(1);
-            }}
-            className="input-pesquisa"
-          />
-        </div>
+        <BarraPesquisa
+          value={filtro}
+          onChange={(e) => {
+          setFiltro(e.target.value);
+          setPaginaAtual(1);
+          }}
+        />
 
         {usuariosFiltrados.length === 0 ? (
           <p><br />Nenhum usuário encontrado!</p>
