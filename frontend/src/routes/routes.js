@@ -14,49 +14,49 @@ import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_ex
 
 // Motivos de Dispensa de Educação Física
 
-import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/lista_motivo.js"
 import CadastrarAtualizarMotivoDispensa from "../pages/motivos/dispensa_ed_fisica/cadastrar_atualizar_motivo.js";
+import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/lista_motivo.js";
 
 // Disciplinas
 
-import ListarDisciplinas from "../pages/disciplinas/lista_disciplina.js"
-import CadastrarAtualizarDisciplina from "../pages/disciplinas/cadastrar_atualizar_disciplina.js"
+import CadastrarAtualizarDisciplina from "../pages/disciplinas/cadastrar_atualizar_disciplina.js";
+import ListarDisciplinas from "../pages/disciplinas/lista_disciplina.js";
 
 // Turmas
 
-import ListarTurmas from "../pages/turmas/lista_turma.js"
-import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma.js"
+import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma.js";
+import ListarTurmas from "../pages/turmas/lista_turma.js";
 
 // Cursos
-import ListarCursos from "../pages/cursos/lista_cursos";                 // página para listar cursos
 import CadastrarAtualizarCursos from "../pages/cursos/cadastrar_atualizar_cursos"; // página para cadastrar/atualizar cursos
+import ListarCursos from "../pages/cursos/lista_cursos"; // página para listar cursos
 
 // // PPC
-import ListarPpc from "../pages/ppcs/lista_ppc";                           // página para listar PPCs
 import CadastrarAtualizarPpc from "../pages/ppcs/cadastrar_atualizar_ppc"; // página para cadastrar/atualizar PPCs
+import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 
 // Usuarios
-import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
-import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
+import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
+import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
 
 //Grupos
-import ListarGrupos from "../pages/grupos/lista_grupo.js";
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
+import ListarGrupos from "../pages/grupos/lista_grupo.js";
 
 //Dispensa Educação Física
 import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
 
 // Formulário de Trancamento de Disciplinas
-import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
 import Formulario from "../pages/forms/trancamento_disciplina/formulario";
+import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
 
 // Formulário de Abono de Falta
-import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js"
+import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
-import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atualizar_coordenadores.js";
 
+import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
 
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
@@ -113,7 +113,10 @@ const routes = [
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />} />,
 
-  <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />
+  <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
+
+  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />
+
  ];
 
 export default routes;
