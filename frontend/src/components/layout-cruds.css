@@ -198,3 +198,10 @@
     margin-top: 4px;
   }
   
+  .botoes-wrapper {
+    display: flex;
+    flex-direction: column; /* coloca um botão embaixo do outro */
+    align-items: flex-end; /* alinhar à esquerda */
+    gap: 10px; /* espaço entre os botões */
+    margin-bottom: 20px; /* espaço depois dos botões */
+  }

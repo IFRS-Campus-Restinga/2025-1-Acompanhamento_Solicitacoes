@@ -12,4 +12,4 @@ class FormDispensaEdFisica(FormularioBase):
         verbose_name = "Formulário de Dispensa de Educação Física"
     
     def __str__(self):
-        return self.nome
+        return str(self.id)

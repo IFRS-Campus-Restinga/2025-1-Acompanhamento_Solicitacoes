@@ -24,24 +24,31 @@ export default function ListarUsuarios() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-
-  const [filtro, setFiltro] = useState("");
-  
+  const [termoBusca, setTermoBusca] = useState("");
   const navigate = useNavigate();
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const navigate = useNavigate();
   const itensPorPagina = 10;
 
   useEffect(() => {
+    const url = exibirInativos
+      ? "http://localhost:8000/solicitacoes/usuarios/inativos/"
+      : "http://localhost:8000/solicitacoes/usuarios/";
+
     axios
-      .get("http://localhost:8000/solicitacoes/usuarios/")
-      .then((res) => setUsuarios(res.data))
+      .get(url)
+      .then((res) => {
+        setUsuarios(res.data);
+        setPaginaAtual(1); // Resetar para a primeira página ao mudar a lista
+      })
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários."}`);
+        setMensagemPopup(
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários."}`
+        );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
-  }, []);
-
+  }, [exibirInativos]);
 
   const filtrarUsuarios = () => {
     const termo = filtro.toLowerCase();
@@ -55,6 +62,13 @@ export default function ListarUsuarios() {
     );
   };
 
+  const usuariosFiltrados = filtrarUsuarios();
+
+  const usuariosPaginados = usuariosFiltrados.slice(
+    (paginaAtual - 1) * itensPorPagina,
+    paginaAtual * itensPorPagina
+  );
+
   const confirmarExclusao = () => {
     axios.delete(`http://localhost:8000/solicitacoes/usuarios/${usuarioSelecionado}/`)
       .then(() => {
@@ -63,7 +77,9 @@ export default function ListarUsuarios() {
         setUsuarios(usuarios.filter((u) => u.id !== usuarioSelecionado));
       })
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`);
+        setMensagemPopup(
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`
+        );
         setTipoMensagem("erro");
       })
       .finally(() => {
@@ -73,31 +89,33 @@ export default function ListarUsuarios() {
       });
   };
 
-  const usuariosFiltrados = filtrarUsuarios();
-
-  const usuariosPaginados = usuariosFiltrados.slice(
-    (paginaAtual - 1) * itensPorPagina,
-    paginaAtual * itensPorPagina
-  );
-
-
   return (
     <div>
       <Header />
       <main className="container">
         <h2>Usuários</h2>
 
-        {/* Botão de cadastrar */}
-        <BotaoCadastrar to="/usuarios/cadastrar" title="Criar Novo Usuário" />
+        <div className="botao-cadastrar-wrapper">
+          <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuário">
+            <button className="botao-cadastrar">
+              <i className="bi bi-plus-circle-fill"></i>
+            </button>
+          </Link>
+        </div>
 
-        {/* Barra de pesquisa */}
-        <BarraPesquisa
-          value={filtro}
-          onChange={(e) => {
-            setFiltro(e.target.value);
-            setPaginaAtual(1);
-          }}
-        />
+        <div className="barra-pesquisa">
+          <i className="bi bi-search icone-pesquisa"></i>
+          <input
+            type="text"
+            placeholder="Buscar..."
+            value={termoBusca}
+            onChange={(e) => {
+              setTermoBusca(e.target.value);
+              setPaginaAtual(1);
+            }}
+            className="input-pesquisa"
+          />
+        </div>
 
         {usuariosFiltrados.length === 0 ? (
           <p><br />Nenhum usuário encontrado!</p>
