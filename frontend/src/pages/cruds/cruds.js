@@ -48,6 +48,13 @@ const Cruds = () => {
             <i className="bi bi-person-arms-up"></i> Dispensa de Educação Física
           </Link>
         </div>
+        <br />
+        <h2>Formulários Disponíveis</h2>
+        <div className="grid-cruds">
+          <Link className="crud-link" to="/trancamento_disciplina">
+            <i className="bi bi-x-circle"></i> Solicitação de Trancamento de Componente Curricular
+          </Link>
+        </div>
       </main>
       <Footer />
     </div>
