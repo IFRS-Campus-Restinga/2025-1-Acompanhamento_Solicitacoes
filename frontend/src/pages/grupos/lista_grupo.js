@@ -12,6 +12,10 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 // PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
 
+//BOTÕES
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+
 export default function ListarGrupos() {
   const navigate = useNavigate();
   const [grupos, setGrupos] = useState([]);
@@ -58,13 +62,8 @@ export default function ListarGrupos() {
       <main className="container">
         <h2>Grupos</h2>
 
-        <div className="botao-cadastrar-wrapper">
-          <Link to="/grupos/cadastrar" className="botao-link" title="Criar Novo Grupo">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
-            </button>
-          </Link>
-        </div>
+        {/* Botão de cadastrar */}
+        <BotaoCadastrar to="/grupos/cadastrar" title="Criar Novo Grupo" />
 
         <table className="tabela-grupos">
           <thead>
@@ -121,11 +120,8 @@ export default function ListarGrupos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate('/')}>
-            <i className="bi bi-arrow-left-circle"></i> Voltar
-          </button>
-        </div>
+        <BotaoVoltar onClick={() => navigate("/")} />
+          
       </main>
       <Footer />
     </div>

@@ -9,6 +9,12 @@ import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import Paginacao from "../../components/UI/paginacao";
 
+//BARRA PESQUISA
+import BarraPesquisa from "../../components/UI/barra_pesquisa";
+//BOTÕES
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+
 export default function ListarDisciplinas() {
   const navigate = useNavigate();
   const [disciplinas, setDisciplinas] = useState([]);
@@ -67,24 +73,17 @@ export default function ListarDisciplinas() {
       <main className="container">
         <h2>Disciplinas</h2>
 
-        <div className="botao-cadastrar-wrapper">
-          <Link to="/disciplinas/cadastrar" className="botao-link" title="Criar Nova Disciplina">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
-            </button>
-          </Link>
-        </div>
+        {/* Botão de cadastrar */}
+        <BotaoCadastrar to="/disciplinas/cadastrar" title="Criar Nova Disciplina" />
 
-        <div className="barra-pesquisa">
-          <i className="bi bi-search icone-pesquisa"></i>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-            className="input-pesquisa"
-          />
-        </div>
+        {/* Barra de pesquisa */}
+        <BarraPesquisa
+          value={filtro}
+          onChange={(e) => {
+            setFiltro(e.target.value);
+            setPaginaAtual(1);
+          }}
+        />
 
         {disciplinasFiltradas.length === 0 ? (
           <p><br />Nenhuma disciplina encontrada!</p>
@@ -143,11 +142,7 @@ export default function ListarDisciplinas() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate('/')}>
-            <i className="bi bi-arrow-left-circle"></i> Voltar
-          </button>
-        </div>
+        <BotaoVoltar onClick={() => navigate("/")} />
 
         <Paginacao
           dados={disciplinasFiltradas}

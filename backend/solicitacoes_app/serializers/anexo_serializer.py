@@ -1,7 +1,7 @@
-from rest_framework.serializers import Serializer
+from rest_framework.serializers import ModelSerializer
 from ..models.anexo import Anexo
 
-class AnexoSerializer(Serializer):
+class AnexoSerializer(ModelSerializer):
     class Meta:
         model = Anexo
-        fields = ['anexo']
+        fields = '__all__'

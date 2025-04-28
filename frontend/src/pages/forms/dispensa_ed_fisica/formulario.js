@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
 import Options from "../../../components/options";
@@ -11,6 +11,11 @@ export default function Formulario() {
     const [dados, setDados] = useState({});
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
+
+    const urls = useMemo(() => [
+        "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+        "http://localhost:8000/solicitacoes/anexos/"
+    ], []);
 
     const popupActions = [
         {
@@ -31,36 +36,82 @@ export default function Formulario() {
             .catch((err) => console.error("Erro ao buscar motivos:", err));
     }, []);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-            await axios.post(
-                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
-                dados
-            )
-            .then(() => {
-                navigate("/solicitacoes");
-            })
-            .catch((err) => {
-                setMsgErro(err);
-                setPopupIsOpen(true);
-            })
-    };
-
     const handleFormChange = (dadosAtualizados) => {
         setDados(dadosAtualizados);
     };
+
+    const postDispensaEdFisica = async (e) => {
+        e.preventDefault();
+    
+        try {
+            // Primeiro envia a solicitação de dispensa
+            const responseDispensa = await axios.post(
+                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+                {
+                    descricao: dados.descricao,
+                    motivo_solicitacao: dados.motivo_solicitacao
+                }
+            );
+    
+            const formDispensaId = responseDispensa.data.id;
+    
+            // Agora envia os anexos, um a um
+            if (dados.anexo instanceof FileList) {
+                const promises = Array.from(dados.anexo).map((file) => {
+                    const formData = new FormData();
+                    formData.append("form_dispensa_ed_fisica", formDispensaId);
+                    formData.append("anexo", file);
+    
+                    return axios.post(
+                        "http://localhost:8000/solicitacoes/anexos/",
+                        formData,
+                        {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        }
+                    );
+                });
+    
+                await Promise.all(promises); // Aguarda todos enviarem
+            } else if (dados.anexo instanceof File) {
+                const formData = new FormData();
+                formData.append("form_dispensa_ed_fisica", formDispensaId);
+                formData.append("anexo", dados.anexo);
+    
+                await axios.post(
+                    "http://localhost:8000/solicitacoes/anexos/",
+                    formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    }
+                );
+            }
+    
+            navigate("/solicitacoes");
+    
+        } catch (err) {
+            console.error(err);
+            setMsgErro(err);
+            setPopupIsOpen(true);
+        }
+    };
+    
+    
 
     return (
         <div>
             <Header />
             <main className="container form-container">
-                <form className="form-box" onSubmit={handleSubmit}>
+                <form className="form-box" onSubmit={postDispensaEdFisica}>
                     <div className="form-group">
                         <Options
-                            url="http://localhost:8000/solicitacoes/dispensa_ed_fisica/"
+                            url={urls}
                             popularCampo={popularMotivosDispensa}
                             onChange={handleFormChange}
-                            ignoreFields={["id"]}
+                            ignoreFields={["id", "form_dispensa_ed_fisica"]}
                         />
                     </div>
                     <button type="submit" className="submit-button">Enviar</button>
@@ -68,7 +119,7 @@ export default function Formulario() {
             </main>
             {popupIsOpen && (
                 <Popup 
-                message={msgErro.response?.data?.motivo_solicitacao}
+                message={JSON.stringify(msgErro)}
                 isError={true}
                 actions={popupActions}
             />

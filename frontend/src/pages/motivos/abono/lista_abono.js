@@ -11,6 +11,12 @@ import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";
 
+//BARRA PESQUISA
+import BarraPesquisa from "../../../components/UI/barra_pesquisa";
+//BOTÕES
+import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+
 export default function ListarMotivosAbono() {
   const navigate = useNavigate();
   const [motivos, setMotivos] = useState([]);
@@ -77,24 +83,17 @@ export default function ListarMotivosAbono() {
       <main className="container">
         <h2>Motivos de Abono</h2>
 
-        <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_abono/cadastrar" className="botao-link" title="Criar Novo Motivo">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
-            </button>
-          </Link>
-        </div>
+        {/* Botão de cadastrar */}
+        <BotaoCadastrar to="/motivo_abono/cadastrar" title="Criar Novo Motivo" />
 
-        <div className="barra-pesquisa">
-          <i className="bi bi-search icone-pesquisa"></i>
-          <input
-            type="text"
-            placeholder="Buscar..."
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value)}
-            className="input-pesquisa"
-          />
-        </div>
+        {/* Barra de pesquisa */}
+        <BarraPesquisa
+          value={filtro}
+          onChange={(e) => {
+            setFiltro(e.target.value);
+            setPaginaAtual(1);
+          }}
+        />
 
         {motivosFiltrados.length === 0 ? (
           <p className="mt-4">Nenhum motivo encontrado.</p>
@@ -158,11 +157,8 @@ export default function ListarMotivosAbono() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate("/")}>
-            <i className="bi bi-arrow-left-circle"></i> Voltar
-          </button>
-        </div>
+        <BotaoVoltar onClick={() => navigate("/")} />
+          
       </main>
       <Footer />
     </div>

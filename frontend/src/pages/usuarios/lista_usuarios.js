@@ -11,6 +11,12 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 // PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
 
+//BARRA PESQUISA
+import BarraPesquisa from "../../components/UI/barra_pesquisa";
+//BOTÕES
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+
 export default function ListarUsuarios() {
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -19,7 +25,7 @@ export default function ListarUsuarios() {
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [termoBusca, setTermoBusca] = useState("");
-  const [exibirInativos, setExibirInativos] = useState(false);
+  const navigate = useNavigate();
   const [paginaAtual, setPaginaAtual] = useState(1);
   const navigate = useNavigate();
   const itensPorPagina = 10;
@@ -45,7 +51,7 @@ export default function ListarUsuarios() {
   }, [exibirInativos]);
 
   const filtrarUsuarios = () => {
-    const termo = termoBusca.toLowerCase();
+    const termo = filtro.toLowerCase();
     return usuarios.filter((usuario) =>
       usuario.nome.toLowerCase().includes(termo) ||
       usuario.email.toLowerCase().includes(termo) ||
@@ -89,26 +95,14 @@ export default function ListarUsuarios() {
       <main className="container">
         <h2>Usuários</h2>
 
-        <div className="botoes-wrapper">
-  <div className="botao-cadastrar-wrapper">
-    <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuário">
-      <button className="botao-cadastrar">
-        <i className="bi bi-plus-circle-fill"></i>
-      </button>
-    </Link>
-  </div>
+        <div className="botao-cadastrar-wrapper">
+          <Link to="/usuarios/cadastrar" className="botao-link" title="Criar Novo Usuário">
+            <button className="botao-cadastrar">
+              <i className="bi bi-plus-circle-fill"></i>
+            </button>
+          </Link>
+        </div>
 
-  <div className="botao-inativos-wrapper">
-    <button
-      onClick={() => setExibirInativos(!exibirInativos)}
-      className="btn btn-secondary"
-    >
-      {exibirInativos ? "Mostrar Ativos" : "Mostrar Inativos"}
-    </button>
-  </div>
-</div>
-
-        {/* Barra de busca */}
         <div className="barra-pesquisa">
           <i className="bi bi-search icone-pesquisa"></i>
           <input
@@ -117,7 +111,7 @@ export default function ListarUsuarios() {
             value={termoBusca}
             onChange={(e) => {
               setTermoBusca(e.target.value);
-              setPaginaAtual(1); // volta para página 1 ao buscar
+              setPaginaAtual(1);
             }}
             className="input-pesquisa"
           />
@@ -194,11 +188,8 @@ export default function ListarUsuarios() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <div className="botao-voltar-wrapper">
-          <button className="botao-voltar" onClick={() => navigate("/")}>
-            <i className="bi bi-arrow-left-circle"></i> Voltar
-          </button>
-        </div>
+        <BotaoVoltar onClick={() => navigate("/")} />
+
       </main>
       <Footer />
     </div>

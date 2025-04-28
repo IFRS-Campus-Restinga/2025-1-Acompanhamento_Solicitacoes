@@ -8,6 +8,10 @@ import Popup from '../../../components/popup';
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";
 
+//BOTÕES
+import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+
 export default function ListarMotivoDispensa() {
 
     const [lista_motivo, setMotivo] = useState([]);
@@ -72,13 +76,10 @@ export default function ListarMotivoDispensa() {
             <Header />
             <main className='container'>
                 <h2>Motivos de dispensa de educação física</h2>
-                <div className="botao-cadastrar-wrapper">
-          <Link to="/motivo_dispensa/cadastrar" className="botao-link" title="Criar Novo Motivo">
-            <button className="botao-cadastrar">
-              <i className="bi bi-plus-circle-fill"></i>
-            </button>
-          </Link>
-        </div>
+                
+                {/* Botão de cadastrar */}
+                <BotaoCadastrar to="/motivo_dispensa/cadastrar" title="Criar Novo Motivo" />
+
             <table className='tabela-cruds'>
                 <thead>
                 <tr>
@@ -111,11 +112,9 @@ export default function ListarMotivoDispensa() {
                                 msgType="popup"
                                 />
                         )}
-                <div className="botao-voltar-wrapper">
-                    <button className="botao-voltar" onClick={() => navigate('/')}>
-                    <i className="bi bi-arrow-left-circle"></i> Voltar
-                    </button>
-                </div>
+
+                <BotaoVoltar onClick={() => navigate("/")} />
+                    
                 </tbody>
             </table>
             <Paginacao

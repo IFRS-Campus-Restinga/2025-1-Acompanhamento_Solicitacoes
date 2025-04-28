@@ -47,6 +47,10 @@ import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.j
 //Dispensa Educação Física
 import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
 
+// Formulário de Trancamento de Disciplinas
+import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
+import Formulario from "../pages/forms/trancamento_disciplina/formulario";
+
 //Coordenadores
 import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atualizar_coordenadores.js";
 
@@ -100,12 +104,7 @@ const routes = [
   <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
 
   // Formulário de Dispensa de Educação Física
-  <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" />, 
-
-  //Coordenadores
-  <Route path="/coordenadores/:id" element={<CadastrarAtualizarCoordenador />} key="editar-coordenadores" />,
-  <Route path="/coordenadores/cadastrar" element={<CadastrarAtualizarCoordenador />} key="cadastrar-coordenadores" />,
-
+  <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> 
  ];
 
 export default routes;
