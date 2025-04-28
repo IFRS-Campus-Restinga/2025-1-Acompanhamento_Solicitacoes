@@ -1,6 +1,7 @@
 from .form_dispensa_ed_fisica import FormDispensaEdFisica
 from django.db import models
 from .form_abono_falta import FormAbonoFalta
+from .forms.form_exercicio_domiciliar import FormExercicioDomiciliar
 from .base import BaseModel
 
 class Anexo(BaseModel):
@@ -16,3 +17,10 @@ class Anexo(BaseModel):
         on_delete=models.CASCADE, 
         related_name="abonos_anexos"
     )
+
+    form_exercicos_domiciliares = models.ForeignKey(
+        FormExercicioDomiciliar, 
+        on_delete=models.CASCADE, 
+        related_name="anexos", 
+        verbose_name="Form")
+
