@@ -1,5 +1,6 @@
 from django.contrib.auth.models import BaseUserManager
 from ..models.status_usuario import StatusUsuario
+from django.db.models import Q
 
 
 class UsuarioManager(BaseUserManager):
@@ -26,16 +27,13 @@ class UsuarioManager(BaseUserManager):
         usuario.save(using=self._db)
         return usuario
     
-    def get_queryset(self):
+    def ativos(self):
         return super().get_queryset().filter(
             is_active=True,
-            status_usuario__in=[
-                StatusUsuario.ATIVO,
-                StatusUsuario.EM_ANALISE
-            ]
+            status_usuario__in=[StatusUsuario.ATIVO, StatusUsuario.EM_ANALISE]
         )
         
     def inativos(self):
         return super().get_queryset().filter(
-            is_active=False  
+            Q(is_active=False) | Q(status_usuario=StatusUsuario.INATIVO)  
         ) 

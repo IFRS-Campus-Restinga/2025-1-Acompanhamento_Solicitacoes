@@ -11,7 +11,7 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     Endpoint para listar e criar usuarios.
     """
     
-    queryset = Usuario.objects.filter(is_superuser=False)
+    queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializer
     permission_classes = [AllowAny]
 
@@ -21,7 +21,7 @@ class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     Endpoint para recuperar, atualizar e deletar um usuario específico.
     """
     
-    queryset = Usuario.objects.filter(is_superuser=False)
+    queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializer
     permission_classes = [AllowAny]
 
