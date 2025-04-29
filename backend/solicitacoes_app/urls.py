@@ -94,7 +94,7 @@ urlpatterns = [
     path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
 
-    path('exercicios-domiciliares/', FormExercicioDomiciliarListCreate.as_view(), name='exercicios-domiciliares-list-create'),
-    path('exercicios-domiciliares/<int:id>/', FormExercicioDomiciliarDetail.as_view(), name='exercicios-domiciliares-detail'),
+    path('form_exercicio_domiciliar/', FormExercicioDomiciliarListCreate.as_view(), name='exercicios-domiciliares-list-create'),
+    path('form_exercicio_domiciliar/<int:id>/', FormExercicioDomiciliarDetail.as_view(), name='exercicios-domiciliares-detail'),
 
 ]
