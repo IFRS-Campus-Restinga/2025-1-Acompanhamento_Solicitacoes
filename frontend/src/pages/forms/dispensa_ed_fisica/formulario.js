@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
 import Options from "../../../components/options";
-import Popup from "../../../components/popup"
+import Popup from "../../../components/pop_ups/popup_feedback"
 import { useNavigate } from "react-router-dom";
 
 export default function Formulario() {
@@ -16,17 +16,6 @@ export default function Formulario() {
         "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
         "http://localhost:8000/solicitacoes/anexos/"
     ], []);
-
-    const popupActions = [
-        {
-          label: "Fechar",
-          className: "btn btn-cancel",
-          onClick: () => {
-            setPopupIsOpen(false);
-            navigate('/solicitacoes');
-          }
-        }
-      ];
 
     const navigate = useNavigate();
 
@@ -105,13 +94,14 @@ export default function Formulario() {
         <div>
             <Header />
             <main className="container form-container">
+            <h2>Formulário de Dispensa de Educação Física</h2>
                 <form className="form-box" onSubmit={postDispensaEdFisica}>
                     <div className="form-group">
                         <Options
                             url={urls}
                             popularCampo={popularMotivosDispensa}
                             onChange={handleFormChange}
-                            ignoreFields={["id", "form_dispensa_ed_fisica"]}
+                            ignoreFields={["id", "form_dispensa_ed_fisica", "form_exercicos_domiciliares", "form_abono_falta"]}
                         />
                     </div>
                     <button type="submit" className="submit-button">Enviar</button>
@@ -119,9 +109,10 @@ export default function Formulario() {
             </main>
             {popupIsOpen && (
                 <Popup 
-                message={JSON.stringify(msgErro)}
-                isError={true}
-                actions={popupActions}
+                show={popupIsOpen}
+                mensagem={msgErro}
+                tipo="error"
+                onClose={() => setPopupIsOpen(false)}
             />
             )}
             <Footer />
