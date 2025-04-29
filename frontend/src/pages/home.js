@@ -4,6 +4,7 @@ import Footer from "./../components/base/footer";
 import Header from "./../components/base/header";
 import "./../components/base/main";
 import "./login.css";
+import GoogleLoginButton from "./../components/GoogleLoginButton";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -28,9 +29,7 @@ const Home = () => {
         <div className="login-box">
           <h2>Bem-vindo ao Sistema de Solicitações</h2>
           <p>Para continuar, entre com sua conta institucional do Google.</p>
-          <button onClick={handleLogin} className="google-button">
-            Entrar com Google
-          </button>
+          <GoogleLoginButton />
         </div>  
         </main>
       <Footer />
