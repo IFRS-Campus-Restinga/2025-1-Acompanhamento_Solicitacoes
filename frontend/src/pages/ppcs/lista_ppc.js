@@ -1,17 +1,11 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
-
-//POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
-
-// PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
-
-//BOTÕES
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
@@ -25,7 +19,9 @@ export default function ListarPpc() {
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
 
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [ppcsPaginados, setMotivosPaginados] = useState([]);
+  const [ppcsPaginados, setPpcsPaginados] = useState([]);
+
+  const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
     axios
@@ -65,14 +61,33 @@ export default function ListarPpc() {
       });
   };
 
+  const ppcsFiltrados = useMemo(() => 
+    ppcs.filter(ppc =>
+      ppc.codigo.toLowerCase().includes(filtro.toLowerCase()) ||
+      (ppc.curso && ppc.curso.toLowerCase().includes(filtro.toLowerCase()))
+    ), 
+    [ppcs, filtro]
+  );
+  
+
   return (
     <div>
       <Header />
       <main className="container">
         <h2>PPCs</h2>
 
-        {/* Botão de cadastrar */}
         <BotaoCadastrar to="/ppcs/cadastrar" title="Criar Novo PPC" />
+
+        <div className="barra-pesquisa">
+          <i className="bi bi-search icone-pesquisa"></i>
+          <input
+            type="text"
+            placeholder="Buscar por código ou curso..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="input-pesquisa"
+          />
+        </div>
 
         <table className="tabela-cruds">
           <thead>
@@ -86,14 +101,10 @@ export default function ListarPpc() {
             {ppcsPaginados.map((ppc, index) => (
               <tr key={ppc.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{ppc.codigo}</td>
-                {/* Exibe o código do curso associado – você pode ajustar para exibir o nome, se o serializer retornar */}
                 <td>{ppc.curso}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link
-                      to={`/ppcs/${encodeURIComponent(ppc.codigo)}`}
-                      title="Editar"
-                    >
+                    <Link to={`/ppcs/${encodeURIComponent(ppc.codigo)}`} title="Editar">
                       <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button
@@ -112,14 +123,14 @@ export default function ListarPpc() {
             ))}
           </tbody>
         </table>
-         <Paginacao
-            dados={ppcs}
-            paginaAtual={paginaAtual}
-            setPaginaAtual={setPaginaAtual}
-            itensPorPagina={5}
-            onDadosPaginados={setMotivosPaginados}
-          />
 
+        <Paginacao
+          dados={ppcsFiltrados}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={5}
+          onDadosPaginados={setPpcsPaginados}
+        />
 
         <PopupConfirmacao
           show={mostrarPopup}
@@ -135,7 +146,6 @@ export default function ListarPpc() {
         />
 
         <BotaoVoltar onClick={() => navigate("/")} />
-
       </main>
       <Footer />
     </div>
