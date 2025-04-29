@@ -52,7 +52,7 @@ const NovaSolicitacao = () => {
       <Header />
       <main className="container">
 
-        <h2>Formulários Disponíveis</h2>
+        <h2>Solicitações Disponíveis</h2>
         <div className="grid-cruds">
           <Link className="crud-link" to="/trancamento_disciplina">
             <i className="bi bi-x-circle"></i> Solicitação de Trancamento de Componente Curricular
