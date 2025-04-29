@@ -57,6 +57,24 @@ export default function FormularioExercicioDomiciliar() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+
+      // Verificação de campos obrigatórios
+      if (!formData.aluno_nome || !formData.email || !formData.matricula || !formData.componentes_curriculares || 
+        !formData.motivo_solicitacao || !formData.periodo_afastamento || !formData.documento_apresentado || !formData.curso) {
+      alert("Todos os campos obrigatórios devem ser preenchidos!");
+      return;
+    }
+
+      // Se "Outro" for selecionado, garantir que há descrição
+      if (formData.motivo_solicitacao === "outro" && !formData.outro_motivo) {
+        alert("Por favor, descreva o motivo da solicitação.");
+        return;
+      }
+      if (formData.documento_apresentado === "outro" && !formData.outro_documento) {
+        alert("Por favor, descreva o documento apresentado.");
+        return;
+      }
+      
     const data = new FormData();
     for (const key in formData) {
       if (key === "arquivos") {
@@ -77,9 +95,18 @@ export default function FormularioExercicioDomiciliar() {
         alert("Solicitação enviada com sucesso!");
       })
       .catch(error => {
-        alert("Erro ao enviar solicitação.");
-        console.error(error);
+        if (error.response) {
+          console.error("Erro na resposta:", error.response.data);
+          alert(`Erro: ${error.response.data.detail || "Erro ao enviar solicitação."}`);
+        } else if (error.request) {
+          console.error("Erro na requisição:", error.request);
+          alert("Erro na requisição. Tente novamente.");
+        } else {
+          console.error("Erro desconhecido:", error.message);
+          alert("Erro desconhecido. Verifique o console.");
+        }
       });
+      
   };
 
   return (

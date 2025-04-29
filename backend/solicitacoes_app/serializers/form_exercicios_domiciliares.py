@@ -41,6 +41,12 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
             })
 
         return data
+    
+    def validate_periodo_afastamento(self, value):
+        if len(value.split()) < 4:  # Garante uma descrição detalhada
+            raise serializers.ValidationError("Por favor, informe um período de afastamento válido, incluindo datas específicas.")
+        return value
+
 
     def save(self, **kwargs):
         formExercicio = super().save(**kwargs)
