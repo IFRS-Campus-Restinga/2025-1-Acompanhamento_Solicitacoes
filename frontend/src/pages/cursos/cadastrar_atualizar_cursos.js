@@ -111,25 +111,6 @@ export default function CadastrarAtualizarCursos() {
               required
             />
           </div>
-          <div className="form-group">
-            <label>Selecione os PPCs (opcional):</label>
-            <select
-              multiple
-              className="input-select"
-              value={selectedPpcs}
-              onChange={handlePpcSelection}
-            >
-              {availablePpcs.map((ppc) => (
-                <option key={ppc.codigo} value={ppc.codigo}>
-                  {ppc.codigo}
-                </option>
-              ))}
-            </select>
-            <div className="novo-ppc-link">
-              <span>Ou </span>
-              <Link to="/ppcs/cadastrar">crie um novo PPC</Link>
-            </div>
-          </div>
           <button type="submit" className="submit-button">
             {codigo ? "Atualizar" : "Cadastrar"}
           </button>
