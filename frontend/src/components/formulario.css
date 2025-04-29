@@ -97,3 +97,35 @@
     }
   }
   
+/*Caixa da data*/
+  .periodo-afastamento {
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .titulo-afastamento {
+    font-size: 1.2em;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+  
+  .datas-container label {
+    font-size: 0.9em; /* Reduzir o tamanho da fonte */
+    margin-bottom: 0; /* Remover margens extras abaixo do texto */
+    color: #333333; /* Cor mais suave para o texto */
+  }
+  
+  .datas-container .form-group {
+    flex: 1; /* Igualar a largura dos campos */
+  }
+  
+  .datas-container input[type="date"] {
+    width: 100%; /* Ajustar para ocupar a largura do container */
+    max-width: 200px; /* Limitar o tamanho da barra */
+  }
+  
+ 
+  
+  

@@ -49,7 +49,7 @@ export default function FormularioAbonoFaltas() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-  
+
     for (const key in formData) {
       if (key === "anexos") {
         Array.from(formData.anexos).forEach((file) => {
@@ -60,7 +60,7 @@ export default function FormularioAbonoFaltas() {
         data.append(key, formData[key]);
       }
     }
-  
+
     try {
       await axios.post("http://localhost:8000/solicitacoes/formulario_abono_falta/", data, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -76,7 +76,6 @@ export default function FormularioAbonoFaltas() {
       setPopupIsOpen(true);
     }
   };
-  
 
   return (
     <div>
@@ -131,24 +130,31 @@ export default function FormularioAbonoFaltas() {
             </select>
           </div>
           <div className="form-group">
-            <label>Data de Início:</label>
-            <input
-              type="date"
-              name="data_inicio_afastamento"
-              value={formData.data_inicio_afastamento}
-              onChange={handleChange}
-              required
-            />
-          </div>
-          <div className="form-group">
-            <label>Data de Fim:</label>
-            <input
-              type="date"
-              name="data_fim_afastamento"
-              value={formData.data_fim_afastamento}
-              onChange={handleChange}
-              required
-            />
+            <fieldset className="periodo-afastamento">
+              <legend className="titulo-afastamento">Período de Afastamento</legend>
+              <div className="datas-container">
+                <div className="form-group">
+                  <label>Data de Início:</label>
+                  <input
+                    type="date"
+                    name="data_inicio_afastamento"
+                    value={formData.data_inicio_afastamento}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Data de Fim:</label>
+                  <input
+                    type="date"
+                    name="data_fim_afastamento"
+                    value={formData.data_fim_afastamento}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </fieldset>
           </div>
           <div className="form-group">
             <label>
@@ -188,11 +194,11 @@ export default function FormularioAbonoFaltas() {
         </form>
       </main>
       <PopupFeedback
-          show={popupIsOpen}
-          mensagem={mensagemPopup}
-          tipo={tipoPopup}
-          onClose={() => setPopupIsOpen(false)}
-        />
+        show={popupIsOpen}
+        mensagem={mensagemPopup}
+        tipo={tipoPopup}
+        onClose={() => setPopupIsOpen(false)}
+      />
       <Footer />
     </div>
   );
