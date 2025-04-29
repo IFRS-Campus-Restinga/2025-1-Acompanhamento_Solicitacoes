@@ -6,7 +6,7 @@ import Header from "../../../components/base/header";
 
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import Popup from "../../../components/popup";
+import Popup from "../../../components/pop_ups/popup_feedback";
 
 export default function CadastrarAtualizarMotivoDispensa() {
   const [popupMsg, setPopupMsg] = useState(null);

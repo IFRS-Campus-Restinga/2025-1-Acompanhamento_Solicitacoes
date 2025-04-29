@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
 import Options from "../../../components/options";
-import Popup from "../../../components/pop_ups/popup_feedback"
+import Feedback from "../../../components/pop_ups/popup_feedback"
 import { useNavigate } from "react-router-dom";
 
 export default function Formulario() {
@@ -11,6 +11,7 @@ export default function Formulario() {
     const [dados, setDados] = useState({});
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
+    const [popupType, setPopupType] = useState([]);
 
     const urls = useMemo(() => [
         "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
@@ -22,7 +23,11 @@ export default function Formulario() {
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/")
             .then((response) => setPopularMotivosDispensa(response.data))
-            .catch((err) => console.error("Erro ao buscar motivos:", err));
+            .catch((err) => {
+                setMsgErro(err);
+                setPopupType("error");
+                setPopupIsOpen(true);
+            });
     }, []);
 
     const handleFormChange = (dadosAtualizados) => {
@@ -82,8 +87,8 @@ export default function Formulario() {
             navigate("/solicitacoes");
     
         } catch (err) {
-            console.error(err);
             setMsgErro(err);
+            setPopupType("error");
             setPopupIsOpen(true);
         }
     };
@@ -107,14 +112,13 @@ export default function Formulario() {
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
             </main>
-            {popupIsOpen && (
-                <Popup 
+                <Feedback 
                 show={popupIsOpen}
                 mensagem={msgErro}
-                tipo="error"
+                tipo={popupType}
                 onClose={() => setPopupIsOpen(false)}
             />
-            )}
+
             <Footer />
         </div>
     );
