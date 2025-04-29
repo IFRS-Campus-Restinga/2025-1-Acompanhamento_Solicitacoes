@@ -54,7 +54,7 @@ class FormAbonoFalta(FormularioBase):
         verbose_name = "Formulário de Abono de Faltas"
     
     def __str__(self):
-        return self.descricao
+        return f"{self.aluno_nome} - {self.motivo_solicitacao}"
     
     def clean(self):
         if self.data_fim_afastamento < self.data_inicio_afastamento:

@@ -8,6 +8,16 @@ class FormAbonoFaltaViewListCreate(ListCreateAPIView):
     serializer_class = FormAbonoFaltaSerializer
     permission_classes = [AllowAny]
 
+    def perform_create(self, serializer):
+        # Verificar se o serializer é válido
+        if not serializer.is_valid():
+            print("Erros de validação no serializer:", serializer.errors)
+            raise ValueError(serializer.errors)
+
+        # Salvar os dados se forem válidos
+        serializer.save()
+        print("Dados salvos com sucesso:", serializer.data)
+
 
 class FormAbonoFaltaViewUpdateDelete(RetrieveUpdateDestroyAPIView):
     queryset = FormAbonoFalta.objects.all()

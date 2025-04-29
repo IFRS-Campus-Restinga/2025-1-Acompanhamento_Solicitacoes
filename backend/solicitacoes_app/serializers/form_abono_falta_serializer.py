@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from ..models import MotivoAbono, FormAbonoFalta, Anexo
 from .motivo_abono_serializer import MotivoAbonoSerializer
-from .anexo_serializer import AnexoSerializer
 
 class FormAbonoFaltaSerializer(serializers.ModelSerializer):
     motivo_solicitacao = MotivoAbonoSerializer(read_only=True)
@@ -11,8 +10,6 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
         label="Motivo da Solicitação",
         write_only=True
     )
-
-    # Campo para anexar documentos diretamente ao formulário
     anexos = serializers.ListField(
         child=serializers.FileField(),
         write_only=True,
@@ -36,35 +33,23 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
             'perdeu_atividades'
         ]
 
-    def create(self, validated_data):
-        anexos_data = validated_data.pop('anexos', [])  # Remove anexos do validated_data
-        form_abono_falta = FormAbonoFalta.objects.create(**validated_data)
-
-        # Salvar os anexos enviados
-        for arquivo in anexos_data:
-            Anexo.objects.create(anexo=arquivo, form_abono_falta=form_abono_falta)
-
-        return form_abono_falta
-
-    def update(self, instance, validated_data):
-        anexos_data = validated_data.pop('anexos', [])  # Remove anexos do validated_data
-
-        # Atualizar campos do formulário
-        instance.acesso_moodle = validated_data.get('acesso_moodle', instance.acesso_moodle)
-        instance.perdeu_atividades = validated_data.get('perdeu_atividades', instance.perdeu_atividades)
-        instance.motivo_solicitacao = validated_data.get('motivo_solicitacao', instance.motivo_solicitacao)
-        instance.data_inicio_afastamento = validated_data.get('data_inicio_afastamento', instance.data_inicio_afastamento)
-        instance.data_fim_afastamento = validated_data.get('data_fim_afastamento', instance.data_fim_afastamento)
-        instance.save()
-
-        # Salvar os anexos enviados
-        for arquivo in anexos_data:
-            Anexo.objects.create(anexo=arquivo, form_abono_falta=instance)
-
-        return instance
-
+    def validate_anexos(self, value):
+        """
+        Validação dos arquivos anexos para tamanho e tipo permitido.
+        """
+        if len(value) > 5:
+            raise serializers.ValidationError("Não é permitido enviar mais de 5 arquivos.")
+        for arquivo in value:
+            if arquivo.size > 5242880:  # Limite de 5 MB por arquivo
+                raise serializers.ValidationError(f"O arquivo {arquivo.name} excede o tamanho máximo permitido de 5 MB.")
+            if not arquivo.content_type.startswith(('application/pdf', 'image/')):
+                raise serializers.ValidationError(f"O arquivo {arquivo.name} tem um tipo não permitido.")
+        return value
 
     def validate(self, data):
+        """
+        Validação adicional para garantir que as datas sejam consistentes.
+        """
         data_inicio = data.get('data_inicio_afastamento')
         data_fim = data.get('data_fim_afastamento')
 
@@ -72,5 +57,20 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({
                 'data_fim_afastamento': 'A data de fim do afastamento não pode ser anterior à data de início.'
             })
-        
         return data
+
+    def create(self, validated_data):
+        """
+        Criação de um registro de FormAbonoFalta com anexos.
+        """
+        anexos_data = validated_data.pop('anexos', [])
+        instance = FormAbonoFalta.objects.create(**validated_data)
+
+        # Criar os anexos vinculados ao formulário
+        for arquivo in anexos_data:
+            Anexo.objects.create(
+                anexo=arquivo,
+                form_abono_falta=instance
+            )
+
+        return instance
