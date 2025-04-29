@@ -22,12 +22,6 @@ class AnexoGetFormDispensa(ListAPIView):
     def get_queryset(self):
         return Anexo.objects.filter(form_dispensa_ed_fisica_id=self.kwargs['pk'])
 
-class AnexoGetFormAbonoFalta(ListAPIView):
-    serializer_class = AnexoSerializer
-    queryset = Anexo.objects.all()
-    permission_classes = [AllowAny]
-    
-    def get_queryset(self):
-        return Anexo.objects.filter(form_abono_falta_id=self.kwargs['pk'])
+
 
     
