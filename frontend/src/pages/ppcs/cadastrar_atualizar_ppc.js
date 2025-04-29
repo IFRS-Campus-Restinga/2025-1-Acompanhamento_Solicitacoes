@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
@@ -86,21 +87,25 @@ export default function CadastrarAtualizarPpc() {
               required
             />
           </div>
+          
           <div className="form-group">
             <label>Curso associado:</label>
-            <select
-              className="input-select"
-              value={selectedCurso}
-              onChange={(e) => setSelectedCurso(e.target.value)}
-              required
-            >
-              <option value="">Selecione um curso</option>
-              {availableCursos.map((curso) => (
-                <option key={curso.codigo} value={curso.codigo}>
-                  {curso.nome} ({curso.codigo})
-                </option>
-              ))}
-            </select>
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <select
+                className="input-select"
+                value={selectedCurso}
+                onChange={(e) => setSelectedCurso(e.target.value)}
+                required
+              >
+                <option value="">Selecione um curso</option>
+                {availableCursos.map((curso) => (
+                  <option key={curso.codigo} value={curso.codigo}>
+                    {curso.nome} ({curso.codigo})
+                  </option>
+                ))}
+              </select>
+              <BotaoCadastrar to="/cursos/cadastrar" title="Criar Novo Curso" />
+            </div>
           </div>
           <button type="submit" className="submit-button">
             {codigo ? "Atualizar" : "Cadastrar"}

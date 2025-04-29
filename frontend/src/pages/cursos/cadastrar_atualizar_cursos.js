@@ -5,6 +5,7 @@ import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar"
 
 export default function CadastrarAtualizarCursos() {
   const [codigoInput, setCodigoInput] = useState("");
