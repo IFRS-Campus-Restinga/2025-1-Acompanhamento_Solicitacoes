@@ -15,17 +15,6 @@ class CoordenadorListCreateView(generics.ListCreateAPIView):
     queryset = Coordenador.objects.all()
     serializer_class = CoordenadorSerializer
     permission_classes = [AllowAny]
-    
-    @transaction.atomic
-    def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        
-        if serializer.is_valid():
-            coordenador = serializer.save()
-            
-            return Response(self.get_serializer(coordenador).data, status=status.HTTP_201_CREATED)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class CoordenadorRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):

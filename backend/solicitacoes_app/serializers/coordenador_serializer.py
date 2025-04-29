@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from ..models import Coordenador
-from .mandato_serializer import MandatoSerializer
 
 
 class CoordenadorSerializer(serializers.ModelSerializer):

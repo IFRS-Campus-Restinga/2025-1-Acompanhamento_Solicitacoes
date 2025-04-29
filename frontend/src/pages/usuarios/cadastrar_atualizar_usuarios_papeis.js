@@ -148,9 +148,11 @@ export default function CadastrarAtualizarUsuarioPapel() {
               <div className="form-group">
                 <label>Curso:</label>
                 <select name="curso" className="input-text" value={formData.curso} onChange={handleChange} required>
-                  <option value="">Selecione o Curso</option>
-                  {cursos.map((curso) => (
-                    <option key={curso.id} value={curso.id}>{curso.codigo} - {curso.nome}</option>
+                <option value="">Selecione o Curso</option>
+                {cursos.map((curso) => (
+                  <option key={curso.codigo} value={curso.codigo}>
+                    {curso.codigo} - {curso.nome}
+                </option>
                   ))}
                 </select>
               </div>
@@ -180,7 +182,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
           }}
         />
       </main>
-      <Footer />
+      < Footer />
     </div>
   );
 }
