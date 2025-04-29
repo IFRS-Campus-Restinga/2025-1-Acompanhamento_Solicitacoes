@@ -2,7 +2,10 @@ import React from "react";
 import { Route } from "react-router-dom";
 
 // Páginas
-import Cruds from "../pages/cruds/cruds.js";
+import Configuracoes from "../pages/configuracoes/configuracoes.js";
+import Cruds from "../pages/configuracoes/cruds.js";
+import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
+
 
 // Motivos de Abono
 import CadastrarAtualizarAbono from "../pages/motivos/abono/cadastrar_atualizar_abono";
@@ -60,6 +63,10 @@ import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/form
 
 const routes = [
   <Route path="/" element={<Cruds />} key="home" />,
+
+  <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
+  <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
+
 
   // Motivo Abono
   <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
