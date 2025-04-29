@@ -87,16 +87,26 @@ export default function FormularioExercicioDomiciliar() {
       <Header />
       <main className="container">
       <h2>Solicitação de Exercícios Domiciliares</h2>
+      <h6>Conforme o Art. 141. da Organização Didática do IFRS, os Exercícios Domiciliares 
+        possibilitam ao estudante realizar atividades em seu domicílio, quando houver 
+        impedimento de frequência às aulas por um período superior a 15 (quinze) dias, 
+        de acordo com o Decreto 1.044/69 e com a Lei 6.202/75, tendo suas faltas abonadas durante 
+        o período de afastamento. O atendimento através de Exercício Domiciliar é um processo 
+        em que a família e a Instituição devem atuar de forma colaborativa, para que o estudante
+        possa realizar suas atividades sem prejuízo na sua vida acadêmica. 
+        A solicitação deverá ser protocolada em até 05 (cinco) dias úteis 
+        subsequentes ao início da ausência às atividades letivas.</h6>
 
       <form onSubmit={handleSubmit} className="formulario" encType="multipart/form-data">
-        <div className="form-group">
-          <label>Nome completo:</label>
-          <input type="text" name="aluno_nome" value={formData.aluno_nome} onChange={handleChange} required />
-        </div>
 
         <div className="form-group">
           <label>E-mail:</label>
           <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+        </div>
+
+        <div className="form-group">
+          <label>Nome completo:</label>
+          <input type="text" name="aluno_nome" value={formData.aluno_nome} onChange={handleChange} required />
         </div>
 
         <div className="form-group">
@@ -118,20 +128,20 @@ export default function FormularioExercicioDomiciliar() {
                     </div>
 
         <div className="form-group">
-          <label>Componentes curriculares e respectivos docentes:</label>
-          <textarea name="componentes_curriculares" value={formData.componentes_curriculares} onChange={handleChange} rows="5" required />
+          <label>Escreva em quais componentes curriculares que você está matriculado e seus respectivos docentes:</label>
+          <textarea name="componentes_curriculares" placeholder="Sua resposta" value={formData.componentes_curriculares} onChange={handleChange} rows="5" required />
         </div>
 
         <div className="form-group">
           <label>Motivo da solicitação:</label>
           <select name="motivo_solicitacao" value={formData.motivo_solicitacao} onChange={handleChange} required>
             <option value="">Selecione o motivo</option>
-            <option value="saude">Problemas de saúde</option>
-            <option value="maternidade">Licença maternidade</option>
-            <option value="familiar">Acompanhamento de familiar</option>
-            <option value="aborto_ou_falecimento">Aborto/Falecimento</option>
-            <option value="adocao">Adoção de criança</option>
-            <option value="conjuge">Cônjuge/companheiro</option>
+            <option value="saude">Problemas de saúde, conforme inciso I do art. 142 da OD.</option>
+            <option value="maternidade">Licença maternidade, conforme inciso II do art. 142 da OD.</option>
+            <option value="familiar">Acompanhamento de familiar (primeiro grau) com problemas de saúde, inciso III, art. 142 da OD.</option>
+            <option value="aborto_ou_falecimento">Gestantes que sofreram aborto, falecimento do recém-nascido ou natimorto (IV, 142 OD)</option>
+            <option value="adocao">Adoção de criança, conforme inciso V, art. 142 da OD.</option>
+            <option value="conjuge">Licença cônjuge/companheiro de parturiente/puérperas, conforme inciso VI do art. 142 da OD.</option>
             <option value="outro">Outro</option>
           </select>
         </div>
@@ -145,11 +155,12 @@ export default function FormularioExercicioDomiciliar() {
 
         <div className="form-group">
           <label>Período de afastamento:</label>
+          <p>Informe a(s) data(s) que aparece(m) no seu atestado/documento. Por exemplo: "60 dias a partir de 11/04/2025" ou "De 11/04 a 15/05/2025". </p>
           <input type="text" name="periodo_afastamento" value={formData.periodo_afastamento} onChange={handleChange} required />
         </div>
 
         <div className="form-group">
-          <label>Documento apresentado:</label>
+          <label>Escolha o tipo de documento para justificar a sua solicitação:</label>
           <select name="documento_apresentado" value={formData.documento_apresentado} onChange={handleChange} required>
             <option value="">Selecione o documento</option>
             <option value="atestado">Atestado médico</option>
@@ -169,12 +180,12 @@ export default function FormularioExercicioDomiciliar() {
         )}
 
         <div className="form-group">
-          <label>Anexar documentos (máx 5 arquivos):</label>
+          <label>Anexe o(s) seu(s) documento(s) (máx 5 arquivos):</label>
           <input type="file" name="arquivos" multiple accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" onChange={handleChange} />
         </div>
 
         <div className="form-group">
-          <label>Você consegue realizar atividades no Moodle?</label>
+          <label>Você consegue realizar as atividades escolares pelo Moodle, de forma remota?</label>
           <div>
             <label>
               <input type="radio" name="consegue_realizar_atividades" value={true} checked={formData.consegue_realizar_atividades === "true"} onChange={handleChange} /> Sim
