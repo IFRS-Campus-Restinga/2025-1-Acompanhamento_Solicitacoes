@@ -9,7 +9,7 @@ class MandatoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Mandato
-        fields = ['coordenador', 'curso', 'inicio_mandato', 'fim_mandato']
+        fields = ['id', 'coordenador', 'curso', 'inicio_mandato', 'fim_mandato']
     
     def validate(self, data):
         # Executa as validações do model
