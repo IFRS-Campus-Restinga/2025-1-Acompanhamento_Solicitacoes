@@ -8,7 +8,7 @@ class CoordenadorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coordenador
-        fields = ['usuario', 'siape', 'mandatos_coordenador']
+        fields = ['id', 'usuario', 'siape', 'mandatos_coordenador']
         
     def get_mandatos_coordenador(self, obj):
         return [

@@ -1,48 +1,62 @@
 from rest_framework import serializers
-from ..models import Usuario, Coordenador, CRE, Aluno, Responsavel
-
+from ..models import Usuario
 
 class UsuarioSerializer(serializers.ModelSerializer):
-    
     papel = serializers.SerializerMethodField()
     papel_detalhes = serializers.SerializerMethodField()
-    data_nascimento = serializers.DateField(format="%d-%m-%Y", input_formats=["%Y-%m-%d", "%d-%m-%Y"])
-    
+
     class Meta:
         model = Usuario
-        fields = ['id', 'email', 'nome', 'cpf', 'telefone', 'data_nascimento', 'is_active', 'papel', 'papel_detalhes']
-        read_only_fields = ['id']
-        
+        fields = [
+            'id', 'nome', 'email', 'cpf', 'telefone', 'data_nascimento',
+            'is_active', 'papel', 'papel_detalhes'
+        ]
     
     def get_papel(self, obj):
-        # Verificando os papéis baseados nos campos relacionados do usuário
-        if hasattr(obj, 'coordenador') and obj.coordenador:
-            return 'Coordenador'
-        elif hasattr(obj, 'aluno') and obj.aluno:
-            return 'Aluno'
-        elif hasattr(obj, 'cre') and obj.cre:
-            return 'CRE'
-        elif hasattr(obj, 'responsavel') and obj.responsavel:
-            return 'Responsavel'
-        return '-'
-    
+        if hasattr(obj, 'coordenador'):
+            return "Coordenador"
+        if hasattr(obj, 'aluno'):
+            return "Aluno"
+        if hasattr(obj, 'cre'):
+            return "CRE"
+        if hasattr(obj, 'responsavel'):
+            return "Responsavel"
+        return "-"
     
     def get_papel_detalhes(self, obj):
-        # Importação tardia para evitar importação circular
+        if hasattr(obj, 'coordenador'):
+            coordenador = obj.coordenador
+            return {
+                "siape": coordenador.siape,
+                "mandatos_coordenador": [
+                    {
+                        "curso": mandato.curso.codigo,
+                        "inicio_mandato": mandato.inicio_mandato.strftime("%d-%m-%Y") if mandato.inicio_mandato else None,
+                        "fim_mandato": mandato.fim_mandato.strftime("%d-%m-%Y") if mandato.fim_mandato else None,
+                    }
+                    for mandato in coordenador.mandatos_coordenador.all()
+                ]
+            }
+        
         if hasattr(obj, 'aluno'):
-            from .aluno_serializer import AlunoSerializer
-            return AlunoSerializer(obj.aluno).data
-        elif hasattr(obj, 'coordenador'):
-            from .coordenador_serializer import CoordenadorSerializer
-            return CoordenadorSerializer(obj.coordenador).data
-        elif hasattr(obj, 'cre'):
-            from .cre_serializer import CRESerializer
-            return CRESerializer(obj.cre).data
-        elif hasattr(obj, 'responsavel'):
-            from .responsavel_serializer import ResponsavelSerializer
-            return ResponsavelSerializer(obj.responsavel).data
+            aluno = obj.aluno
+            return {
+                "matricula": aluno.matricula,
+                "turma": aluno.turma,
+                "ano_ingresso": aluno.ano_ingresso
+            }
+        
+        if hasattr(obj, 'cre'):
+            cre = obj.cre
+            return {
+                "siape": cre.siape
+            }
+        if hasattr(obj, 'responsavel'):
+            responsavel = obj.responsavel
+            return {
+                "aluno": responsavel.aluno.usuario.nome
+            }
         return None
-    
     
     def validate(self, data):
         # Executa as validações do model
