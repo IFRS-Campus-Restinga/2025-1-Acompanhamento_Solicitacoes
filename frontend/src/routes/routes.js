@@ -3,8 +3,9 @@ import { Route } from "react-router-dom";
 
 // Páginas
 import Configuracoes from "../pages/configuracoes/configuracoes.js";
-import Cruds from "../pages/configuracoes/cruds.js";
+//import Cruds from "../pages/configuracoes/cruds.js";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
+import Home from "./../pages/home";
 
 
 // Motivos de Abono
@@ -62,7 +63,8 @@ import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
 
 const routes = [
-  <Route path="/" element={<Cruds />} key="home" />,
+  //página inicial
+  <Route path="/" element={<Home />} key="home" />,
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
   <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
