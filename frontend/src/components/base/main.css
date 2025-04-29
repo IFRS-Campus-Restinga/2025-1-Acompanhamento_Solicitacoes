@@ -7,7 +7,11 @@
       margin: 0;
   }
   
- .container {
-    padding: 20px;
-    flex: 1;
-  }
+/* Centraliza a área principal */
+main.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* ou 100vh se quiser ocupar toda a altura da tela */
+  text-align: center;
+}

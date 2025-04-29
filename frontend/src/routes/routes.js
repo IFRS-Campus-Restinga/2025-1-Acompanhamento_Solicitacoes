@@ -2,7 +2,11 @@ import React from "react";
 import { Route } from "react-router-dom";
 
 // Páginas
-import Cruds from "../pages/cruds/cruds.js";
+import Configuracoes from "../pages/configuracoes/configuracoes.js";
+//import Cruds from "../pages/configuracoes/cruds.js";
+import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
+import Home from "./../pages/home";
+
 
 // Motivos de Abono
 import CadastrarAtualizarAbono from "../pages/motivos/abono/cadastrar_atualizar_abono";
@@ -39,6 +43,8 @@ import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
 import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
+import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
+import SelecionarPapelUsuario from "../pages/usuarios/selecionar_papel.js";
 
 //Grupos
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
@@ -59,7 +65,12 @@ import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
 
 const routes = [
-  <Route path="/" element={<Cruds />} key="home" />,
+  //página inicial
+  <Route path="/" element={<Home />} key="home" />,
+
+  <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
+  <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
+
 
   // Motivo Abono
   <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
@@ -101,6 +112,10 @@ const routes = [
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
   <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
+  <Route path="/usuarios/cadastro" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
+  <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
+  <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
+  <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
 
   // Grupos
   <Route path="/grupos" element={<ListarGrupos />} />,

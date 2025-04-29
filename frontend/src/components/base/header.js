@@ -20,7 +20,8 @@ const Header = () => {
         <div className="right user-info">
           <p className="mensagem-usuario">Bem-vinde, Karolina Dean</p>
           <img src="img/profile-pic.jpg" alt="Perfil" className="profile-pic"/>
-          <Link to="/settings" className="settings-link">
+          {/*LINK PARA ENGRENAGEM E DENTRO HAVERÁ CRUDS PARA VISÃO SOMENTE DO CRE*/}
+          <Link to="/configuracoes" className="configuracoes-link">
           <i className="bi bi-gear-fill icone" title="Configurações"></i>
           </Link>
         </div>

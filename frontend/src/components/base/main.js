@@ -4,7 +4,7 @@ import "./main.css";
 
 const main = () => {
   return (
-    <main>
+    <main classname="container">
       
     </main>
   );

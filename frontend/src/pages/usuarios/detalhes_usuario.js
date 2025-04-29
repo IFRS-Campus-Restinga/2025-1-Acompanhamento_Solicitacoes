@@ -40,9 +40,22 @@ export default function DetalhesUsuario() {
             {usuario.papel === "Coordenador" && (
               <>
                 <p><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</p>
-                <p><strong>Curso:</strong> {usuario.papel_detalhes?.curso}</p>
-                <p><strong>Início do Mandato:</strong> {usuario.papel_detalhes?.inicio_mandato}</p>
-                <p><strong>Fim do Mandato:</strong> {usuario.papel_detalhes?.fim_mandato}</p>
+
+                {(() => {
+                  const mandatos = usuario.papel_detalhes?.mandatos_coordenador || [];
+
+                  if (mandatos.length === 0) {
+                    return <p><em>Sem mandatos registrados.</em></p>;
+                  }
+                  return mandatos.map((mandato, idx) => (
+                    <div key={idx}>
+                      <p><strong>Curso:</strong> {mandato.curso}</p>
+                      <p><strong>Início do Mandato:</strong> {mandato.inicio_mandato}</p>
+                      <p><strong>Fim do Mandato:</strong> {mandato.fim_mandato || "Atual"}</p>
+                      <hr />
+                    </div>
+                  ));
+                })()}
               </>
             )}
 

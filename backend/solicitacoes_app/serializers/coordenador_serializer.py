@@ -1,6 +1,5 @@
 from rest_framework import serializers
 from ..models import Coordenador
-from .mandato_serializer import MandatoSerializer
 
 
 class CoordenadorSerializer(serializers.ModelSerializer):
@@ -8,7 +7,7 @@ class CoordenadorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coordenador
-        fields = ['usuario', 'siape', 'mandatos_coordenador']
+        fields = ['id', 'usuario', 'siape', 'mandatos_coordenador']
         
     def get_mandatos_coordenador(self, obj):
         return [

@@ -87,14 +87,14 @@ urlpatterns = [
     path("formulario_abono_falta/", FormAbonoFaltaViewListCreate.as_view(), name='abono_falta_list_create'),
     path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaViewUpdateDelete.as_view(), name='abono_falta_update_delete'),
     
-    path("mandato/", MandatoListCreateView.as_view(), name='mandato-list'),
-    path("mandato/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
+    path("mandatos/", MandatoListCreateView.as_view(), name='mandato-list'),
+    path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
 
     path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
 
-    path('exercicios-domiciliares/', FormExercicioDomiciliarListCreate.as_view(), name='exercicios-domiciliares-list-create'),
-    path('exercicios-domiciliares/<int:id>/', FormExercicioDomiciliarDetail.as_view(), name='exercicios-domiciliares-detail'),
+    path('form_exercicio_domiciliar/', FormExercicioDomiciliarListCreate.as_view(), name='exercicios-domiciliares-list-create'),
+    path('form_exercicio_domiciliar/<int:id>/', FormExercicioDomiciliarDetail.as_view(), name='exercicios-domiciliares-detail'),
 
 ]
