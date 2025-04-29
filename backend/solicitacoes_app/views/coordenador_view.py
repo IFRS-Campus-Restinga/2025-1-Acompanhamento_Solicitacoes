@@ -21,7 +21,8 @@ class CoordenadorListCreateView(generics.ListCreateAPIView):
         serializer = self.get_serializer(data=request.data)
         
         if serializer.is_valid():
-            coordenador = serializer.save()  # Aqui já salva Usuario, Coordenador e Mandato
+            coordenador = serializer.save()
+            
             return Response(self.get_serializer(coordenador).data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

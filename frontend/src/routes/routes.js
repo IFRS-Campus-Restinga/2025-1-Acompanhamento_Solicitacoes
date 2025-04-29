@@ -43,6 +43,8 @@ import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
 import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
+import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
+import SelecionarPapelUsuario from "../pages/usuarios/selecionar_papel.js";
 
 //Grupos
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
@@ -110,6 +112,10 @@ const routes = [
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
   <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
+  <Route path="/usuarios/cadastro" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
+  <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
+  <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
+  <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
 
   // Grupos
   <Route path="/grupos" element={<ListarGrupos />} />,
