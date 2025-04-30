@@ -80,6 +80,10 @@ const NovaSolicitacao = () => {
             <i className="bi bi-door-open-fill"></i> Desistência de Vaga
           </Link>
 
+
+          <Link className="crud-link" to="/dispensa_ed_fisica">
+          <i class="bi bi-person-arms-up"></i> Solicitação de Dispensa de Educação Física
+          </Link>
         </div>
       </main>
       <Footer />

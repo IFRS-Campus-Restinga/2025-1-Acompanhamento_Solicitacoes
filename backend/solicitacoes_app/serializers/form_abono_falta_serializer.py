@@ -1,8 +1,10 @@
 from rest_framework import serializers
-from ..models import MotivoAbono, FormAbonoFalta, Anexo
+from ..models import MotivoAbono, FormAbonoFalta, Anexo, Curso
 from .motivo_abono_serializer import MotivoAbonoSerializer
 
 class FormAbonoFaltaSerializer(serializers.ModelSerializer):
+    curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
+
     motivo_solicitacao = MotivoAbonoSerializer(read_only=True)
     motivo_solicitacao_id = serializers.PrimaryKeyRelatedField(
         source='motivo_solicitacao',
@@ -21,14 +23,15 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
         model = FormAbonoFalta
         fields = [
             'id',
-            'aluno_nome',
             'email',
+            'aluno_nome',
             'matricula',
+            'curso',
             'motivo_solicitacao',
             'motivo_solicitacao_id',
-            'anexos',
             'data_inicio_afastamento',
             'data_fim_afastamento',
+            'anexos',
             'acesso_moodle',
             'perdeu_atividades'
         ]
@@ -46,7 +49,7 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(f"O arquivo {arquivo.name} tem um tipo não permitido.")
         return value
 
-    def validate(self, data):
+    def validate_data(self, data):
         """
         Validação adicional para garantir que as datas sejam consistentes.
         """
