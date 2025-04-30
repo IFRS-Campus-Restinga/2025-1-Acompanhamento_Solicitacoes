@@ -74,6 +74,10 @@ const NovaSolicitacao = () => {
             <i className="bi bi-calendar-x-fill"></i> Solicitação de Abono de
             Falta
           </Link>
+
+          <Link className="crud-link" to="/dispensa_ed_fisica">
+          <i class="bi bi-person-arms-up"></i> Solicitação de Dispensa de Educação Física
+          </Link>
         </div>
       </main>
       <Footer />

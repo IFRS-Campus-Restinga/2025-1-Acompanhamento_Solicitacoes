@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
+    const [popularCursos, setPopularCursos] = useState([]);
     const [dados, setDados] = useState({});
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
@@ -28,6 +29,16 @@ export default function Formulario() {
                 setPopupType("error");
                 setPopupIsOpen(true);
             });
+    }, []);
+
+    useEffect(() => {
+        axios.get("http://localhost:8000/solicitacoes/cursos/")
+        .then((response) => setPopularCursos(response.data))
+        .catch((err) => {
+            setMsgErro(err);
+            setPopupType("error");
+            setPopupIsOpen(true);
+        })
     }, []);
 
     const handleFormChange = (dadosAtualizados) => {
@@ -104,7 +115,7 @@ export default function Formulario() {
                     <div className="form-group">
                         <Options
                             url={urls}
-                            popularCampo={popularMotivosDispensa}
+                            popularCampo={[popularCursos, popularMotivosDispensa]}
                             onChange={handleFormChange}
                             ignoreFields={["id", "form_dispensa_ed_fisica", "form_exercicos_domiciliares", "form_abono_falta"]}
                         />

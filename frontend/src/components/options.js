@@ -173,7 +173,7 @@ export default function Options({ url = [], popularCampo = [], onChange, ignoreF
                   <option value="">Selecione</option>
                   {popularCampo.map((campo) => (
                     <option key={campo.id} value={campo.id}>
-                      {campo.descricao}
+                      {campo.nome}
                     </option>
                   ))}
                 </select>
