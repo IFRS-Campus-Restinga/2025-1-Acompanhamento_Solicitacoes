@@ -1,11 +1,10 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom"; 
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
-import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar"
 
 export default function CadastrarAtualizarCursos() {
   const [codigoInput, setCodigoInput] = useState("");
@@ -18,6 +17,7 @@ export default function CadastrarAtualizarCursos() {
 
   const navigate = useNavigate();
   const { codigo } = useParams();
+  const location = useLocation();
 
   useEffect(() => {
     axios
@@ -37,7 +37,9 @@ export default function CadastrarAtualizarCursos() {
         })
         .catch((err) => {
           setMensagem(
-            `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar curso."}`
+            `Erro ${err.response?.status || ""}: ${
+              err.response?.data?.detail || "Erro ao carregar curso."
+            }`
           );
           setTipoMensagem("erro");
           setShowFeedback(true);
@@ -47,10 +49,10 @@ export default function CadastrarAtualizarCursos() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const dados = { 
-      codigo: codigoInput, 
-      nome, 
-      ppcs: selectedPpcs 
+    const dados = {
+      codigo: codigoInput,
+      nome,
+      ppcs: selectedPpcs,
     };
 
     const requisicao = codigo
@@ -59,13 +61,19 @@ export default function CadastrarAtualizarCursos() {
 
     requisicao
       .then(() => {
-        setMensagem(codigo ? "Curso atualizado com sucesso!" : "Curso cadastrado com sucesso!");
+        setMensagem(
+          codigo
+            ? "Curso atualizado com sucesso!"
+            : "Curso cadastrado com sucesso!"
+        );
         setTipoMensagem("sucesso");
         setShowFeedback(true);
       })
       .catch((err) => {
         setMensagem(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao salvar curso."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao salvar curso."
+          }`
         );
         setTipoMensagem("erro");
         setShowFeedback(true);
@@ -73,7 +81,10 @@ export default function CadastrarAtualizarCursos() {
   };
 
   const handlePpcSelection = (e) => {
-    const newSelection = Array.from(e.target.selectedOptions, (option) => option.value);
+    const newSelection = Array.from(
+      e.target.selectedOptions,
+      (option) => option.value
+    );
     setSelectedPpcs(newSelection);
   };
 
@@ -123,7 +134,7 @@ export default function CadastrarAtualizarCursos() {
           tipo={tipoMensagem}
           onClose={() => {
             setShowFeedback(false);
-            navigate("/cursos");
+            navigate(location.state?.from || "/cursos");
           }}
         />
       </main>

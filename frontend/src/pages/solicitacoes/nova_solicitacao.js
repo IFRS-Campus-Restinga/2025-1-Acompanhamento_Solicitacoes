@@ -9,12 +9,13 @@ const NovaSolicitacao = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
 
   useEffect(() => {
-    axios.get("http://127.0.0.1:8000/solicitacoes/")
-      .then(res => setSolicitacoes(res.data))
-      .catch(err => console.error("Erro ao buscar solicitações:", err));
+    axios
+      .get("http://127.0.0.1:8000/solicitacoes/")
+      .then((res) => setSolicitacoes(res.data))
+      .catch((err) => console.error("Erro ao buscar solicitações:", err));
   }, []);
 
-/* COLOCAR FUTURAMENTE NO CODIGO
+  /* COLOCAR FUTURAMENTE NO CODIGO
   const NovaSolicitacao = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
     const [usuario, setUsuario] = useState(null);
@@ -51,22 +52,28 @@ const NovaSolicitacao = () => {
     <div>
       <Header />
       <main className="container">
-
         <h2>Solicitações Disponíveis</h2>
         <div className="grid-cruds">
+          <Link className="crud-link" to="/trancamento_matricula">
+            <i className="bi bi-box-arrow-right"></i> Solicitação de Trancamento
+            de Matrícula
+          </Link>
+
           <Link className="crud-link" to="/trancamento_disciplina">
-            <i className="bi bi-x-circle"></i> Solicitação de Trancamento de Componente Curricular
+            <i className="bi bi-x-circle"></i> Solicitação de Trancamento de
+            Componente Curricular
           </Link>
           {/* FORMULARIO EXERCICIOS DOMICILIARES */}
 
           <Link className="crud-link" to="/exercicio_domiciliar">
-            <i className="bi bi-house-check-fill"></i> Solicitação de Exercício Domiciliar
-          </Link>
-          
-          <Link className="crud-link" to="/abono_falta">
-            <i className="bi bi-calendar-x-fill"></i> Solicitação de Abono de Falta
+            <i className="bi bi-house-check-fill"></i> Solicitação de Exercício
+            Domiciliar
           </Link>
 
+          <Link className="crud-link" to="/abono_falta">
+            <i className="bi bi-calendar-x-fill"></i> Solicitação de Abono de
+            Falta
+          </Link>
         </div>
       </main>
       <Footer />

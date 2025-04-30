@@ -6,6 +6,7 @@ import Configuracoes from "../pages/configuracoes/configuracoes.js";
 //import Cruds from "../pages/configuracoes/cruds.js";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
 import Home from "./../pages/home";
+import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js"; 
 
 
 // Motivos de Abono
@@ -130,7 +131,9 @@ const routes = [
 
   <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
 
-  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />
+  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />,
+
+  <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatricula />} key="trancamento_matricula" />,
 
  ];
 
