@@ -5,13 +5,12 @@ from ..models.form_tranc_matricula import FormularioTrancamentoMatricula
 from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
 
 class FormTrancamentoListCreate(generics.ListCreateAPIView):
-    queryset           = FormularioTrancamentoMatricula.objects.all()
-    serializer_class   = FormularioTrancamentoMatriculaSerializer
+    queryset = FormularioTrancamentoMatricula.objects.all()
+    serializer_class = FormularioTrancamentoMatriculaSerializer
     permission_classes = [AllowAny]
-
 
 class FormTrancamentoDetail(generics.RetrieveUpdateDestroyAPIView):
-    queryset           = FormularioTrancamentoMatricula.objects.all()
-    serializer_class   = FormularioTrancamentoMatriculaSerializer
+    queryset = FormularioTrancamentoMatricula.objects.all()
+    serializer_class = FormularioTrancamentoMatriculaSerializer
     permission_classes = [AllowAny]
-    lookup_field       = "id"          # inteiro gerado automaticamente
+    lookup_field = "id"
