@@ -1,17 +1,11 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
-
-//POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
-
-// PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
-
-//BOTÕES
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
@@ -25,7 +19,9 @@ export default function ListarCursos() {
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
 
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [cursosPaginados, setMotivosPaginados] = useState([]);
+  const [cursosPaginados, setCursosPaginados] = useState([]);
+
+  const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
     axios
@@ -61,14 +57,32 @@ export default function ListarCursos() {
       });
   };
 
+  const cursosFiltrados = useMemo(() => 
+    cursos.filter(curso =>
+      curso.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+      curso.codigo.toLowerCase().includes(filtro.toLowerCase())
+    ),
+    [cursos, filtro]
+  );
+
   return (
     <div>
       <Header />
       <main className="container">
         <h2>Cursos</h2>
 
-        {/* Botão de cadastrar */}
         <BotaoCadastrar to="/cursos/cadastrar" title="Criar Novo Curso" />
+
+        <div className="barra-pesquisa">
+          <i className="bi bi-search icone-pesquisa"></i>
+          <input
+            type="text"
+            placeholder="Buscar por nome ou código..."
+            value={filtro}
+            onChange={(e) => setFiltro(e.target.value)}
+            className="input-pesquisa"
+          />
+        </div>
 
         <table className="tabela-cruds">
           <thead>
@@ -106,11 +120,11 @@ export default function ListarCursos() {
         </table>
 
         <Paginacao
-          dados={cursos}
+          dados={cursosFiltrados}
           paginaAtual={paginaAtual}
           setPaginaAtual={setPaginaAtual}
           itensPorPagina={5}
-          onDadosPaginados={setMotivosPaginados}
+          onDadosPaginados={setCursosPaginados}
         />
 
         <PopupConfirmacao
@@ -127,7 +141,6 @@ export default function ListarCursos() {
         />
 
         <BotaoVoltar onClick={() => navigate("/")} />
-
       </main>
       <Footer />
     </div>
