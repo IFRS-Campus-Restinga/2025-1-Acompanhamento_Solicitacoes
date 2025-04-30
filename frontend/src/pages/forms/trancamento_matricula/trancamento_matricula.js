@@ -13,9 +13,7 @@ export default function FormularioTrancamentoMatricula() {
     email: "",
     matricula: "",
     curso: curso_codigo || "",
-    justificativa: "",
-    periodo: "",
-    arquivos: [],
+    justificativa: ""
   });
 
   const navigate = useNavigate();
