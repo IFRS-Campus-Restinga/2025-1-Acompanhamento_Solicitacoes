@@ -24,6 +24,7 @@ from .views.form_exercicios_domiciliares import (
     FormExercicioDomiciliarListCreate,
     FormExercicioDomiciliarDetail
 )
+from .views.form_desistencia_vaga_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -96,5 +97,8 @@ urlpatterns = [
 
     path('form_exercicio_domiciliar/', FormExercicioDomiciliarListCreate.as_view(), name='exercicios-domiciliares-list-create'),
     path('form_exercicio_domiciliar/<int:id>/', FormExercicioDomiciliarDetail.as_view(), name='exercicios-domiciliares-detail'),
+
+    path('form_desistencia_vaga/', FormDesistenciaVagaListCreate.as_view(), name='form_desistencia_vaga_create'),
+    path('form_desistencia_vaga/<int:id>/', FormDesistenciaVagaDetail.as_view(), name='form_desistencia_vaga_detail'),
 
 ]

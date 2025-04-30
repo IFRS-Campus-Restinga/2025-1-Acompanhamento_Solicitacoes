@@ -42,5 +42,7 @@ def api_root(request, format=None):
         'mandato': reverse('solicitacoes_app:mandato-list', request=request, format=format),
 
         'form_tranc_disciplina': reverse('solicitacoes_app:listar_cadastrar_form_trancamento_disciplina', request=request, format=format),
+
+        'form_desistencia_vaga': reverse('solicitacoes_app:form_desistencia_vaga_create', request=request, format=format),
         
         })

@@ -74,6 +74,12 @@ const NovaSolicitacao = () => {
             <i className="bi bi-calendar-x-fill"></i> Solicitação de Abono de
             Falta
           </Link>
+          
+          {/* Form de desistencia de vaga*/}
+          <Link className="crud-link" to="/desistencia_vaga">
+            <i className="bi bi-door-open-fill"></i> Desistência de Vaga
+          </Link>
+
         </div>
       </main>
       <Footer />

@@ -65,6 +65,11 @@ import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
 
+//Form desistencia Vaga
+
+import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario.js";
+
+
 const routes = [
   //página inicial
   <Route path="/" element={<Home />} key="home" />,
@@ -134,6 +139,11 @@ const routes = [
   <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />,
 
   <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatricula />} key="trancamento_matricula" />,
+
+  //from desistencia vaga
+
+  <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
+
 
  ];
 

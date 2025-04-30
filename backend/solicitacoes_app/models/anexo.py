@@ -3,6 +3,7 @@ from .form_dispensa_ed_fisica import FormDispensaEdFisica
 from django.db import models
 from .form_abono_falta import FormAbonoFalta
 from .forms.form_exercicio_domiciliar import FormExercicioDomiciliar
+from .forms.form_desistencia_vaga import FormDesistenciaVaga
 from .base import BaseModel
 
 class Anexo(BaseModel):
@@ -29,11 +30,21 @@ class Anexo(BaseModel):
         blank=True
     )
 
+    form_desistencia_vaga = models.ForeignKey(
+        FormDesistenciaVaga,
+        on_delete=models.CASCADE,
+        related_name="desistencia_anexos",
+        null=True,
+        blank=True
+    )
+
+
     def clean(self):
         linked_forms = [
             self.form_dispensa_ed_fisica,
             self.form_abono_falta,
-            self.form_exercicos_domiciliares
+            self.form_exercicos_domiciliares,
+            self.form_desistencia_vaga
         ]
         if sum(bool(form) for form in linked_forms) != 1:
             raise ValidationError("O anexo deve estar vinculado a apenas um formulário.")
