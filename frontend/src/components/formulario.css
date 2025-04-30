@@ -7,6 +7,11 @@
     border-radius: 12px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   }
+
+  .formulario-largo {
+    max-width: inherit !important;
+    width: 100%;
+  }
   
   /* Agrupamento de cada campo */
   .formulario .form-group {
@@ -134,6 +139,11 @@
     margin-top: 5px;   /* Pequeno espaçamento acima da mensagem */
     display: block;    /* Garantir que o texto fique em uma nova linha */
   }
- 
-  
-  
+
+
+  .erro {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    display: block;
+  }

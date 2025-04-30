@@ -112,7 +112,7 @@ export default function FormularioTrancamentoMatricula() {
 
         <form
           onSubmit={handleSubmit}
-          className="formulario"
+          className="formulario formulario-largo"
           encType="multipart/form-data"
         >
           <div className="form-group">

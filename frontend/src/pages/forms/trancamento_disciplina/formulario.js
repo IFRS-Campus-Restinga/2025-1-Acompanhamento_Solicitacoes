@@ -2,9 +2,10 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
-import Options from "../../../components/options";
 import Popup from "../../../components/popup";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback"; 
 import { useNavigate, useParams } from "react-router-dom";
+import "../../../components/formulario.css";
 
 export default function Formulario() {
     const { curso_codigo } = useParams();
@@ -21,6 +22,12 @@ export default function Formulario() {
     const [msgErro, setMsgErro] = useState([]);
     const [mensagemErro, setMensagemErro] = useState("");
 
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [feedbackData, setFeedbackData] = useState({
+        mensagem: "",
+        tipo: "sucesso"
+    });
+
     const popupActions = [
         {
             label: "Fechar",
@@ -34,14 +41,12 @@ export default function Formulario() {
 
     const navigate = useNavigate();
 
-    // Carregar os cursos ao montar o componente
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/cursos/")
             .then((response) => setCursos(response.data))
             .catch((err) => console.error("Erro ao buscar cursos:", err));
     }, []);
 
-    // Carregar as disciplinas quando o curso for selecionado
     useEffect(() => {
         if (dados.curso) {
             axios.get(`http://localhost:8000/solicitacoes/formulario_trancamento_disciplina/disciplinas/${dados.curso}/`)
@@ -50,85 +55,114 @@ export default function Formulario() {
         }
     }, [dados.curso]);
 
-    // Atualiza o curso selecionado e limpa as disciplinas
     const handleCursoChange = (cursoId) => {
         setDados((prevDados) => ({
             ...prevDados,
             curso: cursoId,
-            disciplinas: [] // Limpa as disciplinas selecionadas ao mudar o curso
+            disciplinas: []
         }));
     };
 
-    // Enviar os dados para a API
     const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Dados a enviar:", dados);  // Depuração para verificar se as disciplinas estão corretas
-
-        await axios.post(
-            "http://localhost:8000/formulario_trancamento_disciplina/",
-            dados
-        )
-        .then(() => {
-            navigate("/solicitacoes");
-        })
-        .catch((err) => {
+        try {
+            await axios.post(
+                "http://localhost:8000/solicitacoes/formulario_trancamento_disciplina/",
+                dados
+            );
+            setMensagemErro("");
+            setFeedbackData({
+                mensagem: "Solicitação enviada com sucesso!",
+                tipo: "sucesso"
+            });
+            setShowFeedback(true);
+            setDados({
+                aluno: "",
+                curso: curso_codigo || "",
+                disciplinas: [],
+                ingressante: false,
+                motivo_solicitacao: "",
+            });
+        } catch (err) {
             setMsgErro(err);
             setPopupIsOpen(true);
+            setFeedbackData({
+                mensagem: "Erro ao enviar a solicitação.",
+                tipo: "erro"
+            });
+            setShowFeedback(true);
+        }
+    };
+
+    const handleFormChange = (campo, valor) => {
+        setDados((prevDados) => {
+            let novosDados = { ...prevDados, [campo]: valor };
+    
+            if (campo === "ingressante" && valor === true) {
+                novosDados.disciplinas = prevDados.disciplinas.slice(0, 2);
+                setMensagemErro("Você só pode selecionar no máximo 2 disciplinas.");
+            }
+    
+            return novosDados;
         });
     };
 
-    // Atualiza os campos do formulário
-    const handleFormChange = (campo, valor) => {
-        setDados((prevDados) => ({
-            ...prevDados,
-            [campo]: valor,
-        }));
-    };
-
-    // Remove uma disciplina selecionada
     const handleRemoveDisciplina = (codigo) => {
         setDados((prevDados) => ({
             ...prevDados,
             disciplinas: prevDados.disciplinas.filter(d => d !== codigo)
         }));
+        setMensagemErro("");
     };
 
     const handleDisciplinasChange = (e) => {
         const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
-        console.log('Disciplinas selecionadas:', selectedOptions);
-    
-        // Limite de disciplinas: 2 se ingressante, 5 caso contrário
         const limite = dados.ingressante ? 2 : 5;
     
-        // Verificar se o número de disciplinas selecionadas excede o limite
-        if (selectedOptions.length > limite) {
+        if (dados.ingressante) {
+            if (dados.disciplinas.length > 2) {
+                setDados((prevDados) => ({
+                    ...prevDados,
+                    disciplinas: prevDados.disciplinas.slice(0, 2),
+                }));
+                setMensagemErro("");
+                return;
+            }
+        }
+        
+        if (dados.disciplinas.length + selectedOptions.length > limite) {
             setMensagemErro(`Você só pode selecionar no máximo ${limite} disciplinas.`);
-            return; // Não atualiza o estado se o limite for ultrapassado
+            return; 
         }
     
-        setMensagemErro(""); // Limpar mensagem de erro quando estiver dentro do limite
-
-        if (dados.ingressante && dados.disciplinas.length > 2) {
-            selectedOptions.length = 2;  // Mantém apenas as 2 primeiras disciplinas
+        setMensagemErro("");
+    
+        if (dados.ingressante && dados.disciplinas.length + selectedOptions.length > 2) {
+            selectedOptions.length = 2 - dados.disciplinas.length;
         }
     
-        // Filtra as disciplinas já selecionadas para não permitir duplicação
         const disciplinasSelecionadas = new Set([...dados.disciplinas, ...selectedOptions]);
-    
-        // Limitar o número de disciplinas selecionadas (máximo de 2 ou 5)
         const disciplinasAtualizadas = Array.from(disciplinasSelecionadas).slice(0, limite);
-    
-        // Atualiza as disciplinas no estado
+
         handleFormChange("disciplinas", disciplinasAtualizadas);
     };
 
     return (
         <div>
             <Header />
-            <main className="container form-container">
-                <form className="form-box" onSubmit={handleSubmit}>
+            <main className="container">
+                <h2>Solicitação de Trancamento de Componente Curricular</h2>
+                <h6><p>Este formulário destina-se à solicitação de trancamento de um ou mais componente(s) curricular(es) do período letivo vigente.</p>
+                <p>Conforme art. 122 da Organização Didática, entende-se por trancamento de componente curricular o ato formal pelo qual o estudante solicita a desistência de um ou mais componentes curriculares do curso.</p>
+                <p>Ainda, quando o estudante for ingressante será permitido o trancamento de até 2 (dois) componentes curriculares matriculados (art. 8º da Organização Didática).</p>
+                <p>QUEM: Estudantes dos cursos subsequentes e do superior.</p>
+                <p>QUANDO: A solicitação de trancamento de componente curricular poderá ser feita dentro de cada período letivo, conforme prazo estabelecido em nosso calendário acadêmico.</p>
+                <p>Após entrega do formulário, a coordenação de curso fará a análise da solicitação em até 7 (sete) dias e a CRE tem até 5 (cinco) dias úteis para inserir os resultados no sistema.</p> 
+                <p>Este prazo pode ser estendido conforme as demandas da coordenação de curso e/ou do setor. O resultado pode ser conferido no sistema acadêmico.</p></h6>
+
+                <form className="formulario formulario-largo" onSubmit={handleSubmit}>
                     <div className="form-group">
-                        <label>Nome do Aluno:</label>
+                        <label>Nome completo:</label>
                         <input
                             type="text"
                             className="input-text"
@@ -204,7 +238,7 @@ export default function Formulario() {
                         </ul>
                     </div>
                     <div className="form-group">
-                        <label>Motivo da Solicitação</label>
+                        <label>Motivo da Solicitação:</label>
                         <textarea
                             value={dados.motivo_solicitacao}
                             onChange={(e) => handleFormChange("motivo_solicitacao", e.target.value)}
@@ -214,13 +248,24 @@ export default function Formulario() {
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
             </main>
+
             {popupIsOpen && (
-                <Popup 
+                <Popup
                     message={msgErro.response?.data?.motivo_solicitacao}
                     isError={true}
                     actions={popupActions}
                 />
             )}
+
+            {showFeedback && (
+                <PopupFeedback
+                    show={showFeedback}
+                    mensagem={feedbackData.mensagem}
+                    tipo={feedbackData.tipo}
+                    onClose={() => setShowFeedback(false)}
+                />
+            )}
+
             <Footer />
         </div>
     );
