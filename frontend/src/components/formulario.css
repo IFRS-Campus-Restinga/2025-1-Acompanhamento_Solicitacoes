@@ -99,6 +99,7 @@
   
 /*Caixa da data*/
   .periodo-afastamento {
+    border: 1px solid #ddd;
     padding: 20px;
     margin-bottom: 20px;
     border-radius: 10px;
@@ -126,6 +127,13 @@
     max-width: 200px; /* Limitar o tamanho da barra */
   }
   
+  /*Mensagem de erro das caixas*/
+  .error-text {
+    font-size: 0.85em; /* Diminuir o tamanho da fonte */
+    color: #d9534f;    /* Cor vermelho para destacar o erro */
+    margin-top: 5px;   /* Pequeno espaçamento acima da mensagem */
+    display: block;    /* Garantir que o texto fique em uma nova linha */
+  }
  
   
   
