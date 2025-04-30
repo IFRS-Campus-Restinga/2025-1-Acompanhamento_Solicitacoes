@@ -7,6 +7,11 @@
     border-radius: 12px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
   }
+
+  .formulario-largo {
+    max-width: inherit !important;
+    width: 100%;
+  }
   
   /* Agrupamento de cada campo */
   .formulario .form-group {
@@ -126,6 +131,12 @@
     max-width: 200px; /* Limitar o tamanho da barra */
   }
   
+  .erro {
+    color: red;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+    display: block;
+  }
  
   
   

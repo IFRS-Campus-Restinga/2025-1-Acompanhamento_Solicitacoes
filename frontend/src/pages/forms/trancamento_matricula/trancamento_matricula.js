@@ -13,15 +13,15 @@ export default function FormularioTrancamentoMatricula() {
     email: "",
     matricula: "",
     curso: curso_codigo || "",
-    justificativa: ""
+    motivo_solicitacao: "",
   });
 
   const navigate = useNavigate();
-  const [popupIsOpen, setPopupIsOpen] = useState(false);
 
   useEffect(() => {
-    axios.get("http://localhost:8000/solicitacoes/cursos/")
-      .then(res => setCursos(res.data))
+    axios
+      .get("http://localhost:8000/solicitacoes/cursos/")
+      .then((res) => setCursos(res.data))
       .catch((err) => console.error("Erro ao buscar cursos:", err));
   }, []);
 
@@ -37,7 +37,13 @@ export default function FormularioTrancamentoMatricula() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!formData.aluno_nome || !formData.email || !formData.matricula || !formData.justificativa || !formData.periodo || !formData.curso) {
+    if (
+      !formData.aluno_nome ||
+      !formData.email ||
+      !formData.matricula ||
+      !formData.motivo_solicitacao ||
+      !formData.curso
+    ) {
       alert("Todos os campos obrigatórios devem ser preenchidos!");
       return;
     }
@@ -45,7 +51,7 @@ export default function FormularioTrancamentoMatricula() {
     const data = new FormData();
     for (const key in formData) {
       if (key === "arquivos") {
-        Array.from(formData.arquivos).forEach(file => {
+        Array.from(formData.arquivos).forEach((file) => {
           data.append("arquivos", file);
         });
       } else {
@@ -53,44 +59,103 @@ export default function FormularioTrancamentoMatricula() {
       }
     }
 
-    axios.post("http://localhost:8000/solicitacoes/form_trancamento/", data, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    })
+    axios
+      .post(
+        "http://localhost:8000/solicitacoes/formularios-trancamento/",
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      )
       .then(() => {
         alert("Solicitação enviada com sucesso!");
         navigate("/solicitacoes");
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Erro ao enviar:", error);
-        alert("Erro ao enviar solicitação. Verifique os dados e tente novamente.");
+        alert(
+          "Erro ao enviar solicitação. Verifique os dados e tente novamente."
+        );
       });
   };
+
   return (
     <div>
       <Header />
       <main className="container">
         <h2>Solicitação de Trancamento de Matrícula</h2>
-        <p>Preencha os dados abaixo para solicitar o trancamento da sua matrícula. Essa solicitação será avaliada pela coordenação do curso.</p>
 
-        <form onSubmit={handleSubmit} className="formulario" encType="multipart/form-data">
+        <div className="descricao-formulario">
+          <p>
+            Este formulário destina-se à solicitação de trancamento total de
+            matrícula.
+          </p>
+          <p>
+            Conforme art. 123 da Organização Didática, o trancamento total da
+            matrícula poderá ser concedido para estudantes dos cursos técnicos
+            subsequentes e de graduação por, no máximo, 50% (cinquenta por
+            cento) do tempo do curso, considerando períodos letivos consecutivos
+            ou não.
+          </p>
+          <p>QUEM: Estudantes dos cursos subsequentes e do superior.</p>
+          <p>
+            QUANDO: A solicitação de trancamento total de matrícula poderá ser
+            feita até a quarta semana após o início das atividades letivas,
+            conforme estabelecido em nosso calendário acadêmico.
+          </p>
+          <p>
+            Após entrega do formulário, a coordenação de curso fará a análise da
+            solicitação em até 7 (sete) dias e a CRE tem até 5 (cinco) dias
+            úteis para inserir os resultados no sistema...
+          </p>
+        </div>
+
+        <form
+          onSubmit={handleSubmit}
+          className="formulario formulario-largo"
+          encType="multipart/form-data"
+        >
           <div className="form-group">
             <label>E-mail:</label>
-            <input type="email" name="email" value={formData.email} onChange={handleChange} required />
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Nome completo:</label>
-            <input type="text" name="aluno_nome" value={formData.aluno_nome} onChange={handleChange} required />
+            <input
+              type="text"
+              name="aluno_nome"
+              value={formData.aluno_nome}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Número de matrícula:</label>
-            <input type="text" name="matricula" value={formData.matricula} onChange={handleChange} required />
+            <input
+              type="text"
+              name="matricula"
+              value={formData.matricula}
+              onChange={handleChange}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label>Curso:</label>
-            <select name="curso" value={formData.curso} onChange={handleChange} required>
+            <select
+              name="curso"
+              value={formData.curso}
+              onChange={handleChange}
+              required
+            >
               <option value="">Selecione o curso</option>
               {cursos.map((curso) => (
                 <option key={curso.codigo} value={curso.codigo}>
@@ -102,10 +167,18 @@ export default function FormularioTrancamentoMatricula() {
 
           <div className="form-group">
             <label>Justificativa do trancamento:</label>
-            <textarea name="justificativa" value={formData.justificativa} onChange={handleChange} rows="5" required />
+            <textarea
+              name="motivo_solicitacao"
+              value={formData.motivo_solicitacao}
+              onChange={handleChange}
+              rows="5"
+              required
+            />
           </div>
 
-          <button type="submit" className="submit-button">Enviar</button>
+          <button type="submit" className="submit-button">
+            Enviar
+          </button>
         </form>
       </main>
       <Footer />
