@@ -58,31 +58,25 @@ const NovaSolicitacao = () => {
             <i className="bi bi-box-arrow-right"></i> Solicitação de Trancamento
             de Matrícula
           </Link>
-
           <Link className="crud-link" to="/trancamento_disciplina">
-            <i className="bi bi-x-circle"></i> Solicitação de Trancamento de
+            <i className="bi bi-x-octagon-fill"></i> Solicitação de Trancamento de
             Componente Curricular
           </Link>
-          {/* FORMULARIO EXERCICIOS DOMICILIARES */}
-
-          <Link className="crud-link" to="/exercicio_domiciliar">
-            <i className="bi bi-house-check-fill"></i> Solicitação de Exercício
-            Domiciliar
-          </Link>
-
-          <Link className="crud-link" to="/abono_falta">
-            <i className="bi bi-calendar-x-fill"></i> Solicitação de Abono de
-            Falta
-          </Link>
-          
           {/* Form de desistencia de vaga*/}
           <Link className="crud-link" to="/desistencia_vaga">
-            <i className="bi bi-door-open-fill"></i> Desistência de Vaga
+            <i className="bi bi-door-open-fill"></i> Termo de Desistência de Vaga
           </Link>
-
-
           <Link className="crud-link" to="/dispensa_ed_fisica">
           <i class="bi bi-person-arms-up"></i> Solicitação de Dispensa de Educação Física
+          </Link>
+          <Link className="crud-link" to="/abono_falta">
+            <i className="bi bi-calendar-x-fill"></i> Solicitação de Justificativa / Abono de
+            Faltas
+          </Link>
+          {/* FORMULARIO EXERCICIOS DOMICILIARES */}
+          <Link className="crud-link" to="/exercicio_domiciliar">
+            <i className="bi bi-house-check-fill"></i> Solicitação de Exercícios
+            Domiciliares
           </Link>
         </div>
       </main>
