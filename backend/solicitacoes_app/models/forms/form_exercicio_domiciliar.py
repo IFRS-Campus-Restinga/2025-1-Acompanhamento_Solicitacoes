@@ -4,6 +4,11 @@ from ..form_base import FormularioBase
 from django.core.validators import MinLengthValidator, EmailValidator
 
 class FormExercicioDomiciliar(FormularioBase):
+    
+    class Meta:
+        verbose_name = "Formulário de Exercícios Domiciliares"
+        
+
     MOTIVOS_SOLICITACAO_CHOICES = [
         ("saude", "Problemas de saúde, conforme inciso I do art. 142 da OD."),
         ("maternidade", "Licença Maternidade, conforme inciso II do art. 142 da OD."),

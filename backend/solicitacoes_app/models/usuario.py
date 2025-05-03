@@ -77,6 +77,7 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
             CRE.objects.filter(usuario=self).exists() or
             Responsavel.objects.filter(usuario=self).exists()
         )
+        # COLOCAR STATUS -- NOVO USUARIO . nOVO E EM APROVACAO PODE DELETAR
 
         if tem_vinculo:
             self.status_usuario = StatusUsuario.INATIVO
@@ -101,5 +102,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         if self.password is None or self.password == "":
             self.password = "Teste123"
             
+            # IMPLEMENTAR METODO PARA VERIFICAR : SE NÃO STTA ATIVO, MUDA PARA ATIVO E CHAMAR  QUANDO FIZER 
         super().save(**kwargs)
         
