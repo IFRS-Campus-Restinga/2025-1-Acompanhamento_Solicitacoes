@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from "react";
 import { Modal } from "bootstrap";
-import "./popup.css";
 
 const Popup = ({ title = "Aviso", message, actions = [], isError}) => {
   const modalRef = useRef(null);
