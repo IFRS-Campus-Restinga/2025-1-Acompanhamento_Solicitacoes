@@ -30,7 +30,7 @@ class UsuarioManager(BaseUserManager):
     def ativos(self):
         return super().get_queryset().filter(
             is_active=True,
-            status_usuario__in=[StatusUsuario.ATIVO, StatusUsuario.EM_ANALISE]
+            status_usuario__in=[StatusUsuario.ATIVO, StatusUsuario.EM_ANALISE, StatusUsuario.NOVO]
         )
         
     def inativos(self):

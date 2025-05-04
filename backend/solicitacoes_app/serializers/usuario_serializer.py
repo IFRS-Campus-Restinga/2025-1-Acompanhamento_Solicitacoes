@@ -9,7 +9,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         model = Usuario
         fields = [
             'id', 'nome', 'email', 'cpf', 'telefone', 'data_nascimento',
-            'is_active', 'papel', 'papel_detalhes'
+            'is_active', 'status_usuario', 'papel', 'papel_detalhes'
         ]
     
     def get_papel(self, obj):
@@ -54,7 +54,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
         if hasattr(obj, 'responsavel'):
             responsavel = obj.responsavel
             return {
-                "aluno": responsavel.aluno.usuario.nome
+                "aluno": responsavel.aluno.usuario.nome if responsavel.aluno and responsavel.aluno.usuario else None
             }
         return None
     

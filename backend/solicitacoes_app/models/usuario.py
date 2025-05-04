@@ -77,18 +77,20 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
             CRE.objects.filter(usuario=self).exists() or
             Responsavel.objects.filter(usuario=self).exists()
         )
-        # COLOCAR STATUS -- NOVO USUARIO . nOVO E EM APROVACAO PODE DELETAR
 
-        if tem_vinculo:
-            self.status_usuario = StatusUsuario.INATIVO
-            self.is_active = False  # Desativa autenticação no sistema
-            self.save()
+        if tem_vinculo: #se Usuario em status_usuario = NOVO ou EM_ANALISE ou sem vinculo - permite deleção física
+            if self.status_usuario == StatusUsuario.NOVO or self.status_usuario == StatusUsuario.EM_ANALISE:
+                super().delete(using=using, keep_parents=keep_parents)
+            else:
+                self.status_usuario = StatusUsuario.INATIVO
+                self.is_active = False  # Desativa autenticação no sistema
+                self.save()            
         else:
             super().delete(using=using, keep_parents=keep_parents)
         
         
     def clean(self):
-       if not isinstance(str(self.nome), str):
+       if not isinstance(self.nome, str):
             raise ValidationError({"nome": "Nome informado é do tipo errado"}, code="error001")
             
     def __str__(self):
@@ -98,10 +100,12 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         verbose_name = "Usuário"
         verbose_name_plural = "Usuários"
     
-    def save(self, **kwargs):      
+    def save(self, **kwargs): 
+             
         if self.password is None or self.password == "":
-            self.password = "Teste123"
-            
-            # IMPLEMENTAR METODO PARA VERIFICAR : SE NÃO STTA ATIVO, MUDA PARA ATIVO E CHAMAR  QUANDO FIZER 
+            self.password = "Teste123"        
+        if not self.pk:
+            self.status_usuario = StatusUsuario.NOVO
+
         super().save(**kwargs)
         
