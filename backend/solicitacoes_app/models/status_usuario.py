@@ -4,4 +4,5 @@ class StatusUsuario (models.TextChoices):
     ATIVO = "Ativo"
     INATIVO = "Inativo"
     EM_ANALISE = "Em Analise"
+    NOVO = "Novo"
 
