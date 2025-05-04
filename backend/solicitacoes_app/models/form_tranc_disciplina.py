@@ -3,6 +3,7 @@ from .curso import Curso
 from .disciplina import Disciplina
 from .form_base import FormularioBase
 from django.core.validators import MinLengthValidator
+from django.core.exceptions import ValidationError
 
 class FormTrancDisciplina(FormularioBase):
     aluno = models.CharField(
@@ -33,3 +34,20 @@ class FormTrancDisciplina(FormularioBase):
 
     def __str__(self):
         return f"Trancamento de disciplinas - Aluno: {self.aluno} - Curso: {self.curso.nome}"
+
+    def clean(self):
+        # Chama o clean do modelo base
+        super().clean()
+
+        qtd_disciplinas = self.disciplinas.count()
+        limite = 2 if self.ingressante else 5
+
+        if qtd_disciplinas > limite:
+            raise ValidationError({
+                'disciplinas': f'Alunos {"ingressantes" if self.ingressante else "regulares"} podem trancar no máximo {limite} disciplinas.'
+            })
+
+        if qtd_disciplinas < 1:
+            raise ValidationError({
+                'disciplinas': 'Pelo menos uma disciplina deve ser selecionada para trancamento.'
+            })
