@@ -17,11 +17,12 @@ class Disciplina(BaseModel):
         verbose_name="Codigo",
         help_text="Digitar o código da disciplina:"
     )
-    ppcs = models.ManyToManyField(
-        Ppc,
-        related_name='disciplinas',
-        verbose_name="PPCs",
-        help_text="Selecionar os PPCs aos quais a disciplina pertence:"
+    ppc = models.ForeignKey(
+        Ppc,  # Relacionamento com o modelo Ppc
+        on_delete=models.CASCADE,  # O que acontece quando o PPC é deletado
+        related_name='disciplinas',  # Nome reverso da relação
+        verbose_name="PPC",
+        help_text="Selecionar o PPC ao qual a disciplina pertence:"
     )
     
     def __str__(self):

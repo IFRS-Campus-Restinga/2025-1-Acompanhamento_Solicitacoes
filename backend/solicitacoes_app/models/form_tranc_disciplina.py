@@ -1,16 +1,18 @@
 from django.db import models
 from .curso import Curso
 from .disciplina import Disciplina
+from .aluno import Aluno
 from .form_base import FormularioBase
 from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
 
 class FormTrancDisciplina(FormularioBase):
-    aluno = models.CharField(
-        max_length=100,
-        validators=[MinLengthValidator(1)],
-        verbose_name="Nome do Aluno",  
-        help_text="Digite o nome do aluno",
+    aluno = models.ForeignKey(
+        Aluno,
+        on_delete=models.CASCADE,
+        related_name="formularios_trancamento", 
+        verbose_name="Aluno",
+        help_text="Selecione o aluno"
     )
     
     curso = models.ForeignKey(
@@ -33,7 +35,7 @@ class FormTrancDisciplina(FormularioBase):
     )
 
     def __str__(self):
-        return f"Trancamento de disciplinas - Aluno: {self.aluno} - Curso: {self.curso.nome}"
+        return f"Trancamento de disciplinas - Aluno: {self.aluno.usuario.nome} - Curso: {self.curso.nome}"
 
     def clean(self):
         # Chama o clean do modelo base

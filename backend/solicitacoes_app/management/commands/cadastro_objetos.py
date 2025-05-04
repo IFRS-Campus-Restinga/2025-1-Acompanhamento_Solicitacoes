@@ -138,26 +138,31 @@ class Command(BaseCommand):
             descricao="Participação em programa de intercâmbio acadêmico"
         )
 
-
+        ads = Ppc.objects.get(codigo="ads/101.2018")
         Disciplina.objects.get_or_create(
             nome="Desenvolvimento de Sistemas 2",
-            codigo="DEVII"
+            codigo="DEVII",
+            defaults={"ppc": ads}
         )
         Disciplina.objects.get_or_create(
             nome="Banco de Dados 1",
-            codigo="BD1"
+            codigo="BD1",
+            defaults={"ppc": ads}
         )
         Disciplina.objects.get_or_create(
             nome="Engenharia de Software",
-            codigo="ESW10"
+            codigo="ESW10",
+            defaults={"ppc": ads}
         )
         Disciplina.objects.get_or_create(
             nome="Gestão de Projetos",
-            codigo="GDP20"
+            codigo="GDP20",
+            defaults={"ppc": ads}
         )
         Disciplina.objects.get_or_create(
             nome="Turismo Sustentável",
-            codigo="TURS1"
+            codigo="TURS1",
+            defaults={"ppc": ads}
         )
 
         Turma.objects.get_or_create(
