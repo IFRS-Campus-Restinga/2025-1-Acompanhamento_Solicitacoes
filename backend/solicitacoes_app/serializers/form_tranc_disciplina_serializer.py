@@ -1,8 +1,11 @@
 from rest_framework import serializers
-from ..models import FormTrancDisciplina, Curso, Disciplina, Ppc
+from ..models import FormTrancDisciplina, Curso, Disciplina, Ppc, Nome
 
 class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
-    aluno = serializers.CharField(max_length=100)
+    nome = serializers.SlugRelatedField(
+        queryset=Nome.objects.all(),
+        slug_field='nome'
+    )
     curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
     disciplinas = serializers.PrimaryKeyRelatedField(queryset=Disciplina.objects.all(), many=True)
     ingressante = serializers.BooleanField(default=False)
@@ -14,7 +17,7 @@ class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormTrancDisciplina
-        fields = ['aluno', 'curso', 'disciplinas', 'ingressante', 'descricao', 'motivo_solicitacao']
+        fields = ['nome', 'curso', 'disciplinas', 'ingressante', 'descricao', 'motivo_solicitacao']
 
     def create(self, validated_data):
         # Texto fixo que você solicitou para a descrição
@@ -33,12 +36,20 @@ class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
         return formTrancamento
     
     def to_representation(self, instance):
+        # Usando o método super para pegar a representação padrão
         representation = super().to_representation(instance)
 
-        # Adiciona campo extra com as disciplinas disponíveis para seleção
+        # Recuperando os PPCs associados ao curso do formulário
         ppcs = Ppc.objects.filter(curso=instance.curso)
-        disciplinas_disponiveis = Disciplina.objects.filter(ppcs__in=ppcs).distinct()
-        # Apenas para apoio visual — mostra quais foram trancadas
+
+        # Obtendo as disciplinas disponíveis para o curso
+        disciplinas_disponiveis = Disciplina.objects.filter(ppc__in=ppcs).distinct()
+
+        # Incluindo as disciplinas disponíveis na resposta (retornando código e nome)
+        
+
+        # Obtendo as disciplinas que foram selecionadas no formulário
         disciplinas_selecionadas = instance.disciplinas.all()
 
+        # Retornando a representação com as disciplinas disponíveis
         return representation

@@ -1,17 +1,16 @@
 from django.db import models
 from .curso import Curso
 from .disciplina import Disciplina
-from .aluno import Aluno
+from .nome import Nome
 from .form_base import FormularioBase
 from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
 
 class FormTrancDisciplina(FormularioBase):
-    aluno = models.ForeignKey(
-        Aluno,
+    nome = models.ForeignKey(
+        Nome,
         on_delete=models.CASCADE,
         related_name="formularios_trancamento", 
-        verbose_name="Aluno",
         help_text="Selecione o aluno"
     )
     

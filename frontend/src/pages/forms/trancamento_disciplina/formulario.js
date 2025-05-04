@@ -9,20 +9,23 @@ import "../../../components/formulario.css";
 
 export default function Formulario() {
     const { curso_codigo } = useParams();
-    const [cursos, setCursos] = useState([]);
-    const [disciplinas, setDisciplinas] = useState([]);
+    const [nomes, setNomes] = useState([]);  // Lista de nomes de alunos
+    const [cursos, setCursos] = useState([]);  // Lista de cursos
+    const [disciplinas, setDisciplinas] = useState([]);  // Lista de disciplinas
     const [dados, setDados] = useState({
-        aluno: "",
-        curso: curso_codigo || "",
+        nome: "",  // ID do nome
+        curso: curso_codigo || "",  // ID do curso
         disciplinas: [],
         ingressante: false,
         motivo_solicitacao: "",
     });
+    const [showFeedback, setShowFeedback] = useState(false);
+    const [mensagem, setMensagem] = useState("");
+    const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+    const [cadastroSucesso, setCadastroSucesso] = useState(false); // <- Adicionado
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
     const [mensagemErro, setMensagemErro] = useState("");
-
-    const [showFeedback, setShowFeedback] = useState(false);
     const [feedbackData, setFeedbackData] = useState({
         mensagem: "",
         tipo: "sucesso"
@@ -42,16 +45,31 @@ export default function Formulario() {
     const navigate = useNavigate();
 
     useEffect(() => {
+        // Buscar os cursos disponíveis
         axios.get("http://localhost:8000/solicitacoes/cursos/")
             .then((response) => setCursos(response.data))
             .catch((err) => console.error("Erro ao buscar cursos:", err));
     }, []);
 
     useEffect(() => {
+        // Buscar os nomes para popular o dropdown
+        axios.get("http://localhost:8000/solicitacoes/nomes/") // Endpoint para nomes
+            .then((response) => setNomes(response.data))
+            .catch((err) => console.error("Erro ao buscar nomes:", err));
+    }, []);
+
+    useEffect(() => {
         if (dados.curso) {
+            console.log("Curso selecionado:", dados.curso);
             axios.get(`http://localhost:8000/solicitacoes/formulario_trancamento_disciplina/disciplinas/${dados.curso}/`)
-                .then((response) => setDisciplinas(response.data))
-                .catch((err) => console.error("Erro ao buscar disciplinas:", err));
+                .then((response) => {
+                    console.log("Disciplinas recebidas:", response.data);  // Verificar a estrutura da resposta
+                    // Supondo que as disciplinas venham em response.data.disciplinas
+                    setDisciplinas(response.data.disciplinas || []);  // Garantir que seja um array
+                })
+                .catch((err) => {
+                    console.error("Erro ao buscar disciplinas:", err);
+                });
         }
     }, [dados.curso]);
 
@@ -70,19 +88,22 @@ export default function Formulario() {
                 "http://localhost:8000/solicitacoes/formulario_trancamento_disciplina/",
                 dados
             );
-            setMensagemErro("");
-            setFeedbackData({
-                mensagem: "Solicitação enviada com sucesso!",
-                tipo: "sucesso"
-            });
+            setTipoMensagem("sucesso");
+            setMensagem("Solicitação enviada com sucesso!");
+            setShowFeedback(true);
             setShowFeedback(true);
             setDados({
-                aluno: "",
+                nome: "",
                 curso: curso_codigo || "",
                 disciplinas: [],
                 ingressante: false,
                 motivo_solicitacao: "",
             });
+            setTimeout(() => {
+                setShowFeedback(false); // Fecha o popup
+                navigate("/nova-solicitacao"); 
+            }, 2000);
+
         } catch (err) {
             setMsgErro(err);
             setPopupIsOpen(true);
@@ -91,6 +112,10 @@ export default function Formulario() {
                 tipo: "erro"
             });
             setShowFeedback(true);
+            setTimeout(() => {
+                setShowFeedback(false); // Fecha o popup
+                navigate("/nova-solicitacao"); 
+            }, 2000);
         }
     };
 
@@ -163,14 +188,20 @@ export default function Formulario() {
                 <form className="formulario formulario-largo" onSubmit={handleSubmit}>
                     <div className="form-group">
                         <label>Nome completo:</label>
-                        <input
-                            type="text"
-                            className="input-text"
-                            value={dados.aluno}
-                            onChange={(e) => handleFormChange("aluno", e.target.value)}
+                        <select
+                            value={dados.nome}
+                            onChange={(e) => handleFormChange("nome", e.target.value)}
                             required
-                        />
+                        >
+                            <option value="">Selecione o nome</option>
+                            {nomes.map((nome) => (
+                                <option key={nome.id} value={nome.id}>
+                                    {nome.nome}  {/* Nome do aluno, herdado de Usuário */}
+                                </option>
+                            ))}
+                        </select>
                     </div>
+
                     <div className="form-group">
                         <label>
                             <input
@@ -247,24 +278,20 @@ export default function Formulario() {
                     </div>
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
-            </main>
-
-            {popupIsOpen && (
-                <Popup
-                    message={msgErro.response?.data?.motivo_solicitacao}
-                    isError={true}
-                    actions={popupActions}
-                />
-            )}
-
-            {showFeedback && (
+                
                 <PopupFeedback
                     show={showFeedback}
-                    mensagem={feedbackData.mensagem}
-                    tipo={feedbackData.tipo}
-                    onClose={() => setShowFeedback(false)}
+                    mensagem={mensagem}
+                    tipo={tipoMensagem}
+                    onClose={() => {
+                        setShowFeedback(false);
+                        if (cadastroSucesso) {
+                            navigate("/nova-solicitao");
+                        }
+                    }}
                 />
-            )}
+                
+            </main>
 
             <Footer />
         </div>

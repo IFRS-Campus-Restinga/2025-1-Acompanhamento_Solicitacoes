@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma
+from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma, Nome
 from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
@@ -179,6 +179,22 @@ class Command(BaseCommand):
         )
         Turma.objects.get_or_create(
             nome="Quinto ano"
+        )
+
+        Nome.objects.get_or_create(
+            nome="Fernando"
+        )
+        Nome.objects.get_or_create(
+            nome="Carol"
+        )
+        Nome.objects.get_or_create(
+            nome="Clarke"
+        )
+        Nome.objects.get_or_create(
+            nome="Pedro"
+        )
+        Nome.objects.get_or_create(
+            nome="Nicolas"
         )
         
         Group.objects.get_or_create(

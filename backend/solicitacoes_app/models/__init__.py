@@ -22,3 +22,4 @@ from .mandato import *
 from .form_tranc_disciplina import *
 from .forms.form_exercicio_domiciliar import *
 from .forms.form_desistencia_vaga import *
+from .nome import *

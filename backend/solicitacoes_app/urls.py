@@ -25,6 +25,7 @@ from .views.form_exercicios_domiciliares import (
     FormExercicioDomiciliarDetail
 )
 from .views.form_desistencia_vaga_view import *
+from .views.nome_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -100,5 +101,8 @@ urlpatterns = [
 
     path('form_desistencia_vaga/', FormDesistenciaVagaListCreate.as_view(), name='form_desistencia_vaga_create'),
     path('form_desistencia_vaga/<int:id>/', FormDesistenciaVagaDetail.as_view(), name='form_desistencia_vaga_detail'),
+
+    path('nomes/', NomeListCreateView.as_view(), name='nome-list'),
+    path('nomes/<str:pk>/', NomeRetrieveUpdateDestroyView.as_view(), name='nome-detail'),
 
 ]

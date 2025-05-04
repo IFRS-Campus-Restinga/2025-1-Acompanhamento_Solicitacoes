@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Curso, Ppc, CRE, Coordenador, Aluno, Responsavel, Disciplina, Usuario, Turma, FormularioTrancamentoMatricula, FormDispensaEdFisica, FormAbonoFalta, Anexo, FormTrancDisciplina
+from .models import Curso, Ppc, CRE, Coordenador, Aluno, Responsavel, Disciplina, Usuario, Turma, FormularioTrancamentoMatricula, FormDispensaEdFisica, FormAbonoFalta, Anexo, FormTrancDisciplina, Nome
 from .models.forms.form_desistencia_vaga import FormDesistenciaVaga
 from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
 
@@ -20,6 +20,7 @@ admin.site.register(FormAbonoFalta)
 admin.site.register(FormTrancDisciplina)
 admin.site.register(FormDesistenciaVaga)
 admin.site.register(FormExercicioDomiciliar)
+admin.site.register(Nome)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)
