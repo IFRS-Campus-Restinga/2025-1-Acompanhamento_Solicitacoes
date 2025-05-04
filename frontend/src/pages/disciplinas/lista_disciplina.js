@@ -59,7 +59,7 @@ export default function ListarDisciplinas() {
   );
 
   const itensPorPagina = 5; // Número de itens por página
-  const totalPaginas = Math.ceil(disciplinasFiltradas.length / itensPorPagina);
+  
 
   // Dados paginados
   const dadosPaginados = disciplinasFiltradas.slice(
@@ -93,7 +93,7 @@ export default function ListarDisciplinas() {
               <tr>
                 <th>Código</th>
                 <th>Nome</th>
-                <th>PPCs</th>
+                <th>PPC</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -103,9 +103,7 @@ export default function ListarDisciplinas() {
                   <td>{disciplina.codigo}</td>
                   <td>{disciplina.nome}</td>
                   <td>
-                    {disciplina.ppcs?.length
-                      ? disciplina.ppcs.map(ppc => ppc.codigo).join(", ")
-                      : "Nenhum PPC atribuído"}
+                    {disciplina.ppc ? disciplina.ppc : "Nenhum PPC atribuído"}
                   </td>
                   <td>
                     <div className="botoes-acoes">

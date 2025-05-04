@@ -10,7 +10,7 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 export default function CadastrarAtualizarDisciplina() {
   const [nome, setNome] = useState("");
   const [codigo, setCodigo] = useState("");
-  const [selectedPpcs, setSelectedPpcs] = useState([]);
+  const [selectedPpc, setSelectedPpc] = useState(""); // Alterado para apenas um PPC
   const [availablePpcs, setAvailablePpcs] = useState([]);
   const [filtro, setFiltro] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
@@ -37,7 +37,15 @@ export default function CadastrarAtualizarDisciplina() {
         .then((res) => {
           setNome(res.data.nome);
           setCodigo(res.data.codigo);
-          setSelectedPpcs(res.data.ppcs.map(p => p.codigo));
+          
+          // Verifique a estrutura dos dados do PPC. Assume-se que res.data.ppcs seja um array.
+          if (res.data.ppc) {
+            setSelectedPpc(res.data.ppc); // <- Isso assume que o backend retorna "ppc": "2021.1" por exemplo
+          } else if (res.data.ppcs && res.data.ppcs.length > 0) {
+            setSelectedPpc(res.data.ppcs[0]?.codigo || "");
+          } else {
+            setSelectedPpc("");
+          }
         })
         .catch((err) => {
           setMensagem(
@@ -54,14 +62,14 @@ export default function CadastrarAtualizarDisciplina() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (selectedPpcs.length === 0) {
-      setMensagem("Por favor, selecione ao menos um PPC.");
+    if (!selectedPpc && !codigoParam) {
+      setMensagem("Por favor, selecione um PPC.");
       setTipoMensagem("erro");
       setShowFeedback(true);
       return;
     }
 
-    const dados = { nome, codigo, ppcs: selectedPpcs };
+    const dados = { nome, codigo, ppc: selectedPpc };
 
     const requisicao = codigoParam
       ? axios.put(`http://localhost:8000/solicitacoes/disciplinas/${codigoParam}/`, dados)
@@ -86,16 +94,7 @@ export default function CadastrarAtualizarDisciplina() {
   };
 
   const handlePpcSelection = (e) => {
-    const ppcSelecionada = e.target.value;
-    if (selectedPpcs.includes(ppcSelecionada)) {
-      setSelectedPpcs(selectedPpcs.filter(p => p !== ppcSelecionada));
-    } else {
-      setSelectedPpcs([...selectedPpcs, ppcSelecionada]);
-    }
-  };
-
-  const handleRemovePpc = (codigo) => {
-    setSelectedPpcs(selectedPpcs.filter(p => p !== codigo));
+    setSelectedPpc(e.target.value); // Agora define um único PPC
   };
 
   const filteredPpcs = availablePpcs.filter(ppc =>
@@ -141,16 +140,13 @@ export default function CadastrarAtualizarDisciplina() {
               />
             </div>
             <select
-              multiple
               className="input-select"
-              onChange={handlePpcSelection}
+              value={selectedPpc}
+              onChange={handlePpcSelection} // Agora permite apenas a seleção de um PPC
             >
+              <option value="">Selecione um PPC</option>
               {filteredPpcs.map((ppc) => (
-                <option
-                  key={ppc.codigo}
-                  value={ppc.codigo}
-                  className={selectedPpcs.includes(ppc.codigo) ? "option-selected" : ""}
-                >
+                <option key={ppc.codigo} value={ppc.codigo}>
                   {ppc.codigo}
                 </option>
               ))}
@@ -159,17 +155,11 @@ export default function CadastrarAtualizarDisciplina() {
 
           <div className="form-group">
             <label>Ppc Selecionado:</label>
-            <ul>
-              {selectedPpcs.map((codigo) => {
-                const ppc = availablePpcs.find(p => p.codigo === codigo);
-                return (
-                  <li key={codigo}>
-                    {ppc ? `${ppc.codigo}` : 'Desconhecido'}
-                    <button type="button" onClick={() => handleRemovePpc(codigo)} className="remove-btn">X</button>
-                  </li>
-                );
-              })}
-            </ul>
+            {selectedPpc && (
+              <ul>
+                <li>{selectedPpc}</li>
+              </ul>
+            )}
           </div>
 
           <button type="submit" className="submit-button">
