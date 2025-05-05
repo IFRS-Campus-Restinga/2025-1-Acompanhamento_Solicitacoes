@@ -97,6 +97,7 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
                   maxLength={value.max_length ?? undefined}
                   onChange={handleChange}
                   value={dados[key] ?? ""}
+                  className="form-control"
                 />
                 <br />
               </div>
@@ -105,7 +106,7 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
 
           if ((value.type === "string") && (value.max_length >= 60 || value.max_length == null)) {
             return (
-              <div key={key}>
+              <div key={key} className="form-group">
                 <label htmlFor={key}>{value.label + ":"}</label>
                 <textarea
                   id={key}
@@ -115,7 +116,6 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
                   maxLength={value.max_length ?? undefined}
                   onChange={handleChange}
                   value={dados[key] ?? ""}
-                  className="form-control"
                 />
                 <br />
               </div>
@@ -124,7 +124,7 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
 
           if (value.type === "integer") {
             return (
-              <div key={key}>
+              <div key={key} className="form-group">
                 <label htmlFor={key}>{value.label + ":"}</label>
                 <input
                   id={key}
@@ -145,7 +145,7 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
             const labelKey = Array.isArray(campoInfo) ? "nome" : campoInfo?.labelKey || "nome";
 
             return (
-              <div key={key}>
+              <div key={key} className="form-group">
                 <label htmlFor={key}>{value.label + ":"}</label>
                 <select
                   id={key}
@@ -167,9 +167,9 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
             );
           }
 
-          if (value.type === "bool") {
+          if (value.type === "bool" ) {
             return (
-              <div key={key}>
+              <div key={key} className="form-group">
                 <label htmlFor={key}>{value.label + ":"}</label>
                 <input
                   id={key}
@@ -186,7 +186,7 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
 
           if (value.type === "file upload") {
             return (
-              <div key={key}>
+              <div key={key} className="form-group">
                 <label htmlFor={key}>{value.label + ":"}</label>
                 <input
                   id={key}

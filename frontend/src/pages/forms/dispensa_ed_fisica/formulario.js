@@ -5,6 +5,7 @@ import Footer from "../../../components/base/footer";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback"
 import { useNavigate } from "react-router-dom";
+import "../../../components/formulario.css";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
@@ -109,10 +110,30 @@ export default function Formulario() {
     return (
         <div>
             <Header />
-            <main className="container form-container">
+            <main className="container">
                 <h2>Formulário de Dispensa de Educação Física</h2>
-                <form className="form-box" onSubmit={postDispensaEdFisica}>
-                    <div className="form-group">
+                <div className="descricao-formulario">
+                    <p>Este formulário é destinado aos estudantes que solicitam a dispensa da prática de Educação Física. Para solicitar a dispensa, é necessário preencher integralmente o formulário, apresentando toda documentação comprobatória.</p>
+
+                    <p>De acordo com a LDB, Lei 9394/96, Art. 26 a Educação Física, integrada à proposta pedagógica da escola, é componente curricular obrigatório da educação básica, sendo sua prática facultativa ao aluno que se enquadrar em qualquer um dos pontos a seguir: </p>
+
+                    <ul>
+                        <li>Cumprir jornada de trabalho igual ou superior a seis horas;</li>
+                        <li>Maior de trinta anos de idade;</li>
+                        <li>Prestar serviço militar inicial ou que, em situação similar, estiver obrigado à prática da educação física;</li>
+                        <li>Estar amparado pelo decreto-lei n°1.044, de 21 de outubro de 1969;</li>
+                        <li>Ter prole.</li>
+                    </ul>
+
+                    <p>QUEM: Todos os cursos.</p>
+
+                    <p>QUANDO: a qualquer momento dentro do período letivo.</p>
+
+                    <p>Após entrega do formulário, a coordenação de curso fará a análise da solicitação em até 7 (sete) dias e a CRE tem até 5 (cinco) dias úteis para inserir os resultados no sistema. Este prazo pode ser estendido conforme as demandas da coordenação de curso e/ou do setor.</p>
+                </div>
+
+                <form className="formulario formulario-largo" onSubmit={postDispensaEdFisica}>
+
                         <Options
                             url={urls}
                             popularCampo={{
@@ -128,7 +149,6 @@ export default function Formulario() {
                             onChange={handleFormChange}
                             ignoreFields={["id", "form_dispensa_ed_fisica", "form_exercicos_domiciliares", "form_abono_falta"]}
                         />
-                    </div>
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
             </main>
