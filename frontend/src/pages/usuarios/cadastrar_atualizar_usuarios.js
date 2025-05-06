@@ -1,20 +1,21 @@
-import axios from "axios";
-import React, { useEffect, useState } from "react";
+import api from "../../services/api";
+import React, { useEffect, useState, useCallback } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
-export default function CadastrarAtualizarUsuario() {
-  const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    cpf: "",
-    telefone: "",
-    data_nascimento: "",
-    is_active: true,
-  });
+const initialState = {
+  nome: "",
+  email: "",
+  cpf: "",
+  telefone: "",
+  data_nascimento: "",
+  is_active: true,
+};
 
+export default function CadastrarAtualizarUsuario() {
+  const [formData, setFormData] = useState(initialState);
   const [errors, setErrors] = useState({});
   const [showFeedback, setShowFeedback] = useState(false);
   const [mensagem, setMensagem] = useState("");
@@ -23,79 +24,79 @@ export default function CadastrarAtualizarUsuario() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const carregarUsuario = useCallback(async (usuarioId) => {
+    try {
+      const response = await api.get(`usuarios/${usuarioId}/`);
+      const usuario = response.data;
+
+      if (usuario.data_nascimento) {
+        const data = new Date(usuario.data_nascimento);
+        usuario.data_nascimento = data.toISOString().split("T")[0];
+      }
+      setFormData(usuario);
+    } catch (error) {
+      console.error("Erro ao carregar usuário:", error);
+      setMensagem(`Erro ${error.response?.status || ""}: ${error.response?.data?.detail || "Erro ao carregar usuário."}`);
+      setTipoMensagem("erro");
+      setShowFeedback(true);
+    }
+  }, []);
+
   useEffect(() => {
     if (id) {
-      axios.get(`http://localhost:8000/solicitacoes/usuarios/${id}/`)
-        .then(res => {
-          const usuario = res.data;
-  
-          // Se data_nascimento existir, formatar apenas a parte da data
-          if (usuario.data_nascimento) {
-            const data = new Date(usuario.data_nascimento);
-            usuario.data_nascimento = data.toISOString().split("T")[0]; // Garante o formato YYYY-MM-DD
-          }
-  
-          setFormData(usuario);
-        })
-        .catch(err => {
-          setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuário."}`);
-          setTipoMensagem("erro");
-          setShowFeedback(true);
-        });
+      carregarUsuario(id);
+    }
+  }, [id, carregarUsuario]);
+
+  const validarCampo = useCallback(async (fieldName, value) => {
+    try {
+      const data = { [fieldName]: value };
+      const url = id ? `usuarios/${id}/` : "usuarios/";
+      const method = id ? api.patch : api.post;
+      await method(url, data);
+      setErrors((prev) => ({ ...prev, [fieldName]: null }));
+    } catch (error) {
+      if (error.response?.status === 400 && error.response?.data) {
+        setErrors((prev) => ({ ...prev, [fieldName]: error.response.data[fieldName] || null }));
+      }
     }
   }, [id]);
 
-  const validateField = (fieldName, value) => {
-    const data = { [fieldName]: value };
-    const url = id
-      ? `http://localhost:8000/solicitacoes/usuarios/${id}/`
-      : "http://localhost:8000/solicitacoes/usuarios/";
-
-    const method = id ? axios.patch : axios.post;
-
-    method(url, data)
-      .then(() => setErrors(prev => ({ ...prev, [fieldName]: null })))
-      .catch(err => {
-        if (err.response?.status === 400 && err.response?.data) {
-          setErrors(prev => ({ ...prev, [fieldName]: err.response.data[fieldName] || null }));
-        }
-      });
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
-    validateField(name, value);
+    validarCampo(name, value);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const url = id
-      ? `http://localhost:8000/solicitacoes/usuarios/${id}/`
-      : "http://localhost:8000/solicitacoes/usuarios/";
+    const url = id ? `usuarios/${id}/` : "usuarios/";
+    const request = id ? api.put(url, formData) : api.post(url, formData);
 
-    const request = id ? axios.put(url, formData) : axios.post(url, formData);
-
-    request
-      .then(() => {
-        setMensagem(id ? "Usuário atualizado com sucesso!" : "Usuário cadastrado com sucesso!");
-        setTipoMensagem("sucesso");
+    try {
+      await request;
+      setMensagem(id ? "Usuário atualizado com sucesso!" : "Usuário cadastrado com sucesso!");
+      setTipoMensagem("sucesso");
+      setShowFeedback(true);
+    } catch (error) {
+      if (error.response?.status === 400 && error.response.data) {
+        setErrors(error.response.data);
+      } else {
+        setMensagem(`Erro ${error.response?.status || ""}: ${error.response?.data?.detail || "Erro ao salvar usuário."}`);
+        setTipoMensagem("erro");
         setShowFeedback(true);
-      })
-      .catch(err => {
-        if (err.response?.status === 400 && err.response.data) {
-          setErrors(err.response.data);
-        } else {
-          setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao salvar usuário."}`);
-          setTipoMensagem("erro");
-          setShowFeedback(true);
-        }
-      });
+      }
+    }
   };
+
+  const fecharFeedback = useCallback(() => {
+    setShowFeedback(false);
+    navigate("/usuarios");
+  }, [navigate]);
 
   return (
     <div>
@@ -103,21 +104,23 @@ export default function CadastrarAtualizarUsuario() {
       <main className="container form-container">
         <h2>{id ? "Editar Usuário" : "Cadastrar Novo Usuário"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
-          {["nome", "email", "cpf", "telefone", "data_nascimento"].map((field) => (
-            <div className="form-group" key={field}>
-              <label>{field.replace("_", " ").replace(/\b\w/g, l => l.toUpperCase())}:</label>
-              <input
-                type={field === "email" ? "email" : field === "data_nascimento" ? "date" : "text"}
-                name={field}
-                className={`input-text ${errors[field] ? "input-error" : ""}`} //aplica o css da classe input-error, se há erro
-                value={formData[field] || ""}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors[field] && <div className="error-text">{errors[field]}</div>}
-            </div>
-          ))}
+          {Object.keys(initialState)
+            .filter((key) => key !== "is_active")
+            .map((field) => (
+              <div className="form-group" key={field}>
+                <label>{field.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}:</label>
+                <input
+                  type={field === "email" ? "email" : field === "data_nascimento" ? "date" : "text"}
+                  name={field}
+                  className={`input-text ${errors[field] ? "input-error" : ""}`}
+                  value={formData[field] || ""}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                  required
+                />
+                {errors[field] && <div className="error-text">{errors[field]}</div>}
+              </div>
+            ))}
 
           <button type="submit" className="submit-button">
             {id ? "Atualizar" : "Cadastrar"}
@@ -128,10 +131,7 @@ export default function CadastrarAtualizarUsuario() {
           show={showFeedback}
           mensagem={mensagem}
           tipo={tipoMensagem}
-          onClose={() => {
-            setShowFeedback(false);
-            navigate("/usuarios");
-          }}
+          onClose={fecharFeedback}
         />
       </main>
       <Footer />
