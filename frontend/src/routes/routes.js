@@ -3,10 +3,11 @@ import { Route } from "react-router-dom";
 
 // Páginas
 import Configuracoes from "../pages/configuracoes/configuracoes.js";
+import Perfil from "../pages/perfil/perfil.js";
 //import Cruds from "../pages/configuracoes/cruds.js";
+import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
 import Home from "./../pages/home";
-import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js"; 
 
 
 // Motivos de Abono
@@ -42,9 +43,9 @@ import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 
 // Usuarios
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
+import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
 import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
-import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
 import SelecionarPapelUsuario from "../pages/usuarios/selecionar_papel.js";
 
 //Grupos
@@ -75,6 +76,7 @@ const routes = [
   <Route path="/" element={<Home />} key="home" />,
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
+  <Route path="/perfil" element={<Perfil />} key="perfil" />,
   <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
 
 
