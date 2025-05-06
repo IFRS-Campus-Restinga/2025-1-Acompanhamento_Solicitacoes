@@ -27,16 +27,6 @@ class Mandato(BaseModel):
         # Valida se o fim do mandato é posterior ao início
         if self.fim_mandato and self.inicio_mandato >= self.fim_mandato:
             raise ValidationError("O fim do mandato deve ser posterior ao início.")
-
-        # Verifica se o mandato se sobrepõe a outro mandato existente para o mesmo curso
-        mandatos_sobrepostos = Mandato.objects.filter(
-            curso=self.curso,
-            fim_mandato__gt=self.inicio_mandato,
-            inicio_mandato__lt=self.fim_mandato
-        ).exclude(id=self.id)  # Exclui o mandato atual, caso esteja fazendo uma atualização.
-
-        if mandatos_sobrepostos.exists():
-            raise ValidationError(f"O mandato para o curso {self.curso} se sobrepõe a um mandato existente.")
             
     class Meta:
         verbose_name = "Mandato"
