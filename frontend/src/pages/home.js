@@ -3,8 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "./../components/base/footer";
 import Header from "./../components/base/header";
 import "./../components/base/main";
-import "./login.css";
-import GoogleLoginButton from "./../components/GoogleLoginButton";
+import Login from "./login";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -27,9 +26,7 @@ const Home = () => {
       <Header />
       <main className="container">
         <div className="login-box">
-          <h2>Bem-vindo ao Sistema de Solicitações</h2>
-          <p>Para continuar, entre com sua conta institucional do Google.</p>
-          <GoogleLoginButton />
+          <Login />
         </div>  
         </main>
       <Footer />
