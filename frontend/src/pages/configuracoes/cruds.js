@@ -52,23 +52,6 @@ const Cruds = () => {
             <i className="bi bi-person-arms-up"></i> Dispensa de Educação Física
           </Link>
         </div>
-        <br />
-        <h2>Formulários Disponíveis</h2>
-        <div className="grid-cruds">
-          <Link className="crud-link" to="/trancamento_disciplina">
-            <i className="bi bi-x-circle"></i> Solicitação de Trancamento de Componente Curricular
-          </Link>
-          {/* FORMULARIO EXERCICIOS DOMICILIARES */}
-
-         <Link className="crud-link" to="/exercicio_domiciliar">
-          <i className="bi bi-house-check-fill"></i> Solicitação de Exercício Domiciliar
-        </Link>
-
-        <Link className="crud-link" to="/dispensa_ed_fisica">
-          <i className="bi bi-person-arms-up"></i>Solicitação de Dispensa de Educação Física
-        </Link>
-
-        </div>
       </main>
       <Footer />
     </div>
