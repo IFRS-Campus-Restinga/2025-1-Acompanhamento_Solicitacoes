@@ -26,6 +26,7 @@ from .views.form_exercicios_domiciliares import (
 )
 from .views.form_desistencia_vaga_view import *
 from .views.nome_view import *
+from .views.perfil_usuario_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -72,6 +73,8 @@ urlpatterns = [
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
+
+    path('perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
     path('responsaveis/', ResponsavelListCreateView.as_view(), name='responsavel-list'),
     path('responsaveis/<int:pk>/', ResponsavelRetrieveUpdateDestroyView.as_view(), name='responsavel-detail'),
