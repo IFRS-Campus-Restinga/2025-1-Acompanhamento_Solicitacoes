@@ -1,9 +1,15 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-export default function Options({ url = [], popularCampo = {}, onChange, ignoreFields = [] }) {
-  const [options, setOptions] = useState({});
+export default function Options({
+  url = [],
+  popularCampo = {},
+  onChange,
+  ignoreFields = []
+}) {
+  const [fieldsOrdered, setFieldsOrdered] = useState([]);
   const [dados, setDados] = useState({});
+  const [loading, setLoading] = useState(true); // <- estado de carregamento
 
   const handleChange = (e) => {
     const { name, type, checked, value, files } = e.target;
@@ -29,180 +35,198 @@ export default function Options({ url = [], popularCampo = {}, onChange, ignoreF
   };
 
   useEffect(() => {
-    url.forEach(popularForm);
+    let cancelado = false;
 
-    function popularForm(item) {
-      axios
-        .options(item)
-        .then((response) => {
+    async function carregarOptionsSequencialmente() {
+      setLoading(true);
+      let novosCamposOrdenados = [];
+      let novosDadosIniciais = {};
+
+      for (const endpoint of url) {
+        try {
+          const response = await axios.options(endpoint);
           const fields = response.data.actions.POST;
 
-          setOptions((prevOptions) => ({
-            ...prevOptions,
-            actions: {
-              POST: {
-                ...prevOptions.actions?.POST,
-                ...fields,
-              }
-            }
-          }));
+          for (const [key, value] of Object.entries(fields)) {
+            if (ignoreFields.includes(key)) continue;
 
-          const camposIniciais = {};
-          Object.entries(fields).forEach(([key, value]) => {
-            if (ignoreFields.includes(key)) return;
+            novosCamposOrdenados.push([key, value]);
 
             if (value.type === "bool") {
-              camposIniciais[key] = false;
+              novosDadosIniciais[key] = false;
             } else if (value.type === "integer") {
-              camposIniciais[key] = null;
+              novosDadosIniciais[key] = null;
             } else {
-              camposIniciais[key] = "";
+              novosDadosIniciais[key] = "";
             }
-          });
+          }
+        } catch (err) {
+          console.error("Erro ao carregar options de:", endpoint, err);
+        }
+      }
 
-          setDados((prevDados) => ({
-            ...prevDados,
-            ...camposIniciais
-          }));
-
-          onChange?.({
-            ...dados,
-            ...camposIniciais
-          });
-        })
-        .catch((err) => console.error(err));
+      if (!cancelado) {
+        setFieldsOrdered(novosCamposOrdenados);
+        setDados((prev) => {
+          const atualizados = { ...prev, ...novosDadosIniciais };
+          onChange?.(atualizados);
+          return atualizados;
+        });
+        setLoading(false);
+      }
     }
 
+    carregarOptionsSequencialmente();
+
+    return () => {
+      cancelado = true;
+    };
   }, [url]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-32">
+        <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
+  }
 
   return (
     <>
-      {options.actions &&
-        options.actions.POST &&
-        Object.entries(options.actions.POST).map(([key, value]) => {
-          if (ignoreFields.includes(key)) {
-            return null;
-          }
+      {fieldsOrdered.map(([key, value]) => {
+        if (value.type === "string" && value.max_length < 60) {
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <input
+                id={key}
+                name={key}
+                type="text"
+                required={value.required}
+                minLength={value.min_length ?? undefined}
+                maxLength={value.max_length ?? undefined}
+                onChange={handleChange}
+                value={dados[key] ?? ""}
+              />
+              <br />
+            </div>
+          );
+        }
 
-          if ((value.type === "string") && (value.max_length < 60)) {
-            return (
-              <div key={key}>
-                <label htmlFor={key}>{value.label + ":"}</label>
-                <input
-                  id={key}
-                  name={key}
-                  type="text"
-                  required={value.required}
-                  minLength={value.min_length ?? undefined}
-                  maxLength={value.max_length ?? undefined}
-                  onChange={handleChange}
-                  value={dados[key] ?? ""}
-                  className="form-control"
-                />
+        if (value.type === "string" && (value.max_length >= 60 || value.max_length == null)) {
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <textarea
+                id={key}
+                name={key}
+                required={value.required}
+                minLength={value.min_length ?? undefined}
+                maxLength={value.max_length ?? undefined}
+                onChange={handleChange}
+                value={dados[key] ?? ""}
+                className="form-control"
+              />
+              <br />
+            </div>
+          );
+        }
+
+        if (value.type === "integer") {
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <input
+                id={key}
+                name={key}
+                type="number"
+                required={value.required}
+                onChange={handleChange}
+                value={dados[key] ?? ""}
+              />
+              <br />
+            </div>
+          );
+        }
+
+        if (value.type === "field") {
+          const campoInfo = popularCampo[key];
+          const lista = Array.isArray(campoInfo) ? campoInfo : campoInfo?.data;
+          const labelKey = Array.isArray(campoInfo) ? "nome" : campoInfo?.labelKey || "nome";
+
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <select
+                id={key}
+                name={key}
+                required={value.required}
+                onChange={handleChange}
+                value={dados[key] ?? ""}
+                className="form-select"
+              >
+                <option value="">Selecione</option>
+                {lista?.map((campo) => (
+                  <option key={campo.id} value={campo.id}>
+                    {campo[labelKey]}
+                  </option>
+                ))}
+              </select>
+              <br />
+            </div>
+          );
+        }
+
+        if (value.type === "bool") {
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <input
+                id={key}
+                name={key}
+                type="checkbox"
+                onChange={handleChange}
+                checked={!!dados[key]}
+                className="form-check-input"
+              />
+              <br />
+            </div>
+          );
+        }
+
+        if (value.type === "file upload") {
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <input
+                id={key}
+                name={key}
+                type="file"
+                onChange={handleChange}
+                className="form-control-file"
+                multiple
+              />
+              <br />
+            </div>
+          );
+        }
+
+        if (value.type === "email") {
+          return (
+            <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <input
+                id={key}
+                name={key}
+                type="email"
+                onChange={handleChange}></input>
                 <br />
-              </div>
-            );
-          }
+            </div>
+          )
+        }
 
-          if ((value.type === "string") && (value.max_length >= 60 || value.max_length == null)) {
-            return (
-              <div key={key} className="form-group">
-                <label htmlFor={key}>{value.label + ":"}</label>
-                <textarea
-                  id={key}
-                  name={key}
-                  required={value.required}
-                  minLength={value.min_length ?? undefined}
-                  maxLength={value.max_length ?? undefined}
-                  onChange={handleChange}
-                  value={dados[key] ?? ""}
-                />
-                <br />
-              </div>
-            );
-          }
-
-          if (value.type === "integer") {
-            return (
-              <div key={key} className="form-group">
-                <label htmlFor={key}>{value.label + ":"}</label>
-                <input
-                  id={key}
-                  name={key}
-                  type="number"
-                  required={value.required}
-                  onChange={handleChange}
-                  value={dados[key] ?? ""}
-                />
-                <br />
-              </div>
-            );
-          }
-
-          if (value.type === "field") {
-            const campoInfo = popularCampo[key];
-            const lista = Array.isArray(campoInfo) ? campoInfo : campoInfo?.data;
-            const labelKey = Array.isArray(campoInfo) ? "nome" : campoInfo?.labelKey || "nome";
-
-            return (
-              <div key={key} className="form-group">
-                <label htmlFor={key}>{value.label + ":"}</label>
-                <select
-                  id={key}
-                  name={key}
-                  required={value.required}
-                  onChange={handleChange}
-                  value={dados[key] ?? ""}
-                  className="form-select"
-                >
-                  <option value="">Selecione</option>
-                  {lista?.map((campo) => (
-                    <option key={campo.id == null ? campo.codigo : campo.id} value={campo.id == null ? campo.codigo : campo.id}>
-                      {campo[labelKey]}
-                    </option>
-                  ))}
-                </select>
-                <br />
-              </div>
-            );
-          }
-
-          if (value.type === "bool" ) {
-            return (
-              <div key={key} className="form-group">
-                <label htmlFor={key}>{value.label + ":"}</label>
-                <input
-                  id={key}
-                  name={key}
-                  type="checkbox"
-                  onChange={handleChange}
-                  checked={!!dados[key]}
-                  className="form-check-input"
-                />
-                <br />
-              </div>
-            );
-          }
-
-          if (value.type === "file upload") {
-            return (
-              <div key={key} className="form-group">
-                <label htmlFor={key}>{value.label + ":"}</label>
-                <input
-                  id={key}
-                  name={key}
-                  type="file"
-                  onChange={handleChange}
-                  className="form-control-file"
-                  multiple
-                />
-                <br />
-              </div>
-            );
-          }
-
-          return null;
-        })}
+        return null;
+      })}
     </>
   );
 }

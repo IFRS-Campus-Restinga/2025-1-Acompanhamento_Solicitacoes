@@ -6,6 +6,7 @@ import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback"
 import { useNavigate } from "react-router-dom";
 import "../../../components/formulario.css";
+import IgnoreFields from "../../../components/ignoreFields";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
@@ -54,6 +55,13 @@ export default function Formulario() {
                 "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
                 {
                     descricao: dados.descricao,
+                    email: dados.email,
+                    cpf: dados.cpf,
+                    matricula: dados.matricula,
+                    turma: dados.turma,
+                    ano_semestre_ingresso: dados.ano_semestre_ingresso,
+                    observacoes: dados.observacoes,
+                    aluno: dados.aluno,
                     curso: dados.curso,
                     motivo_solicitacao: dados.motivo_solicitacao
                 }
@@ -147,7 +155,7 @@ export default function Formulario() {
                                 }
                             }}
                             onChange={handleFormChange}
-                            ignoreFields={["id", "form_dispensa_ed_fisica", "form_exercicos_domiciliares", "form_abono_falta"]}
+                            ignoreFields={IgnoreFields}
                         />
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
