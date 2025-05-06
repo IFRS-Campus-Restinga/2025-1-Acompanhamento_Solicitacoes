@@ -14,14 +14,16 @@ const Header = () => {
           <ul className="nav-links">
             <li><Link to="/nova-solicitacao">Nova Solicitação</Link></li>
             <li><Link to="/solicitacoes">Minhas Solicitações</Link></li>
+             {/*LINK PARA Configurações E DENTRO HAVERÁ CRUDS PARA VISÃO SOMENTE DO CRE*/}
+            <li><Link to="/configuracoes" className="configuracoes-link">Configurações</Link></li>
           </ul>
         </nav>
 
         <div className="right user-info">
           <p className="mensagem-usuario">Bem-vinde, Karolina Dean</p>
           <img src="img/profile-pic.jpg" alt="Perfil" className="profile-pic"/>
-          {/*LINK PARA ENGRENAGEM E DENTRO HAVERÁ CRUDS PARA VISÃO SOMENTE DO CRE*/}
-          <Link to="/configuracoes" className="configuracoes-link">
+          {/*LINK PARA ENGRENAGEM E DENTRO HAVERÁ Editar perfil PARA VISÃO DE QUEM ESTÁ LOGADO*/}
+          <Link to="/perfil" className="perfil-link">
           <i className="bi bi-gear-fill icone" title="Configurações"></i>
           </Link>
         </div>

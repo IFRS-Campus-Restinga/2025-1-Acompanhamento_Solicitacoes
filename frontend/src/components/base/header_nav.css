@@ -77,13 +77,13 @@
   object-fit: cover;
 }
 
-.configuracoes-link {
+.perfil-link {
   text-decoration: none;
   color: white;
   font-size: 14px;
 }
 
-.configuracoes-link:hover {
+.perfil-link:hover {
   text-decoration: underline;
 }
 
