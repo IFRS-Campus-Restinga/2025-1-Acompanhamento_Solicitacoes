@@ -2,13 +2,28 @@ import axios from "axios";
 import React, { useState } from "react";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
+import axiosInstance from "../../services/axiosInstance";
 import "./../../components/base/main.css";
 import "./../../components/formulario.css";
 
 const EditarPerfil = ({ dadosIniciais }) => {
-      const [dadosUsuario, setDadosUsuario] = useState(dadosIniciais.usuario);
-      const [dadosEspecificos, setDadosEspecificos] = useState(dadosIniciais[dadosIniciais.tipo] || {});
-      const tipo = dadosIniciais.tipo;
+    // Define valores padrão se 'dadosIniciais' for null ou undefined
+    const usuarioInicial = dadosIniciais?.usuario || {
+      nome: "",
+      email: "",
+      telefone: "",
+      data_nascimento: ""
+    };
+    const especificosIniciais = dadosIniciais?.[dadosIniciais?.tipo] || {};
+  
+    const [dadosUsuario, setDadosUsuario] = useState(usuarioInicial);
+    const [dadosEspecificos, setDadosEspecificos] = useState(especificosIniciais);
+    const tipo = dadosIniciais?.tipo || "";
+  
+    // Se 'dadosIniciais' for null, exibe uma mensagem de erro no retorno
+    if (!dadosIniciais) {
+      return <p>Erro ao carregar os dados do perfil.</p>;
+    }
 
       const handleChangeUsuario = (e) => {
         setDadosUsuario({ ...dadosUsuario, [e.target.name]: e.target.value });
@@ -20,10 +35,18 @@ const EditarPerfil = ({ dadosIniciais }) => {
 
       const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Validação antes de enviar a requisição
+        if (!dadosUsuario.nome || !dadosUsuario.email || !dadosUsuario.data_nascimento) {
+          alert("Todos os campos obrigatórios devem ser preenchidos.");
+          return;
+        }
     
         try {
-          await axios.put(`/usuarios/${dadosUsuario.id}/`, dadosUsuario);
+           // Atualiza os dados do usuário no backend
+          await axiosInstance.put(`/usuarios/${dadosUsuario.id}/`, dadosUsuario);
     
+          // Se o usuário for aluno, coordenador ou CRE, atualiza os dados específicos
           if (tipo && dadosEspecificos) {
             const endpointMap = {
               aluno: `/alunos/${dadosUsuario.id}/`,
@@ -35,6 +58,7 @@ const EditarPerfil = ({ dadosIniciais }) => {
           }
     
           alert("Dados atualizados com sucesso!");
+          window.location.href = "/home"; // Redireciona o usuário após o update
         } catch (error) {
           console.error("Erro ao atualizar:", error);
           alert("Erro ao atualizar dados");
