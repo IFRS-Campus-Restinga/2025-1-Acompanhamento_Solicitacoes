@@ -1,5 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import "react-datepicker/dist/react-datepicker.css";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import Header from "../../../components/base/header";
@@ -16,7 +17,9 @@ export default function FormularioExercicioDomiciliar() {
     componentes_curriculares: "",
     motivo_solicitacao: "",
     outro_motivo: "",
-    periodo_afastamento: "",
+    data_inicio_afastamento: "",
+    data_fim_afastamento: "",
+    periodo_afastamento: 0,
     documento_apresentado: "",
     outro_documento: "",
     arquivos: [],
@@ -46,21 +49,53 @@ export default function FormularioExercicioDomiciliar() {
       .catch((err) => console.error("Erro ao buscar cursos:", err));
   }, []);
 
-  const handleChange = (e) => {
-    const { name, value, type, files } = e.target;
-    if (type === "file") {
-      setFormData({ ...formData, arquivos: files });
-    } else {
-      setFormData({ ...formData, [name]: value });
+  useEffect(() => {
+    if (formData.data_inicio && formData.data_fim) {
+      const inicio = new Date(formData.data_inicio);
+      const fim = new Date(formData.data_fim);
+    
+    if (new Date(formData.data_fim) < new Date(formData.data_inicio)) {
+        alert("A data final não pode ser anterior à data inicial.");
+        return;
+      }      
+  
+      const diffTime = Math.abs(fim - inicio);
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; // +1 inclui o último dia
+  
+      setFormData((prevData) => ({
+        ...prevData,
+        periodo_afastamento: `${diffDays} dia${diffDays > 1 ? "s" : ""}`,
+      }));
     }
-  };
+  }, [formData.data_inicio, formData.data_fim]);
+  
+
+  const handleChange = (e) => {
+      const { name, value } = e.target;
+      const updatedFormData = { ...formData, [name]: value };
+    
+      // Se ambas as datas estiverem preenchidas, calcula a diferença
+      if (
+        (name === "data_inicio_afastamento" || name === "data_fim_afastamento") &&
+        updatedFormData.data_inicio_afastamento &&
+        updatedFormData.data_fim_afastamento
+      ) {
+        const inicio = new Date(updatedFormData.data_inicio_afastamento);
+        const fim = new Date(updatedFormData.data_fim_afastamento);
+        const diffMs = fim - inicio;
+        const diffDias = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        updatedFormData.periodo_afastamento = diffDias;
+      }
+    
+      setFormData(updatedFormData);
+    };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
       // Verificação de campos obrigatórios
       if (!formData.aluno_nome || !formData.email || !formData.matricula || !formData.componentes_curriculares || 
-        !formData.motivo_solicitacao || !formData.periodo_afastamento || !formData.documento_apresentado || !formData.curso) {
+        !formData.motivo_solicitacao || !formData.data_inicio || !formData.data_fim || !formData.documento_apresentado || !formData.curso) {
       alert("Todos os campos obrigatórios devem ser preenchidos!");
       return;
     }
@@ -75,8 +110,15 @@ export default function FormularioExercicioDomiciliar() {
         return;
       }
       
-    const data = new FormData();
-    for (const key in formData) {
+      
+     // Criar FormData e formatar datas corretamente
+  const data = new FormData();
+  data.append("data_inicio", formData.data_inicio.toISOString().split("T")[0]); // ✅ Converte para YYYY-MM-DD
+  data.append("data_fim", formData.data_fim.toISOString().split("T")[0]); // ✅ Converte para YYYY-MM-DD
+  data.append("periodo_afastamento", formData.periodo_afastamento);
+
+  for (const key in formData) {
+    if (key !== "data_inicio" && key !== "data_fim") {
       if (key === "arquivos") {
         Array.from(formData.arquivos).forEach(file => {
           data.append("arquivos", file);
@@ -85,6 +127,7 @@ export default function FormularioExercicioDomiciliar() {
         data.append(key, formData[key]);
       }
     }
+  }
 
     axios.post("http://localhost:8000/solicitacoes/form_exercicio_domiciliar/", data, {
       headers: {
@@ -182,8 +225,33 @@ export default function FormularioExercicioDomiciliar() {
 
         <div className="form-group">
           <label>Período de afastamento:</label>
-          <p>Informe a(s) data(s) que aparece(m) no seu atestado/documento. Por exemplo: "60 dias a partir de 11/04/2025" ou "De 11/04 a 15/05/2025". </p>
-          <input type="text" name="periodo_afastamento" value={formData.periodo_afastamento} onChange={handleChange} required />
+          <input
+            type="text"
+            name="periodo_afastamento"
+            value={formData.periodo_afastamento}
+            readOnly
+            style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}/>
+
+            <fieldset className="periodo-afastamento">
+                <div className="datas-container">
+                  <div className="form-group">
+                    <label>Data inicial:</label>
+                    <input
+                      type="date"
+                      name="data_inicio"
+                      value={formData.data_inicio}
+                      onChange={handleChange}/>
+                  </div>
+                  <div className="form-group">
+                    <label>Data final:</label>
+                    <input
+                      type="date"
+                      name="data_fim"
+                      value={formData.data_fim}
+                      onChange={handleChange}/>
+                  </div>
+                </div>
+            </fieldset>
         </div>
 
         <div className="form-group">

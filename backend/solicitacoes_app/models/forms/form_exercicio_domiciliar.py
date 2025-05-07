@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import date
 from ..curso import Curso
 from ..form_base import FormularioBase
 from django.core.validators import MinLengthValidator, EmailValidator
@@ -37,7 +38,9 @@ class FormExercicioDomiciliar(FormularioBase):
     motivo_solicitacao = models.CharField(max_length=30, choices=MOTIVOS_SOLICITACAO_CHOICES)
     outro_motivo = models.CharField(max_length=255, blank=True, null=True)
 
-    periodo_afastamento = models.CharField(max_length=255, help_text="Descreva o período informado no atestado ou documento.")
+    data_inicio_afastamento = models.DateField( default=date.today, verbose_name="Data de início do afastamento")
+    data_fim_afastamento = models.DateField(default=date.today, verbose_name="Data de fim do afastamento")
+    periodo_afastamento = models.PositiveIntegerField()  # Em dias
 
     documento_apresentado = models.CharField(max_length=30, choices=DOCUMENTO_APRESENTADO_CHOICES)
     outro_documento = models.CharField(max_length=255, blank=True, null=True)
