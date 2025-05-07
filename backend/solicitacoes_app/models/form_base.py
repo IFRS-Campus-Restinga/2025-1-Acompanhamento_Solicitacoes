@@ -3,8 +3,8 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 
 class FormularioBase(BaseModel):
-    nome = models.CharField(max_length=60, null=True) #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
-    descricao = models.TextField(blank=True, null=True, validators=MinLengthValidator(10)) #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
+    nome_formulario = models.CharField(max_length=60, null=True,  validators=MinLengthValidator(10)) #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
+    descricao = models.TextField(blank=True, null=True) #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
 
     motivo_solicitacao = models.CharField(
         max_length=255
