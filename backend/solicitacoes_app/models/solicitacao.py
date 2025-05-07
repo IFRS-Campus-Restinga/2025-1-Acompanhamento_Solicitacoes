@@ -26,6 +26,7 @@ class Solicitacao(BaseModel):
         null=False,
         verbose_name="Status da Solicitação"
     )
+    
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
