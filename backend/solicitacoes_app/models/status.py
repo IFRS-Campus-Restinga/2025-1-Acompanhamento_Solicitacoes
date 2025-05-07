@@ -7,4 +7,3 @@ class Status(models.TextChoices):
     REGISTRADO = "Registrado"
     INDEFERIDO = "Indeferido"
     APROVADO = "Aprovado"
-

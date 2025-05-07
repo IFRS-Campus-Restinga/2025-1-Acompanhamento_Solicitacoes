@@ -4,27 +4,16 @@ from django.core.validators import MinLengthValidator
 from .status import Status
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-import datetime
+from .aluno import Aluno
+from django.core.exceptions import ValidationError
 
 class Solicitacao(BaseModel):
-
-    data_solicitacao = models.DateField(
-        help_text="Data em que o evento da solicitação ocorreu ou para quando é solicitada.",
-        verbose_name="Data Efetiva da Solicitação",
+    aluno = models.ForeignKey(
+        Aluno,
+        related_name='aluno',
+        on_delete=models.DO_NOTHING   
     )
-    data_emissao = models.DateField(
-        verbose_name="Data de Emissão/Conclusão",
-        null=True, blank=True,
-        help_text="Data em que a solicitação foi processada e teve um resultado."
-    )
-
-    status = models.CharField( 
-        max_length=20, 
-        choices=Status.choices,
-        blank=False,
-        null=False,
-        verbose_name="Status da Solicitação"
-    )
+    
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
@@ -44,5 +33,34 @@ class Solicitacao(BaseModel):
     )
     formulario_associado = GenericForeignKey('content_type', 'object_id')
 
+    data_solicitacao = models.DateField(
+        help_text="Escreva aqui a data da solicitação", 
+        verbose_name="Data da Solicitação:",
+    )
+
+    data_emissao = models.DateField(
+        help_text="Escreva aqui a data de emissão", 
+        verbose_name="Data emissão:",
+    )
+
+    status = models.CharField( 
+        max_length=20, 
+        choices=Status.choices,
+        blank=False,
+        null=False,
+        verbose_name="Status da Solicitação"
+    )
+
+    def clean(self):
+        ModelClass = self.content_type.model_class()
+        if not ModelClass.objects.filter(pk=self.object_id).exists():
+            raise ValidationError("O ID do formulário associado não existe para este tipo.")
+        
+    
     def __str__(self):
-        return self.status
+        nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
+        if self.formulario_associado:
+            nome_formulario = str(self.formulario_associado)
+        else:
+            nome_formulario = "Sem Formulário"
+        return f"{nome_aluno} | {nome_formulario}"

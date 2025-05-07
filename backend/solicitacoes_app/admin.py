@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import Curso, Ppc, CRE, Coordenador, Aluno, Responsavel, Disciplina, Usuario, Turma, FormularioTrancamentoMatricula, FormDispensaEdFisica, FormAbonoFalta, Anexo, FormTrancDisciplina, Nome
+from .models import *
 from .models.forms.form_desistencia_vaga import FormDesistenciaVaga
 from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
 
@@ -21,6 +21,7 @@ admin.site.register(FormTrancDisciplina)
 admin.site.register(FormDesistenciaVaga)
 admin.site.register(FormExercicioDomiciliar)
 admin.site.register(Nome)
+admin.site.register(Solicitacao)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)
@@ -45,4 +46,10 @@ class UsuarioAdmin(BaseUserAdmin):
         ),
     )
 
+class SolicitacaoAdmin(admin.ModelAdmin):
+    raw_id_fields = ('aluno', )
+    list_display = ('id', 'aluno', 'get_formulario_associado', 'data_solicitacao', 'status')
 
+    def get_formulario_associado(self, obj):
+        return str(obj.formulario_associado)
+    get_formulario_associado.short_description = 'Formulário Associado'
