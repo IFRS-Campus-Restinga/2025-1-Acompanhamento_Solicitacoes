@@ -13,7 +13,7 @@ class Aluno(BaseModel):
         max_length=20, unique=True
     )
     ppc = models.ForeignKey(
-        Ppc,
+        Ppc, on_delete=models.DO_NOTHING,
         related_name='ppcs'
     )
     ano_ingresso = models.IntegerField(
