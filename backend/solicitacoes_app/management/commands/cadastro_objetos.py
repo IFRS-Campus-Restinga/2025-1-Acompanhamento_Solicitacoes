@@ -30,7 +30,7 @@ class Command(BaseCommand):
         )
 
 
-        Ppc.objects.get_or_create(
+        ppc1 = Ppc.objects.get_or_create(
             codigo="ads/101.2018",
             defaults={"curso": curso1}
         )
@@ -270,7 +270,7 @@ class Command(BaseCommand):
             usuario=usuario_aluno,
             defaults={
                 "matricula": "2023123456",
-                "ppc": "esw/404.2021",
+                "ppc": ppc1,
                 "ano_ingresso": 2023,
             }
         )
