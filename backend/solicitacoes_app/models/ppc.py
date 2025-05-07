@@ -3,7 +3,6 @@ from django.db import models
 from django.core.validators import *
 from .curso import Curso
 
-
 class Ppc(BaseModel):
     codigo = models.CharField(
         primary_key=True,

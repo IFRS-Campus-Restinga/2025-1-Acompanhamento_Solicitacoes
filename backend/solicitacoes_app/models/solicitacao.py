@@ -4,27 +4,13 @@ from django.core.validators import MinLengthValidator
 from .status import Status
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-import datetime
+from .aluno import Aluno
 
 class Solicitacao(BaseModel):
-
-
-    data_solicitacao = models.DateField(
-        help_text="Escreva aqui a data da solicitação", 
-        verbose_name="Data da Solicitação:",
-    )
-
-    data_emissao = models.DateField(
-        help_text="Escreva aqui a data de emissão", 
-        verbose_name="Data emissão:",
-    )
-
-    status = models.CharField( 
-        max_length=20, 
-        choices=Status.choices,
-        blank=False,
-        null=False,
-        verbose_name="Status da Solicitação"
+    aluno = models.ForeignKey(
+        Aluno,
+        related_name='aluno',
+        on_delete=models.DO_NOTHING   
     )
     
     content_type = models.ForeignKey(
@@ -45,6 +31,24 @@ class Solicitacao(BaseModel):
         help_text="O ID da instância específica do formulário."
     )
     formulario_associado = GenericForeignKey('content_type', 'object_id')
+
+    data_solicitacao = models.DateField(
+        help_text="Escreva aqui a data da solicitação", 
+        verbose_name="Data da Solicitação:",
+    )
+
+    data_emissao = models.DateField(
+        help_text="Escreva aqui a data de emissão", 
+        verbose_name="Data emissão:",
+    )
+
+    status = models.CharField( 
+        max_length=20, 
+        choices=Status.choices,
+        blank=False,
+        null=False,
+        verbose_name="Status da Solicitação"
+    )
 
     
     def __str__(self):
