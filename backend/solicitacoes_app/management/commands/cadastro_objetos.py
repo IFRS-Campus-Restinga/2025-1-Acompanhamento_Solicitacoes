@@ -30,7 +30,7 @@ class Command(BaseCommand):
         )
 
 
-        ppc1 = Ppc.objects.get_or_create(
+        ppc1, _ = Ppc.objects.get_or_create(
             codigo="ads/101.2018",
             defaults={"curso": curso1}
         )
