@@ -8,6 +8,16 @@ import "../../../components/formulario.css";
 export default function FormularioTrancamentoMatricula() {
   const { curso_codigo } = useParams();
   const [cursos, setCursos] = useState([]);
+  const [alunos, setAlunos] = useState([]);
+  const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/solicitacoes/alunos/")
+      .then((res) => setAlunos(res.data))
+      .catch((err) => console.error("Erro ao buscar alunos:", err));
+  }, []);
+
   const [formData, setFormData] = useState({
     aluno_nome: "",
     email: "",
@@ -116,54 +126,66 @@ export default function FormularioTrancamentoMatricula() {
           encType="multipart/form-data"
         >
           <div className="form-group">
-            <label>E-mail:</label>
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Nome completo:</label>
-            <input
-              type="text"
-              name="aluno_nome"
-              value={formData.aluno_nome}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Número de matrícula:</label>
-            <input
-              type="text"
-              name="matricula"
-              value={formData.matricula}
-              onChange={handleChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label>Curso:</label>
+            <label>Selecione o aluno:</label>
             <select
-              name="curso"
-              value={formData.curso}
-              onChange={handleChange}
-              required
+              onChange={(e) => {
+                const aluno = alunos.find(
+                  (a) => a.usuario.id === parseInt(e.target.value)
+                );
+                setAlunoSelecionado(aluno);
+                setFormData((prev) => ({
+                  ...prev,
+                  aluno: aluno.usuario.id,
+                  aluno_nome: aluno.usuario.nome,
+                  matricula: aluno.matricula,
+                  curso: aluno.ppc.curso.nome,
+                  ppc: aluno.ppc.id,
+                }));
+              }}
             >
-              <option value="">Selecione o curso</option>
-              {cursos.map((curso) => (
-                <option key={curso.codigo} value={curso.codigo}>
-                  {curso.nome}
+              <option value="">Selecione o aluno</option>
+              {alunos.map((aluno) => (
+                <option key={aluno.usuario.id} value={aluno.usuario.id}>
+                  {aluno.usuario.nome}
                 </option>
               ))}
             </select>
           </div>
+          {alunoSelecionado && (
+            <>
+              <div className="form-group">
+                <label>Nome:</label>
+                <input
+                  type="text"
+                  value={alunoSelecionado.usuario.nome}
+                  readOnly
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Matrícula:</label>
+                <input
+                  type="text"
+                  value={alunoSelecionado.matricula}
+                  readOnly
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Curso:</label>
+                <input
+                  type="text"
+                  value={alunoSelecionado.ppc.curso.nome}
+                  readOnly
+                />
+              </div>
+
+              <div className="form-group">
+                <label>PPC:</label>
+                <input type="text" value={alunoSelecionado.ppc.nome} readOnly />
+              </div>
+            </>
+          )}
 
           <div className="form-group">
             <label>Justificativa do trancamento:</label>

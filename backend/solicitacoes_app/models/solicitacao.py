@@ -8,15 +8,14 @@ import datetime
 
 class Solicitacao(BaseModel):
 
-
     data_solicitacao = models.DateField(
-        help_text="Escreva aqui a data da solicitação", 
-        verbose_name="Data da Solicitação:",
+        help_text="Data em que o evento da solicitação ocorreu ou para quando é solicitada.",
+        verbose_name="Data Efetiva da Solicitação",
     )
-
     data_emissao = models.DateField(
-        help_text="Escreva aqui a data de emissão", 
-        verbose_name="Data emissão:",
+        verbose_name="Data de Emissão/Conclusão",
+        null=True, blank=True,
+        help_text="Data em que a solicitação foi processada e teve um resultado."
     )
 
     status = models.CharField( 
@@ -45,6 +44,5 @@ class Solicitacao(BaseModel):
     )
     formulario_associado = GenericForeignKey('content_type', 'object_id')
 
-    
     def __str__(self):
         return self.status
