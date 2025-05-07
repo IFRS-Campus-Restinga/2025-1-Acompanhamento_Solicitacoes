@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import FormExercicioDomiciliar, Curso
+from datetime import datetime
 
 class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
     aluno_nome = serializers.CharField(max_length=100)
@@ -11,6 +12,8 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
     motivo_solicitacao = serializers.ChoiceField(choices=FormExercicioDomiciliar.MOTIVOS_SOLICITACAO_CHOICES)
     outro_motivo = serializers.CharField(max_length=255, required=False, allow_blank=True, allow_null=True)
     
+    data_inicio = serializers.DateField() 
+    data_fim = serializers.DateField() 
     periodo_afastamento = serializers.CharField(max_length=255)
     
     documento_apresentado = serializers.ChoiceField(choices=FormExercicioDomiciliar.DOCUMENTO_APRESENTADO_CHOICES)
@@ -21,13 +24,19 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FormExercicioDomiciliar
-        fields = [
-            'aluno_nome', 'email', 'matricula', 'curso', 'componentes_curriculares',
-            'motivo_solicitacao', 'outro_motivo', 'periodo_afastamento',
-            'documento_apresentado', 'outro_documento', 'arquivos', 'consegue_realizar_atividades'
-        ]
+        fields = '__all__'
 
     def validate(self, data):
+
+        inicio = data.get('data_inicio_afastamento')
+        fim = data.get('data_fim_afastamento')
+
+        if inicio and fim:
+            if fim < inicio:
+                raise serializers.ValidationError("A data de fim deve ser posterior à data de início.")
+            data['periodo_afastamento'] = (fim - inicio).days
+        return data
+
         # Validação extra: outro_motivo precisa ser preenchido se motivo_solicitacao for 'outro'
         if data.get('motivo_solicitacao') == 'outro' and not data.get('outro_motivo'):
             raise serializers.ValidationError({

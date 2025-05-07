@@ -1,13 +1,14 @@
 import axios from "axios";
 import 'bootstrap-icons/font/bootstrap-icons.css';
-import React from "react";
-import { BrowserRouter as Router, Routes } from "react-router-dom";
-import "./App.css";
-import routes from "./routes/routes";
-import "./var.css";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import './index.css'
+import React from "react";
+import "react-datepicker/dist/react-datepicker.css";
+import { BrowserRouter as Router, Routes } from "react-router-dom";
+import "./App.css";
+import './index.css';
+import routes from "./routes/routes";
+import "./var.css";
 class App extends React.Component {
   state = {
     isConnected: false,

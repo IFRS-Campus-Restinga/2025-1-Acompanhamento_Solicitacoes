@@ -12,3 +12,4 @@ from .form_tranc_matricula_view import *
 from .anexo_view import *
 from .mandato_view import *
 from .form_exercicios_domiciliares import *
+from .form_entrega_ativ_compl_view import *

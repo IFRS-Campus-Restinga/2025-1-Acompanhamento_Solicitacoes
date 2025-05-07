@@ -4,6 +4,8 @@ import { Route } from "react-router-dom";
 // Páginas
 import Configuracoes from "../pages/configuracoes/configuracoes.js";
 import Perfil from "../pages/perfil/perfil.js";
+import PosLogin from "../pages/pos_login";
+
 //import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
@@ -70,15 +72,19 @@ import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/form
 
 import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario.js";
 
+import { Navigate } from "react-router-dom";
+
+
+const token = localStorage.getItem("token");
 
 const routes = [
   //página inicial
   <Route path="/" element={<Home />} key="home" />,
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
-  <Route path="/perfil" element={<Perfil />} key="perfil" />,
   <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
-
+  <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} />,
+  <Route path="/pos-login" element={<PosLogin />} />,
 
   // Motivo Abono
   <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
