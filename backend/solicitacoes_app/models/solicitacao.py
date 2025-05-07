@@ -58,4 +58,9 @@ class Solicitacao(BaseModel):
         
     
     def __str__(self):
-        return self.aluno.usuario.nome + ' | '
+        nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
+        if self.formulario_associado:
+            nome_formulario = str(self.formulario_associado)
+        else:
+            nome_formulario = "Sem Formulário"
+        return f"{nome_aluno} | {nome_formulario}"
