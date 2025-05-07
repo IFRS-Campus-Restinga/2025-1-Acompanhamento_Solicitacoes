@@ -3,6 +3,7 @@ from .base import BaseModel
 from .usuario import Usuario
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
+from .ppc import *
 
 class Aluno(BaseModel):
     usuario = models.OneToOneField(
@@ -11,8 +12,9 @@ class Aluno(BaseModel):
     matricula = models.CharField(
         max_length=20, unique=True
     )
-    turma = models.CharField(
-        max_length=100
+    ppc = models.ForeignKey(
+        Ppc,
+        related_name='ppcs'
     )
     ano_ingresso = models.IntegerField(
         validators=[MinValueValidator(2000),MaxValueValidator(datetime.date.today().year)]
