@@ -270,7 +270,7 @@ class Command(BaseCommand):
             usuario=usuario_aluno,
             defaults={
                 "matricula": "2023123456",
-                "turma": "Turma A",
+                "ppc": "esw/404.2021",
                 "ano_ingresso": 2023,
             }
         )
