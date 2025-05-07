@@ -5,6 +5,7 @@ from .status import Status
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from .aluno import Aluno
+from django.core.exceptions import ValidationError
 
 class Solicitacao(BaseModel):
     aluno = models.ForeignKey(
@@ -50,6 +51,11 @@ class Solicitacao(BaseModel):
         verbose_name="Status da Solicitação"
     )
 
+    def clean(self):
+        ModelClass = self.content_type.model_class()
+        if not ModelClass.objects.filter(pk=self.object_id).exists():
+            raise ValidationError("O ID do formulário associado não existe para este tipo.")
+        
     
     def __str__(self):
-        return self.status
+        return self.aluno.usuario.nome + ' | '

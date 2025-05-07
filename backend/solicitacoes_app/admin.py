@@ -46,4 +46,10 @@ class UsuarioAdmin(BaseUserAdmin):
         ),
     )
 
+class SolicitacaoAdmin(admin.ModelAdmin):
+    raw_id_fields = ('aluno', )
+    list_display = ('id', 'aluno', 'get_formulario_associado', 'data_solicitacao', 'status')
 
+    def get_formulario_associado(self, obj):
+        return str(obj.formulario_associado)
+    get_formulario_associado.short_description = 'Formulário Associado'
