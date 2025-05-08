@@ -6,10 +6,11 @@ import Configuracoes from "../pages/configuracoes/configuracoes.js";
 import Perfil from "../pages/perfil/perfil.js";
 import PosLogin from "../pages/pos_login";
 
-//import Cruds from "../pages/configuracoes/cruds.js";
+import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
 import Home from "./../pages/home";
+import ListarSolicitacoes from "../pages/solicitacoes/listar_solicitacoes";
 
 
 // Motivos de Abono
@@ -152,7 +153,8 @@ const routes = [
 
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
-
+  //Solicitacoes
+  <Route path="/todas" element={<ListarSolicitacoes />} />
  ];
 
 export default routes;
