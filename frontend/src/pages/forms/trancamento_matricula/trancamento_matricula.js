@@ -180,15 +180,6 @@ export default function FormularioTrancamentoMatricula() {
           {alunoSelecionado && (
             <>
               <div className="form-group">
-                <label>Nome:</label>
-                <input
-                  type="text"
-                  value={alunoSelecionado.usuario.nome}
-                  readOnly
-                />
-              </div>
-
-              <div className="form-group">
                 <label>Matrícula:</label>
                 <input
                   type="text"
