@@ -28,6 +28,7 @@ from .views.form_desistencia_vaga_view import *
 from .views.nome_view import *
 from .views.perfil_usuario_view import *
 from .views.form_entrega_ativ_compl_view import *
+from .views.solicitacao_view import *
 
 app_name = 'solicitacoes_app'
 
@@ -112,4 +113,5 @@ urlpatterns = [
     path('form_ativ_compl/', FormEntregaAtivComplListCreate.as_view(), name='form_ativ_compl_list_create'),
     path('form_ativ_compl/<int:id>/', FormEntregaAtivComplUpdate.as_view(), name='form_ativ_compl_update'),
 
+    path('solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
 ]
