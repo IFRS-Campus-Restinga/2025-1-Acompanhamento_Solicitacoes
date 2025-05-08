@@ -80,8 +80,8 @@ urlpatterns = [
     path('responsaveis/', ResponsavelListCreateView.as_view(), name='responsavel-list'),
     path('responsaveis/<int:pk>/', ResponsavelRetrieveUpdateDestroyView.as_view(), name='responsavel-detail'),
     
-    path("formularios-trancamento/",FormTrancamentoListCreate.as_view(),name="listar_cadastrar_form_trancamento",),
-    path("formularios-trancamento/<int:id>/",FormTrancamentoDetail.as_view(),name="detalhar_atualizar_deletar_form_trancamento",),
+    path("formularios-trancamento/", FormTrancamentoCreateWithSolicitacaoView.as_view()),
+    path("formularios-trancamento/<int:id>/", FormTrancamentoDetail.as_view()),
 
     path("dispensa_ed_fisica/", FormDispEdFisicaViewListCreate.as_view(), name='dispensa_ed_fisica_list_create'),
     path("dispensa_ed_fisica/<int:id>/", FormDispEdFisicaViewUpdateDelete.as_view(), name='dispensa_ed_fisica_update_delete'),

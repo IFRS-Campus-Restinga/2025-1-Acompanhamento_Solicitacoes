@@ -48,11 +48,7 @@ export default function FormularioTrancamentoMatricula() {
     e.preventDefault();
 
     if (
-      !formData.aluno_nome ||
-      !formData.email ||
-      !formData.matricula ||
-      !formData.motivo_solicitacao ||
-      !formData.curso
+      !formData.motivo_solicitacao 
     ) {
       alert("Todos os campos obrigatórios devem ser preenchidos!");
       return;
