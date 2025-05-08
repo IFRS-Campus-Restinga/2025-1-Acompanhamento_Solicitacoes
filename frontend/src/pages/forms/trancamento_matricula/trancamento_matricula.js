@@ -129,9 +129,34 @@ export default function FormularioTrancamentoMatricula() {
             <label>Selecione o aluno:</label>
             <select
               onChange={(e) => {
+                const value = e.target.value;
+
+                // Verifica se o valor está vazio (significa que o usuário desmarcou a seleção)
+                if (!value) {
+                  setAlunoSelecionado(null);
+                  setFormData((prev) => ({
+                    ...prev,
+                    aluno: "",
+                    aluno_nome: "",
+                    matricula: "",
+                    curso: "",
+                    ppc: "",
+                  }));
+                  return; // Não continua o fluxo
+                }
+
                 const aluno = alunos.find(
-                  (a) => a.usuario.id === parseInt(e.target.value)
+                  (a) => a.usuario.id === parseInt(value)
                 );
+
+                if (!aluno || !aluno.ppc || !aluno.ppc.curso) {
+                  alert("Erro ao carregar dados do aluno selecionado.");
+                  console.log(
+                    aluno + " ++ " + aluno.ppc + " ++ " + aluno.ppc.curso
+                  );
+                  return;
+                }
+
                 setAlunoSelecionado(aluno);
                 setFormData((prev) => ({
                   ...prev,
@@ -139,7 +164,7 @@ export default function FormularioTrancamentoMatricula() {
                   aluno_nome: aluno.usuario.nome,
                   matricula: aluno.matricula,
                   curso: aluno.ppc.curso.nome,
-                  ppc: aluno.ppc.id,
+                  ppc: aluno.ppc.codigo,
                 }));
               }}
             >
@@ -151,6 +176,7 @@ export default function FormularioTrancamentoMatricula() {
               ))}
             </select>
           </div>
+
           {alunoSelecionado && (
             <>
               <div className="form-group">

@@ -1,15 +1,19 @@
 from rest_framework import serializers
 from ..models import Aluno, Usuario, Ppc
-
+from .usuario_serializer import *
+from .ppc_serializer import *
 class AlunoSerializer(serializers.ModelSerializer):
     
-    ppc = serializers.PrimaryKeyRelatedField(queryset=Ppc.objects.all())
+    ppc = PpcSerializer(read_only=True)
     depth=1
-    
+    usuario = UsuarioSerializer(read_only=True)
+    usuario_id = serializers.PrimaryKeyRelatedField(
+        source='usuario', queryset=Usuario.objects.all(), write_only=True
+    )
+
     class Meta:
         model = Aluno
-        fields = ['usuario', 'matricula', 'ano_ingresso', 'ppc']
-        
+        fields = ['usuario', 'usuario_id', 'matricula', 'ano_ingresso', 'ppc', 'ppc_id']
     
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')
