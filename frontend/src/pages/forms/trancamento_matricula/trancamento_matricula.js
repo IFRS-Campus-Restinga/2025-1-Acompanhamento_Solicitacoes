@@ -208,7 +208,7 @@ export default function FormularioTrancamentoMatricula() {
 
               <div className="form-group">
                 <label>PPC:</label>
-                <input type="text" value={alunoSelecionado.ppc.nome} readOnly />
+                <input type="text" value={alunoSelecionado.ppc.codigo} readOnly />
               </div>
             </>
           )}
