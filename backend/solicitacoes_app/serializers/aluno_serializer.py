@@ -13,7 +13,7 @@ class AlunoSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Aluno
-        fields = ['usuario', 'usuario_id', 'matricula', 'ano_ingresso', 'ppc', 'ppc_id']
+        fields = '__all__'
     
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')

@@ -46,14 +46,12 @@ export default function FormularioTrancamentoMatricula() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    if (
-      !formData.motivo_solicitacao 
-    ) {
+  
+    if (!formData.motivo_solicitacao) {
       alert("Todos os campos obrigatórios devem ser preenchidos!");
       return;
     }
-
+  
     const data = new FormData();
     for (const key in formData) {
       if (key === "arquivos") {
@@ -64,26 +62,37 @@ export default function FormularioTrancamentoMatricula() {
         data.append(key, formData[key]);
       }
     }
-
+  
+    if (alunoSelecionado) {
+      const alunoId = alunoSelecionado.id;
+      data.append("aluno", alunoId);
+      console.log("🔵 Adicionando aluno ao FormData:", alunoId);
+    } else {
+      console.warn("⚠️ Nenhum aluno selecionado!");
+    }
+  
+    // 🔍 Mostrar todos os dados que estão sendo enviados
+    console.log("📦 Dados enviados no FormData:");
+    for (let pair of data.entries()) {
+      console.log(`${pair[0]}:`, pair[1]);
+    }
+  
     axios
-      .post(
-        "http://localhost:8000/solicitacoes/formularios-trancamento/",
-        data,
-        {
-          headers: { "Content-Type": "multipart/form-data" },
-        }
-      )
+      .post("http://localhost:8000/solicitacoes/formularios-trancamento/", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
       .then(() => {
         alert("Solicitação enviada com sucesso!");
         navigate("/solicitacoes");
       })
       .catch((error) => {
-        console.error("Erro ao enviar:", error);
+        console.error("❌ Erro ao enviar:", error.response?.data || error);
         alert(
           "Erro ao enviar solicitação. Verifique os dados e tente novamente."
         );
       });
   };
+  
 
   return (
     <div>
@@ -147,16 +156,17 @@ export default function FormularioTrancamentoMatricula() {
 
                 if (!aluno || !aluno.ppc || !aluno.ppc.curso) {
                   alert("Erro ao carregar dados do aluno selecionado.");
-                  console.log(
-                    aluno + " ++ " + aluno.ppc + " ++ " + aluno.ppc.curso
-                  );
+                  console.warn("❌ Dados incompletos:", aluno);
                   return;
                 }
+                
+                console.log("✅ Aluno selecionado:", aluno);
+                
 
                 setAlunoSelecionado(aluno);
                 setFormData((prev) => ({
                   ...prev,
-                  aluno: aluno.usuario.id,
+                  aluno: aluno.id,
                   aluno_nome: aluno.usuario.nome,
                   matricula: aluno.matricula,
                   curso: aluno.ppc.curso.nome,
@@ -195,7 +205,11 @@ export default function FormularioTrancamentoMatricula() {
 
               <div className="form-group">
                 <label>PPC:</label>
-                <input type="text" value={alunoSelecionado.ppc.codigo} readOnly />
+                <input
+                  type="text"
+                  value={alunoSelecionado.ppc.codigo}
+                  readOnly
+                />
               </div>
             </>
           )}

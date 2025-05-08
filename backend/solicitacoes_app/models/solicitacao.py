@@ -39,8 +39,8 @@ class Solicitacao(BaseModel):
     )
 
     data_emissao = models.DateField(
-        help_text="Escreva aqui a data de emissão", 
-        verbose_name="Data emissão:",
+        blank=True,
+        null=True
     )
 
     status = models.CharField( 
