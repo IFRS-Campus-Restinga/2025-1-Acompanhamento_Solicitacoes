@@ -3,9 +3,26 @@ from ..models import Solicitacao
 from django.contrib.contenttypes.models import ContentType
 
 class SolicitacaoSerializer(serializers.ModelSerializer):
+    tipo = serializers.SerializerMethodField()
+    nome_aluno = serializers.SerializerMethodField()
+
     class Meta:
         model = Solicitacao
-        fields = '__all__'
+        fields = '__all__' 
+
+    def get_tipo(self, obj):
+        if obj.formulario_associado:
+            return getattr(
+                obj.formulario_associado,
+                "nome_formulario",
+                str(obj.formulario_associado)
+            )
+        return "Tipo não disponível"
+
+    def get_nome_aluno(self, obj):
+        if obj.aluno and hasattr(obj.aluno, "usuario"):
+            return obj.aluno.usuario.nome
+        return "Aluno não disponível"
 
     def validate(self, data):
         content_type = data.get('content_type')

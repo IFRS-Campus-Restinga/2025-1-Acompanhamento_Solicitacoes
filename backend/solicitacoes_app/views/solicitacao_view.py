@@ -7,3 +7,9 @@ class SolicitacaoListCreate(generics.ListCreateAPIView):
     queryset = Solicitacao.objects.all()
     serializer_class = SolicitacaoSerializer
     permission_classes = [AllowAny] 
+    
+class SolicitacaoDetail(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Solicitacao.objects.all()
+    serializer_class = SolicitacaoSerializer
+    permission_classes = [AllowAny]
+    lookup_field = "id"  

@@ -1,9 +1,9 @@
 from rest_framework import serializers
 from ..models import Ppc
-from .curso_serializer import CursoSerializer  # importe o serializer de Curso
+from .curso_serializer import CursoSerializer 
 
 class PpcSerializer(serializers.ModelSerializer):
-    curso = CursoSerializer()  # Aqui está a mudança!
+    curso = CursoSerializer()  
 
     class Meta:
         model = Ppc

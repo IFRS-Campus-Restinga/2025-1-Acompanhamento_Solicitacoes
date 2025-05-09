@@ -8,10 +8,13 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
-import api from "../../services/api"
+import api from "../../services/api";
 
 export default function ListarSolicitacoes() {
-  console.log("➡️ Fazendo requisição para:", api.defaults.baseURL + "todas-solicitacoes");
+  console.log(
+    "➡️ Fazendo requisição para:",
+    api.defaults.baseURL + "todas-solicitacoes"
+  );
   const navigate = useNavigate();
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -26,26 +29,21 @@ export default function ListarSolicitacoes() {
   const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
-
-
-    api.get("todas-solicitacoes")
+    api
+      .get("todas-solicitacoes")
       .then((res) => {
         console.log("✅ Resposta recebida:", res.data);
+        setSolicitacoes(res.data); // <-- Adicione esta linha
       })
       .catch((error) => {
         console.error("❌ Erro ao buscar solicitações:", error);
-        console.error("➡️ Config:", error.config);
-        console.error("➡️ Request:", error.request);
-        if (error.response) {
-          console.error("➡️ Response headers:", error.response.headers);
-          console.error("➡️ Status:", error.response.status);
-        }
+        // ... resto do catch
       });
   }, []);
 
   const confirmarExclusao = () => {
     api
-      .delete(`todas-solicitacoes/${idSelecionado}/`)  // No mesmo formato que antes
+      .delete(`todas-solicitacoes/${idSelecionado}/`)
       .then(() => {
         setMensagemPopup("Solicitação excluída com sucesso.");
         setTipoMensagem("sucesso");
@@ -65,7 +63,6 @@ export default function ListarSolicitacoes() {
         setIdSelecionado(null);
       });
   };
-  
 
   const solicitacoesFiltradas = useMemo(
     () =>
@@ -100,6 +97,7 @@ export default function ListarSolicitacoes() {
           <thead>
             <tr>
               <th>ID</th>
+              <th>Aluno</th>
               <th>Tipo</th>
               <th>Status</th>
               <th>Data</th>
@@ -113,6 +111,7 @@ export default function ListarSolicitacoes() {
                 className={index % 2 === 0 ? "linha-par" : "linha-impar"}
               >
                 <td>{solicitacao.id}</td>
+                <td>{solicitacao.nome_aluno}</td>
                 <td>{solicitacao.tipo}</td>
                 <td>{solicitacao.status}</td>
                 <td>{solicitacao.data_solicitacao}</td>
