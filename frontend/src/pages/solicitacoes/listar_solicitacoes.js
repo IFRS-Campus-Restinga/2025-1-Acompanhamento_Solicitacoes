@@ -8,8 +8,10 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
+import api from "../../services/api"
 
 export default function ListarSolicitacoes() {
+  console.log("➡️ Fazendo requisição para:", api.defaults.baseURL + "todas-solicitacoes");
   const navigate = useNavigate();
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -24,21 +26,26 @@ export default function ListarSolicitacoes() {
   const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:8000/solicitacoes/") 
-      .then((res) => setSolicitacoes(res.data))
-      .catch((err) => {
-        setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar solicitações."}`
-        );
-        setTipoMensagem("erro");
-        setMostrarFeedback(true);
+
+
+    api.get("todas-solicitacoes")
+      .then((res) => {
+        console.log("✅ Resposta recebida:", res.data);
+      })
+      .catch((error) => {
+        console.error("❌ Erro ao buscar solicitações:", error);
+        console.error("➡️ Config:", error.config);
+        console.error("➡️ Request:", error.request);
+        if (error.response) {
+          console.error("➡️ Response headers:", error.response.headers);
+          console.error("➡️ Status:", error.response.status);
+        }
       });
   }, []);
 
   const confirmarExclusao = () => {
-    axios
-      .delete(`http://localhost:8000/solicitacoes/${idSelecionado}/`)
+    api
+      .delete(`todas-solicitacoes/${idSelecionado}/`)  // No mesmo formato que antes
       .then(() => {
         setMensagemPopup("Solicitação excluída com sucesso.");
         setTipoMensagem("sucesso");
@@ -46,7 +53,9 @@ export default function ListarSolicitacoes() {
       })
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir solicitação."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao excluir solicitação."
+          }`
         );
         setTipoMensagem("erro");
       })
@@ -56,12 +65,16 @@ export default function ListarSolicitacoes() {
         setIdSelecionado(null);
       });
   };
+  
 
-  const solicitacoesFiltradas = useMemo(() =>
-    solicitacoes.filter(s =>
-      s.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
-      s.status?.toLowerCase().includes(filtro.toLowerCase())
-    ), [solicitacoes, filtro]
+  const solicitacoesFiltradas = useMemo(
+    () =>
+      solicitacoes.filter(
+        (s) =>
+          s.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
+          s.status?.toLowerCase().includes(filtro.toLowerCase())
+      ),
+    [solicitacoes, filtro]
   );
 
   return (
@@ -95,7 +108,10 @@ export default function ListarSolicitacoes() {
           </thead>
           <tbody>
             {solicitacoesPaginadas.map((solicitacao, index) => (
-              <tr key={solicitacao.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+              <tr
+                key={solicitacao.id}
+                className={index % 2 === 0 ? "linha-par" : "linha-impar"}
+              >
                 <td>{solicitacao.id}</td>
                 <td>{solicitacao.tipo}</td>
                 <td>{solicitacao.status}</td>

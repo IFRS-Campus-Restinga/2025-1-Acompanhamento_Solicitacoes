@@ -154,7 +154,7 @@ const routes = [
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
   //Solicitacoes
-  <Route path="/todas" element={<ListarSolicitacoes />} />
+  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create'"/>
  ];
 
 export default routes;

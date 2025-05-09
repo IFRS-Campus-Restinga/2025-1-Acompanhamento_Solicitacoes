@@ -113,5 +113,5 @@ urlpatterns = [
     path('form_ativ_compl/', FormEntregaAtivComplListCreate.as_view(), name='form_ativ_compl_list_create'),
     path('form_ativ_compl/<int:id>/', FormEntregaAtivComplUpdate.as_view(), name='form_ativ_compl_update'),
 
-    path('solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
+    path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
 ]

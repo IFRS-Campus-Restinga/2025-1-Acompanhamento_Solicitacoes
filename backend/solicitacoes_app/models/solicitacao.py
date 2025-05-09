@@ -53,18 +53,18 @@ class Solicitacao(BaseModel):
         verbose_name="Status da Solicitação"
     )
 
-    def save(self, *args, **kwargs):
-        if self.pk:
-            original = Solicitacao.objects.get(pk=self.pk)
-            campos_restritos = ['aluno', 'content_type',
-                                'object_id', 'data_solicitacao']
+    # def save(self, *args, **kwargs):
+    #     if self.pk:
+    #         original = Solicitacao.objects.get(pk=self.pk)
+    #         campos_restritos = ['aluno', 'content_type',
+    #                             'object_id', 'data_solicitacao']
 
-            for campo in campos_restritos:
-                if getattr(self, campo) != getattr(original, campo):
-                    raise ValidationError(
-                        f"O campo '{campo}' não pode ser alterado após a criação.")
+    #         for campo in campos_restritos:
+    #             if getattr(self, campo) != getattr(original, campo):
+    #                 raise ValidationError(
+    #                     f"O campo '{campo}' não pode ser alterado após a criação.")
 
-        super().save(*args, **kwargs)
+    #     super().save(*args, **kwargs)
 
     def __str__(self):
         nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
