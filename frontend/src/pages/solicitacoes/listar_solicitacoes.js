@@ -80,7 +80,7 @@ export default function ListarSolicitacoes() {
       <main className="container">
         <h2>Solicitações</h2>
 
-        <BotaoCadastrar to="/solicitacoes/cadastrar" title="Nova Solicitação" />
+        <BotaoCadastrar to="/nova-solicitacao" title="Nova Solicitação" />
 
         <div className="barra-pesquisa">
           <i className="bi bi-search icone-pesquisa"></i>
@@ -101,6 +101,7 @@ export default function ListarSolicitacoes() {
               <th>Tipo</th>
               <th>Status</th>
               <th>Data</th>
+              <th>Posse</th> {/* <-- nova coluna */}
               <th>Ações</th>
             </tr>
           </thead>
@@ -115,6 +116,7 @@ export default function ListarSolicitacoes() {
                 <td>{solicitacao.tipo}</td>
                 <td>{solicitacao.status}</td>
                 <td>{solicitacao.data_solicitacao}</td>
+                <td>{solicitacao.posse_solicitacao}</td> {/* <-- nova célula */}
                 <td>
                   <div className="botoes-acoes">
                     <Link to={`/solicitacoes/${solicitacao.id}`} title="Editar">

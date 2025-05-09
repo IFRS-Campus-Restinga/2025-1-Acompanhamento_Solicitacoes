@@ -6,7 +6,7 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from .aluno import Aluno
 from django.core.exceptions import ValidationError
-
+from .posse_solicitacao import PosseSolicitacao
 
 class Solicitacao(BaseModel):
     aluno = models.ForeignKey(
@@ -14,7 +14,14 @@ class Solicitacao(BaseModel):
         related_name='aluno',
         on_delete=models.DO_NOTHING
     )
-
+    
+    posse_solicitacao = models.CharField(
+        max_length=20,
+        choices=PosseSolicitacao.choices,
+        default=PosseSolicitacao.COORDENACAO,
+        verbose_name="Responsável Atual pela Solicitação"
+    )
+    
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,

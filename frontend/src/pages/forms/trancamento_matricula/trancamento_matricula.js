@@ -83,7 +83,7 @@ export default function FormularioTrancamentoMatricula() {
       })
       .then(() => {
         alert("Solicitação enviada com sucesso!");
-        navigate("/solicitacoes");
+        navigate("/todas-solicitacoes");
       })
       .catch((error) => {
         console.error("❌ Erro ao enviar:", error.response?.data || error);
