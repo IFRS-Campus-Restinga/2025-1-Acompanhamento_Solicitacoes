@@ -147,7 +147,7 @@ export default function FormularioTrancamentoMatricula() {
                     curso: "",
                     ppc: "",
                   }));
-                  return; // Não continua o fluxo
+                  return; 
                 }
 
                 const aluno = alunos.find(

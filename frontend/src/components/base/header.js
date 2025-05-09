@@ -13,7 +13,7 @@ const Header = () => {
         <nav className="center">
           <ul className="nav-links">
             <li><Link to="/nova-solicitacao">Nova Solicitação</Link></li>
-            <li><Link to="/solicitacoes">Minhas Solicitações</Link></li>
+            <li><Link to="/todas-solicitacoes">Minhas Solicitações</Link></li>
              {/*LINK PARA Configurações E DENTRO HAVERÁ CRUDS PARA VISÃO SOMENTE DO CRE*/}
             <li><Link to="/configuracoes" className="configuracoes-link">Configurações</Link></li>
           </ul>
