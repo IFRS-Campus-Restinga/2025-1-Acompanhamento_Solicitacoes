@@ -1,25 +1,10 @@
 from django.db import models
-from .curso import Curso
 from .disciplina import Disciplina
-from .nome import Nome
 from .form_base import FormularioBase
-from django.core.validators import MinLengthValidator
 from django.core.exceptions import ValidationError
 
 class FormTrancDisciplina(FormularioBase):
-    nome = models.ForeignKey(
-        Nome,
-        on_delete=models.CASCADE,
-        related_name="formularios_trancamento", 
-        help_text="Selecione o aluno"
-    )
-    
-    curso = models.ForeignKey(
-        Curso,
-        on_delete=models.CASCADE,
-        related_name="formularios_trancamento", 
-        help_text="Selecione o curso"
-    )
+    nome_formulario = "Formulário de Trancamento de Componente Curricular"
     
     disciplinas = models.ManyToManyField(
         Disciplina,
@@ -27,19 +12,13 @@ class FormTrancDisciplina(FormularioBase):
         help_text="Selecione as disciplinas que deseja trancar"
     )
 
-    # Pode ser interessante também adicionar um campo para saber se o aluno é ingressante
     ingressante = models.BooleanField(
         default=False,
         help_text="Marque se o aluno é ingressante. Essa informação é importante para limitar a quantidade de trancamentos."
     )
 
-    def __str__(self):
-        return f"Trancamento de disciplinas - Aluno: {self.aluno.usuario.nome} - Curso: {self.curso.nome}"
-
     def clean(self):
-        # Chama o clean do modelo base
         super().clean()
-
         qtd_disciplinas = self.disciplinas.count()
         limite = 2 if self.ingressante else 5
 
@@ -52,3 +31,10 @@ class FormTrancDisciplina(FormularioBase):
             raise ValidationError({
                 'disciplinas': 'Pelo menos uma disciplina deve ser selecionada para trancamento.'
             })
+
+    class Meta:
+        verbose_name = "Formulário de Trancamento de Componente Curricular"
+        verbose_name_plural = "Formulários de Trancamento de Componente Curricular"
+
+    def __str__(self):
+        return f"{self.nome_formulario} (ID: {self.id})"

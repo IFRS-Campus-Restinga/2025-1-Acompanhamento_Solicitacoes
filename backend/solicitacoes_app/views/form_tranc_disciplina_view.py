@@ -1,11 +1,11 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny  # Importação adicionada
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-
-from ..models.form_tranc_disciplina import FormTrancDisciplina
+from django.contrib.contenttypes.models import ContentType
+from datetime import datetime
+from ..models import FormTrancDisciplina, Disciplina, Ppc, Solicitacao, Aluno
 from ..serializers.form_tranc_disciplina_serializer import FormTrancDisciplinaSerializer
-from ..models import Disciplina, Ppc
 
 class FormTrancDisciplinaListCreate(generics.ListCreateAPIView):
     """
@@ -14,6 +14,26 @@ class FormTrancDisciplinaListCreate(generics.ListCreateAPIView):
     queryset = FormTrancDisciplina.objects.all()
     serializer_class = FormTrancDisciplinaSerializer
     permission_classes = [AllowAny]
+
+    def perform_create(self, serializer):
+        print("🔥 request.data no backend:", self.request.data)
+        aluno_id = self.request.data.get("aluno")
+
+        if not aluno_id:
+            raise ValueError("Campo 'aluno_id' é obrigatório para criar a solicitação.")
+        
+        # Obter o aluno e seu curso
+        aluno = Aluno.objects.get(id=aluno_id)  # Assumindo que aluno também usa codigo
+        curso_codigo = aluno.ppc.curso.codigo  # Acessa o codigo do curso via PPC
+
+        form = serializer.save()
+
+        Solicitacao.objects.create(
+            aluno_id=aluno_id,
+            content_type=ContentType.objects.get_for_model(FormTrancDisciplina),
+            object_id=form.id,
+            data_solicitacao=datetime.now()
+        )
 
 class FormTrancDisciplinaDetail(generics.RetrieveAPIView):
     """
@@ -30,14 +50,11 @@ def disciplinas_por_curso(request, curso_codigo):
     Endpoint para listar disciplinas de um curso específico.
     """
     try:
-        # Filtrar as disciplinas com base no curso_codigo
         disciplinas = Disciplina.objects.filter(ppc__curso__codigo=curso_codigo).distinct()
         
-        # Se não encontrar disciplinas, retornar uma lista vazia
         if not disciplinas:
             return Response({"disciplinas": []}, status=200)
         
-        # Retornar disciplinas no formato que o frontend espera
         return Response({
             "disciplinas": [
                 {"codigo": disciplina.codigo, "nome": disciplina.nome} for disciplina in disciplinas
