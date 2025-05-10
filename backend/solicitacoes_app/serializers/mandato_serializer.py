@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import Mandato, Curso, Coordenador
+from django.core.exceptions import ValidationError
 
 class MandatoSerializer(serializers.ModelSerializer):
     curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
@@ -9,10 +10,15 @@ class MandatoSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Mandato
-        fields = ['id', 'coordenador', 'curso', 'inicio_mandato', 'fim_mandato']
+        fields = '__all__'
     
     def validate(self, data):
-        # Executa as validações do model
-        instance = self.instance or self.Meta.model(**data)
-        instance.full_clean() 
+          # Cria uma instância do model com os dados validados
+        instance = self.Meta.model(**data)
+        if self.instance:  # Se estiver editando, atribui o ID para a exclusão na validação
+            instance.pk = self.instance.pk
+        try:
+            instance.full_clean()
+        except ValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
         return data

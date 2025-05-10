@@ -2,8 +2,8 @@ from rest_framework import serializers
 from ..models import Aluno, Usuario, Ppc
 from .usuario_serializer import *
 from .ppc_serializer import *
-class AlunoSerializer(serializers.ModelSerializer):
-    
+
+class AlunoSerializer(serializers.ModelSerializer): 
     ppc = PpcSerializer(read_only=True)
     depth=1
     usuario = UsuarioSerializer(read_only=True)

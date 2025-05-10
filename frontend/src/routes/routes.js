@@ -66,6 +66,9 @@ import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulari
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
+import ListarCursosSelecionar from "../pages/coordenadores/lista_cursos_selecionar.js";
+import ListarCoordenadores from "../pages/coordenadores/lista_coordenadores.js";
+import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
 
@@ -131,6 +134,17 @@ const routes = [
   <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
   <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
+
+  //Coordenadores
+  <Route path="/selecionarcurso" element={< ListarCursosSelecionar />} />,
+  <Route path="/cursos/:codigo/coordenadores" element={<ListarCoordenadores />} />,
+  
+  
+  //Mandatos
+  <Route path="/mandatos" element={<CadastrarAtualizarMandato />} key="listar-mandatos" />,
+  <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
+  <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
+
 
   // Grupos
   <Route path="/grupos" element={<ListarGrupos />} />,

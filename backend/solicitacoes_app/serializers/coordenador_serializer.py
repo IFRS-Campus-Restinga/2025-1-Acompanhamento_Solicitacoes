@@ -1,14 +1,19 @@
 from rest_framework import serializers
-from ..models import Coordenador
+from ..models import Coordenador, Usuario
+from ..serializers.usuario_serializer import UsuarioSerializer
 
 
 class CoordenadorSerializer(serializers.ModelSerializer):
     mandatos_coordenador = serializers.SerializerMethodField()
+    usuario = UsuarioSerializer(read_only=True)
+    usuario_id = serializers.PrimaryKeyRelatedField(
+        source='usuario', queryset=Usuario.objects.all(), write_only=True
+    )
 
     class Meta:
         model = Coordenador
-        fields = ['id', 'usuario', 'siape', 'mandatos_coordenador']
-        
+        fields = '__all__'
+    
     def get_mandatos_coordenador(self, obj):
         return [
             {

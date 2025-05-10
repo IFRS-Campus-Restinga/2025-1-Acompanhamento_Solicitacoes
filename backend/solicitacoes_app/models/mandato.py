@@ -27,10 +27,25 @@ class Mandato(BaseModel):
         # Valida se o fim do mandato é posterior ao início
         if self.fim_mandato and self.inicio_mandato >= self.fim_mandato:
             raise ValidationError("O fim do mandato deve ser posterior ao início.")
+        
+           # Valida sobreposição com qualquer dia de mandato ativo
+        mandatos_existentes = Mandato.objects.filter(
+            curso=self.curso,
+            coordenador=self.coordenador
+        ).exclude(pk=self.pk)
+
+        for mandato in mandatos_existentes:
+            novo_inicio = self.inicio_mandato
+            novo_fim = self.fim_mandato
+            existente_inicio = mandato.inicio_mandato
+            existente_fim = mandato.fim_mandato
+
+            # Verifica se há alguma sobreposição entre os períodos
+            if novo_inicio <= (existente_fim or novo_inicio) and (novo_fim or existente_inicio) >= existente_inicio:
+                raise ValidationError(
+                    f"O período deste mandato se sobrepõe ao mandato existente de {existente_inicio} a {existente_fim or 'indefinido'}."
+                )
             
     class Meta:
         verbose_name = "Mandato"
         verbose_name_plural = "Mandatos"
-        constraints = [
-            models.UniqueConstraint(fields=['coordenador', 'curso'], name='unique_mandato') #usada para garantir que um coordenador não tenha múltiplos mandatos no mesmo curso ao mesmo tempo
-        ]
