@@ -136,8 +136,8 @@ const routes = [
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
 
   //Coordenadores
-  <Route path="/selecionarcurso" element={< ListarCursosSelecionar />} />,
-  <Route path="/cursos/:codigo/coordenadores" element={<ListarCoordenadores />} />,
+  //<Route path="/selecionarcurso" element={< ListarCursosSelecionar />} />,
+  //<Route path="/cursos/:codigo/coordenadores" element={<ListarCoordenadores />} />,
   
   
   //Mandatos
