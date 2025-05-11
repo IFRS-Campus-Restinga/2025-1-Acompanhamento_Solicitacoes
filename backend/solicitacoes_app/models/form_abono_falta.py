@@ -1,6 +1,6 @@
 from datetime import date
 from django.db import models
-from ..models import MotivoAbono, Curso
+from ..models import MotivoAbono, Curso, Aluno
 from django.core.exceptions import ValidationError
 from .form_base import FormularioBase
 from django.db.models import RESTRICT
@@ -11,11 +11,11 @@ class FormAbonoFalta(FormularioBase):
         validators=[EmailValidator()]
     )
     
-    aluno_nome = models.CharField(
-        max_length=100,
-        validators=[MinLengthValidator(1)],
+    aluno_nome = models.ForeignKey(
+        Aluno,
+        on_delete=RESTRICT,
         verbose_name="Nome do Aluno",  
-        help_text="Digite o nome do aluno",
+        help_text="Nome do aluno",
     )
 
     matricula = models.CharField(
