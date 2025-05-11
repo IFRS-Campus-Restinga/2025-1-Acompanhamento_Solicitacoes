@@ -66,8 +66,8 @@ import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulari
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
-//import ListarCursosSelecionar from "../pages/coordenadores/lista_cursos_selecionar.js"; 
-//import ListarCoordenadores from "../pages/coordenadores/lista_coordenadores.js";
+import ListarCursosSelecionar from "../pages/coordenadores/lista_cursos_selecionar.js"; 
+import ListarCoordenadores from "../pages/coordenadores/lista_coordenadores.js";
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
@@ -138,20 +138,16 @@ const routes = [
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
-  <Route path="/usuarios/cadastrar" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
-  // ATENÇÃO: Você tem duas rotas para "/usuarios/cadastrar". A de cima com SelecionarPapelUsuario 
-  // e a de baixo com CadastrarAtualizarUsuario. Isso pode causar conflitos.
-  // A rota para SelecionarPapelUsuario é a que o GoogleRedirectHandler usa para e-mails IFRS.
-  // Verifique se a rota abaixo ainda é necessária ou se o nome deve ser diferente.
-  // <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
-  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
+  <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
+  <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
+  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuarioPapel />} key="editar-usuarios" />,
   <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
   <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
 
   //Coordenadores
-  //<Route path="/selecionarcurso" element={< ListarCursosSelecionar />} />,
-  //<Route path="/cursos/:codigo/coordenadores" element={<ListarCoordenadores />} />,
+  <Route path="/selecionarcurso" element={< ListarCursosSelecionar />} />,
+  <Route path="/cursos/:codigo/coordenadores" element={<ListarCoordenadores />} />,
   
   
   //Mandatos
