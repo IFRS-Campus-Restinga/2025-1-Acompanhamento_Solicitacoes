@@ -29,6 +29,10 @@ from .views.nome_view import *
 from .views.perfil_usuario_view import *
 from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
+from .views.calendario_academico_view import (
+    CalendarioAcademicoListCreateView,
+    CalendarioAcademicoRetrieveUpdateDestroyView
+)
 
 app_name = 'solicitacoes_app'
 
@@ -115,4 +119,7 @@ urlpatterns = [
 
     path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
     path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
+
+    path('calendarios/', CalendarioAcademicoListCreateView.as_view(), name='calendario-list-create'),
+    path('calendarios/<str:codigo>/', CalendarioAcademicoRetrieveUpdateDestroyView.as_view(), name='calendario-detail'),
 ]

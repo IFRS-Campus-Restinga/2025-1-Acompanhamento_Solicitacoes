@@ -4,9 +4,9 @@ import { Route } from "react-router-dom";
 // Páginas
 import Configuracoes from "../pages/configuracoes/configuracoes.js";
 import Perfil from "../pages/perfil/perfil.js";
-import PosLogin from "../pages/pos_login";
+//import PosLogin from "../pages/pos_login";
 
-import Cruds from "../pages/configuracoes/cruds.js";
+//import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
 import Home from "./../pages/home";
@@ -61,6 +61,10 @@ import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
 // Formulário de Trancamento de Disciplinas
 import Formulario from "../pages/forms/trancamento_disciplina/formulario";
 import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
+
+// Calendário Acadêmico
+import ListarCalendarios from "../pages/calendario_academico/lista_calendarios.js";
+import CadastrarAtualizarCalendario from "../pages/calendario_academico/cadastrar_atualizar_calendario.js";
 
 // Formulário de Abono de Falta
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
@@ -138,13 +142,9 @@ const routes = [
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
-  <Route path="/usuarios/cadastrar" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
-  // ATENÇÃO: Você tem duas rotas para "/usuarios/cadastrar". A de cima com SelecionarPapelUsuario 
-  // e a de baixo com CadastrarAtualizarUsuario. Isso pode causar conflitos.
-  // A rota para SelecionarPapelUsuario é a que o GoogleRedirectHandler usa para e-mails IFRS.
-  // Verifique se a rota abaixo ainda é necessária ou se o nome deve ser diferente.
-  // <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
-  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
+  <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
+  <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
+  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuarioPapel />} key="editar-usuarios" />,
   <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
   <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
@@ -170,6 +170,10 @@ const routes = [
  
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />} />,
+
+  <Route path="/calendarios" element={<ListarCalendarios />} key="listar-calendarios" />,
+  <Route path="/calendarios/cadastrar" element={<CadastrarAtualizarCalendario />} key="cadastrar-calendarios" />,
+  <Route path="/calendarios/:codigo" element={<CadastrarAtualizarCalendario />} key="editar-calendarios" />,
 
   <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
 
