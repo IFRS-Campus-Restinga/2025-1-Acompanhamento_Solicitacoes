@@ -26,6 +26,8 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         help_text="Escreva aqui o CPF",
         verbose_name="CPF:",
         validators=[validar_cpf],
+        null=True,  
+        blank=True,
     )
     telefone = models.CharField(
         max_length=11,
@@ -34,11 +36,15 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         ],
         help_text="Escreva aqui o telefone",
         verbose_name="Telefone:",
+        null=True,  
+        blank=True,
     )
     data_nascimento = models.DateField(
         help_text="Escreva aqui a data de nascimento", 
         verbose_name="Data nascimento:",
-        validators=[validar_idade]
+        validators=[validar_idade],
+        null=True,  
+        blank=True,
     )
     
     status_usuario = models.CharField( 

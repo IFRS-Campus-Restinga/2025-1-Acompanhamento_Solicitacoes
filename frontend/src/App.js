@@ -10,6 +10,8 @@ import "./App.css";
 import './index.css';
 import routes from "./routes/routes";
 import "./var.css";
+import GoogleRedirectHandler from './components/GoogleRedirectHandler';
+
 
 class App extends React.Component {
   state = {

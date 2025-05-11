@@ -78,17 +78,27 @@ import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulari
 
 import { Navigate } from "react-router-dom";
 
+// Importe o GoogleRedirectHandler
+import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js"; 
+
 
 const token = localStorage.getItem("token");
 
 const routes = [
+  // Rota para o GoogleRedirectHandler - Coloque esta rota antes de rotas genéricas ou de fallback
+  <Route 
+    path="/auth/google/redirect-handler" 
+    element={<GoogleRedirectHandler />}
+    key="google-redirect-handler"
+  />,
+  
   //página inicial
   <Route path="/" element={<Home />} key="home" />,
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
   <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
   <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} />,
-  <Route path="/pos-login" element={<PosLogin />} />,
+  //<Route path="/pos-login" element={<PosLogin />} />,
 
   // Motivo Abono
   <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
@@ -128,9 +138,13 @@ const routes = [
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
-  <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
+  <Route path="/usuarios/cadastrar" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
+  // ATENÇÃO: Você tem duas rotas para "/usuarios/cadastrar". A de cima com SelecionarPapelUsuario 
+  // e a de baixo com CadastrarAtualizarUsuario. Isso pode causar conflitos.
+  // A rota para SelecionarPapelUsuario é a que o GoogleRedirectHandler usa para e-mails IFRS.
+  // Verifique se a rota abaixo ainda é necessária ou se o nome deve ser diferente.
+  // <Route path="/usuarios/cadastrar" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
-  <Route path="/usuarios/cadastro" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
   <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
   <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
@@ -168,7 +182,10 @@ const routes = [
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
   //Solicitacoes
-  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create'"/>
+  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>
+  
+  
  ];
 
 export default routes;
+
