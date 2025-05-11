@@ -235,3 +235,27 @@
     background-color: #eee;
     border-color: #999;
 }
+
+/* Container da lista */
+.ppc-selection-box {
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+/* Itens da lista */
+.ppc-option {
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.ppc-option:hover {
+  background-color: #f5f5f5;
+}
+
+/* Item selecionado */
+.ppc-option.selected {
+  background-color: #e0f7fa;
+  font-weight: bold;
+}

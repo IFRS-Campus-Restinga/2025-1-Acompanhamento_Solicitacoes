@@ -93,10 +93,6 @@ export default function CadastrarAtualizarDisciplina() {
       });
   };
 
-  const handlePpcSelection = (e) => {
-    setSelectedPpc(e.target.value); // Agora define um único PPC
-  };
-
   const filteredPpcs = availablePpcs.filter(ppc =>
     ppc.codigo.toLowerCase().includes(filtro.toLowerCase())
   );
@@ -139,26 +135,32 @@ export default function CadastrarAtualizarDisciplina() {
                 className="input-pesquisa"
               />
             </div>
-            <select
-              className="input-select"
-              value={selectedPpc}
-              onChange={handlePpcSelection} // Agora permite apenas a seleção de um PPC
-            >
-              <option value="">Selecione um PPC</option>
+            <div className="ppc-selection-box">
               {filteredPpcs.map((ppc) => (
-                <option key={ppc.codigo} value={ppc.codigo}>
+                <div 
+                  key={ppc.codigo}
+                  className={`ppc-option ${selectedPpc === ppc.codigo ? 'selected' : ''}`}
+                  onClick={() => setSelectedPpc(ppc.codigo)}
+                >
                   {ppc.codigo}
-                </option>
+                </div>
               ))}
-            </select>
+            </div>
           </div>
 
           <div className="form-group">
-            <label>Ppc Selecionado:</label>
+            <label>PPC Selecionado:</label>
             {selectedPpc && (
-              <ul>
-                <li>{selectedPpc}</li>
-              </ul>
+              <div className="selected-ppc-box">
+                {selectedPpc}
+                <button
+                  type="button"
+                  onClick={() => setSelectedPpc("")}
+                  className="remove-btn"
+                >
+                  X
+                </button>
+              </div>
             )}
           </div>
 

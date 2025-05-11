@@ -20,32 +20,29 @@ export default function Formulario() {
     const [mensagem, setMensagem] = useState("");
     const [tipoMensagem, setTipoMensagem] = useState("sucesso");
     const [mensagemErro, setMensagemErro] = useState("");
+    const [filtroDisciplina, setFiltroDisciplina] = useState("");
     const navigate = useNavigate();
 
-    // Busca todos os alunos
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/alunos/")
             .then((res) => setAlunos(res.data))
             .catch((err) => console.error("Erro ao buscar alunos:", err));
     }, []);
 
-    // Busca disciplinas quando um aluno é selecionado (AJUSTADO)
     useEffect(() => {
         if (alunoSelecionado?.ppc?.codigo) {
             axios.get(`http://localhost:8000/solicitacoes/formulario_trancamento_disciplina/disciplinas/${alunoSelecionado.ppc.curso.codigo}/`)
                 .then((res) => {
-                    // Verifica se a resposta é um array ou está dentro de uma propriedade 'disciplinas'
                     const disciplinasData = Array.isArray(res.data) ? res.data : 
-                                          res.data.disciplinas ? res.data.disciplinas : 
-                                          [];
+                                        res.data.disciplinas ? res.data.disciplinas : [];
                     setDisciplinas(disciplinasData);
                 })
                 .catch((err) => {
                     console.error("Erro ao buscar disciplinas:", err.response?.data || err);
-                    setDisciplinas([]); // Limpa as disciplinas em caso de erro
+                    setDisciplinas([]);
                 });
         } else {
-            setDisciplinas([]); // Limpa se não houver aluno selecionado
+            setDisciplinas([]);
         }
     }, [alunoSelecionado]);
 
@@ -63,7 +60,7 @@ export default function Formulario() {
             setDados({
                 ...dados,
                 aluno: aluno.id,
-                disciplinas: [] // Reseta as disciplinas selecionadas ao mudar aluno
+                disciplinas: []
             });
         }
     };
@@ -72,7 +69,6 @@ export default function Formulario() {
         const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
         const limite = dados.ingressante ? 2 : 5;
     
-        // Combina as disciplinas já selecionadas com as novas
         const novasDisciplinas = [...new Set([...dados.disciplinas, ...selectedOptions])];
     
         if (novasDisciplinas.length > limite) {
@@ -109,6 +105,11 @@ export default function Formulario() {
             setShowFeedback(true);
         }
     };
+
+    const disciplinasFiltradas = disciplinas.filter(disciplina =>
+        disciplina.nome.toLowerCase().includes(filtroDisciplina.toLowerCase()) ||
+        disciplina.codigo.toLowerCase().includes(filtroDisciplina.toLowerCase())
+    );
 
     return (
         <div>
@@ -171,29 +172,40 @@ export default function Formulario() {
                                         disciplinas: isIngressante ? dados.disciplinas.slice(0, 2) : dados.disciplinas
                                     });
                                 
-                                    // Atualiza a mensagem de erro se o limite for excedido
                                     if (dados.disciplinas.length > novoLimite) {
                                         setMensagemErro(`Você só pode selecionar no máximo ${novoLimite} disciplinas.`);
                                     } else {
-                                        setMensagemErro(""); // Limpa a mensagem se estiver dentro do limite
+                                        setMensagemErro("");
                                     }
                                 }}
                             />
-                            <span> Sou ingressante </span>
+                            <span> Estou no primeiro semestre </span>
                         </label>
                     </div>
 
                     <div className="form-group">
                         <label>Disciplinas Disponíveis:</label>
+                        <div className="barra-pesquisa">
+                            <i className="bi bi-search icone-pesquisa"></i>
+                            <input
+                                type="text"
+                                placeholder="Buscar disciplinas..."
+                                value={filtroDisciplina}
+                                onChange={(e) => setFiltroDisciplina(e.target.value)}
+                                className="input-pesquisa"
+                                disabled={!alunoSelecionado || disciplinas.length === 0}
+                                style={{ paddingLeft: '30px', height: '38px' }} 
+                            />
+                        </div>
                         <select
                             multiple
-                            size="5" // Melhora a visualização
+                            size="5"
                             value={dados.disciplinas}
                             onChange={handleDisciplinasChange}
                             disabled={!alunoSelecionado || disciplinas.length === 0}
                             required
                         >
-                            {disciplinas.map((disciplina) => (
+                            {disciplinasFiltradas.map((disciplina) => (
                                 <option key={disciplina.codigo} value={disciplina.codigo}>
                                     {disciplina.nome} ({disciplina.codigo})
                                 </option>

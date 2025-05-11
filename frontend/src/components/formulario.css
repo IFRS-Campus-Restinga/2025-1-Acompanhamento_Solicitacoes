@@ -1,159 +1,157 @@
-/* Base para todos os formulários */
+/* RESET GLOBAL PARA SELECTS MULTIPLOS */
+select[multiple] {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+}
+
+select[multiple]::-webkit-scrollbar {
+  width: 8px;
+}
+
+select[multiple]::-webkit-scrollbar-thumb {
+  background: #e0e0e0;
+  border-radius: 4px;
+}
+
+/* BASE PARA FORMULÁRIOS */
 .formulario {
-    max-width: 800px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background-color: #f9f9f9;
-    border-radius: 12px;
-    box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
-  }
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+}
 
-  .formulario-largo {
-    max-width: inherit !important;
-    width: 100%;
+.formulario-largo {
+  max-width: inherit !important;
+  width: 100%;
+}
+
+/* GRUPOS DE CAMPOS */
+.formulario .form-group {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1.5rem;
+}
+
+/* LABELS */
+.formulario .form-group label {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+/* INPUTS BÁSICOS */
+.formulario .form-group input[type="text"],
+.formulario .form-group input[type="email"],
+.formulario .form-group input[type="file"],
+.formulario .form-group select,
+.formulario .form-group textarea {
+  padding: 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: #fff;
+  transition: border-color 0.3s;
+}
+
+.formulario .form-group input:focus,
+.formulario .form-group select:focus,
+.formulario .form-group textarea:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+/* BOTÕES RADIO/CHECKBOX */
+.formulario .form-group div {
+  display: flex;
+  gap: 2rem;
+  margin-top: 0.5rem;
+}
+
+.formulario .form-group input[type="radio"],
+.formulario .form-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+}
+
+/* BOTÃO ENVIAR */
+.submit-button {
+  background-color: #007bff;
+  color: white;
+  padding: 0.9rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: block;
+  margin: 2rem auto 0 auto;
+}
+
+.submit-button:hover {
+  background-color: #0056b3;
+}
+
+/* TÍTULOS */
+main.container {
+  text-align: left;
+}
+
+main.container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: var(--verde-escuro);
+}
+
+/* CALENDÁRIO */
+.periodo-afastamento {
+  border: 1px solid #ddd;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background-color: #f9f9f9;
+}
+
+.titulo-afastamento {
+  font-size: 1.2em;
+  color: #333333;
+  margin-bottom: 10px;
+}
+
+.datas-container label {
+  font-size: 0.9em;
+  margin-bottom: 0;
+  color: #333333;
+}
+
+.datas-container .form-group {
+  flex: 1;
+}
+
+.datas-container input[type="date"] {
+  width: 100%;
+  max-width: 200px;
+}
+
+/* MENSAGENS DE ERRO */
+.error-text,
+.erro {
+  color: #d9534f;
+  font-size: 0.85em;
+  margin-top: 5px;
+  display: block;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 600px) {
+  .formulario {
+    padding: 1rem;
   }
-  
-  /* Agrupamento de cada campo */
   .formulario .form-group {
-    display: flex;
-    flex-direction: column;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
   }
-  
-  /* Label dos campos */
-  .formulario .form-group label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: #333;
-  }
-  
-  /* Inputs, Selects e Textareas */
-  .formulario .form-group input[type="text"],
-  .formulario .form-group input[type="email"],
-  .formulario .form-group input[type="file"],
-  .formulario .form-group select,
-  .formulario .form-group textarea {
-    padding: 0.75rem;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    font-size: 1rem;
-    background-color: #fff;
-    transition: border-color 0.3s;
-  }
-  
-  .formulario .form-group input:focus,
-  .formulario .form-group select:focus,
-  .formulario .form-group textarea:focus {
-    border-color: #007bff;
-    outline: none;
-  }
-  
-  /* Área dos botões de rádio */
-  .formulario .form-group div {
-    display: flex;
-    gap: 2rem;
-    margin-top: 0.5rem;
-  }
-  
-  /* Estilo dos botões de rádio */
-  .formulario .form-group input[type="radio"] {
-    margin-right: 0.5rem;
-  }
-
-  /* Estilo dos botões de rádio */
-  .formulario .form-group input[type="checkbox"] {
-    margin-right: 0.5rem;
-  }
-  
-  /* Botão de envio */
-  .submit-button {
-    background-color: #007bff;
-    color: white;
-    padding: 0.9rem 2rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s;
-    display: block;
-    margin: 2rem auto 0 auto;
-  }
-  
-  .submit-button:hover {
-    background-color: #0056b3;
-  }
-  
-  /* Títulos */
-  main.container{
-    text-align: left;
-  }
-
-  main.container h2 {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: var(--verde-escuro);
-  }
-  
-  /* Responsividade */
-  @media (max-width: 600px) {
-    .formulario {
-      padding: 1rem;
-    }
-  
-    .formulario .form-group {
-      margin-bottom: 1rem;
-    }
-  }
-  
-  /*CALENDARIO*/
-
-  .periodo-afastamento {
-    border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 10px;
-    background-color: #f9f9f9;
-  }
-  
-  .titulo-afastamento {
-    font-size: 1.2em;
-    color: #333333;
-    margin-bottom: 10px;
-  }
-  
-  .datas-container label {
-    font-size: 0.9em; /* Reduzir o tamanho da fonte */
-    margin-bottom: 0; /* Remover margens extras abaixo do texto */
-    color: #333333; /* Cor mais suave para o texto */
-  }
-  
-  .datas-container .form-group {
-    flex: 1; /* Igualar a largura dos campos */
-  }
-  
-  .datas-container input[type="date"] {
-    width: 100%; /* Ajustar para ocupar a largura do container */
-    max-width: 200px; /* Limitar o tamanho da barra */
-  }
-  
-  /*Mensagem de erro das caixas*/
-  .error-text {
-    font-size: 0.85em; /* Diminuir o tamanho da fonte */
-    color: #d9534f;    /* Cor vermelho para destacar o erro */
-    margin-top: 5px;   /* Pequeno espaçamento acima da mensagem */
-    display: block;    /* Garantir que o texto fique em uma nova linha */
-  }
-
-
-  .erro {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-    display: block;
-  }
-
-
-  
-  
-  
+}
