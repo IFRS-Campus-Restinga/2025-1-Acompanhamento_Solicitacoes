@@ -29,6 +29,7 @@ from .views.nome_view import *
 from .views.perfil_usuario_view import *
 from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
+from .views.buscar_info_usuario import * 
 
 from .views.calendario_academico_view import (
     CalendarioAcademicoListCreateView,
