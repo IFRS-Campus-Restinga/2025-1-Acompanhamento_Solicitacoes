@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import CalendarioAcademico
+from ..models import CalendarioAcademico
 
 class CalendarioAcademicoSerializer(serializers.ModelSerializer):
     # Campos calculados (apenas para exibição)
