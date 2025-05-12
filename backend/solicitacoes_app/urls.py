@@ -5,7 +5,7 @@ from .views.ppc_view import *
 from .views.motivo_abono_view import *
 from .views.motivo_dispensa_view import *
 from .views.motivo_exercicios_view import *
-from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView
+from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView,CadastroCoordenadorMandatoView
 from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
 from .views.disciplina_view import *
@@ -66,6 +66,7 @@ urlpatterns = [
 
     path('coordenadores/', CoordenadorListCreateView.as_view(), name='coordenador-list'),
     path('coordenadores/<int:pk>', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
+    path('coordenadores/cadastro-coordenador-mandato/', CadastroCoordenadorMandatoView.as_view(), name='cadastro-coordenador-mandato'),
 
     path('cres/', CREListCreateView.as_view(), name='cre-list'),
     path('cres/<int:pk>', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),

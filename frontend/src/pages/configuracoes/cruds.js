@@ -24,8 +24,11 @@ const Cruds = () => {
           <Link className="crud-link" to="/usuarios">
             <i className="bi bi-person-circle"></i> Usuários
           </Link>
-          <Link className="crud-link" to="/usuarios/cadastro">
+          <Link className="crud-link" to="/usuarios/selecionarpapel">
             <i className="bi bi-person-circle"></i> Cadastro Aluno/CRE/Coordenador
+          </Link>
+          <Link className="crud-link" to="/mandatos/cadastrar">
+            <i className="bi bi-person-circle"></i> Cadastrar/Atualizar Mandato
           </Link>
           <Link className="crud-link" to="/grupos">
             <i className="bi bi-people-fill"></i> Grupos

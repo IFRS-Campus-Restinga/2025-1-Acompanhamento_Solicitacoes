@@ -1,106 +1,82 @@
-//teste//
-
-
-import axios from "axios";
+import api from "../../services/api";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+
+const initialFormState = {
+  nome: "", email: "", cpf: "", telefone: "", data_nascimento: "",
+  siape: "",
+  curso: "",
+  inicio_mandato: "",
+  fim_mandato: "",
+};
 
 export default function CadastrarAtualizarCoordenador() {
-  const [formData, setFormData] = useState({
-    nome: "",
-    email: "",
-    cpf: "",
-    telefone: "",
-    data_nascimento: "",
-    siape: "",
-    curso: "",
-    inicio_mandato: "",
-    fim_mandato: ""
-  });
-
+  const [formData, setFormData] = useState(initialFormState);
+  const [cursos, setCursos] = useState([]);
   const [errors, setErrors] = useState({});
   const [showFeedback, setShowFeedback] = useState(false);
-  const [mensagem, setMensagem] = useState("");
-  const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [cursos, setCursos] = useState([]);
-
+  const [feedbackMessage, setFeedbackMessage] = useState("");
+  const [feedbackType, setFeedbackType] = useState("sucesso");
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { id } = useParams(); // id do coordenador
-
-  const getCursos = async () => {
-    try {
-      const response = await axios.get(`http://localhost:8000/solicitacoes/cursos/`);
-      setCursos(response.data);  // A resposta deve conter a lista de cursos
-    } catch (error) {
-      console.error("Erro ao carregar cursos", error);
-    }
-  };
+  const isEditing = !!id;
+  const title = isEditing ? "Editar Coordenador" : "Cadastrar Novo Coordenador";
+  const submitButtonText = isEditing ? "Atualizar Coordenador" : "Cadastrar Coordenador";
 
   useEffect(() => {
-    getCursos();  // Carregar os cursos quando o componente for montado
-
-    if (id) {
-      axios.get(`http://localhost:8000/solicitacoes/coordenadores/${id}/`)
-        .then(res => {
-          const data = res.data;
-          setFormData({
-            nome: data.usuario.nome,
-            email: data.usuario.email,
-            cpf: data.usuario.cpf,
-            telefone: data.usuario.telefone,
-            data_nascimento: data.usuario.data_nascimento,
-            siape: data.siape,
-            curso: data.mandato.curso, // Preenchendo com o curso do coordenador
-            inicio_mandato: data.mandato.inicio_mandato,
-            fim_mandato: data.mandato.fim_mandato || "",
-          });
-        })
-        .catch(err => {
-          console.error(err);
-          setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar coordenador."}`);
-          setTipoMensagem("erro");
-          setShowFeedback(true);
-        });
+    async function loadCursos() {
+      try {
+        const response = await api.get("cursos/");
+        setCursos(response.data);
+      } catch (error) {
+        console.error("Erro ao carregar cursos:", error);
+        setFeedbackType("erro");
+        setFeedbackMessage(`Erro ao carregar cursos: ${error.message}`);
+        setShowFeedback(true);
+      }
     }
-  }, [id]);
 
-  const validateField = (fieldName, value) => {
-    const data = { [fieldName]: value };
-    const url = id
-      ? `http://localhost:8000/solicitacoes/coordenadores/${id}/`
-      : "http://localhost:8000/solicitacoes/coordenadores/";
-
-    const method = id ? axios.patch : axios.post;
-
-    method(url, data)
-      .then(() => setErrors(prev => ({ ...prev, [fieldName]: null })))
-      .catch(err => {
-        if (err.response?.status === 400 && err.response?.data) {
-          setErrors(prev => ({ ...prev, [fieldName]: err.response.data[fieldName] || null }));
+    async function loadCoordenadorData() {
+      if (isEditing && id) {
+        try {
+          const response = await api.get(`coordenadores/${id}/`);
+          const coordenadorData = response.data;
+          setFormData({
+            nome: coordenadorData.usuario.nome,
+            email: coordenadorData.usuario.email,
+            cpf: coordenadorData.usuario.cpf,
+            telefone: coordenadorData.usuario.telefone,
+            data_nascimento: coordenadorData.usuario.data_nascimento,
+            siape: coordenadorData.siape,
+            curso: coordenadorData.mandatos_coordenador[0]?.curso || "",
+            inicio_mandato: coordenadorData.mandatos_coordenador[0]?.inicio_mandato ? coordenadorData.mandatos_coordenador[0].inicio_mandato.split('-').reverse().join('-') : "",
+            fim_mandato: coordenadorData.mandatos_coordenador[0]?.fim_mandato ? coordenadorData.mandatos_coordenador[0].fim_mandato.split('-').reverse().join('-') : "",
+          });
+        } catch (error) {
+          console.error("Erro ao carregar dados do coordenador:", error);
+          setFeedbackType("erro");
+          setFeedbackMessage(`Erro ao carregar dados do coordenador: ${error.message}`);
+          setShowFeedback(true);
         }
-      });
-  };
+      }
+    }
+
+    loadCursos();
+    loadCoordenadorData();
+  }, [id, isEditing]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: null })); // Limpa o erro ao alterar o campo
   };
 
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    validateField(name, value);
-  };
-
-  const handleSubmit = async (e) => {
+  async function handleSubmit(e) {
     e.preventDefault();
-    const url = id
-      ? `http://localhost:8000/solicitacoes/coordenadores/${id}/`
-      : "http://localhost:8000/solicitacoes/coordenadores/";
-
-    const method = id ? axios.put : axios.post;
 
     const payload = {
       usuario: {
@@ -111,95 +87,122 @@ export default function CadastrarAtualizarCoordenador() {
         data_nascimento: formData.data_nascimento,
       },
       siape: formData.siape,
-      mandato: {
-        curso: formData.curso,
-        inicio_mandato: formData.inicio_mandato,
-        fim_mandato: formData.fim_mandato || null,
-      }
+      curso: formData.curso,
+      inicio_mandato: formData.inicio_mandato,
+      fim_mandato: formData.fim_mandato || null,
     };
 
     try {
-      await method(url, payload);
-      setMensagem(id ? "Coordenador atualizado com sucesso!" : "Coordenador cadastrado com sucesso!");
-      setTipoMensagem("sucesso");
-      setShowFeedback(true);
-    } catch (err) {
-      console.error(err);
-      if (err.response?.status === 400 && err.response.data) {
-        setErrors(err.response.data);
+      let response;
+      if (isEditing && id) {
+        response = await api.put(`coordenadores/${id}/`, payload);
       } else {
-        setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao salvar coordenador."}`);
-        setTipoMensagem("erro");
-        setShowFeedback(true);
+        response = await api.post("coordenadores/cadastro-coordenador-mandato/", payload);
+      }
+
+      setFeedbackType("sucesso");
+      setFeedbackMessage(`Coordenador ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso!`);
+      setShowFeedback(true);
+      setFormData(initialFormState);
+      setErrors({});
+      navigate("/coordenadores");
+    } catch (error) {
+      console.error(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} coordenador:`, error);
+      const errorData = error.response?.data;
+      setFeedbackType("erro");
+      setFeedbackMessage(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} coordenador. ${errorData ? JSON.stringify(errorData) : ""}`);
+      setShowFeedback(true);
+      if (errorData) {
+        setErrors(errorData); // Atualiza o estado de errors com os erros do backend
       }
     }
+  }
+
+  const closeFeedback = () => {
+    setShowFeedback(false);
   };
 
   return (
     <div>
       <Header />
       <main className="container form-container">
-        <h2>{id ? "Editar Coordenador" : "Cadastrar Novo Coordenador"}</h2>
+        <h2>{title}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
-          {[ 
-            { name: "nome", label: "Nome" },
-            { name: "email", label: "Email", type: "email" },
-            { name: "cpf", label: "CPF" },
-            { name: "telefone", label: "Telefone" },
-            { name: "data_nascimento", label: "Data de Nascimento", type: "date" },
-            { name: "siape", label: "SIAPE" },
-            { name: "inicio_mandato", label: "Início do Mandato", type: "date" },
-            { name: "fim_mandato", label: "Fim do Mandato", type: "date" },
-          ].map(({ name, label, type = "text" }) => (
-            <div className="form-group" key={name}>
-              <label>{label}:</label>
-              <input
-                type={type}
-                name={name}
-                className={`input-text ${errors[name] ? "input-error" : ""}`}
-                value={formData[name] || ""}
-                onChange={handleChange}
-                onBlur={handleBlur}
-                required
-              />
-              {errors[name] && <div className="error-text">{errors[name]}</div>}
-            </div>
-          ))}
-
-          {/* Campo de seleção para o curso */}
+          <h3>Dados do Usuário</h3>
           <div className="form-group">
-            <label>Curso:</label>
+            <label htmlFor="nome">Nome:</label>
+            <input type="text" id="nome" name="nome" className={`input-text ${errors.nome ? "input-error" : ""}`} value={formData.nome} onChange={handleChange} required />
+            {errors.nome && <div className="error-text">{errors.nome}</div>}
+          </div>
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input type="email" id="email" name="email" className={`input-text ${errors.email ? "input-error" : ""}`} value={formData.email} onChange={handleChange} required />
+            {errors.email && <div className="error-text">{errors.email}</div>}
+          </div>
+          <div className="form-group">
+            <label htmlFor="cpf">CPF:</label>
+            <input type="text" id="cpf" name="cpf" className={`input-text ${errors.cpf ? "input-error" : ""}`} value={formData.cpf} onChange={handleChange} required />
+            {errors.cpf && <div className="error-text">{errors.cpf}</div>}
+          </div>
+          <div className="form-group">
+            <label htmlFor="telefone">Telefone:</label>
+            <input type="text" id="telefone" name="telefone" className={`input-text ${errors.telefone ? "input-error" : ""}`} value={formData.telefone} onChange={handleChange} required />
+            {errors.telefone && <div className="error-text">{errors.telefone}</div>}
+          </div>
+          <div className="form-group">
+            <label htmlFor="data_nascimento">Data de Nascimento:</label>
+            <input type="date" id="data_nascimento" name="data_nascimento" className={`input-text ${errors.data_nascimento ? "input-error" : ""}`} value={formData.data_nascimento} onChange={handleChange} required />
+            {errors.data_nascimento && <div className="error-text">{errors.data_nascimento}</div>}
+          </div>
+
+          <h3>Dados do Coordenador</h3>
+          <div className="form-group">
+            <label htmlFor="siape">SIAPE:</label>
+            <input type="number" id="siape" name="siape" className={`input-text ${errors.siape ? "input-error" : ""}`} value={formData.siape} onChange={handleChange} required />
+            {errors.siape && <div className="error-text">{errors.siape}</div>}
+          </div>
+
+          <h3>Dados do Mandato</h3>
+          <div className="form-group">
+            <label htmlFor="curso">Curso:</label>
             <select
+              id="curso"
               name="curso"
               className={`input-text ${errors.curso ? "input-error" : ""}`}
-              value={formData.curso || ""}
+              value={formData.curso}
               onChange={handleChange}
               required
             >
-              <option value="">Selecione o curso</option>
+              <option value="">Selecione o Curso</option>
               {cursos.map(curso => (
-                <option key={curso.id} value={curso.id}>
-                  {curso.nome}
+                <option key={curso.codigo} value={curso.codigo}>
+                  {`${curso.nome} (${curso.codigo})`}
                 </option>
               ))}
             </select>
             {errors.curso && <div className="error-text">{errors.curso}</div>}
           </div>
+          <div className="form-group">
+            <label htmlFor="inicio_mandato">Início do Mandato:</label>
+            <input type="date" id="inicio_mandato" name="inicio_mandato" className={`input-text ${errors.inicio_mandato ? "input-error" : ""}`} value={formData.inicio_mandato} onChange={handleChange} required />
+            {errors.inicio_mandato && <div className="error-text">{errors.inicio_mandato}</div>}
+          </div>
+          <div className="form-group">
+            <label htmlFor="fim_mandato">Fim do Mandato (Opcional):</label>
+            <input type="date" id="fim_mandato" name="fim_mandato" className="input-text" value={formData.fim_mandato} onChange={handleChange} />
+            {errors.fim_mandato && <div className="error-text">{errors.fim_mandato}</div>}
+          </div>
 
-          <button type="submit" className="submit-button">
-            {id ? "Atualizar" : "Cadastrar"}
-          </button>
+          <button type="submit" className="submit-button">{submitButtonText}</button>
         </form>
 
         <PopupFeedback
           show={showFeedback}
-          mensagem={mensagem}
-          tipo={tipoMensagem}
-          onClose={() => {
-            setShowFeedback(false);
-            navigate("/coordenadores");
-          }}
+          mensagem={feedbackMessage}
+          tipo={feedbackType}
+          onClose={closeFeedback}
         />
+        <BotaoVoltar onClick={() => navigate("/usuarios")} />
       </main>
       <Footer />
     </div>

@@ -21,7 +21,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             return "CRE"
         if hasattr(obj, 'responsavel'):
             return "Responsavel"
-        return "-"
+        return "Externo"
     
     def get_papel_detalhes(self, obj):
         if hasattr(obj, 'coordenador'):
