@@ -6,7 +6,7 @@ class MandatoSerializer(serializers.ModelSerializer):
     curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
     coordenador = serializers.PrimaryKeyRelatedField(queryset=Coordenador.objects.all())
     inicio_mandato = serializers.DateField(format="%d-%m-%Y", input_formats=["%Y-%m-%d", "%d-%m-%Y"])
-    fim_mandato = serializers.DateField(format="%d-%m-%Y", input_formats=["%Y-%m-%d", "%d-%m-%Y"], required=False)
+    fim_mandato = serializers.DateField(format="%d-%m-%Y", input_formats=["%Y-%m-%d", "%d-%m-%Y"], required=False, allow_null=True)
     
     class Meta:
         model = Mandato
@@ -22,3 +22,18 @@ class MandatoSerializer(serializers.ModelSerializer):
         except ValidationError as e:
             raise serializers.ValidationError(e.message_dict)
         return data
+    
+class MandatoHistoricoSerializer(serializers.ModelSerializer):
+    coordenador = serializers.SerializerMethodField()
+    inicio_mandato = serializers.DateField(format="%d-%m-%Y")
+    fim_mandato = serializers.DateField(format="%d-%m-%Y", allow_null=True)
+
+    class Meta:
+        model = Mandato
+        fields = ('id', 'coordenador', 'inicio_mandato', 'fim_mandato')
+
+    def get_coordenador(self, mandato):
+        from ..serializers.coordenador_serializer import CoordenadorMinimoSerializer
+        coordenador = Coordenador.objects.select_related('usuario').get(id=mandato.coordenador_id)
+        serializer = CoordenadorMinimoSerializer(coordenador)
+        return serializer.data

@@ -73,7 +73,10 @@ import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 //import ListarCursosSelecionar from "../pages/coordenadores/lista_cursos_selecionar.js"; 
 //import ListarCoordenadores from "../pages/coordenadores/lista_coordenadores.js";
 import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atualizar_coordenadores.js";
+//Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
+import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
+
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
 
@@ -85,6 +88,7 @@ import { Navigate } from "react-router-dom";
 
 // Importe o GoogleRedirectHandler
 import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js"; 
+
 
 
 const token = localStorage.getItem("token");
@@ -156,7 +160,7 @@ const routes = [
   
   
   //Mandatos
-  <Route path="/mandatos" element={<CadastrarAtualizarMandato />} key="listar-mandatos" />,
+  <Route path="/mandatos" element={< HistoricoMandatos/>} key="listar-mandatos" />,
   <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
   <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
 

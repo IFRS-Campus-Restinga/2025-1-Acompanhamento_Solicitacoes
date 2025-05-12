@@ -18,7 +18,7 @@ from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
 from .views.form_abono_falta_view import *
-from .views.mandato_view import MandatoListCreateView, MandatoRetrieveUpdateDestroyView
+from .views.mandato_view import HistoricoMandatosPorCursoView, MandatoListCreateView, MandatoRetrieveUpdateDestroyView
 from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, FormTrancDisciplinaDetail, disciplinas_por_curso
 from .views.form_exercicios_domiciliares import (
     FormExercicioDomiciliarListCreate,
@@ -68,6 +68,7 @@ urlpatterns = [
     path('coordenadores/<int:pk>', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
     path('coordenadores/cadastro-coordenador-mandato/', CadastroCoordenadorMandatoView.as_view(), name='cadastro-coordenador-mandato'),
 
+
     path('cres/', CREListCreateView.as_view(), name='cre-list'),
     path('cres/<int:pk>', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
 
@@ -107,7 +108,8 @@ urlpatterns = [
     
     path("mandatos/", MandatoListCreateView.as_view(), name='mandato-list'),
     path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
-
+    path('mandatos/historico/', HistoricoMandatosPorCursoView.as_view(), name='historico_mandatos_por_curso'),
+    
     path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),

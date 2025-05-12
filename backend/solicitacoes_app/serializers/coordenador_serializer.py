@@ -1,8 +1,16 @@
 from rest_framework import serializers
 from ..models import Coordenador, Usuario, Mandato, Curso
-from ..serializers.usuario_serializer import UsuarioSerializer
+from ..serializers.usuario_serializer import UsuarioSerializer, UsuarioMinimoSerializer
 from ..serializers.mandato_serializer import MandatoSerializer
 from django.core.exceptions import ValidationError
+
+class CoordenadorMinimoSerializer(serializers.ModelSerializer):
+    usuario = UsuarioMinimoSerializer(read_only=True)
+
+    class Meta:
+        model = Coordenador
+        fields = ('id', 'siape', 'usuario')
+
 
 class CoordenadorSerializer(serializers.ModelSerializer):
     mandatos_coordenador = serializers.SerializerMethodField(read_only=True)
@@ -11,8 +19,14 @@ class CoordenadorSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Coordenador
-        fields = ['usuario', 'siape', 'mandatos_coordenador']
+        fields = ['id','usuario', 'siape', 'mandatos_coordenador']
 
+    def get_nome_usuario(self, obj):
+        return [
+            {'usuario': mandato.coordenador.usuario.nome}
+            for mandato in obj.mandatos_coordenador.all()
+        ]
+    
     def get_mandatos_coordenador(self, obj):
         return [
             {

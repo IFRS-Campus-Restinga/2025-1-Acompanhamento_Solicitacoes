@@ -94,7 +94,6 @@ export default function CadastrarAtualizarMandato() {
         inicio_mandato: formData.inicio_mandato,
         fim_mandato: formData.fim_mandato || null,
       };
-
       const response = isEditing
         ? await api.patch(`mandatos/${id}/`, payload)
         : await api.post("mandatos/", payload);

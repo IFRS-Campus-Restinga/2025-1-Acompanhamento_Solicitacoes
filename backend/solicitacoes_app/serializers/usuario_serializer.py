@@ -1,6 +1,13 @@
 from rest_framework import serializers
 from ..models import Usuario
 
+
+class UsuarioMinimoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = ('nome',)
+
+
 class UsuarioSerializer(serializers.ModelSerializer):
     papel = serializers.SerializerMethodField()
     papel_detalhes = serializers.SerializerMethodField()
