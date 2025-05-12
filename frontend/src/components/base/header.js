@@ -45,7 +45,7 @@ const Header = () => {
     // localStorage.removeItem("refreshToken"); // Se você usar refresh tokens
     setUserData(null);
     // TODO: Adicionar lógica para invalidar o token no backend, se aplicável
-    navigate("/login"); // Redireciona para a página de login
+    navigate("/"); // Redireciona para a página de login
     // window.location.reload(); // Força um reload para limpar qualquer estado restante, se necessário
   };
 
