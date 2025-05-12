@@ -54,10 +54,19 @@ export default function ListarCalendarios() {
       });
   };
 
-  const calendariosFiltrados = calendarios.filter((calendario) =>
-    calendario.codigo.toLowerCase().includes(filtro.toLowerCase()) ||
-    calendario.get_formulario_display.toLowerCase().includes(filtro.toLowerCase())
-  );
+  // Filtro em tempo real (seguro e eficiente)
+  const calendariosFiltrados = React.useMemo(() => {
+    if (!filtro) return calendarios; // Retorna tudo se não houver filtro
+    
+    const termo = filtro.toLowerCase();
+    return calendarios.filter((calendario) => {
+      return (
+        (calendario.codigo?.toLowerCase() || "").includes(termo) ||
+        (calendario.nome_formulario?.toLowerCase() || "").includes(termo) ||
+        (calendario.nome_tipo_curso?.toLowerCase() || "").includes(termo)
+      );
+    });
+  }, [calendarios, filtro]); // Recalcula apenas quando `calendarios` ou `filtro` mudam
 
   const itensPorPagina = 5;
 

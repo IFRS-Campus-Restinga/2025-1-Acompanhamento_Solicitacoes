@@ -44,8 +44,9 @@ export default function CadastrarAtualizarCalendario() {
           setCodigo(res.data.codigo);
           setFormulario(res.data.formulario);
           setTipoCurso(res.data.tipo_curso);
-          setDataInicio(res.data.data_inicio);
-          setDataFim(res.data.data_fim);
+          // Corrige o fuso horário das datas
+          setDataInicio(res.data.data_inicio.split('T')[0]);
+          setDataFim(res.data.data_fim.split('T')[0]);
         })
         .catch((err) => {
           setMensagem(
@@ -70,12 +71,13 @@ export default function CadastrarAtualizarCalendario() {
       return;
     }
 
+    // Prepara os dados com as datas corretamente formatadas
     const dados = {
       codigo,
       formulario,
       tipo_curso: tipoCurso,
-      data_inicio: dataInicio,
-      data_fim: dataFim
+      data_inicio: dataInicio + 'T00:00:00', // Força UTC
+      data_fim: dataFim + 'T00:00:00'
     };
 
     const requisicao = codigoParam
@@ -112,7 +114,7 @@ export default function CadastrarAtualizarCalendario() {
         
         <form className="form-box" onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Código do Período</label>
+            <label>Código do Período:</label>
             <input
               type="text"
               className="input-text"
@@ -171,7 +173,7 @@ export default function CadastrarAtualizarCalendario() {
               />
               <div className="date-display-box">
                 {dataInicio 
-                  ? new Date(dataInicio).toLocaleDateString('pt-BR', {
+                  ? new Date(dataInicio + 'T00:00:00').toLocaleDateString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric'
@@ -192,7 +194,7 @@ export default function CadastrarAtualizarCalendario() {
               />
               <div className="date-display-box">
                 {dataFim 
-                  ? new Date(dataFim).toLocaleDateString('pt-BR', {
+                  ? new Date(dataFim + 'T00:00:00').toLocaleDateString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
                       year: 'numeric'

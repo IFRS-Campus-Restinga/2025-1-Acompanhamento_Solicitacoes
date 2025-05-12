@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma, Nome
+from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma, Nome, CalendarioAcademico
 from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
@@ -163,6 +163,15 @@ class Command(BaseCommand):
             nome="Turismo Sustentável",
             codigo="TURS1",
             defaults={"ppc": ads}
+        )
+
+        CalendarioAcademico.objects.get_or_create(
+            codigo= "2025-2",
+            formulario= "TRANCAMENTODISCIPLINA",
+            tipo_curso= "GRADUACAO",
+            data_inicio= "2025-03-01",
+            data_fim= "2025-08-30",
+            ativo= True
         )
 
         Turma.objects.get_or_create(
