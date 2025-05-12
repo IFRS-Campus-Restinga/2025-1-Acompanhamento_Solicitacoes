@@ -98,7 +98,7 @@ export default function ListarUsuarios() {
 
         <div className="botoes-wrapper">
 
-        <BotaoCadastrar to="/usuarios/cadastrar" title="Criar Novo Usuário" />
+        <BotaoCadastrar to="/usuarios/cadastro" title="Criar Novo Usuário" />
           <div className="botao-inativos-wrapper">
             <button
               onClick={() => setExibirInativos(!exibirInativos)}

@@ -66,7 +66,7 @@ export default function DetalhesUsuario() {
             {usuario.papel === "Aluno" && (
               <>
                 <p><strong>Matrícula:</strong> {usuario.papel_detalhes?.matricula}</p>
-                <p><strong>Turma:</strong> {usuario.papel_detalhes?.turma}</p>
+                <p><strong>PPC:</strong> {usuario.papel_detalhes?.ppc}</p>
                 <p><strong>Ano de Ingresso:</strong> {usuario.papel_detalhes?.ano_ingresso}</p>
               </>
             )}

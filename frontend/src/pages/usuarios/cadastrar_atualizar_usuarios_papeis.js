@@ -185,7 +185,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
         <option value="">Selecione</option>
         {field === "ppc" &&
           options.map(option => {
-            console.log("Opção do PPC no render:", option); // ADICIONE ESTE LOG
+            console.log("Opção do PPC no render:", option);
             return (
               <option key={option} value={option}>
                 {option}
