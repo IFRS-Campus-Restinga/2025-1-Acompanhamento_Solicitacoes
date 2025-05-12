@@ -72,6 +72,7 @@ import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 //Coordenadores
 //import ListarCursosSelecionar from "../pages/coordenadores/lista_cursos_selecionar.js"; 
 //import ListarCoordenadores from "../pages/coordenadores/lista_coordenadores.js";
+import CadastrarAtualizarCoordenador  from "../pages/CadastrarAtualizarCoordenadoroordenadores/cadastrar_atualizar_coordenadores.js";
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
@@ -79,9 +80,6 @@ import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/form
 //Form desistencia Vaga
 
 import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario.js";
-
-//Tela CRE
-import HomeCRE from "../pages/telas_cre/home_cre.js"
 
 import { Navigate } from "react-router-dom";
 
@@ -147,9 +145,9 @@ const routes = [
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
   <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
-  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuarioPapel />} key="editar-usuarios" />,
+  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
   <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
-  <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-coordenador" />,
+  <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarCoordenador />} key="cadastrar-coordenador" />,
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
 
   //Coordenadores
@@ -189,11 +187,7 @@ const routes = [
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
   //Solicitacoes
-  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
-
-  //Tela CRE
-  <Route path="/cre/home" element={<HomeCRE />} />
-
+  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>
   
   
  ];
