@@ -80,6 +80,9 @@ import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/form
 
 import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario.js";
 
+//Tela CRE
+import HomeCRE from "../pages/telas_cre/home_cre.js"
+
 import { Navigate } from "react-router-dom";
 
 // Importe o GoogleRedirectHandler
@@ -186,7 +189,11 @@ const routes = [
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
   //Solicitacoes
-  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>
+  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
+
+  //Tela CRE
+  <Route path="/cre/home" element={<HomeCRE />} />
+
   
   
  ];

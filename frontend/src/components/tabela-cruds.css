@@ -34,3 +34,10 @@
   overflow-wrap: break-word;
   word-break: break-word;
 }
+
+.botao-olho {
+  display: flex;
+  justify-content: center; /* Centraliza horizontalmente */
+  align-items: center; /* Centraliza verticalmente */
+  height: 100%; /* Garante que ocupa toda a célula */
+}

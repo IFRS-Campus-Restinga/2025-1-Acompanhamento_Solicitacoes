@@ -211,7 +211,7 @@ export default function FormularioAbonoFaltas() {
             <input
               type="text"
               name="matricula"
-              //creadOnly style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
+              //readOnly style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
               value={formData.matricula}
               onChange={handleChange}
             />
