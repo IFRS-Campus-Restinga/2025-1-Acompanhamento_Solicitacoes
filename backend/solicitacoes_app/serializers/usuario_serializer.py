@@ -49,7 +49,7 @@ class UsuarioSerializer(serializers.ModelSerializer):
             aluno = obj.aluno
             return {
                 "matricula": aluno.matricula,
-                "ppc": aluno.ppc.codigo,
+                "curso": aluno.ppc.curso.nome,
                 "ano_ingresso": aluno.ano_ingresso
             }
         
