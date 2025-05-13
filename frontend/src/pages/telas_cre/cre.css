@@ -1,0 +1,76 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background-color: #f9f9f9; /* Fundo suave */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.formulario-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.campo-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ccc;
+    font-size: 16px;
+}
+
+.campo-nome {
+    font-weight: bold;
+    width: 40%;
+    text-align: left;
+}
+
+.campo-valor {
+    width: 60%;
+    text-align: right;
+    color: #333;
+}
+
+.botoes-container {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-aprovar, .btn-rejeitar {
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.btn-aprovar {
+    background-color: #90EE90; /* Verde claro */
+    color: black;
+}
+
+.btn-rejeitar {
+    background-color: #FF7F7F; /* Vermelho claro */
+    color: black;
+}
+
+.btn-aprovar:hover {
+    background-color: #76D376;
+    transform: scale(1.05);
+}
+
+.btn-rejeitar:hover {
+    background-color: #FF6B6B;
+    transform: scale(1.05);
+}
+
+.btn-aprovar:active, .btn-rejeitar:active {
+    transform: scale(0.95);
+}

@@ -38,6 +38,9 @@ from .views.calendario_academico_view import (
 
 from .views.buscar_info_usuario import * 
 
+from .views.detalhe_formularios_view import *
+from .views.atualizar_status_view import *
+
 app_name = 'solicitacoes_app'
 
 
@@ -131,4 +134,7 @@ urlpatterns = [
 
     path('calendarios/', CalendarioAcademicoListCreateView.as_view(), name='calendario-list-create'),
     path('calendarios/<str:codigo>/', CalendarioAcademicoRetrieveUpdateDestroyView.as_view(), name='calendario-detail'),
-]
+
+    path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
+
+    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),]

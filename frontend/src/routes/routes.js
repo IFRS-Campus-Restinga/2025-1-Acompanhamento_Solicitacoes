@@ -89,6 +89,10 @@ import { Navigate } from "react-router-dom";
 // Importe o GoogleRedirectHandler
 import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js"; 
 
+//Tela CRE
+import HomeCRE from  "../pages/telas_cre/home_cre.js";
+import DetalheSolicitacao from "../pages/telas_cre/detalhe_solicitacao.js";
+
 
 
 const token = localStorage.getItem("token");
@@ -191,8 +195,11 @@ const routes = [
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
   //Solicitacoes
-  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>
+  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
   
+  //Tela CRE
+  <Route path="/cre/home" element={<HomeCRE />} key="home_cre" />,
+  <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />
   
  ];
 
