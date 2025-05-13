@@ -19,8 +19,8 @@ export default function CadastrarAtualizarCoordenador() {
   const [cursos, setCursos] = useState([]);
   const [errors, setErrors] = useState({});
   const [showFeedback, setShowFeedback] = useState(false);
-  const [feedbackMessage, setFeedbackMessage] = useState("");
-  const [feedbackType, setFeedbackType] = useState("sucesso");
+  const [mensagem, setMensagem] = useState("");
+  const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
@@ -34,8 +34,8 @@ export default function CadastrarAtualizarCoordenador() {
         setCursos(response.data);
       } catch (error) {
         console.error("Erro ao carregar cursos:", error);
-        setFeedbackType("erro");
-        setFeedbackMessage(`Erro ao carregar cursos: ${error.message}`);
+        setTipoMensagem("erro");
+        setMensagem(`Erro ao carregar cursos: ${error.message}`);
         setShowFeedback(true);
       }
     }
@@ -58,8 +58,8 @@ export default function CadastrarAtualizarCoordenador() {
           });
         } catch (error) {
           console.error("Erro ao carregar dados do coordenador:", error);
-          setFeedbackType("erro");
-          setFeedbackMessage(`Erro ao carregar dados do coordenador: ${error.message}`);
+          setTipoMensagem("erro");
+          setMensagem(`Erro ao carregar dados do coordenador: ${error.message}`);
           setShowFeedback(true);
         }
       }
@@ -100,17 +100,17 @@ export default function CadastrarAtualizarCoordenador() {
         response = await api.post("coordenadores/cadastro-coordenador-mandato/", payload);
       }
 
-      setFeedbackType("sucesso");
-      setFeedbackMessage(`Coordenador ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso!`);
+      setTipoMensagem("sucesso");
+      setMensagem(`Coordenador ${isEditing ? 'atualizado' : 'cadastrado'} com sucesso!`);
       setShowFeedback(true);
       setFormData(initialFormState);
       setErrors({});
-      navigate("/coordenadores");
+      navigate("/usuarios");
     } catch (error) {
       console.error(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} coordenador:`, error);
       const errorData = error.response?.data;
-      setFeedbackType("erro");
-      setFeedbackMessage(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} coordenador. ${errorData ? JSON.stringify(errorData) : ""}`);
+      setTipoMensagem("erro");
+      setMensagem(`Erro ao ${isEditing ? 'atualizar' : 'cadastrar'} coordenador. ${errorData ? JSON.stringify(errorData) : ""}`);
       setShowFeedback(true);
       if (errorData) {
         setErrors(errorData); // Atualiza o estado de errors com os erros do backend
@@ -198,11 +198,11 @@ export default function CadastrarAtualizarCoordenador() {
 
         <PopupFeedback
           show={showFeedback}
-          mensagem={feedbackMessage}
-          tipo={feedbackType}
+          mensagem={mensagem}
+          tipo={tipoMensagem}
           onClose={closeFeedback}
         />
-        <BotaoVoltar onClick={() => navigate("/usuarios")} />
+        <BotaoVoltar onClick={() => navigate('/usuarios')} />
       </main>
       <Footer />
     </div>
