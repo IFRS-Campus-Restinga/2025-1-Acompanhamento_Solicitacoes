@@ -93,7 +93,7 @@ export default function ListarSolicitacoes() {
           />
         </div>
 
-        <table className="tabela-cruds">
+        <table className="tabela-cruds tabela-solicitacoes">
           <thead>
             <tr>
               <th>ID</th>
@@ -115,7 +115,7 @@ export default function ListarSolicitacoes() {
                 <td>{solicitacao.nome_aluno}</td>
                 <td>{solicitacao.tipo}</td>
                 <td>{solicitacao.status}</td>
-                <td>{solicitacao.data_solicitacao}</td>
+                <td className="coluna-data">{solicitacao.data_solicitacao}</td>
                 <td>{solicitacao.posse_solicitacao}</td> {/* <-- nova célula */}
                 <td>
                   <div className="botoes-acoes">

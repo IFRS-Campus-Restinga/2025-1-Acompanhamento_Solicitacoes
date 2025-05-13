@@ -41,3 +41,9 @@
   align-items: center; /* Centraliza verticalmente */
   height: 100%; /* Garante que ocupa toda a célula */
 }
+
+.tabela-cruds th.coluna-data,
+.tabela-cruds td.coluna-data {
+  min-width: 15%;
+  white-space: nowrap; 
+}
