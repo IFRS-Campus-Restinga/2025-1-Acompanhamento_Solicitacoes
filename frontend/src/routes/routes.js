@@ -70,12 +70,13 @@ import CadastrarAtualizarCalendario from "../pages/calendario_academico/cadastra
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
-//import ListarCursosSelecionar from "../pages/coordenadores/lista_cursos_selecionar.js"; 
-//import ListarCoordenadores from "../pages/coordenadores/lista_coordenadores.js";
 import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atualizar_coordenadores.js";
+
 //Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
+import ListaMandatosPorCurso from "../pages/coordenadores/mandatos/lista_coord_mandato_por_curso.js";
+import SelecaoCursoMandato from "../pages/coordenadores/mandatos/selecao_curso_mandatos.js";
 
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
@@ -158,15 +159,14 @@ const routes = [
   <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarCoordenador />} key="cadastrar-coordenador" />,
   <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
 
-  //Coordenadores
-  //<Route path="/selecionarcurso" element={< ListarCursosSelecionar />} />,
-  //<Route path="/cursos/:codigo/coordenadores" element={<ListarCoordenadores />} />,
-  
   
   //Mandatos
-  <Route path="/mandatos" element={< HistoricoMandatos/>} key="listar-mandatos" />,
+
+  <Route path="/mandatos-selecionarcurso" element={< SelecaoCursoMandato/>} key="selecionar-curso-mandato" />,
+  <Route path="/mandatos/curso/:codigo" element={< ListaMandatosPorCurso/>} key="listar-mandatos-curso" />,
   <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
   <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
+  <Route path="/mandatos" element={<HistoricoMandatos/>} key="listar-historico-mandatos" />,
 
 
   // Grupos

@@ -37,3 +37,15 @@ class MandatoHistoricoSerializer(serializers.ModelSerializer):
         coordenador = Coordenador.objects.select_related('usuario').get(id=mandato.coordenador_id)
         serializer = CoordenadorMinimoSerializer(coordenador)
         return serializer.data
+    
+    
+    def validate(self, data):
+          # Cria uma instância do model com os dados validados
+        instance = self.Meta.model(**data)
+        if self.instance:  # Se estiver editando, atribui o ID para a exclusão na validação
+            instance.pk = self.instance.pk
+        try:
+            instance.full_clean()
+        except ValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
+        return data
