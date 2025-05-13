@@ -306,7 +306,7 @@ export default function FormularioAbonoFaltas() {
               Perdeu Atividades Avaliativas?
             </label> 
           </div>
-          <button type="submit" className="botao-enviar">
+          <button type="submit" className="submit-button">
             Enviar
           </button>
         </form>

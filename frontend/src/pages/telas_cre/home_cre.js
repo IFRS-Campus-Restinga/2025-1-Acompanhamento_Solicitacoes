@@ -35,7 +35,7 @@ const HomeCRE = () => {
         <div>
             <Header />
             <main className="container">
-                <h1>Painel do CRE</h1>
+                <h2>Painel do CRE</h2>
 
                 {loading ? (
                     <p>Carregando solicitações...</p>
@@ -63,7 +63,7 @@ const HomeCRE = () => {
                                     <td>{solicitacao.posse_solicitacao}</td>
                                     <td>
                                         <div className="botao-olho">
-                                            <Link to={`/todas-solicitacoes/${solicitacao.id}`} title="Ver detalhes">
+                                            <Link to={`/detalhe-solicitacao/${solicitacao.id}`} title="Ver detalhes">
                                                 <i className="bi bi-eye-fill icone-olho"></i>
                                             </Link>
                                         </div>

@@ -317,3 +317,29 @@
 .submit-button:hover {
   background-color: #45a049;
 }
+
+
+
+
+.selecao-curso-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.selecao-curso-wrapper label {
+    font-weight: bold;
+}
+
+.selecao-curso-wrapper select {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.erro-mensagem {
+    color: red;
+    margin-top: 10px;
+}

@@ -57,6 +57,28 @@ class CadastroCoordenadorMandatoSerializer(serializers.Serializer):
     curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
     inicio_mandato = serializers.DateField()
     fim_mandato = serializers.DateField(required=False, allow_null=True)
+    
+    
+    def validate(self, data):
+        # Validações específicas do CadastroCoordenadorMandatoSerializer (se houver)
+        if data['inicio_mandato'] and data.get('fim_mandato') and data['inicio_mandato'] >= data['fim_mandato']:
+            raise serializers.ValidationError("A data de início do mandato deve ser anterior à data de fim.")
+
+        # Cria uma instância temporária do Mandato para validação
+        mandato_data = {
+            'curso': data['curso'],
+            'coordenador': Coordenador(),  # Um objeto Coordenador vazio é suficiente para a validação do Mandato
+            'inicio_mandato': data['inicio_mandato'],
+            'fim_mandato': data.get('fim_mandato')
+        }
+        mandato_instance = Mandato(**mandato_data)
+
+        try:
+            mandato_instance.full_clean()
+        except ValidationError as e:
+            raise serializers.ValidationError(e.message_dict)
+
+        return data
 
     def create(self, validated_data):
         usuario_data = validated_data.pop('usuario')

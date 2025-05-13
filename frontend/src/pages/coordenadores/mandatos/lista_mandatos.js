@@ -6,6 +6,7 @@ import Header from '../../../components/base/header';
 import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 function HistoricoMandatos() {
     const [historicoCursosComMandatos, setHistoricoCursosComMandatos] = useState([]);
@@ -127,6 +128,7 @@ function HistoricoMandatos() {
                     tipo={tipoFeedback}
                     onClose={() => setMostrarFeedback(false)}
                 />
+                <BotaoVoltar onClick={() => navigate("/")} />
             </main>
             <Footer />
         </div>
