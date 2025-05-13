@@ -8,9 +8,15 @@ import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
+// Função auxiliar para formatar a data corretamente
+const formatarDataParaExibicaoLocal = (dataString) => {
+    if (!dataString) return '';
+    const dataFormatada = dataString.replace(/-/g, '/');
+    return new Date(dataFormatada).toLocaleDateString();
+};
+
 export default function ListaMandatosPorCurso() {
     const { cursoCodigo } = useParams();
-    console.log("Parâmetros da URL:", useParams());
     const [mandatosDoCurso, setMandatosDoCurso] = useState([]);
     const [cursoNome, setCursoNome] = useState('');
     const [mostrarPopupExcluir, setMostrarPopupExcluir] = useState(false);
@@ -21,25 +27,25 @@ export default function ListaMandatosPorCurso() {
     const navigate = useNavigate();
 
     useEffect(() => {
-    async function carregarMandatosDoCurso() {
-        try {
-            const response = await api.get(`/mandatos/historico/${cursoCodigo}`);
-            if (response.data) {
-                setMandatosDoCurso(response.data.historico_mandatos);
-                setCursoNome(response.data.nome);
-            } else {
-                setCursoNome('Erro ao carregar informações do curso.');
+        async function carregarMandatosDoCurso() {
+            try {
+                const response = await api.get(`/mandatos/historico/${cursoCodigo}`);
+                if (response.data) {
+                    setMandatosDoCurso(response.data.historico_mandatos);
+                    setCursoNome(response.data.nome);
+                } else {
+                    setCursoNome('Erro ao carregar informações do curso.');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar mandatos do curso:', error);
+                setMensagemFeedback(`Erro ao carregar mandatos: ${error.message}`);
+                setTipoFeedback('erro');
+                setMostrarFeedback(true);
             }
-        } catch (error) {
-            console.error('Erro ao carregar mandatos do curso:', error);
-            setMensagemFeedback(`Erro ao carregar mandatos: ${error.message}`);
-            setTipoFeedback('erro');
-            setMostrarFeedback(true);
         }
-    }
 
-    carregarMandatosDoCurso();
-}, [cursoCodigo]);
+        carregarMandatosDoCurso();
+    }, [cursoCodigo]);
 
     async function excluirMandato() {
         if (!mandatoSelecionadoParaExcluir) return;
@@ -85,10 +91,10 @@ export default function ListaMandatosPorCurso() {
                         </thead>
                         <tbody>
                             {mandatosDoCurso && mandatosDoCurso.map((mandato, index) => (
-                                <tr key={mandato.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}> {/* Adicionando classes de estilo */}
+                                <tr key={mandato.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                                     <td>{mandato.coordenador.usuario.nome} ({mandato.coordenador.siape})</td>
-                                    <td>{new Date(mandato.inicio_mandato).toLocaleDateString()}</td>
-                                    <td>{mandato.fim_mandato ? new Date(mandato.fim_mandato).toLocaleDateString() : 'Atual'}</td>
+                                    <td>{formatarDataParaExibicaoLocal(mandato.inicio_mandato)}</td>
+                                    <td>{mandato.fim_mandato ? formatarDataParaExibicaoLocal(mandato.fim_mandato) : 'Atual'}</td>
                                     <td>
                                         <div className="botoes-acoes">
                                             <Link to={`/mandatos/editar/${mandato.id}`} title="Editar Mandato">
@@ -131,3 +137,4 @@ export default function ListaMandatosPorCurso() {
         </div>
     );
 }
+

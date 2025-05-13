@@ -3,6 +3,7 @@ from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios,
 from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
+from ...models.mandato import Mandato
 from ...models.cre import CRE
 from django.contrib.auth.models import Group
  
@@ -246,13 +247,27 @@ class Command(BaseCommand):
             usuario_cre.set_password("senha456")
             usuario_cre.save()
 
-        Coordenador.objects.get_or_create(
+        
+        coordenador1, created = Coordenador.objects.get_or_create(
             usuario=usuario_coord,
+            defaults={"siape": 123456}
+        )
+        
+        mandato1, created = Mandato.objects.get_or_create(
+            curso=curso2, 
+            coordenador=coordenador1,
+            inicio_mandato="2023-01-15",
             defaults={
-                "siape": 123456,
-               #"inicio_mandato": "2025-01-01",
-               #"fim_mandato": "2026-01-01",
-               #"curso": curso1,
+                "fim_mandato": "2024-01-14" # Opcional, pode ser None
+            }
+        )
+        
+        mandato2, created = Mandato.objects.get_or_create(
+            curso=curso5, 
+            coordenador=coordenador1,
+            inicio_mandato="2025-01-15",
+            defaults={
+                "fim_mandato": "2025-12-14" # Opcional, pode ser None
             }
         )
 
