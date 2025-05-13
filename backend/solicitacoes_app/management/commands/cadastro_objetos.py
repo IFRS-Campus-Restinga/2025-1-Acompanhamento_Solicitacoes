@@ -219,6 +219,44 @@ class Command(BaseCommand):
         Group.objects.get_or_create(
             name="Aluno"
         )
+        
+        #NÃO EXCLUA PLEASE - ADICIONAR DISCIPLINA EM TURMA p/ solic exercicios dom
+        # Associar disciplinas a uma turma: 
+        try:
+            turma_primeiro_ano = Turma.objects.get(nome="Primeiro ano")
+            disciplina_bd1 = Disciplina.objects.get(codigo="BD1")
+
+            # Adiciona as disciplinas à turma
+            turma_primeiro_ano.disciplinas.add(disciplina_bd1)
+            # Pode adicionar mais disciplinas conforme necessário
+
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_primeiro_ano.nome}'"))
+
+            turma_segundo_ano = Turma.objects.get(nome="Segundo ano")
+            disciplina_dev_sistemas = Disciplina.objects.get(codigo="DEVII")
+            turma_segundo_ano.disciplinas.add(disciplina_dev_sistemas )
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_segundo_ano.nome}'"))
+
+            turma_terceiro_ano = Turma.objects.get(nome="Terceiro ano")
+            disciplina_Esw = Disciplina.objects.get(codigo="ESW10")
+            turma_terceiro_ano.disciplinas.add(disciplina_Esw)
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_terceiro_ano.nome}'"))
+
+            turma_quarto_ano = Turma.objects.get(nome="Quarto ano")
+            disciplina_tur = Disciplina.objects.get(codigo="TURS1")
+            turma_quarto_ano.disciplinas.add(disciplina_tur)
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_quarto_ano.nome}'"))
+
+            turma_quinto_ano = Turma.objects.get(nome="Quinto ano")
+            disciplina_gestao = Disciplina.objects.get(codigo="GDP20")
+            turma_quinto_ano.disciplinas.add(disciplina_gestao)
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_quinto_ano.nome}'"))
+
+        except Turma.DoesNotExist:
+            self.stdout.write(self.style.ERROR("Uma ou mais turmas não encontradas para associar disciplinas."))
+        except Disciplina.DoesNotExist:
+            self.stdout.write(self.style.ERROR("Uma ou mais disciplinas não encontradas para associar às turmas."))
+
 
         
         usuario_coord, created = Usuario.objects.get_or_create(
