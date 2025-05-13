@@ -139,9 +139,78 @@ class Command(BaseCommand):
         for nome_turma in ["Primeiro ano", "Segundo ano", "Terceiro ano", "Quarto ano", "Quinto ano"]:
             Turma.objects.get_or_create(nome=nome_turma)
 
+<<<<<<< HEAD
+        Nome.objects.get_or_create(
+            nome="Fernando"
+        )
+        Nome.objects.get_or_create(
+            nome="Carol"
+        )
+        Nome.objects.get_or_create(
+            nome="Clarke"
+        )
+        Nome.objects.get_or_create(
+            nome="Pedro"
+        )
+        Nome.objects.get_or_create(
+            nome="Nicolas"
+        )
+        
+        Group.objects.get_or_create(
+            name="Usuários"
+        )
+        Group.objects.get_or_create(
+            name="CRE"
+        )
+        Group.objects.get_or_create(
+            name="Coordenador"
+        )
+        Group.objects.get_or_create(
+            name="Aluno"
+        )
+        
+        #NÃO EXCLUA PLEASE - ADICIONAR DISCIPLINA EM TURMA p/ solic exercicios dom
+        # Associar disciplinas a uma turma: 
+        try:
+            turma_primeiro_ano = Turma.objects.get(nome="Primeiro ano")
+            disciplina_bd1 = Disciplina.objects.get(codigo="BD1")
+
+            # Adiciona as disciplinas à turma
+            turma_primeiro_ano.disciplinas.add(disciplina_bd1)
+            # Pode adicionar mais disciplinas conforme necessário
+
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_primeiro_ano.nome}'"))
+
+            turma_segundo_ano = Turma.objects.get(nome="Segundo ano")
+            disciplina_dev_sistemas = Disciplina.objects.get(codigo="DEVII")
+            turma_segundo_ano.disciplinas.add(disciplina_dev_sistemas )
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_segundo_ano.nome}'"))
+
+            turma_terceiro_ano = Turma.objects.get(nome="Terceiro ano")
+            disciplina_Esw = Disciplina.objects.get(codigo="ESW10")
+            turma_terceiro_ano.disciplinas.add(disciplina_Esw)
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_terceiro_ano.nome}'"))
+
+            turma_quarto_ano = Turma.objects.get(nome="Quarto ano")
+            disciplina_tur = Disciplina.objects.get(codigo="TURS1")
+            turma_quarto_ano.disciplinas.add(disciplina_tur)
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_quarto_ano.nome}'"))
+
+            turma_quinto_ano = Turma.objects.get(nome="Quinto ano")
+            disciplina_gestao = Disciplina.objects.get(codigo="GDP20")
+            turma_quinto_ano.disciplinas.add(disciplina_gestao)
+            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_quinto_ano.nome}'"))
+
+        except Turma.DoesNotExist:
+            self.stdout.write(self.style.ERROR("Uma ou mais turmas não encontradas para associar disciplinas."))
+        except Disciplina.DoesNotExist:
+            self.stdout.write(self.style.ERROR("Uma ou mais disciplinas não encontradas para associar às turmas."))
+
+=======
         # Nomes
         for nome in ["Fernando", "Carol", "Clarke", "Pedro", "Nicolas"]:
             Nome.objects.get_or_create(nome=nome)
+>>>>>>> 30325afa648adf9900ccf985d0fa570975df2ec5
 
         # Grupos
         for nome in ["Usuários", "CRE", "Coordenador", "Aluno"]:
