@@ -115,7 +115,7 @@ export default function CadastrarAtualizarMandato() {
 
   const closeFeedback = () => {
     setShowFeedback(false);
-    navigate("/mandatos"); // Redirecionar para a listagem de mandatos
+    navigate(-1);
   };
 
   return (

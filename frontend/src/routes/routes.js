@@ -163,7 +163,7 @@ const routes = [
   //Mandatos
 
   <Route path="/mandatos-selecionarcurso" element={< SelecaoCursoMandato/>} key="selecionar-curso-mandato" />,
-  <Route path="/mandatos/curso/:codigo" element={< ListaMandatosPorCurso/>} key="listar-mandatos-curso" />,
+  <Route path="/mandatos/curso/:cursoCodigo" element={< ListaMandatosPorCurso/>} key="listar-mandatos-curso" />,
   <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
   <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
   <Route path="/mandatos" element={<HistoricoMandatos/>} key="listar-historico-mandatos" />,

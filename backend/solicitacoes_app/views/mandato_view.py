@@ -32,6 +32,7 @@ class MandatoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     
     
 class HistoricoMandatosPorCursoView(generics.ListAPIView):
+    
     serializer_class = CursoComHistoricoMandatosSerializer
     queryset = Curso.objects.all().prefetch_related(
         Prefetch(
@@ -40,3 +41,14 @@ class HistoricoMandatosPorCursoView(generics.ListAPIView):
             to_attr='historico_mandatos'
         )
     ).order_by('nome')
+    
+class HistoricoMandatosPorCursoDetailView(generics.RetrieveAPIView):
+    serializer_class = CursoComHistoricoMandatosSerializer
+    queryset = Curso.objects.all().prefetch_related(
+        Prefetch(
+            'mandatos_curso',
+            queryset=Mandato.objects.all().order_by('-inicio_mandato').select_related('coordenador__usuario'),
+            to_attr='historico_mandatos'
+        )
+    ).order_by('nome')
+    lookup_field='codigo'

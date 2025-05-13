@@ -8,7 +8,7 @@ import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
-function HistoricoMandatos() {
+export default function HistoricoMandatos() {
     const [historicoCursosComMandatos, setHistoricoCursosComMandatos] = useState([]);
     const [mostrarPopupExcluir, setMostrarPopupExcluir] = useState(false);
     const [mandatoSelecionadoParaExcluir, setMandatoSelecionadoParaExcluir] = useState(null);
@@ -134,5 +134,3 @@ function HistoricoMandatos() {
         </div>
     );
 }
-
-export default HistoricoMandatos;

@@ -10,6 +10,7 @@ import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 export default function ListaMandatosPorCurso() {
     const { cursoCodigo } = useParams();
+    console.log("Parâmetros da URL:", useParams());
     const [mandatosDoCurso, setMandatosDoCurso] = useState([]);
     const [cursoNome, setCursoNome] = useState('');
     const [mostrarPopupExcluir, setMostrarPopupExcluir] = useState(false);
@@ -20,27 +21,25 @@ export default function ListaMandatosPorCurso() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        async function carregarMandatosDoCurso() {
-            try {
-                const response = await api.get(`/mandatos/historico/?curso_codigo=${cursoCodigo}`); // Seu endpoint existente com filtro por curso
-                if (response.data && response.data.length > 0) {
-                    setMandatosDoCurso(response.data[0].historico_mandatos); // Assumindo que o backend retorna a estrutura como antes
-                    setCursoNome(response.data[0].nome);
-                } else if (response.data && response.data.length === 0) {
-                    setCursoNome('Curso não encontrado ou sem mandatos.');
-                } else {
-                    setCursoNome('Erro ao carregar informações do curso.');
-                }
-            } catch (error) {
-                console.error('Erro ao carregar mandatos do curso:', error);
-                setMensagemFeedback(`Erro ao carregar mandatos: ${error.message}`);
-                setTipoFeedback('erro');
-                setMostrarFeedback(true);
+    async function carregarMandatosDoCurso() {
+        try {
+            const response = await api.get(`/mandatos/historico/${cursoCodigo}`);
+            if (response.data) {
+                setMandatosDoCurso(response.data.historico_mandatos);
+                setCursoNome(response.data.nome);
+            } else {
+                setCursoNome('Erro ao carregar informações do curso.');
             }
+        } catch (error) {
+            console.error('Erro ao carregar mandatos do curso:', error);
+            setMensagemFeedback(`Erro ao carregar mandatos: ${error.message}`);
+            setTipoFeedback('erro');
+            setMostrarFeedback(true);
         }
+    }
 
-        carregarMandatosDoCurso();
-    }, [cursoCodigo]);
+    carregarMandatosDoCurso();
+}, [cursoCodigo]);
 
     async function excluirMandato() {
         if (!mandatoSelecionadoParaExcluir) return;
@@ -69,13 +68,13 @@ export default function ListaMandatosPorCurso() {
                 <h2>Mandatos do Curso: {cursoNome}</h2>
 
                 <div className="botoes-wrapper">
-                    <BotaoCadastrar to={`/mandatos/cadastrar?curso_codigo=${cursoCodigo}`} title="Criar Novo Mandato" />
+                    <BotaoCadastrar to={`/mandatos/cadastrar/`} title="Criar Novo Mandato" />
                 </div>
 
                 {mandatosDoCurso && mandatosDoCurso.length === 0 ? (
                     <p>Nenhum mandato encontrado para este curso.</p>
                 ) : (
-                    <table className="tabela-cruds"> {/* Usando a mesma classe de estilo da lista de usuários */}
+                    <table className="tabela-cruds">
                         <thead>
                             <tr>
                                 <th>Coordenador (SIAPE)</th>
