@@ -1,42 +1,28 @@
-from django.http import JsonResponse
-from django.contrib.auth.models import User
-from ..models.aluno import Aluno  # Importe seu model de Aluno
-from django.http import JsonResponse
-from ..models import Turma, Disciplina  # Importe seus models
+from rest_framework.generics import ListAPIView
+from ..models import Usuario
+from ..serializers.usuario_serializer import UsuarioSerializer# O seu UsuarioSerializer existente
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from ..models import Turma
+from ..serializers.disciplina_serializer import DisciplinaSerializer # O novo DisciplinaSerializer
+from django.shortcuts import get_object_or_404
 
-def buscar_info_usuario(request):
-    email = request.GET.get('email')
-    if email:
-        try:
-            user = User.objects.get(email=email)
-            try:
-                aluno = Aluno.objects.get(user=user)
-                data = {
-                    'aluno_nome': f'{user.first_name} {user.last_name}',
-                    'matricula': aluno.matricula,
-                    # Adicione outros campos que você precisa
-                }
-            except Aluno.DoesNotExist:
-                data = {
-                    'aluno_nome': f'{user.first_name} {user.last_name}',
-                    # Outras informações genéricas do usuário, se houver
-                }
-            return JsonResponse(data)
-        except User.DoesNotExist:
-            return JsonResponse({'erro': 'Usuário não encontrado'}, status=404)
-    else:
-        return JsonResponse({'erro': 'O parâmetro "email" é obrigatório'}, status=400)
-    
+class UsuarioPorEmailView(ListAPIView):
+    serializer_class = UsuarioSerializer
+
+    def get_queryset(self):
+        email = self.request.query_params.get('email', None)
+        if email is not None:
+            return Usuario.objects.filter(email__iexact=email)
+        return Usuario.objects.none() # Retorna vazio se não houver e-mail
+        
 
 
-def buscar_componentes_turma(request):
-    turma_id = request.GET.get('turma_id')
-    if turma_id:
-        try:
-            turma = Turma.objects.get(pk=turma_id)
-            componentes = turma.disciplinas.all().values('id', 'nome') # Ajuste os campos conforme seu model
-            return JsonResponse(list(componentes), safe=False)
-        except Turma.DoesNotExist:
-            return JsonResponse({'erro': 'Turma não encontrada'}, status=404)
-    else:
-        return JsonResponse({'erro': 'O parâmetro "turma_id" é obrigatório'}, status=400)
+class DisciplinasPorTurmaView(APIView):
+    def get(self, request, turma_id, format=None):
+        turma = get_object_or_404(Turma, pk=turma_id)
+        disciplinas = turma.disciplinas.all()
+        serializer = DisciplinaSerializer(disciplinas, many=True)
+        return Response(serializer.data)
+
+ 

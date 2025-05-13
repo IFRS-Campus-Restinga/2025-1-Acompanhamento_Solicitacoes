@@ -36,20 +36,24 @@ from .views.calendario_academico_view import (
     CalendarioAcademicoRetrieveUpdateDestroyView
 )
 
-from .views.buscar_info_usuario import * 
-
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
 
+from django.urls import path
+
+from .views.buscar_info_usuario import UsuarioPorEmailView
+
+from .views.buscar_info_usuario import DisciplinasPorTurmaView
+
 app_name = 'solicitacoes_app'
 
-
+       
 urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
 
-    path('buscar_info_usuario/', buscar_info_usuario, name='buscar_info_usuario'),
-    path('buscar_info_usuario/', buscar_componentes_turma, name='buscar_componentes_turma'),
+    path('usuarios/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
+    path('turmas/<int:turma_id>/disciplinas/', DisciplinasPorTurmaView.as_view(), name='disciplinas-por-turma'),
 
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
