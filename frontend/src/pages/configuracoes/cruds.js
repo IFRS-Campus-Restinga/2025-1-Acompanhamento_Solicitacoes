@@ -60,6 +60,7 @@ const Cruds = () => {
           <Link className="crud-link" to="/motivo_dispensa">
             <i className="bi bi-person-arms-up"></i> Dispensa de Educação Física
           </Link>
+
         </div>
       </main>
       <Footer />

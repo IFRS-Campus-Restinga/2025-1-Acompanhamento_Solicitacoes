@@ -7,7 +7,6 @@ class AnexoSerializer(ModelSerializer):
         model = Anexo
         fields = [
             'anexo',
-            'form_dispensa_ed_fisica',
             'form_abono_falta',
             'form_exercicos_domiciliares'
         ]
@@ -15,7 +14,6 @@ class AnexoSerializer(ModelSerializer):
     def validate(self, data):
         # Garantir que apenas um formulário está vinculado ao anexo
         forms = [
-            data.get('form_dispensa_ed_fisica'),
             data.get('form_abono_falta'),
             data.get('form_exercicos_domiciliares')
         ]

@@ -11,6 +11,7 @@ import IgnoreFields from "../../../components/ignoreFields";
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
     const [popularCursos, setPopularCursos] = useState([]);
+    const [popularAlunos, setPopularAlunos] = useState([]);
     const [dados, setDados] = useState({});
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
@@ -18,7 +19,6 @@ export default function Formulario() {
 
     const urls = useMemo(() => [
         "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
-        "http://localhost:8000/solicitacoes/anexos/"
     ], []);
 
     const navigate = useNavigate();
@@ -43,75 +43,63 @@ export default function Formulario() {
             })
     }, []);
 
+    useEffect(() => {
+        axios.get("http://localhost:8000/solicitacoes/alunos/")
+            .then((response) => setPopularAlunos(response.data))
+            .catch((err) => {
+                setMsgErro(err);
+                setPopupType("error");
+                setPopupIsOpen(true);
+            });
+    }, []);
+
     const handleFormChange = (dadosAtualizados) => {
         setDados(dadosAtualizados);
     };
 
     const postDispensaEdFisica = async (e) => {
-        e.preventDefault();
-        try {
-            // Primeiro envia a solicitação de dispensa
-            const responseDispensa = await axios.post(
-                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
-                {
-                    descricao: dados.descricao,
-                    email: dados.email,
-                    cpf: dados.cpf,
-                    matricula: dados.matricula,
-                    turma: dados.turma,
-                    ano_semestre_ingresso: dados.ano_semestre_ingresso,
-                    observacoes: dados.observacoes,
-                    aluno: dados.aluno,
-                    curso: dados.curso,
-                    motivo_solicitacao: dados.motivo_solicitacao
+    e.preventDefault();
+
+    try {
+        const formData = new FormData();
+
+        for (const [key, value] of Object.entries(dados)) {
+            if (key === "anexos") {
+                if (Array.isArray(value)) {
+                    value.forEach((file) => formData.append("anexos", file));
+                } else if (value instanceof File) {
+                    formData.append("anexos", value);
                 }
-            );
-
-            const formDispensaId = responseDispensa.data.id;
-
-            // Agora envia os anexos, um a um
-            if (dados.anexo instanceof FileList) {
-                const promises = Array.from(dados.anexo).map((file) => {
-                    const formData = new FormData();
-                    formData.append("form_dispensa_ed_fisica", formDispensaId);
-                    formData.append("anexo", file);
-
-                    return axios.post(
-                        "http://localhost:8000/solicitacoes/anexos/",
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        }
-                    );
-                });
-
-                await Promise.all(promises); // Aguarda todos enviarem
-            } else if (dados.anexo instanceof File) {
-                const formData = new FormData();
-                formData.append("form_dispensa_ed_fisica", formDispensaId);
-                formData.append("anexo", dados.anexo);
-
-                await axios.post(
-                    "http://localhost:8000/solicitacoes/anexos/",
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
-                );
+            } else if (value !== undefined && value !== null) {
+                formData.append(key, value);
+            } else {
+                formData.append(key, ""); // evita campos vazios se forem required
             }
-
-            navigate("/solicitacoes");
-
-        } catch (err) {
-            setMsgErro(err);
-            setPopupType("error");
-            setPopupIsOpen(true);
         }
-    };
+
+        // Debug para ver o que está indo no FormData
+        for (let pair of formData.entries()) {
+            console.log(pair[0], pair[1]);
+        }
+
+        await axios.post(
+            "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+            formData,
+            {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }
+        );
+
+        navigate("/solicitacoes");
+    } catch (err) {
+        console.error("Erro no envio:", err.response?.data || err.message);
+        setMsgErro(err.response?.data || err.message);
+        setPopupType("error");
+        setPopupIsOpen(true);
+    }
+};
 
 
 
@@ -145,13 +133,13 @@ export default function Formulario() {
                         <Options
                             url={urls}
                             popularCampo={{
+                                aluno: {
+                                    data: popularAlunos,
+                                    labelKey: "id"
+                                },
                                 motivo_solicitacao: {
                                     data: popularMotivosDispensa,
                                     labelKey: "descricao"
-                                },
-                                curso: {
-                                    data: popularCursos,
-                                    labelKey: "nome"
                                 }
                             }}
                             onChange={handleFormChange}
@@ -162,7 +150,7 @@ export default function Formulario() {
             </main>
             <Feedback
                 show={popupIsOpen}
-                mensagem={msgErro?.response?.data?.detail || msgErro?.message || "Erro desconhecido"}
+                mensagem={msgErro?.response?.data?.detail || msgErro?.message || "Erro desconhecido!!!"}
                 tipo={popupType}
                 onClose={() => setPopupIsOpen(false)}
             />

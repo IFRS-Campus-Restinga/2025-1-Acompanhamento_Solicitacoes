@@ -18,11 +18,11 @@ export default function Options({
     if (type === "checkbox") {
       newValue = checked;
     } else if (type === "file") {
-      newValue = files.length > 1 ? files : files[0];
+      newValue = files.length > 1 ? Array.from(files) : files[0];
     } else if (type === "number") {
       newValue = value === "" ? null : parseInt(value);
     } else {
-      newValue = value;
+      newValue = value === "" ? null : value;
     }
 
     const novosDados = {
@@ -41,6 +41,12 @@ export default function Options({
       setLoading(true);
       let novosCamposOrdenados = [];
       let novosDadosIniciais = {};
+
+      novosCamposOrdenados.sort(([keyA], [keyB]) => {
+        if (keyA === "anexos") return 1;
+        if (keyB === "anexos") return -1;
+        return 0;
+      });
 
       for (const endpoint of url) {
         try {
@@ -74,7 +80,14 @@ export default function Options({
         });
         setLoading(false);
       }
+          novosCamposOrdenados.sort(([keyA], [keyB]) => {
+        if (keyA === "anexos") return 1;
+        if (keyB === "anexos") return -1;
+        return 0;
+      });
     }
+
+
 
     carregarOptionsSequencialmente();
 
@@ -94,6 +107,25 @@ export default function Options({
   return (
     <>
       {fieldsOrdered.map(([key, value]) => {
+
+        if (key === "anexos") {
+        return (
+          <div key={key} className="form-group">
+            <label htmlFor={key}>{value.label || "Anexos"}:</label>
+            <input
+              id={key}
+              name={key}
+              type="file"
+              multiple
+              required={value.required}
+              onChange={handleChange}
+              className="form-control-file"
+            />
+            <br />
+          </div>
+        );
+      }
+
         if (value.type === "string" && value.max_length < 60) {
           return (
             <div key={key} className="form-group">
@@ -153,8 +185,31 @@ export default function Options({
           const campoInfo = popularCampo[key];
           const lista = Array.isArray(campoInfo) ? campoInfo : campoInfo?.data;
           const labelKey = Array.isArray(campoInfo) ? "nome" : campoInfo?.labelKey || "nome";
-
-          return (
+          if (key === "disciplinas") {
+            return (
+              <div key={key} className="form-group">
+              <label htmlFor={key}>{value.label}:</label>
+              <select
+                id={key}
+                name={key}
+                required={value.required}
+                onChange={handleChange}
+                value={dados[key] ?? ""}
+                className="form-select"
+                multiple
+              >
+                <option value="">Selecione</option>
+                {lista?.map((campo) => (
+                  <option key={campo.codigo} value={campo.codigo}>
+                    {campo[labelKey]}
+                  </option>
+                ))}
+              </select>
+              <br />
+            </div>
+            )
+          } else {
+            return (
             <div key={key} className="form-group">
               <label htmlFor={key}>{value.label}:</label>
               <select
@@ -164,6 +219,7 @@ export default function Options({
                 onChange={handleChange}
                 value={dados[key] ?? ""}
                 className="form-select"
+                
               >
                 <option value="">Selecione</option>
                 {lista?.map((campo) => (
@@ -174,7 +230,8 @@ export default function Options({
               </select>
               <br />
             </div>
-          );
+            )
+          }
         }
 
         if (value.type === "bool") {
@@ -194,7 +251,7 @@ export default function Options({
           );
         }
 
-        if (value.type === "file upload") {
+        if (value.type === "file upload" || value.label === "Anexo(s)") {
           return (
             <div key={key} className="form-group">
               <label htmlFor={key}>{value.label}:</label>

@@ -1,35 +1,15 @@
 from ..models.motivo_dispensa import MotivoDispensa
 from .form_base import FormularioBase
 from .curso import Curso
-from django.db.models import ForeignKey, CharField, EmailField, RESTRICT
+from django.db.models import ForeignKey, CharField, RESTRICT
 from .aluno import Aluno
-from .validators import validar_cpf
+from .multi_file_field import MultiFileField
 
 class FormDispensaEdFisica(FormularioBase):
     aluno = ForeignKey(Aluno,
                        on_delete=RESTRICT,
                        verbose_name="Aluno",
                        help_text="Selecione o aluno")
-    
-    email = EmailField(verbose_name="Email",
-                       help_text="Email será autopreenchido")
-    
-    cpf = CharField(max_length=11,
-                    verbose_name="CPF",
-                    help_text="CPF será autopreenchido",
-                    validators=[validar_cpf])
-    
-    matricula = CharField(max_length=20,
-                          verbose_name="Matrícula",
-                          help_text="Matrícula será autopreenchido")
-
-
-    curso = ForeignKey(
-        Curso,
-        on_delete=RESTRICT,
-        verbose_name="Curso", 
-        help_text="Selecione o curso"
-    )
     
     turma = CharField(max_length=10, 
                       verbose_name="Turma",
@@ -54,6 +34,8 @@ class FormDispensaEdFisica(FormularioBase):
         verbose_name="Observações",
         help_text="Digite suas observações"
     )
+
+    anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos")
 
     
     class Meta:
