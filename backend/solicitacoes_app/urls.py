@@ -52,7 +52,7 @@ urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
 
-    path('usuarios/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
+    #path('usuarios/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
     path('turmas/<int:turma_id>/disciplinas/', DisciplinasPorTurmaView.as_view(), name='disciplinas-por-turma'),
 
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
