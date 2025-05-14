@@ -139,7 +139,7 @@ class Command(BaseCommand):
         for nome_turma in ["Primeiro ano", "Segundo ano", "Terceiro ano", "Quarto ano", "Quinto ano"]:
             Turma.objects.get_or_create(nome=nome_turma)
 
-<<<<<<< HEAD
+
         Nome.objects.get_or_create(
             nome="Fernando"
         )
@@ -206,11 +206,9 @@ class Command(BaseCommand):
         except Disciplina.DoesNotExist:
             self.stdout.write(self.style.ERROR("Uma ou mais disciplinas não encontradas para associar às turmas."))
 
-=======
         # Nomes
         for nome in ["Fernando", "Carol", "Clarke", "Pedro", "Nicolas"]:
             Nome.objects.get_or_create(nome=nome)
->>>>>>> 30325afa648adf9900ccf985d0fa570975df2ec5
 
         # Grupos
         for nome in ["Usuários", "CRE", "Coordenador", "Aluno"]:
