@@ -7,13 +7,15 @@ from django.db.models import RESTRICT
 from django.core.validators import MinLengthValidator, EmailValidator
 
 class FormAbonoFalta(FormularioBase):
+    nome_formulario = "Formulário de Justificativa/Abono de Falta"
+    
     email = models.EmailField(
         validators=[EmailValidator()]
     )
     
-    aluno_nome = models.ForeignKey(
-        Aluno,
-        on_delete=RESTRICT,
+    aluno_nome = models.CharField(
+        max_length=50, 
+        validators=[MinLengthValidator(2)],
         verbose_name="Nome do Aluno",  
         help_text="Nome do aluno",
     )

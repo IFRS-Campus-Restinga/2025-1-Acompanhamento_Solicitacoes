@@ -7,7 +7,7 @@ from solicitacoes_app.serializers.solicitacao_serializer import SolicitacaoSeria
 class AtualizarStatusSolicitacaoView(UpdateAPIView):
     queryset = Solicitacao.objects.all()
     serializer_class = SolicitacaoSerializer
-    lookup_field = "id"  # Define que o parâmetro `id` será usado para buscar a solicitação
+    lookup_field = "id"
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -17,7 +17,15 @@ class AtualizarStatusSolicitacaoView(UpdateAPIView):
         if novo_status not in dict(Status.choices).values():
             return Response({"erro": "Status inválido."}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Atualiza posse_solicitacao conforme a etapa do processo
+        if novo_status == Status.EM_ANALISE:
+            instance.posse_solicitacao = "Coordenador"
+        elif novo_status == Status.EM_EMISSAO:
+            instance.posse_solicitacao = "CRE"
+        elif novo_status == Status.APROVADO:
+            instance.posse_solicitacao = "Aluno"
+
         instance.status = novo_status
         instance.save()
 
-        return Response({"mensagem": f"Status atualizado para: {novo_status}"}, status=status.HTTP_200_OK)
+        return Response({"mensagem": f"Status atualizado para: {novo_status}, responsável agora é {instance.posse_solicitacao}"}, status=status.HTTP_200_OK)

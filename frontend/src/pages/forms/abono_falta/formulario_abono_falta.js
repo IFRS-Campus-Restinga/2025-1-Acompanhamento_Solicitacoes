@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import Header from "../../../components/base/header";
 import Footer from "../../../components/base/footer";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
@@ -26,6 +26,7 @@ export default function FormularioAbonoFaltas() {
   const [popupIsOpen, setPopupIsOpen] = useState(false);
   const [tipoPopup, setTipoPopup] = useState("success");
   const [mensagemPopup, setMensagemPopup] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/cursos/")
@@ -136,13 +137,14 @@ export default function FormularioAbonoFaltas() {
     }
 
     try {
-      await axios.post("http://localhost:8000/solicitacoes/formulario_abono_falta/", data, {
+      const response = await axios.post("http://localhost:8000/solicitacoes/formulario_abono_falta/", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
+      console.log("Solicitação criada:", response.data);
       setTipoPopup("success");
       setMensagemPopup("Formulário enviado com sucesso!");
       setPopupIsOpen(true);
-      setTimeout(() => (window.location.href = "/solicitacoes"), 2000);
+      setTimeout(() => navigate("/todas-solicitacoes"), 2000);
     } catch (err) {
       console.error("Erro ao enviar formulário:", err.response || err);
       setTipoPopup("error");

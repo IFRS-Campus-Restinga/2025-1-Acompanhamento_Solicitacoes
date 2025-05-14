@@ -198,7 +198,7 @@ const routes = [
   <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
   
   //Tela CRE
-  <Route path="/cre/home" element={<HomeCRE />} key="home_cre" />,
+  <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />
   
  ];
