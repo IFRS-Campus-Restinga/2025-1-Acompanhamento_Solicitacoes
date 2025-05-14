@@ -16,3 +16,9 @@ class Responsavel(BaseModel):
 
     def __str__(self):
         return f"Responsável - {self.usuario.nome}"
+    
+    def delete(self, using=None, keep_parents=False):
+        super().delete(using=using, keep_parents=keep_parents)
+    
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)

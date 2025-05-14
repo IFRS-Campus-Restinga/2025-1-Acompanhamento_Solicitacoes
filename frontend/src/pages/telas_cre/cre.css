@@ -1,54 +1,58 @@
-.container {
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    background-color: #f9f9f9; /* Fundo suave */
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.dados-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9f9f9; /* Mantendo o fundo cinza claro */
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.formulario-container {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
+/* Cada bloco de informações segue o mesmo padrão */
+.bloco-info {
+max-width: 800px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
 
+/* Ajuste dos títulos dos campos */
 .campo-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 1px solid #ccc;
-    font-size: 16px;
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  border-bottom: 1px solid #ccc;
 }
 
 .campo-nome {
-    font-weight: bold;
-    width: 40%;
-    text-align: left;
+  font-weight: 600;
+  width: 30%;
+  text-align: left;
 }
 
 .campo-valor {
-    width: 60%;
-    text-align: right;
-    color: #333;
-}
-
-.botoes-container {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 20px;
+  width: 70%;
+  text-align: left;
 }
 
 .btn-aprovar, .btn-rejeitar {
-    padding: 10px 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Espaço entre ícone e texto */
+    padding: 12px 20px;
+    font-size: 16px;
     font-weight: bold;
-    border-radius: 6px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
+    width: 100%;
+    max-width: 250px;
 }
 
 .btn-aprovar {
@@ -61,6 +65,7 @@
     color: black;
 }
 
+/* Estilo ao passar o mouse */
 .btn-aprovar:hover {
     background-color: #76D376;
     transform: scale(1.05);
@@ -71,6 +76,18 @@
     transform: scale(1.05);
 }
 
+/* Estilo ao clicar */
 .btn-aprovar:active, .btn-rejeitar:active {
     transform: scale(0.95);
+}
+
+/* Adicionando ícones nos botões */
+.btn-aprovar::before {
+    content: "✔"; /* Ícone de check */
+    font-size: 18px;
+}
+
+.btn-rejeitar::before {
+    content: "✖"; /* Ícone de X */
+    font-size: 18px;
 }

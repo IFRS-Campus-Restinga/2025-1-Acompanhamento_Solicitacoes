@@ -205,7 +205,9 @@ const routes = [
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
   
   //Form de entrega de atividades complementares
-  <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />
+  <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
+  <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
+  <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />
   
  ];
 

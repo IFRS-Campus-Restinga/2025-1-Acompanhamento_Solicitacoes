@@ -76,8 +76,8 @@ export default function CadastrarAtualizarCalendario() {
       codigo,
       formulario,
       tipo_curso: tipoCurso,
-      data_inicio: dataInicio + 'T00:00:00', // Força UTC
-      data_fim: dataFim + 'T00:00:00'
+      data_inicio: dataInicio,
+      data_fim: dataFim
     };
 
     const requisicao = codigoParam
