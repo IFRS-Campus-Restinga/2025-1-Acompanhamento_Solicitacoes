@@ -8,6 +8,8 @@ class FormDesistenciaVaga(FormularioBase):
 
     class Meta:
         verbose_name = "Formulário de Desistência de Vaga"
+    
+    nome_formulario = "Formulário de Desistência de Vaga"
 
 
     TIPO_CURSO_CHOICES = [
