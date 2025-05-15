@@ -78,6 +78,9 @@ const NovaSolicitacao = () => {
             <i className="bi bi-house-check-fill"></i> Solicitação de Exercícios
             Domiciliares
           </Link>
+          <Link className="crud-link" to="/form_ativ_compl">
+            <i class="bi bi-card-list"></i> Entrega de Atividades Complementares
+          </Link>
         </div>
       </main>
       <Footer />

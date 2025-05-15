@@ -11,14 +11,19 @@ import IgnoreFields from "../../../components/ignoreFields";
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
     const [popularCursos, setPopularCursos] = useState([]);
+    const [popularAlunos, setPopularAlunos] = useState([]);
     const [dados, setDados] = useState({});
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
     const [popupType, setPopupType] = useState([]);
 
+    // Novos estados para os campos do aluno
+    const [nomeAluno, setNomeAluno] = useState("");
+    const [emailAluno, setEmailAluno] = useState("");
+    const [matriculaAluno, setMatriculaAluno] = useState("");
+
     const urls = useMemo(() => [
         "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
-        "http://localhost:8000/solicitacoes/anexos/"
     ], []);
 
     const navigate = useNavigate();
@@ -43,71 +48,101 @@ export default function Formulario() {
             })
     }, []);
 
+    useEffect(() => {
+        axios.get("http://localhost:8000/solicitacoes/alunos/")
+            .then((response) => setPopularAlunos(response.data))
+            .catch((err) => {
+                setMsgErro(err);
+                setPopupType("error");
+                setPopupIsOpen(true);
+            });
+    }, []);
+
     const handleFormChange = (dadosAtualizados) => {
         setDados(dadosAtualizados);
+        // Se o ID do aluno mudou, busca os detalhes
+        if (dadosAtualizados.aluno) {
+            const alunoSelecionadoId = dadosAtualizados.aluno;
+            fetchAlunoDetails(alunoSelecionadoId);
+        } else {
+            // Limpa os campos se nenhum aluno estiver selecionado
+            setNomeAluno("");
+            setEmailAluno("");
+            setMatriculaAluno("");
+        }
+    };
+
+    const fetchAlunoDetails = async (alunoId) => {
+        try {
+            const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/${alunoId}/`);
+            const alunoDetails = response.data;
+
+            // Assumindo que a API retorna algo como:
+            // { id: 1, matricula: '12345', usuario: { nome: 'Nome do Aluno', email: 'email@example.com' } }
+
+            setNomeAluno(alunoDetails.usuario.nome);
+            setEmailAluno(alunoDetails.usuario.email);
+            setMatriculaAluno(alunoDetails.matricula);
+
+            // Atualiza o estado 'dados' com as informações do aluno
+            setDados(prevDados => ({
+                ...prevDados,
+                nome_aluno: alunoDetails.usuario.nome, // Use os names corretos dos seus campos
+                email_aluno: alunoDetails.usuario.email,
+                matricula_aluno: alunoDetails.matricula,
+                aluno: alunoId // Mantém o ID do aluno selecionado
+            }));
+        } catch (err) {
+            console.error("Erro ao buscar detalhes do aluno:", err);
+            setMsgErro("Erro ao buscar detalhes do aluno.");
+            setPopupType("error");
+            setPopupIsOpen(true);
+            // Limpa os campos em caso de erro
+            setNomeAluno("");
+            setEmailAluno("");
+            setMatriculaAluno("");
+        }
     };
 
     const postDispensaEdFisica = async (e) => {
         e.preventDefault();
+
         try {
-            // Primeiro envia a solicitação de dispensa
-            const responseDispensa = await axios.post(
+            const formData = new FormData();
+
+            for (const [key, value] of Object.entries(dados)) {
+                if (key === "anexos") {
+                    if (Array.isArray(value)) {
+                        value.forEach((file) => formData.append("anexos", file));
+                    } else if (value instanceof File) {
+                        formData.append("anexos", value);
+                    }
+                } else if (value !== undefined && value !== null) {
+                    formData.append(key, value);
+                } else {
+                    formData.append(key, ""); // evita campos vazios se forem required
+                }
+            }
+
+            // Debug para ver o que está indo no FormData
+            for (let pair of formData.entries()) {
+                console.log(pair[0], pair[1]);
+            }
+
+            await axios.post(
                 "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+                formData,
                 {
-                    descricao: dados.descricao,
-                    email: dados.email,
-                    cpf: dados.cpf,
-                    matricula: dados.matricula,
-                    turma: dados.turma,
-                    ano_semestre_ingresso: dados.ano_semestre_ingresso,
-                    observacoes: dados.observacoes,
-                    aluno: dados.aluno,
-                    curso: dados.curso,
-                    motivo_solicitacao: dados.motivo_solicitacao
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
                 }
             );
 
-            const formDispensaId = responseDispensa.data.id;
-
-            // Agora envia os anexos, um a um
-            if (dados.anexo instanceof FileList) {
-                const promises = Array.from(dados.anexo).map((file) => {
-                    const formData = new FormData();
-                    formData.append("form_dispensa_ed_fisica", formDispensaId);
-                    formData.append("anexo", file);
-
-                    return axios.post(
-                        "http://localhost:8000/solicitacoes/anexos/",
-                        formData,
-                        {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            }
-                        }
-                    );
-                });
-
-                await Promise.all(promises); // Aguarda todos enviarem
-            } else if (dados.anexo instanceof File) {
-                const formData = new FormData();
-                formData.append("form_dispensa_ed_fisica", formDispensaId);
-                formData.append("anexo", dados.anexo);
-
-                await axios.post(
-                    "http://localhost:8000/solicitacoes/anexos/",
-                    formData,
-                    {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    }
-                );
-            }
-
-            navigate("/solicitacoes");
-
+            navigate("/todas-solicitacoes");
         } catch (err) {
-            setMsgErro(err);
+            console.error("Erro no envio:", err.response?.data || err.message);
+            setMsgErro(err.response?.data || err.message);
             setPopupType("error");
             setPopupIsOpen(true);
         }
@@ -141,28 +176,45 @@ export default function Formulario() {
                 </div>
 
                 <form className="formulario formulario-largo" onSubmit={postDispensaEdFisica}>
-
-                        <Options
-                            url={urls}
-                            popularCampo={{
-                                motivo_solicitacao: {
-                                    data: popularMotivosDispensa,
-                                    labelKey: "descricao"
-                                },
-                                curso: {
-                                    data: popularCursos,
-                                    labelKey: "nome"
+                    {/* Campos para exibir nome, email e matrícula do aluno */}
+                    <div className="form-group">
+                        <label htmlFor="nome_aluno">Nome do Aluno:</label>
+                        <input type="text" id="nome_aluno" value={nomeAluno} readOnly />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="email_aluno">Email do Aluno:</label>
+                        <input type="email" id="email_aluno" value={emailAluno} readOnly />
+                    </div>
+                    <div className="form-group">
+                        <label htmlFor="matricula_aluno">Matrícula do Aluno:</label>
+                        <input type="text" id="matricula_aluno" value={matriculaAluno} readOnly />
+                    </div>
+                    <Options
+                        url={urls}
+                        popularCampo={{
+                            aluno: {
+                                data: popularAlunos,
+                                labelKey: "id",
+                                valueKey: "id", // Especifica a chave do ID
+                                onChange: (event) => {
+                                    const alunoId = event.target.value;
+                                    handleFormChange({ ...dados, aluno: alunoId });
                                 }
-                            }}
-                            onChange={handleFormChange}
-                            ignoreFields={IgnoreFields}
-                        />
+                            },
+                            motivo_solicitacao: {
+                                data: popularMotivosDispensa,
+                                labelKey: "descricao"
+                            }
+                        }}
+                        onChange={handleFormChange}
+                        ignoreFields={IgnoreFields}
+                    />
                     <button type="submit" className="submit-button">Enviar</button>
                 </form>
             </main>
             <Feedback
                 show={popupIsOpen}
-                mensagem={msgErro?.response?.data?.detail || msgErro?.message || "Erro desconhecido"}
+                mensagem={msgErro?.response?.data?.detail || msgErro?.message || "Erro desconhecido!!!"}
                 tipo={popupType}
                 onClose={() => setPopupIsOpen(false)}
             />

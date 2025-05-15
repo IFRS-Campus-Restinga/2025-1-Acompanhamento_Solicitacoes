@@ -8,13 +8,7 @@ from .base import BaseModel
 
 class Anexo(BaseModel):
     anexo = models.FileField(verbose_name="Anexo(s)", max_length=4096, upload_to="docs/")
-    form_dispensa_ed_fisica = models.ForeignKey(
-        FormDispensaEdFisica,
-        on_delete=models.CASCADE,
-        related_name="anexos",
-        null=True,
-        blank=True
-    )
+
     form_abono_falta = models.ForeignKey(
         FormAbonoFalta,
         on_delete=models.CASCADE,
