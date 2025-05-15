@@ -80,7 +80,7 @@ const FormularioExercicioDomiciliar = () => {
     setIsLoadingUsuario(true);
     setErroBuscaUsuario("");
     try {
-      const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios/?email=${currentEmailValue}`);
+      const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${currentEmailValue}`);
       if (response.data && response.data.length > 0) {
         const usuario = response.data[0];
         setValue("aluno_nome", usuario.nome || "");
