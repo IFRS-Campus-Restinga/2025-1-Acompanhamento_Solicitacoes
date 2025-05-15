@@ -15,6 +15,8 @@ class Solicitacao(BaseModel):
         on_delete=models.DO_NOTHING
     )
     
+    nome_formulario = models.CharField(max_length=60, null=True, validators=[MinLengthValidator(10)]) #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
+    
     posse_solicitacao = models.CharField(
         max_length=20,
         choices=PosseSolicitacao.choices,

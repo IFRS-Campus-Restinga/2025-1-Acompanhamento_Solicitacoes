@@ -2,9 +2,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import *
 from ..curso import Curso
-from ..form_base import FormularioBase
+from ..solicitacao import Solicitacao
 
-class FormDesistenciaVaga(FormularioBase):
+class FormDesistenciaVaga(Solicitacao):
 
     class Meta:
         verbose_name = "Formulário de Desistência de Vaga"
@@ -24,7 +24,7 @@ class FormDesistenciaVaga(FormularioBase):
     matricula = models.CharField(max_length=20)
     curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name="formularios_desistencia_vaga", blank=True, null= True)
     tipo_curso = models.CharField(max_length=20, choices=TIPO_CURSO_CHOICES)
-
+    motivo_solicitacao = models.TextField()
     # Documentos
     atestado_vaga_nova_escola = models.FileField(upload_to='desistencia/', blank=True, null=True, verbose_name="Atestado de vaga da nova escola", help_text="Somente necessário se Ensino Medio")
     doc_identificacao_responsavel = models.FileField(upload_to='desistencia/', blank=True, null=True, verbose_name="Documento de identificação do responsável legal", help_text="Somente necessário se Ensino Medio")

@@ -2,11 +2,11 @@ from datetime import date
 from django.db import models
 from ..models import MotivoAbono, Curso, Aluno
 from django.core.exceptions import ValidationError
-from .form_base import FormularioBase
+from .solicitacao import Solicitacao
 from django.db.models import RESTRICT
 from django.core.validators import MinLengthValidator, EmailValidator
 
-class FormAbonoFalta(FormularioBase):
+class FormAbonoFalta(Solicitacao):
     nome_formulario = "Formulário de Justificativa/Abono de Falta"
     
     email = models.EmailField(

@@ -1,10 +1,10 @@
 from django.db import models
 from datetime import date
 from ..curso import Curso
-from ..form_base import FormularioBase
+from ..solicitacao import Solicitacao
 from django.core.validators import MinLengthValidator, EmailValidator
 
-class FormExercicioDomiciliar(FormularioBase):
+class FormExercicioDomiciliar(Solicitacao):
     
     class Meta:
         verbose_name = "Formulário de Exercícios Domiciliares"

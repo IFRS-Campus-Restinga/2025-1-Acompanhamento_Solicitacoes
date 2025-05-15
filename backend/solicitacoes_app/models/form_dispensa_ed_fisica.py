@@ -1,15 +1,11 @@
 from ..models.motivo_dispensa import MotivoDispensa
-from .form_base import FormularioBase
+from .solicitacao import Solicitacao
 from .curso import Curso
 from django.db.models import ForeignKey, CharField, RESTRICT
 from .aluno import Aluno
 from .multi_file_field import MultiFileField
 
-class FormDispensaEdFisica(FormularioBase):
-    aluno = ForeignKey(Aluno,
-                       on_delete=RESTRICT,
-                       verbose_name="Aluno",
-                       help_text="Selecione o aluno")
+class FormDispensaEdFisica(Solicitacao):
     
     turma = CharField(max_length=10, 
                       verbose_name="Turma",

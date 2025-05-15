@@ -1,9 +1,9 @@
 from django.db import models
 from .disciplina import Disciplina
-from .form_base import FormularioBase
+from .solicitacao import Solicitacao
 from django.core.exceptions import ValidationError
 
-class FormTrancDisciplina(FormularioBase):
+class FormTrancDisciplina(Solicitacao):
     nome_formulario = "Formulário de Trancamento de Componente Curricular"
     
     disciplinas = models.ManyToManyField(
@@ -17,6 +17,8 @@ class FormTrancDisciplina(FormularioBase):
         help_text="Marque se o aluno é ingressante. Essa informação é importante para limitar a quantidade de trancamentos."
     )
 
+    motivo_solicitacao = models.TextField()
+    
     def clean(self):
         super().clean()
         qtd_disciplinas = self.disciplinas.count()

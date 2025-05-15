@@ -1,8 +1,9 @@
 from django.db import models
-from .form_base import FormularioBase   # sua classe abstrata
+from .solicitacao import Solicitacao   # sua classe abstrata
 
-class FormularioTrancamentoMatricula(FormularioBase):
+class FormularioTrancamentoMatricula(Solicitacao):
     nome_formulario = "Formulário de Trancamento de Matrícula"
+    motivo_solicitacao = models.TextField()
     
     class Meta:
         verbose_name = "Formulário de Trancamento de Matrícula"
