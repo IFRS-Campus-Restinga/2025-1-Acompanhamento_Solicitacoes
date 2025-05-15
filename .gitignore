@@ -3,6 +3,7 @@ __pycache__/
 *.pyc
 *.sqlite3
 migrations/
+backend/uploads/
 # *.py[cod]
 # *$py.class
 
