@@ -15,7 +15,7 @@ class Solicitacao(BaseModel):
         on_delete=models.DO_NOTHING
     )
     
-    nome_formulario = models.CharField(max_length=60, null=True, validators=[MinLengthValidator(10)]) #Campo que explica o objetivo do formulário em questão. Vai ser apresentado no frontend na tela de abertura do formulário.
+    nome_formulario = models.CharField(max_length=60, null=True, validators=[MinLengthValidator(10)])
     
     posse_solicitacao = models.CharField(
         max_length=20,
@@ -78,5 +78,5 @@ class Solicitacao(BaseModel):
 
     def __str__(self):
         nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
-        nome_formulario = str(self.formulario_associado) if self.formulario_associado else "Sem Formulário"
+        nome_formulario = self.nome_formulario or "Sem Formulário"
         return f"{nome_aluno} | {nome_formulario}"
