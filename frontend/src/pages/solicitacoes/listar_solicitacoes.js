@@ -1,4 +1,3 @@
-import axios from "axios";
 import React, { useEffect, useState, useMemo } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "../../components/base/header";
@@ -11,11 +10,8 @@ import Paginacao from "../../components/UI/paginacao";
 import api from "../../services/api";
 
 export default function ListarSolicitacoes() {
-  console.log(
-    "➡️ Fazendo requisição para:",
-    api.defaults.baseURL + "todas-solicitacoes"
-  );
   const navigate = useNavigate();
+
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [idSelecionado, setIdSelecionado] = useState(null);
@@ -25,20 +21,29 @@ export default function ListarSolicitacoes() {
 
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [solicitacoesPaginadas, setSolicitacoesPaginadas] = useState([]);
-
   const [filtro, setFiltro] = useState("");
 
-  useEffect(() => {
+  const carregarSolicitacoes = () => {
+    console.log("➡️ Requisitando todas-solicitacoes...");
     api
       .get("todas-solicitacoes")
       .then((res) => {
         console.log("✅ Resposta recebida:", res.data);
-        setSolicitacoes(res.data); // <-- Adicione esta linha
+        setSolicitacoes(res.data);
       })
       .catch((error) => {
         console.error("❌ Erro ao buscar solicitações:", error);
-        // ... resto do catch
       });
+  };
+
+  useEffect(() => {
+    carregarSolicitacoes();
+
+    // Se você usar sessionStorage para controlar retorno de cadastro:
+    if (sessionStorage.getItem("voltarDoCadastro")) {
+      carregarSolicitacoes();
+      sessionStorage.removeItem("voltarDoCadastro");
+    }
   }, []);
 
   const confirmarExclusao = () => {
@@ -47,7 +52,6 @@ export default function ListarSolicitacoes() {
       .then(() => {
         setMensagemPopup("Solicitação excluída com sucesso.");
         setTipoMensagem("sucesso");
-        setSolicitacoes(solicitacoes.filter((s) => s.id !== idSelecionado));
       })
       .catch((err) => {
         setMensagemPopup(
@@ -61,6 +65,7 @@ export default function ListarSolicitacoes() {
         setMostrarPopup(false);
         setMostrarFeedback(true);
         setIdSelecionado(null);
+        carregarSolicitacoes(); // Recarrega após exclusão
       });
   };
 
@@ -80,7 +85,11 @@ export default function ListarSolicitacoes() {
       <main className="container">
         <h2>Solicitações</h2>
 
-        <BotaoCadastrar to="/nova-solicitacao" title="Nova Solicitação" />
+        <BotaoCadastrar
+          to="/nova-solicitacao"
+          title="Nova Solicitação"
+          onClick={() => sessionStorage.setItem("voltarDoCadastro", "1")}
+        />
 
         <div className="barra-pesquisa">
           <i className="bi bi-search icone-pesquisa"></i>
@@ -101,7 +110,7 @@ export default function ListarSolicitacoes() {
               <th>Tipo</th>
               <th>Status</th>
               <th>Data</th>
-              <th>Posse</th> {/* <-- nova coluna */}
+              <th>Posse</th>
               <th>Ações</th>
             </tr>
           </thead>
@@ -115,11 +124,16 @@ export default function ListarSolicitacoes() {
                 <td>{solicitacao.nome_aluno}</td>
                 <td>{solicitacao.tipo}</td>
                 <td>{solicitacao.status}</td>
-                <td className="coluna-data">{solicitacao.data_solicitacao}</td>
-                <td>{solicitacao.posse_solicitacao}</td> {/* <-- nova célula */}
+                <td className="coluna-data">
+                  {solicitacao.data_solicitacao}
+                </td>
+                <td>{solicitacao.posse_solicitacao}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/solicitacoes/${solicitacao.id}`} title="Editar">
+                    <Link
+                      to={`/solicitacoes/${solicitacao.id}`}
+                      title="Editar"
+                    >
                       <i className="bi bi-pencil-square icone-editar"></i>
                     </Link>
                     <button

@@ -45,7 +45,7 @@ class Solicitacao(BaseModel):
     def save(self, *args, **kwargs):
         if self.pk:
             original = Solicitacao.objects.get(pk=self.pk)
-            campos_restritos = ['aluno', 'content_type', 'object_id', 'data_solicitacao']
+            campos_restritos = ['aluno', 'data_solicitacao']
 
             for campo in campos_restritos:
                 if getattr(self, campo) != getattr(original, campo):

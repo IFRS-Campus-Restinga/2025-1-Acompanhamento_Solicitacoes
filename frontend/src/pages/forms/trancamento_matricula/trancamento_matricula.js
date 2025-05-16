@@ -43,6 +43,10 @@ export default function FormularioTrancamentoMatricula() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    console.log("📤 Submetendo formulário...");
+    console.log("📦 formData (estado):", formData);
+    console.log("🎓 alunoSelecionado:", alunoSelecionado);
+
     if (!formData.motivo_solicitacao || !alunoSelecionado) {
       alert("Preencha todos os campos obrigatórios.");
       return;
@@ -51,25 +55,37 @@ export default function FormularioTrancamentoMatricula() {
     const data = new FormData();
     data.append("motivo_solicitacao", formData.motivo_solicitacao);
     data.append("aluno", alunoSelecionado.id);
-    data.append("data_solicitacao", new Date().toISOString().split("T")[0]); // opcional, se o backend não preencher sozinho
+    data.append("data_solicitacao", new Date().toISOString().split("T")[0]);
 
     if (formData.arquivos) {
-      Array.from(formData.arquivos).forEach((file) => {
+      Array.from(formData.arquivos).forEach((file, i) => {
         data.append("arquivos", file);
+        console.log(`📎 Arquivo ${i}:`, file.name);
       });
     }
 
+    // DEBUG: Verificar conteúdo do FormData
+    for (let [key, value] of data.entries()) {
+      console.log(`📄 FormData -> ${key}:`, value);
+    }
+
     axios
-      .post("http://localhost:8000/solicitacoes/formularios-trancamento/", data, {
-        headers: { "Content-Type": "multipart/form-data" },
-      })
+      .post(
+        "http://localhost:8000/solicitacoes/formularios-trancamento/",
+        data,
+        {
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      )
       .then(() => {
         alert("Solicitação enviada com sucesso!");
         navigate("/todas-solicitacoes");
       })
       .catch((error) => {
-        console.error("Erro ao enviar:", error.response?.data || error);
-        alert("Erro ao enviar solicitação. Verifique os dados e tente novamente.");
+        console.error("❌ Erro ao enviar:", error.response?.data || error);
+        alert(
+          "Erro ao enviar solicitação. Verifique os dados e tente novamente."
+        );
       });
   };
 
@@ -81,16 +97,18 @@ export default function FormularioTrancamentoMatricula() {
 
         <div className="descricao-formulario">
           <p>
-            Este formulário destina-se à solicitação de trancamento total de matrícula.
+            Este formulário destina-se à solicitação de trancamento total de
+            matrícula.
           </p>
           <p>
-            Conforme art. 123 da Organização Didática, o trancamento total da matrícula
-            poderá ser concedido para estudantes dos cursos técnicos subsequentes e de
-            graduação por, no máximo, 50% do tempo do curso.
+            Conforme art. 123 da Organização Didática, o trancamento total da
+            matrícula poderá ser concedido para estudantes dos cursos técnicos
+            subsequentes e de graduação por, no máximo, 50% do tempo do curso.
           </p>
           <p>QUEM: Estudantes dos cursos subsequentes e do superior.</p>
           <p>
-            QUANDO: Até a 4ª semana após o início das atividades letivas, conforme calendário.
+            QUANDO: Até a 4ª semana após o início das atividades letivas,
+            conforme calendário.
           </p>
         </div>
 
@@ -135,17 +153,29 @@ export default function FormularioTrancamentoMatricula() {
             <>
               <div className="form-group">
                 <label>Matrícula:</label>
-                <input type="text" value={alunoSelecionado.matricula} readOnly />
+                <input
+                  type="text"
+                  value={alunoSelecionado.matricula}
+                  readOnly
+                />
               </div>
 
               <div className="form-group">
                 <label>Curso:</label>
-                <input type="text" value={alunoSelecionado.ppc.curso.nome} readOnly />
+                <input
+                  type="text"
+                  value={alunoSelecionado.ppc.curso.nome}
+                  readOnly
+                />
               </div>
 
               <div className="form-group">
                 <label>PPC:</label>
-                <input type="text" value={alunoSelecionado.ppc.codigo} readOnly />
+                <input
+                  type="text"
+                  value={alunoSelecionado.ppc.codigo}
+                  readOnly
+                />
               </div>
             </>
           )}
