@@ -10,6 +10,12 @@ export default function FormularioTrancamentoMatricula() {
   const [cursos, setCursos] = useState([]);
   const [alunos, setAlunos] = useState([]);
   const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+  const [formData, setFormData] = useState({
+    motivo_solicitacao: "",
+    arquivos: [],
+  });
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -17,16 +23,6 @@ export default function FormularioTrancamentoMatricula() {
       .then((res) => setAlunos(res.data))
       .catch((err) => console.error("Erro ao buscar alunos:", err));
   }, []);
-
-  const [formData, setFormData] = useState({
-    aluno_nome: "",
-    email: "",
-    matricula: "",
-    curso: curso_codigo || "",
-    motivo_solicitacao: "",
-  });
-
-  const navigate = useNavigate();
 
   useEffect(() => {
     axios
@@ -38,45 +34,31 @@ export default function FormularioTrancamentoMatricula() {
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file") {
-      setFormData({ ...formData, arquivos: files });
+      setFormData((prev) => ({ ...prev, arquivos: files }));
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    if (!formData.motivo_solicitacao) {
-      alert("Todos os campos obrigatórios devem ser preenchidos!");
+
+    if (!formData.motivo_solicitacao || !alunoSelecionado) {
+      alert("Preencha todos os campos obrigatórios.");
       return;
     }
-  
+
     const data = new FormData();
-    for (const key in formData) {
-      if (key === "arquivos") {
-        Array.from(formData.arquivos).forEach((file) => {
-          data.append("arquivos", file);
-        });
-      } else {
-        data.append(key, formData[key]);
-      }
+    data.append("motivo_solicitacao", formData.motivo_solicitacao);
+    data.append("aluno", alunoSelecionado.id);
+    data.append("data_solicitacao", new Date().toISOString().split("T")[0]); // opcional, se o backend não preencher sozinho
+
+    if (formData.arquivos) {
+      Array.from(formData.arquivos).forEach((file) => {
+        data.append("arquivos", file);
+      });
     }
-  
-    if (alunoSelecionado) {
-      const alunoId = alunoSelecionado.id;
-      data.append("aluno", alunoId);
-      console.log("🔵 Adicionando aluno ao FormData:", alunoId);
-    } else {
-      console.warn("⚠️ Nenhum aluno selecionado!");
-    }
-  
-    // 🔍 Mostrar todos os dados que estão sendo enviados
-    console.log("📦 Dados enviados no FormData:");
-    for (let pair of data.entries()) {
-      console.log(`${pair[0]}:`, pair[1]);
-    }
-  
+
     axios
       .post("http://localhost:8000/solicitacoes/formularios-trancamento/", data, {
         headers: { "Content-Type": "multipart/form-data" },
@@ -86,13 +68,10 @@ export default function FormularioTrancamentoMatricula() {
         navigate("/todas-solicitacoes");
       })
       .catch((error) => {
-        console.error("❌ Erro ao enviar:", error.response?.data || error);
-        alert(
-          "Erro ao enviar solicitação. Verifique os dados e tente novamente."
-        );
+        console.error("Erro ao enviar:", error.response?.data || error);
+        alert("Erro ao enviar solicitação. Verifique os dados e tente novamente.");
       });
   };
-  
 
   return (
     <div>
@@ -102,26 +81,16 @@ export default function FormularioTrancamentoMatricula() {
 
         <div className="descricao-formulario">
           <p>
-            Este formulário destina-se à solicitação de trancamento total de
-            matrícula.
+            Este formulário destina-se à solicitação de trancamento total de matrícula.
           </p>
           <p>
-            Conforme art. 123 da Organização Didática, o trancamento total da
-            matrícula poderá ser concedido para estudantes dos cursos técnicos
-            subsequentes e de graduação por, no máximo, 50% (cinquenta por
-            cento) do tempo do curso, considerando períodos letivos consecutivos
-            ou não.
+            Conforme art. 123 da Organização Didática, o trancamento total da matrícula
+            poderá ser concedido para estudantes dos cursos técnicos subsequentes e de
+            graduação por, no máximo, 50% do tempo do curso.
           </p>
           <p>QUEM: Estudantes dos cursos subsequentes e do superior.</p>
           <p>
-            QUANDO: A solicitação de trancamento total de matrícula poderá ser
-            feita até a quarta semana após o início das atividades letivas,
-            conforme estabelecido em nosso calendário acadêmico.
-          </p>
-          <p>
-            Após entrega do formulário, a coordenação de curso fará a análise da
-            solicitação em até 7 (sete) dias e a CRE tem até 5 (cinco) dias
-            úteis para inserir os resultados no sistema...
+            QUANDO: Até a 4ª semana após o início das atividades letivas, conforme calendário.
           </p>
         </div>
 
@@ -135,19 +104,9 @@ export default function FormularioTrancamentoMatricula() {
             <select
               onChange={(e) => {
                 const value = e.target.value;
-
-                // Verifica se o valor está vazio (significa que o usuário desmarcou a seleção)
                 if (!value) {
                   setAlunoSelecionado(null);
-                  setFormData((prev) => ({
-                    ...prev,
-                    aluno: "",
-                    aluno_nome: "",
-                    matricula: "",
-                    curso: "",
-                    ppc: "",
-                  }));
-                  return; 
+                  return;
                 }
 
                 const aluno = alunos.find(
@@ -156,23 +115,12 @@ export default function FormularioTrancamentoMatricula() {
 
                 if (!aluno || !aluno.ppc || !aluno.ppc.curso) {
                   alert("Erro ao carregar dados do aluno selecionado.");
-                  console.warn("❌ Dados incompletos:", aluno);
                   return;
                 }
-                
-                console.log("✅ Aluno selecionado:", aluno);
-                
 
                 setAlunoSelecionado(aluno);
-                setFormData((prev) => ({
-                  ...prev,
-                  aluno: aluno.id,
-                  aluno_nome: aluno.usuario.nome,
-                  matricula: aluno.matricula,
-                  curso: aluno.ppc.curso.nome,
-                  ppc: aluno.ppc.codigo,
-                }));
               }}
+              required
             >
               <option value="">Selecione o aluno</option>
               {alunos.map((aluno) => (
@@ -187,29 +135,17 @@ export default function FormularioTrancamentoMatricula() {
             <>
               <div className="form-group">
                 <label>Matrícula:</label>
-                <input
-                  type="text"
-                  value={alunoSelecionado.matricula}
-                  readOnly
-                />
+                <input type="text" value={alunoSelecionado.matricula} readOnly />
               </div>
 
               <div className="form-group">
                 <label>Curso:</label>
-                <input
-                  type="text"
-                  value={alunoSelecionado.ppc.curso.nome}
-                  readOnly
-                />
+                <input type="text" value={alunoSelecionado.ppc.curso.nome} readOnly />
               </div>
 
               <div className="form-group">
                 <label>PPC:</label>
-                <input
-                  type="text"
-                  value={alunoSelecionado.ppc.codigo}
-                  readOnly
-                />
+                <input type="text" value={alunoSelecionado.ppc.codigo} readOnly />
               </div>
             </>
           )}
@@ -222,6 +158,16 @@ export default function FormularioTrancamentoMatricula() {
               onChange={handleChange}
               rows="5"
               required
+            />
+          </div>
+
+          <div className="form-group">
+            <label>Anexos (opcional):</label>
+            <input
+              type="file"
+              name="arquivos"
+              multiple
+              onChange={handleChange}
             />
           </div>
 

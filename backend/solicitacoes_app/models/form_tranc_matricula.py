@@ -8,6 +8,8 @@ class FormularioTrancamentoMatricula(Solicitacao):
         self.nome_formulario = "Formulário de Trancamento de Matrícula"
         
         super().save(*args, **kwargs)
+        
+        
     class Meta:
         verbose_name = "Formulário de Trancamento de Matrícula"
 

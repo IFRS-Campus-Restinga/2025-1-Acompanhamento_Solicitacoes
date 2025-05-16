@@ -23,28 +23,6 @@ class Solicitacao(BaseModel):
         default=PosseSolicitacao.COORDENACAO,
         verbose_name="Responsável Atual pela Solicitação"
     )
-    
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE,
-        verbose_name="Tipo de Formulário",
-        help_text="O tipo específico de formulário associado a esta solicitação.",
-        limit_choices_to=models.Q(app_label='solicitacoes_app', model='formexerciciodomiciliar') |
-                         models.Q(app_label='solicitacoes_app', model='formdispensaedfisica') |
-                         models.Q(app_label='solicitacoes_app', model='formtrancdisciplina') |
-                         models.Q(app_label='solicitacoes_app', model='formabonofalta') |
-                         models.Q(app_label='solicitacoes_app', model='formdesistenciavaga') |
-                         models.Q(app_label='solicitacoes_app', model='formulariotrancamentomatricula'),
-        related_name="formulario_associado"
-    )
-
-    object_id = models.PositiveIntegerField(
-        verbose_name="ID do Formulário Vinculado",
-        help_text="O ID da instância específica do formulário."
-    )
-
-    formulario_associado = GenericForeignKey('content_type', 'object_id')
-
     data_solicitacao = models.DateField(
         help_text="Escreva aqui a data da solicitação",
         verbose_name="Data da Solicitação:"

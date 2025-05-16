@@ -4,7 +4,6 @@ from .solicitacao import Solicitacao
 from django.core.exceptions import ValidationError
 
 class FormTrancDisciplina(Solicitacao):
-    nome_formulario = "Formulário de Trancamento de Componente Curricular"
     
     disciplinas = models.ManyToManyField(
         Disciplina,
@@ -34,6 +33,9 @@ class FormTrancDisciplina(Solicitacao):
                 'disciplinas': 'Pelo menos uma disciplina deve ser selecionada para trancamento.'
             })
 
+    def save(self, *args, **kwargs):
+        self.nome_formulario = "Formulário de Trancamento de Componente Curricular"
+        
     class Meta:
         verbose_name = "Formulário de Trancamento de Componente Curricular"
         verbose_name_plural = "Formulários de Trancamento de Componente Curricular"
