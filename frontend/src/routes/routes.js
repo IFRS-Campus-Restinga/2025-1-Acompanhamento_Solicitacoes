@@ -1,4 +1,3 @@
-import React from "react";
 import { Route } from "react-router-dom";
 
 // Páginas
@@ -8,9 +7,9 @@ import Perfil from "../pages/perfil/perfil.js";
 
 //import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
+import ListarSolicitacoes from "../pages/solicitacoes/listar_solicitacoes";
 import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
 import Home from "./../pages/home";
-import ListarSolicitacoes from "../pages/solicitacoes/listar_solicitacoes";
 
 
 // Motivos de Abono
@@ -63,8 +62,8 @@ import Formulario from "../pages/forms/trancamento_disciplina/formulario";
 import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
 
 // Calendário Acadêmico
-import ListarCalendarios from "../pages/calendario_academico/lista_calendarios.js";
 import CadastrarAtualizarCalendario from "../pages/calendario_academico/cadastrar_atualizar_calendario.js";
+import ListarCalendarios from "../pages/calendario_academico/lista_calendarios.js";
 
 // Formulário de Abono de Falta
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
@@ -74,8 +73,8 @@ import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atua
 
 //Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
-import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
 import ListaMandatosPorCurso from "../pages/coordenadores/mandatos/lista_coord_mandato_por_curso.js";
+import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
 import SelecaoCursoMandato from "../pages/coordenadores/mandatos/selecao_curso_mandatos.js";
 
 
@@ -88,15 +87,19 @@ import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulari
 import { Navigate } from "react-router-dom";
 
 // Importe o GoogleRedirectHandler
-import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js"; 
+import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 
 //Tela CRE
-import HomeCRE from  "../pages/telas_cre/home_cre.js";
-import DetalheSolicitacao from "../pages/telas_cre/detalhe_solicitacao.js";
-import HomeCoordenador from "../pages/tela_coordenador/homecoordenador.js";
+import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
+import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
+import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
+
+//Telas Aluno
+
+
 
 //Form Entrega de Atividades Complementares
-import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js"
+import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
 
 
 

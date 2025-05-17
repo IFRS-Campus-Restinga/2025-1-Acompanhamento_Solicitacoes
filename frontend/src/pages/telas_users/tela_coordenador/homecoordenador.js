@@ -1,9 +1,9 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Header from "../../components/base/header";
-import Footer from "../../components/base/footer";
-import "../../components/tabela-cruds.css";
-import "../../components/layout-cruds.css";
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/header";
+import "../../../components/layout-cruds.css";
+import "../../../components/tabela-cruds.css";
 
 const HomeCoordenador = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);

@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "../../components/base/header";
-import Footer from "../../components/base/footer";
+import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/header";
 
 export default function DetalheSolicitacao() {
     const { id } = useParams();
