@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from ..models import Turma
 from ..serializers.disciplina_serializer import DisciplinaSerializer # O novo DisciplinaSerializer
+from rest_framework.decorators import api_view  
 from django.shortcuts import get_object_or_404
 
 class UsuarioPorEmailView(ListAPIView):
@@ -25,4 +26,28 @@ class DisciplinasPorTurmaView(APIView):
         serializer = DisciplinaSerializer(disciplinas, many=True)
         return Response(serializer.data)
 
+@api_view(['GET'])
+def disciplinas_por_ppc(request, ppc_codigo):
+    """
+    Endpoint para listar disciplinas de um PPC específico.
+    """
+    try:
+        # Corrigindo a consulta - deve ser Disciplina.objects.filter
+        disciplinas = Disciplina.objects.filter(ppc__codigo=ppc_codigo).distinct()
+        
+        if not disciplinas.exists():
+            return Response(
+                {"detail": "Nenhuma disciplina encontrada para este PPC."}, 
+                status=status.HTTP_200_OK
+            )
+        
+        # Usando o serializer para formatar a resposta
+        serializer = DisciplinaSerializer(disciplinas, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    except Exception as e:
+        return Response(
+            {"error": str(e)}, 
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )
  
