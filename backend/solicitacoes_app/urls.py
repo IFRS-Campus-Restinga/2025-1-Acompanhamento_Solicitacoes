@@ -61,6 +61,8 @@ urlpatterns = [
     path('ppcs/', PpcListCreateView.as_view(), name='listar_cadastrar_ppcs'),
     path('ppcs/<path:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
 
+    path('ppcs/<str:ppc_codigo>/disciplinas/', disciplinas_por_ppc, name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
+
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
     path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),
     path('motivo_abono/tipos/', TipoFaltaView.as_view(), name='tipo_faltas'),
