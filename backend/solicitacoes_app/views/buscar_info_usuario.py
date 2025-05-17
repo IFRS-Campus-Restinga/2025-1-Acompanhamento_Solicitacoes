@@ -17,37 +17,33 @@ class UsuarioPorEmailView(ListAPIView):
             return Usuario.objects.filter(email__iexact=email)
         return Usuario.objects.none() # Retorna vazio se não houver e-mail
         
-
-
-class DisciplinasPorTurmaView(APIView):
-    def get(self, request, turma_id, format=None):
-        turma = get_object_or_404(Turma, pk=turma_id)
-        disciplinas = turma.disciplinas.all()
-        serializer = DisciplinaSerializer(disciplinas, many=True)
-        return Response(serializer.data)
-
-@api_view(['GET'])
-def disciplinas_por_ppc(request, ppc_codigo):
+class DisciplinasPorPPCView(ListAPIView):
     """
     Endpoint para listar disciplinas de um PPC específico.
+    Utiliza a classe ListAPIView que é mais robusta.
     """
-    try:
-        # Corrigindo a consulta - deve ser Disciplina.objects.filter
-        disciplinas = Disciplina.objects.filter(ppc__codigo=ppc_codigo).distinct()
-        
-        if not disciplinas.exists():
+    serializer_class = DisciplinaSerializer
+
+    def get_queryset(self):
+        ppc_codigo = self.kwargs['ppc_codigo']
+        return Disciplina.objects.filter(ppc__codigo=ppc_codigo).distinct()
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.get_queryset()
+            
+            if not queryset.exists():
+                return Response(
+                    {"detail": "Nenhuma disciplina encontrada para este PPC."},
+                    status=status.HTTP_200_OK
+                )
+            
+            serializer = self.get_serializer(queryset, many=True)
+            return Response(serializer.data)
+            
+        except Exception as e:
             return Response(
-                {"detail": "Nenhuma disciplina encontrada para este PPC."}, 
-                status=status.HTTP_200_OK
+                {"error": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
-        
-        # Usando o serializer para formatar a resposta
-        serializer = DisciplinaSerializer(disciplinas, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
-    except Exception as e:
-        return Response(
-            {"error": str(e)}, 
-            status=status.HTTP_500_INTERNAL_SERVER_ERROR
-        )
  

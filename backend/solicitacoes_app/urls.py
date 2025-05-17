@@ -43,7 +43,7 @@ from django.urls import path
 
 from .views.buscar_info_usuario import UsuarioPorEmailView
 
-from .views.buscar_info_usuario import DisciplinasPorTurmaView
+from .views.buscar_info_usuario import DisciplinasPorPPCView
 
 app_name = 'solicitacoes_app'
 
@@ -53,7 +53,6 @@ urlpatterns = [
     path('saudacao/', saudacao, name="saudacao"),
 
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
-    path('turmas/<int:turma_id>/disciplinas/', DisciplinasPorTurmaView.as_view(), name='disciplinas-por-turma'),
 
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
@@ -61,7 +60,7 @@ urlpatterns = [
     path('ppcs/', PpcListCreateView.as_view(), name='listar_cadastrar_ppcs'),
     path('ppcs/<path:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
 
-    path('ppcs/<str:ppc_codigo>/disciplinas/', disciplinas_por_ppc, name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
+    path('ppcs/<str:ppc_codigo>/disciplinas/', DisciplinasPorPPCView.as_view(), name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
 
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
     path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),
