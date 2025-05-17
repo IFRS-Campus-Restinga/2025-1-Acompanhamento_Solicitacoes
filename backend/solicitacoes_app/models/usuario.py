@@ -14,6 +14,17 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         help_text="Escreva aqui o nome", 
         verbose_name="Nome:"
     )
+    # adicionei isso abaixo se der erro me fala ~ Clarke ❤
+    first_name = models.CharField(max_length=30, blank=True)
+    last_name = models.CharField(max_length=150, blank=True)
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        blank=True,
+        null=True,
+        help_text="Nome de usuário para login alternativo"
+    )
+    #
     email = models.EmailField(
         unique=True,
         help_text="Escreva aqui o email",
@@ -67,6 +78,12 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         return self.nome
 
     def save(self, *args, **kwargs):
+        # Preenche automaticamente first_name e last_name a partir de nome
+        if self.nome and not self.first_name:
+            names = self.nome.split(' ')
+            self.first_name = names[0]
+            self.last_name = ' '.join(names[1:]) if len(names) > 1 else ''
+
         # Regra: Ao criar usuario, recebe o STATUSUSUARIO = NOVO e is_active=True
         if not self.pk: # Somente na criação
             self.status_usuario = StatusUsuario.NOVO
@@ -101,6 +118,17 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
         self.is_active = False
         self.save() # Salva as alterações para realizar a deleção lógica.
         # Não chama super().delete() aqui para deleção lógica.
+
+    def get_full_name(self):
+        """Retorna o nome completo do usuário"""
+        if self.first_name and self.last_name:
+            return f"{self.first_name} {self.last_name}".strip()
+        return self.nome  # Fallback para o campo nome principal
+
+    def get_short_name(self):
+        """Retorna o primeiro nome"""
+        return self.first_name if self.first_name else self.nome.split(' ')[0]
+
 
     class Meta:
         verbose_name = "Usuário"
