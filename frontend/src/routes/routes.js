@@ -90,12 +90,14 @@ import { Navigate } from "react-router-dom";
 import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 
 //Tela CRE
-import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
 import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
 
-//Telas Aluno
+//Tela Coordenador
+import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 
+//Telas Aluno
+import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
 
 
 //Form Entrega de Atividades Complementares
@@ -203,18 +205,23 @@ const routes = [
 
   //Solicitacoes
   <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
+
+  //TELAS USERS
   
   //Tela CRE
   <Route path="/cre/home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-  
+
+  //Tela Coordenador
+  <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
+
+  //Tela Aluno
+  <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
+
   //Form de entrega de atividades complementares
   <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
   <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-
-  <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
-  
   
  ];
 
