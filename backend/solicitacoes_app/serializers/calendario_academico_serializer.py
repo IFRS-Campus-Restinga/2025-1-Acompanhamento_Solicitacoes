@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import CalendarioAcademico
+from ..models import Disponibilidade
 
 class CalendarioAcademicoSerializer(serializers.ModelSerializer):
     # Campos calculados (apenas para exibição)
@@ -14,7 +14,7 @@ class CalendarioAcademicoSerializer(serializers.ModelSerializer):
     esta_ativo = serializers.BooleanField(read_only=True)  # Usa a property `esta_ativo` do model
 
     class Meta:
-        model = CalendarioAcademico
+        model = Disponibilidade
         fields = [
             'codigo',
             'formulario',
