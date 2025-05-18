@@ -97,13 +97,11 @@ import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
 import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 
 //Telas Aluno
+import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
 import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
-
 
 //Form Entrega de Atividades Complementares
 import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
-
-
 
 const token = localStorage.getItem("token");
 
@@ -217,6 +215,7 @@ const routes = [
 
   //Tela Aluno
   <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
+  <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
 
   //Form de entrega de atividades complementares
   <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
