@@ -10,13 +10,21 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 export default function CadastrarAtualizarDisciplina() {
   const [nome, setNome] = useState("");
   const [codigo, setCodigo] = useState("");
-  const [selectedPpc, setSelectedPpc] = useState(""); // Alterado para apenas um PPC
+  const [selectedPpc, setSelectedPpc] = useState("");
+  const [periodo, setPeriodo] = useState("1º Ano");
   const [availablePpcs, setAvailablePpcs] = useState([]);
   const [filtro, setFiltro] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [cadastroSucesso, setCadastroSucesso] = useState(false); // <- Adicionado
+  const [cadastroSucesso, setCadastroSucesso] = useState(false);
+
+  const periodosDisponiveis = [
+    "1º Ano", "2º Ano", "3º Ano", "4º Ano",
+    "1º Semestre", "2º Semestre", "3º Semestre", "4º Semestre",
+    "5º Semestre", "6º Semestre", "7º Semestre", "8º Semestre",
+    "9º Semestre", "10º Semestre"
+  ];
 
   const navigate = useNavigate();
   const { codigo: codigoParam } = useParams();
@@ -37,6 +45,7 @@ export default function CadastrarAtualizarDisciplina() {
         .then((res) => {
           setNome(res.data.nome);
           setCodigo(res.data.codigo);
+          setPeriodo(res.data.periodo || "1º Ano");
           
           // Verifique a estrutura dos dados do PPC. Assume-se que res.data.ppcs seja um array.
           if (res.data.ppc) {
@@ -69,7 +78,7 @@ export default function CadastrarAtualizarDisciplina() {
       return;
     }
 
-    const dados = { nome, codigo, ppc: selectedPpc };
+    const dados = { nome, codigo, periodo, ppc: selectedPpc};
 
     const requisicao = codigoParam
       ? axios.put(`http://localhost:8000/solicitacoes/disciplinas/${codigoParam}/`, dados)
@@ -122,6 +131,19 @@ export default function CadastrarAtualizarDisciplina() {
               onChange={(e) => setCodigo(e.target.value)}
               required
             />
+          </div>
+          <div className="form-group">
+            <label>Período:</label>
+            <select
+              className="input-text"
+              value={periodo}
+              onChange={(e) => setPeriodo(e.target.value)}
+              required
+            >
+              {periodosDisponiveis.map((p) => (
+                <option key={p} value={p}>{p}</option>
+              ))}
+            </select>
           </div>
           <div className="form-group">
             <label>Selecione um Ppc:</label>

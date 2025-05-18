@@ -93,6 +93,7 @@ export default function ListarDisciplinas() {
               <tr>
                 <th>Código</th>
                 <th>Nome</th>
+                <th>Período</th>
                 <th>PPC</th>
                 <th>Ações</th>
               </tr>
@@ -102,6 +103,7 @@ export default function ListarDisciplinas() {
                 <tr key={disciplina.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                   <td>{disciplina.codigo}</td>
                   <td>{disciplina.nome}</td>
+                  <td>{disciplina.periodo}</td>
                   <td>
                     {disciplina.ppc ? disciplina.ppc : "Nenhum PPC atribuído"}
                   </td>
