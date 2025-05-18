@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import HeaderAluno from "../../../components/base/aluno/header_aluno";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
 import "../../../components/formulario.css";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
@@ -40,7 +40,7 @@ const MinhasSolicitacoesAluno = () => {
 
     return (
         <div>
-            <Header />
+            <HeaderAluno />
             <main className="container">
                 <h2>Lista de Solicitações</h2>
 

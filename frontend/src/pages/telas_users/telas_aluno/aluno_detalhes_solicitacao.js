@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import HeaderAluno from "../../../components/base/aluno/header_aluno";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
 import "../../../components/detalhes_solicitacao.css";
 
 export default function DetalhesSolicitacao() {
@@ -16,11 +16,17 @@ export default function DetalhesSolicitacao() {
         const fetchSolicitacao = async () => {
             try {
                 setLoading(true);
+                setError(null);
                 const response = await axios.get(`http://localhost:8000/solicitacoes/detalhes/${id}/`);
+                
+                if (!response.data) {
+                    throw new Error("Dados da solicitação não encontrados");
+                }
+                
                 setSolicitacao(response.data);
             } catch (error) {
-                console.error("Erro ao buscar detalhes da solicitação", error);
-                setError("Não foi possível carregar os detalhes da solicitação.");
+                console.error("Erro ao buscar detalhes:", error);
+                setError(error.message || "Não foi possível carregar os detalhes da solicitação.");
             } finally {
                 setLoading(false);
             }
@@ -41,10 +47,14 @@ export default function DetalhesSolicitacao() {
         return new Date(dataString).toLocaleDateString('pt-BR', options);
     };
 
+    const handleVoltar = () => {
+        navigate('/aluno/minhas-solicitacoes');
+    };
+
     if (loading) {
         return (
             <div className="page-container">
-                <Header />
+                <HeaderAluno />
                 <main className="container">
                     <div className="loading-spinner">
                         <p>Carregando detalhes da solicitação...</p>
@@ -58,26 +68,13 @@ export default function DetalhesSolicitacao() {
     if (error) {
         return (
             <div className="page-container">
-                <Header />
+                <HeaderAluno />
                 <main className="container">
                     <div className="error-message">
                         <p>{error}</p>
-                        <button onClick={() => navigate(-1)}>Voltar</button>
-                    </div>
-                </main>
-                <Footer />
-            </div>
-        );
-    }
-
-    if (!solicitacao) {
-        return (
-            <div className="page-container">
-                <Header />
-                <main className="container">
-                    <div className="no-data">
-                        <p>Solicitação não encontrada.</p>
-                        <button onClick={() => navigate(-1)}>Voltar</button>
+                        <button onClick={handleVoltar} className="btn-voltar">
+                            Voltar
+                        </button>
                     </div>
                 </main>
                 <Footer />
@@ -87,10 +84,10 @@ export default function DetalhesSolicitacao() {
 
     return (
         <div className="page-container">
-            <Header />
+            <HeaderAluno />
             <main className="container detalhes-container">
                 <div className="detalhes-header">
-                    <h2>Detalhes da Solicitação</h2>
+                    <h2>Detalhes da Solicitação #{solicitacao.id}</h2>
                     <span className={`status-badge ${solicitacao.status.toLowerCase().replace(' ', '-')}`}>
                         {solicitacao.status}
                     </span>
@@ -102,15 +99,19 @@ export default function DetalhesSolicitacao() {
                         <div className="info-grid">
                             <div className="info-item">
                                 <label>Documento Solicitado:</label>
-                                <p>{solicitacao.tipo}</p>
+                                <p>{solicitacao.tipo || 'Não informado'}</p>
                             </div>
                             <div className="info-item">
                                 <label>Responsável:</label>
-                                <p>{solicitacao.posse_solicitacao}</p>
+                                <p>{solicitacao.posse_solicitacao || 'Não atribuído'}</p>
                             </div>
                             <div className="info-item">
                                 <label>Data da Solicitação:</label>
                                 <p>{formatarData(solicitacao.data_solicitacao)}</p>
+                            </div>
+                            <div className="info-item">
+                                <label>Última Atualização:</label>
+                                <p>{formatarData(solicitacao.data_atualizacao)}</p>
                             </div>
                         </div>
                     </div>
@@ -134,10 +135,10 @@ export default function DetalhesSolicitacao() {
 
                 <div className="detalhes-actions">
                     <button 
-                        onClick={() => navigate(-1)} 
+                        onClick={handleVoltar} 
                         className="btn-voltar"
                     >
-                        Voltar
+                        Voltar para Minhas Solicitações
                     </button>
                 </div>
             </main>
