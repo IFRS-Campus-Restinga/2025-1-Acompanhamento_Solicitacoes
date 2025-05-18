@@ -1,7 +1,8 @@
 from .base import BaseModel
 from django.db import models
 from django.core.validators import MinLengthValidator
-from .ppc import Ppc  # Importa o modelo PPC
+from .ppc import Ppc
+from .periodo_disciplina import PeriodoDisciplina
 
 class Disciplina(BaseModel):
     nome = models.CharField(
@@ -17,10 +18,19 @@ class Disciplina(BaseModel):
         verbose_name="Codigo",
         help_text="Digitar o código da disciplina:"
     )
+
+    periodo = models.CharField(
+        max_length=20,
+        choices=PeriodoDisciplina.choices,
+        default=PeriodoDisciplina.PRIMEIRO_ANO,
+        verbose_name="Período",
+        help_text="Selecionar o semestre/ano da disciplina:"
+    )
+
     ppc = models.ForeignKey(
-        Ppc,  # Relacionamento com o modelo Ppc
-        on_delete=models.CASCADE,  # O que acontece quando o PPC é deletado
-        related_name='disciplinas',  # Nome reverso da relação
+        Ppc, 
+        on_delete=models.CASCADE, 
+        related_name='disciplinas', 
         verbose_name="PPC",
         help_text="Selecionar o PPC ao qual a disciplina pertence:"
     )

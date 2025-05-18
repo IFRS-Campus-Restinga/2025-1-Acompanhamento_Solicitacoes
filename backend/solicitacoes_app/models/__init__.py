@@ -25,3 +25,4 @@ from .forms.form_desistencia_vaga import *
 from .nome import *
 from .posse_solicitacao import *
 from .calendario_academico import *
+from .periodo_disciplina import *
