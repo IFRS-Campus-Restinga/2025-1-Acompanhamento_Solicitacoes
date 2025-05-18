@@ -2,6 +2,7 @@ from django.db import models
 from .disciplina import Disciplina
 from .solicitacao import Solicitacao
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 class FormTrancDisciplina(Solicitacao):
     
@@ -35,6 +36,9 @@ class FormTrancDisciplina(Solicitacao):
 
     def save(self, *args, **kwargs):
         self.nome_formulario = "Formulário de Trancamento de Componente Curricular"
+        if not self.data_solicitacao:  # 👈 Se não tiver data, define como agora
+            self.data_solicitacao = timezone.now().date()
+        super().save(*args, **kwargs)
         
     class Meta:
         verbose_name = "Formulário de Trancamento de Componente Curricular"
