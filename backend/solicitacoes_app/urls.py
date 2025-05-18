@@ -31,9 +31,9 @@ from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
 from .views.buscar_info_usuario import * 
 
-from .views.calendario_academico_view import (
-    CalendarioAcademicoListCreateView,
-    CalendarioAcademicoRetrieveUpdateDestroyView
+from .views.disponibilidade_view import (
+    DisponibilidadeListCreateView,
+    DisponibilidadeRetrieveUpdateDestroyView
 )
 
 from .views.detalhe_formularios_view import *
@@ -138,8 +138,8 @@ urlpatterns = [
     path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
     path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
 
-    path('calendarios/', CalendarioAcademicoListCreateView.as_view(), name='calendario-list-create'),
-    path('calendarios/<str:codigo>/', CalendarioAcademicoRetrieveUpdateDestroyView.as_view(), name='calendario-detail'),
+    path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
+    path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 

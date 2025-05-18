@@ -48,8 +48,8 @@ const Cruds = () => {
           <Link className="crud-link" to="/cursos">
             <i className="bi bi-mortarboard"></i> Cursos
           </Link>
-          <Link className="crud-link" to="/calendarios">
-            <i className="bi bi-calendar-check"></i> Calendário Acadêmico
+          <Link className="crud-link" to="/disponibilidades">
+            <i className="bi bi-calendar-check"></i> Disponibilidade de Formulários
           </Link>
           <Link className="crud-link" to="/motivo_abono">
             <i className="bi bi-calendar-x-fill"></i> Abono de Faltas

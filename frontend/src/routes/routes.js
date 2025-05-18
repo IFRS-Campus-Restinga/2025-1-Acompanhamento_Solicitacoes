@@ -61,9 +61,9 @@ import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
 import Formulario from "../pages/forms/trancamento_disciplina/formulario";
 import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
 
-// Calendário Acadêmico
-import CadastrarAtualizarCalendario from "../pages/calendario_academico/cadastrar_atualizar_calendario.js";
-import ListarCalendarios from "../pages/calendario_academico/lista_calendarios.js";
+// Disponibilidade
+import CadastrarAtualizarDisponibilidade from "../pages/disponibilidade/cadastrar_atualizar.js";
+import ListarDisponibilidades from "../pages/disponibilidade/listar.js";
 
 // Formulário de Abono de Falta
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
@@ -187,9 +187,9 @@ const routes = [
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />} />,
 
-  <Route path="/calendarios" element={<ListarCalendarios />} key="listar-calendarios" />,
-  <Route path="/calendarios/cadastrar" element={<CadastrarAtualizarCalendario />} key="cadastrar-calendarios" />,
-  <Route path="/calendarios/:codigo" element={<CadastrarAtualizarCalendario />} key="editar-calendarios" />,
+  <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
+  <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
+  <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
 
   <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
 
