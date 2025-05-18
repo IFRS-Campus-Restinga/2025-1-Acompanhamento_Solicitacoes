@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import HeaderAluno from "../../../components/base/aluno/header_aluno";
 import Footer from "../../../components/base/footer";
-import "../../../components/detalhes_solicitacao.css";
+//import "../../../components/detalhes_solicitacao.css";
 
 export default function DetalhesSolicitacao() {
     const { id } = useParams();
