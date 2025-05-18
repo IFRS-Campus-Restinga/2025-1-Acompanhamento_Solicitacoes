@@ -119,11 +119,11 @@ class Command(BaseCommand):
 
         # Disciplinas do PPC de ADS
         ads = Ppc.objects.get(codigo="ads/101.2018")
-        Disciplina.objects.get_or_create(nome="Desenvolvimento de Sistemas 2", codigo="DEVII", defaults={"ppc": ads})
-        Disciplina.objects.get_or_create(nome="Banco de Dados 1", codigo="BD1", defaults={"ppc": ads})
-        Disciplina.objects.get_or_create(nome="Engenharia de Software", codigo="ESW10", defaults={"ppc": ads})
-        Disciplina.objects.get_or_create(nome="Gestão de Projetos", codigo="GDP20", defaults={"ppc": ads})
-        Disciplina.objects.get_or_create(nome="Turismo Sustentável", codigo="TURS1", defaults={"ppc": ads})
+        Disciplina.objects.get_or_create(nome="Desenvolvimento de Sistemas 2", codigo="DEVII", defaults={"ppc": ads, "periodo": "1º Ano"})
+        Disciplina.objects.get_or_create(nome="Banco de Dados 1", codigo="BD1", defaults={"ppc": ads, "periodo": "1º Ano"})
+        Disciplina.objects.get_or_create(nome="Engenharia de Software", codigo="ESW10", defaults={"ppc": ads, "periodo": "1º Ano"})
+        Disciplina.objects.get_or_create(nome="Gestão de Projetos", codigo="GDP20", defaults={"ppc": ads, "periodo": "1º Ano"})
+        Disciplina.objects.get_or_create(nome="Turismo Sustentável", codigo="TURS1", defaults={"ppc": ads, "periodo": "1º Ano"})
 
         # Calendário
         CalendarioAcademico.objects.get_or_create(
