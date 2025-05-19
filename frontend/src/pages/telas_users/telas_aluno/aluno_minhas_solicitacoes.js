@@ -11,7 +11,7 @@ import api from "../../../services/api";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
-import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+//import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../../components/UI/paginacao";
 
 
@@ -237,7 +237,8 @@ const MinhasSolicitacoesAluno = () => {
                 onClose={() => setMostrarFeedback(false)}
                 />
 
-                <BotaoVoltar onClick={() => navigate("/")} />
+                {/*<BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />*/}
+                
             </main>
             <Footer />
         </div>
