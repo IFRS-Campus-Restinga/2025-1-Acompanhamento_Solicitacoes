@@ -85,6 +85,7 @@ class UsuarioSerializerComPapeis(serializers.ModelSerializer):
         if hasattr(obj, 'coordenador'):
             coordenador = obj.coordenador
             return {
+                "id": coordenador.id,
                 "siape": coordenador.siape,
                 "mandatos_coordenador": [
                     {
@@ -99,6 +100,7 @@ class UsuarioSerializerComPapeis(serializers.ModelSerializer):
         if hasattr(obj, 'aluno'):
             aluno = obj.aluno
             return {
+                "id": aluno.id,
                 "matricula": aluno.matricula,
                 "curso": aluno.ppc.curso.nome,
                 "ano_ingresso": aluno.ano_ingresso
@@ -107,11 +109,13 @@ class UsuarioSerializerComPapeis(serializers.ModelSerializer):
         if hasattr(obj, 'cre'):
             cre = obj.cre
             return {
+                "id": cre.id,
                 "siape": cre.siape
             }
         if hasattr(obj, 'responsavel'):
             responsavel = obj.responsavel
             return {
+                "id": responsavel.id,
                 "aluno": responsavel.aluno.usuario.nome if responsavel.aluno and responsavel.aluno.usuario else None
             }
         return None

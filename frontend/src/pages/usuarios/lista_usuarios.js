@@ -147,7 +147,7 @@ export default function ListarUsuarios() {
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/editar/${usuario.papel.toLowerCase()}/${usuario.id}`} title="Editar">
+                      <Link to={`/usuarios/editar/${usuario.papel.toLowerCase()}/${usuario.papel_detalhes?.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button
