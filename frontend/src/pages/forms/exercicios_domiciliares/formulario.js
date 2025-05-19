@@ -23,6 +23,7 @@ const FormularioExercicioDomiciliar = () => {
   const [erroBuscaUsuario, setErroBuscaUsuario] = useState("");
   const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
   const [erroBuscaDisciplinas, setErroBuscaDisciplinas] = useState("");
+  const [isLoadingMatricula, setIsLoadingMatricula] = useState(false);
 
   const motivoSolicitacao = watch("motivo_solicitacao");
   const documentoApresentado = watch("documento_apresentado");
@@ -65,23 +66,81 @@ const FormularioExercicioDomiciliar = () => {
       setValue("email", email);
       setValue("aluno_nome", name);
 
-      // Extrai matrícula do e-mail
-      const matricula = extractMatriculaFromEmail(email);
-      if (matricula) {
-        setValue("matricula", matricula);
-        clearErrors("matricula");
-
-        buscarInfoAluno(email, matricula);
-      } else {
-        // Dispara o evento de blur para buscar a matrícula
-        const event = { target: { value: email } };
-        handleEmailBlur(event);
-      }
+      // Tenta obter a matrícula usando a lógica de fallback
+      buscarMatriculaComFallback(email, name);
     }
   }, [setValue, clearErrors]);
 
+  // Nova função para buscar matrícula com fallback
+  const buscarMatriculaComFallback = async (email, nome) => {
+    // Primeiro tenta extrair matrícula do e-mail
+    const matriculaFromEmail = extractMatriculaFromEmail(email);
+    if (matriculaFromEmail) {
+      setValue("matricula", matriculaFromEmail);
+      clearErrors("matricula");
+      
+      // Se encontrou matrícula no e-mail, busca informações adicionais do aluno
+      buscarInfoAluno(email, matriculaFromEmail);
+      return;
+    }
+    
+    // Se não conseguiu extrair do e-mail, busca pelo e-mail na API de usuários
+    setIsLoadingUsuario(true);
+    try {
+      const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${email}`);
+      if (response.data?.length > 0) {
+        const usuario = response.data[0];
+        
+        // Se o usuário tem matrícula nos papel_detalhes, usa essa matrícula
+        if (usuario.papel === "Aluno" && usuario.papel_detalhes?.matricula) {
+          setValue("matricula", usuario.papel_detalhes.matricula);
+          clearErrors("matricula");
+          
+          // Busca informações adicionais do aluno
+          buscarInfoAluno(email, usuario.papel_detalhes.matricula);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao buscar usuário pelo e-mail:", error);
+    } finally {
+      setIsLoadingUsuario(false);
+    }
+    
+    // Se ainda não encontrou a matrícula, busca pelo nome na API de alunos
+    setIsLoadingMatricula(true);
+    try {
+      // Busca todos os alunos
+      const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/listar`);
+      if (response.data && Array.isArray(response.data)) {
+        // Procura por um aluno com nome similar
+        const alunoEncontrado = response.data.find(aluno => 
+          aluno.usuario?.nome?.toLowerCase().includes(nome.toLowerCase()) ||
+          nome.toLowerCase().includes(aluno.usuario?.nome?.toLowerCase())
+        );
+        
+        if (alunoEncontrado && alunoEncontrado.matricula) {
+          setValue("matricula", alunoEncontrado.matricula);
+          clearErrors("matricula");
+          
+          // Busca informações adicionais do aluno
+          buscarInfoAluno(email, alunoEncontrado.matricula);
+          return;
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao buscar alunos:", error);
+    } finally {
+      setIsLoadingMatricula(false);
+    }
+    
+    // Se chegou aqui, não conseguiu encontrar a matrícula
+    setErroBuscaUsuario("Não foi possível encontrar a matrícula. Por favor, entre em contato com a secretaria.");
+  };
+
   const buscarInfoAluno = async (email, matricula) => {
     try {
+      // Primeiro tenta buscar pelo endpoint específico de informações do aluno
       const response = await axios.get(`http://localhost:8000/solicitacoes/alunos-info/?email=${email}&matricula=${matricula}`);
       if (response.data) {
         setAlunoInfo(response.data);
@@ -99,9 +158,44 @@ const FormularioExercicioDomiciliar = () => {
             carregarDisciplinasPorPpc(response.data.ppc.codigo);
           }
         }
+        return;
       }
     } catch (error) {
-      console.error("Erro ao buscar informações do aluno:", error);
+      console.error("Erro ao buscar informações do aluno pelo endpoint alunos-info:", error);
+    }
+    
+    // Se não conseguiu pelo endpoint específico, tenta buscar pelo endpoint de alunos
+    try {
+      // Busca todos os alunos
+      const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/listar`);
+      if (response.data && Array.isArray(response.data)) {
+        // Procura por um aluno com a matrícula correspondente
+        const alunoEncontrado = response.data.find(aluno => aluno.matricula === matricula);
+        
+        if (alunoEncontrado) {
+          setAlunoInfo({
+            ...alunoEncontrado,
+            curso: alunoEncontrado.ppc?.curso,
+            ppc: alunoEncontrado.ppc
+          });
+          
+          // Preenche automaticamente o curso se disponível
+          if (alunoEncontrado.ppc?.curso) {
+            setValue("curso", alunoEncontrado.ppc.curso.codigo);
+            
+            // Se o aluno tem PPC, seleciona automaticamente
+            if (alunoEncontrado.ppc) {
+              setValue("ppc", alunoEncontrado.ppc.codigo);
+              setPpcSelecionado(alunoEncontrado.ppc.codigo);
+              
+              // Carrega as disciplinas do PPC
+              carregarDisciplinasPorPpc(alunoEncontrado.ppc.codigo);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao buscar alunos pelo endpoint listar:", error);
     }
   };
 
@@ -170,59 +264,34 @@ const FormularioExercicioDomiciliar = () => {
       return;
     }
 
-    // Primeiro tenta extrair matrícula do e-mail
-    const matriculaFromEmail = extractMatriculaFromEmail(currentEmailValue);
-    if (matriculaFromEmail) {
-      setValue("matricula", matriculaFromEmail);
-      clearErrors("matricula");
-      
-      // Se encontrou matrícula no e-mail, não precisa buscar na API
-      if (!watch("aluno_nome")) {
-        setIsLoadingUsuario(true);
-        try {
-          const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${currentEmailValue}`);
-          if (response.data?.length > 0) {
-            setValue("aluno_nome", response.data[0].nome || "");
-            clearErrors("aluno_nome");
-          }
-        } catch (error) {
-          console.error("Erro ao buscar nome do usuário:", error);
-        } finally {
-          setIsLoadingUsuario(false);
-        }
-      }
-      return;
-    }
-
-    // Se não encontrou matrícula no e-mail, busca completa na API
+    // Busca o nome do usuário primeiro
     setIsLoadingUsuario(true);
-    setErroBuscaUsuario("");
-
+    let nomeUsuario = "";
+    
     try {
       const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${currentEmailValue}`);
       if (response.data?.length > 0) {
         const usuario = response.data[0];
-        setValue("aluno_nome", usuario.nome || "");
-        setValue("matricula", usuario.papel_detalhes?.matricula || "");
-        clearErrors(["email", "aluno_nome", "matricula"]);
-        
-        // Se o usuário tem PPC, seleciona automaticamente
-        if (usuario.papel === "Aluno" && usuario.papel_detalhes?.ppc) {
-          setValue("ppc", usuario.papel_detalhes.ppc);
-          setPpcSelecionado(usuario.papel_detalhes.ppc);
-          carregarDisciplinasPorPpc(usuario.papel_detalhes.ppc);
-        }
+        nomeUsuario = usuario.nome || "";
+        setValue("aluno_nome", nomeUsuario);
+        clearErrors("aluno_nome");
       } else {
         setValue("aluno_nome", "");
         setValue("matricula", "");
         setErroBuscaUsuario("Utilizador não encontrado com este e-mail.");
+        setIsLoadingUsuario(false);
+        return;
       }
     } catch (error) {
-      console.error("Erro ao buscar dados do utilizador:", error);
+      console.error("Erro ao buscar nome do usuário:", error);
       setErroBuscaUsuario("Erro ao buscar dados. Tente novamente.");
-    } finally {
       setIsLoadingUsuario(false);
+      return;
     }
+    
+    // Agora que temos o nome, buscamos a matrícula com a lógica de fallback
+    await buscarMatriculaComFallback(currentEmailValue, nomeUsuario);
+    setIsLoadingUsuario(false);
   };
 
   const handlePpcChange = async (event) => {
@@ -347,7 +416,7 @@ const FormularioExercicioDomiciliar = () => {
               readOnly={!!localStorage.getItem('googleUser')}
               style={localStorage.getItem('googleUser') ? { backgroundColor: "#e9ecef", cursor: "not-allowed" } : {}}
             />
-            {isLoadingUsuario && <p>A procurar utilizador...</p>}
+            {(isLoadingUsuario || isLoadingMatricula) && <p>A procurar informações do usuário...</p>}
             {erroBuscaUsuario && <span className="error-text">{erroBuscaUsuario}</span>}
             {errors.email && <span className="error-text">{errors.email.message}</span>}
           </div>
