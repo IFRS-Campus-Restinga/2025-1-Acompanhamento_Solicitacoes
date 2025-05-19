@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
-import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
-import PopupFeedback from "../../components/pop_ups/popup_feedback";
-import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
-import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
-import Paginacao from "../../components/UI/paginacao";
-import api from "../../services/api";
+import Footer from "./components/base/footer";
+import HeaderCRE from "./components/base/headers/header_cre";
+import PopupConfirmacao from "./components/pop_ups/popup_confirmacao";
+import PopupFeedback from "./components/pop_ups/popup_feedback";
+import BotaoCadastrar from "./components/UI/botoes/botao_cadastrar";
+import BotaoVoltar from "./components/UI/botoes/botao_voltar";
+import Paginacao from "./components/UI/paginacao";
+import api from "./services/api";
 
 export default function ListarSolicitacoes() {
   const navigate = useNavigate();
