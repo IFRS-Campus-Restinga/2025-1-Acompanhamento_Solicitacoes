@@ -1,11 +1,11 @@
 import axios from 'axios';
-import React, { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import Header from "../../../components/base/headers/header";
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
-import BarraPesquisa from '../../../components/UI/barra_pesquisa';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
+import BarraPesquisa from '../../../components/UI/barra_pesquisa';
 
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";

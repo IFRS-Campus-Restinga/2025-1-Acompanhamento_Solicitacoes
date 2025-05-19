@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Header from "../../components/base/header";
-import Footer from "../../components/base/footer";
-import "../../components/formulario.css";
-import "../../components/tabela-cruds.css";
-import "../../components/layout-cruds.css";
+import Footer from "../../../components/base/footer";
+import HeaderCRE from "../../../components/base/headers/header_cre";
+import "../../../components/formulario.css";
+import "../../../components/layout-cruds.css";
+import "../../../components/tabela-cruds.css";
 
 const HomeCRE = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
@@ -33,7 +33,7 @@ const HomeCRE = () => {
 
     return (
         <div>
-            <Header />
+            <HeaderCRE />
             <main className="container">
                 <h2>Painel do CRE</h2>
 

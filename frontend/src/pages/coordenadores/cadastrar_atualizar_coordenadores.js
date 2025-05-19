@@ -1,10 +1,10 @@
-import api from "../../services/api";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/header";
+import Header from "../../components/base/headers/header";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+import api from "../../services/api";
 
 const initialFormState = {
   nome: "", email: "", cpf: "", telefone: "", data_nascimento: "",

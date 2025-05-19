@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Header from "../../../components/base/header";
-import Footer from "../../../components/base/footer";
-import PopupFeedback from "../../../components/pop_ups/popup_feedback"; 
 import { useNavigate } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
 export default function Formulario() {
     const [alunos, setAlunos] = useState([]);
@@ -113,7 +113,7 @@ export default function Formulario() {
 
     return (
         <div>
-            <Header />
+            <HeaderAluno />
             <main className="container">
                 <h2>Solicitação de Trancamento de Componente Curricular</h2>
                 <div className="descricao-formulario">

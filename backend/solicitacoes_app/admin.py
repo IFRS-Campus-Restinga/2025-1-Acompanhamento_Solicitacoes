@@ -22,7 +22,7 @@ admin.site.register(FormDesistenciaVaga)
 admin.site.register(FormExercicioDomiciliar)
 admin.site.register(Nome)
 admin.site.register(Solicitacao)
-admin.site.register(CalendarioAcademico)
+admin.site.register(Disponibilidade)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)

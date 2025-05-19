@@ -1,7 +1,7 @@
 import axios from "axios";
-import React, { useState } from "react";
+import { useState } from "react";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/header";
+import Header from "../../components/base/headers/header";
 import axiosInstance from "../../services/axiosInstance";
 import "./../../components/base/main.css";
 import "./../../components/formulario.css";

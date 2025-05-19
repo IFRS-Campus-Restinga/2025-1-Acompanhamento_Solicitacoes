@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 
 export default function FormularioDesistenciaVaga() {
@@ -154,7 +154,7 @@ export default function FormularioDesistenciaVaga() {
 
   return (
     <div >
-      <Header />
+      <HeaderAluno />
       <main className="container">
         <h1>Solicitação de Desistência de Vaga</h1>
             <h6><br></br>Este formulário destina-se a solicitação de desistência da vaga. Para desistir da vaga no IFRS Campus Restinga você deverá preencher o formulário, e anexar a documentação necessária, conforme segue:</h6>

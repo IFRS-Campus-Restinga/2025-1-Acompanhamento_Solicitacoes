@@ -1,14 +1,19 @@
 from django.db import models
 from datetime import date
+from django.contrib.auth import get_user_model
+
+from ..ppc import Ppc
 from ..curso import Curso
-from ..form_base import FormularioBase
+from ..solicitacao import Solicitacao
 from django.core.validators import MinLengthValidator, EmailValidator
 
-class FormExercicioDomiciliar(FormularioBase):
-    
+User = get_user_model()
+
+class FormExercicioDomiciliar(Solicitacao):
     class Meta:
         verbose_name = "Formulário de Exercícios Domiciliares"
-        
+        verbose_name_plural = "Formulários de Exercícios Domiciliares"
+        ordering = ['-data_solicitacao']
 
     MOTIVOS_SOLICITACAO_CHOICES = [
         ("saude", "Problemas de saúde, conforme inciso I do art. 142 da OD."),
@@ -29,25 +34,103 @@ class FormExercicioDomiciliar(FormularioBase):
         ("outro", "Outro")
     ]
 
-    aluno_nome = models.CharField(max_length=100, validators=[MinLengthValidator(1)])
-    email = models.EmailField(validators=[EmailValidator()])
-    matricula = models.CharField(max_length=20, validators=[MinLengthValidator(1)])
-    curso = models.ForeignKey(Curso, on_delete=models.CASCADE, related_name="formularios_exercicios_domiciliares")
-    componentes_curriculares = models.TextField()
+    aluno_nome = models.CharField(
+        max_length=100,
+        validators=[MinLengthValidator(1)],
+        verbose_name="Nome do Aluno"
+    )
+    
+    email = models.EmailField(
+        validators=[EmailValidator()],
+        verbose_name="E-mail"
+    )
+    
+    matricula = models.CharField(
+        max_length=20,
+        validators=[MinLengthValidator(1)],
+        verbose_name="Matrícula"
+    )
 
-    motivo_solicitacao = models.CharField(max_length=30, choices=MOTIVOS_SOLICITACAO_CHOICES)
-    outro_motivo = models.CharField(max_length=255, blank=True, null=True)
+    curso = models.ForeignKey(
+    Curso,
+    on_delete=models.CASCADE,
+    related_name="formularios_exercicios_domiciliares",
+    verbose_name="Curso"
+    )
 
-    data_inicio_afastamento = models.DateField( default=date.today, verbose_name="Data de início do afastamento")
-    data_fim_afastamento = models.DateField(default=date.today, verbose_name="Data de fim do afastamento")
-    periodo_afastamento = models.PositiveIntegerField()  # Em dias
+    ppc = models.ForeignKey(
+        Ppc,
+        on_delete=models.CASCADE,
+        related_name='exercicios_domiciliares',
+        null=True
+    )
 
-    documento_apresentado = models.CharField(max_length=30, choices=DOCUMENTO_APRESENTADO_CHOICES)
-    outro_documento = models.CharField(max_length=255, blank=True, null=True)
+    componentes_curriculares = models.TextField(
+        verbose_name="Componentes Curriculares"
+    )
 
-    arquivos = models.FileField(upload_to="documentos_exercicios_domiciliares/", blank=True, null=True)
+    motivo_solicitacao = models.CharField(
+        max_length=30,
+        choices=MOTIVOS_SOLICITACAO_CHOICES,
+        verbose_name="Motivo da Solicitação"
+    )
+    
+    outro_motivo = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Outro Motivo"
+    )
 
-    consegue_realizar_atividades = models.BooleanField()
+    data_inicio_afastamento = models.DateField(
+        default=date.today,
+        verbose_name="Data de Início do Afastamento"
+    )
+    
+    data_fim_afastamento = models.DateField(
+        default=date.today,
+        verbose_name="Data de Fim do Afastamento"
+    )
+
+    documento_apresentado = models.CharField(
+        max_length=30,
+        choices=DOCUMENTO_APRESENTADO_CHOICES,
+        verbose_name="Documento Apresentado"
+    )
+    
+    outro_documento = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="Outro Documento"
+    )
+
+    arquivos = models.FileField(
+        upload_to="documentos_exercicios_domiciliares/%Y/%m/%d/",
+        blank=True,
+        null=True,
+        verbose_name="Arquivos Anexados"
+    )
+
+    consegue_realizar_atividades = models.BooleanField(
+        verbose_name="Consegue Realizar Atividades Remotas"
+    )
 
     def __str__(self):
         return f"Exercício Domiciliar - {self.aluno_nome} ({self.curso.nome})"
+    
+    @property
+    def periodo_afastamento(self):
+        """Calcula o período de afastamento em dias"""
+        if self.data_inicio_afastamento and self.data_fim_afastamento:
+            return (self.data_fim_afastamento - self.data_inicio_afastamento).days + 1
+        return 0
+
+    def save(self, *args, **kwargs):
+        if hasattr(self, 'aluno') and self.aluno:
+            # Usamos first_name e last_name diretamente como fallback
+            full_name = f"{getattr(self.aluno, 'first_name', '')} {getattr(self.aluno, 'last_name', '')}".strip()
+            self.aluno_nome = full_name or getattr(self.aluno, 'username', '')
+            self.email = getattr(self.aluno, 'email', '')
+            self.matricula = getattr(self.aluno, 'matricula', '')
+        super().save(*args, **kwargs)

@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/header";
+import Header from "../../components/base/headers/header";
 
 // POPUPS
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -54,15 +54,15 @@ export default function ListarUsuarios() {
   const filtrarUsuarios = () => {
     const termo = filtro.toLowerCase();
     return usuarios.filter((usuario) =>
-      usuario.nome.toLowerCase().includes(termo) ||
-      usuario.email.toLowerCase().includes(termo) ||
-      usuario.cpf.toLowerCase().includes(termo) ||
-      usuario.telefone.toLowerCase().includes(termo) ||
-      usuario.data_nascimento.toLowerCase().includes(termo) ||
-      usuario.papel.toLowerCase().includes(termo)
+        (usuario.nome || '').toLowerCase().includes(termo) ||
+        (usuario.email || '').toLowerCase().includes(termo) ||
+        (usuario.cpf || '').toLowerCase().includes(termo) ||
+        (usuario.telefone || '').toLowerCase().includes(termo) ||
+        (usuario.data_nascimento || '').toLowerCase().includes(termo) ||
+        (usuario.papel || '').toLowerCase().includes(termo) ||
+        (usuario.status_usuario || '').toLowerCase().includes(termo)
     );
-  };
-
+};
   const usuariosFiltrados = filtrarUsuarios();
 
   const usuariosPaginados = usuariosFiltrados.slice(
@@ -127,8 +127,8 @@ export default function ListarUsuarios() {
                 <th>CPF</th>
                 <th>Email</th>
                 <th>Telefone</th>
-                <th>Data de Nascimento</th>
                 <th>Papel</th>
+                <th>Status</th>
                 <th>Ações</th>
               </tr>
             </thead>
@@ -139,14 +139,15 @@ export default function ListarUsuarios() {
                   <td>{usuario.cpf}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.telefone}</td>
-                  <td>{usuario.data_nascimento}</td>
                   <td>{usuario.papel}</td>
+                  <td>{usuario.status_usuario}</td>
+
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/editar/${usuario.id}`} title="Editar">
+                      <Link to={`/usuarios/editar/${usuario.papel.toLowerCase()}/${usuario.papel_detalhes?.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button

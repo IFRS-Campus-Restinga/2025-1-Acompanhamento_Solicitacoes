@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/header";
+import Header from "../../components/base/headers/header";
 
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -93,6 +93,7 @@ export default function ListarDisciplinas() {
               <tr>
                 <th>Código</th>
                 <th>Nome</th>
+                <th>Período</th>
                 <th>PPC</th>
                 <th>Ações</th>
               </tr>
@@ -102,6 +103,7 @@ export default function ListarDisciplinas() {
                 <tr key={disciplina.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                   <td>{disciplina.codigo}</td>
                   <td>{disciplina.nome}</td>
+                  <td>{disciplina.periodo}</td>
                   <td>
                     {disciplina.ppc ? disciplina.ppc : "Nenhum PPC atribuído"}
                   </td>

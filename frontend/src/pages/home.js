@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import Header from "../components/base/headers/header";
 import Footer from "./../components/base/footer";
-import Header from "./../components/base/header";
 import "./../components/base/main";
 import Login from "./login";
 

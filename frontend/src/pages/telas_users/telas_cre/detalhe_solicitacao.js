@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import Header from "../../components/base/header";
-import Footer from "../../components/base/footer";
+import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import HeaderCRE from "../../../components/base/headers/header_cre";
 
 export default function DetalheSolicitacao() {
     const { id } = useParams();
@@ -51,7 +51,7 @@ export default function DetalheSolicitacao() {
 
     return (
         <div>
-            <Header />
+            <HeaderCRE />
             <main className="container">
                 <h2>Detalhes da Solicitação</h2>
 

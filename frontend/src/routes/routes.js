@@ -1,4 +1,3 @@
-import React from "react";
 import { Route } from "react-router-dom";
 
 // Páginas
@@ -8,9 +7,8 @@ import Perfil from "../pages/perfil/perfil.js";
 
 //import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
-import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
+import ListarSolicitacoes from "../listar_solicitacoes.js";
 import Home from "./../pages/home";
-import ListarSolicitacoes from "../pages/solicitacoes/listar_solicitacoes";
 
 
 // Motivos de Abono
@@ -62,20 +60,21 @@ import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
 import Formulario from "../pages/forms/trancamento_disciplina/formulario";
 import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
 
-// Calendário Acadêmico
-import ListarCalendarios from "../pages/calendario_academico/lista_calendarios.js";
-import CadastrarAtualizarCalendario from "../pages/calendario_academico/cadastrar_atualizar_calendario.js";
+// Disponibilidade
+import CadastrarAtualizarDisponibilidade from "../pages/disponibilidade/cadastrar_atualizar.js";
+import FormularioIndisponivel from '../pages/disponibilidade/FormularioIndisponivel.js';
+import ListarDisponibilidades from "../pages/disponibilidade/listar.js";
+import VerificadorDisponibilidade from '../pages/disponibilidade/VerificadorDisponibilidade.js';
 
 // Formulário de Abono de Falta
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
-import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atualizar_coordenadores.js";
 
 //Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
-import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
 import ListaMandatosPorCurso from "../pages/coordenadores/mandatos/lista_coord_mandato_por_curso.js";
+import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
 import SelecaoCursoMandato from "../pages/coordenadores/mandatos/selecao_curso_mandatos.js";
 
 
@@ -88,17 +87,22 @@ import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulari
 import { Navigate } from "react-router-dom";
 
 // Importe o GoogleRedirectHandler
-import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js"; 
+import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 
 //Tela CRE
-import HomeCRE from  "../pages/telas_cre/home_cre.js";
-import DetalheSolicitacao from "../pages/telas_cre/detalhe_solicitacao.js";
-import HomeCoordenador from "../pages/tela_coordenador/homecoordenador.js";
+import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
+import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
+
+//Tela Coordenador
+import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
+
+//Telas Aluno
+import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
+import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
+import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
 
 //Form Entrega de Atividades Complementares
-import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js"
-
-
+import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
 
 const token = localStorage.getItem("token");
 
@@ -114,7 +118,7 @@ const routes = [
   <Route path="/" element={<Home />} key="home" />,
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
-  <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
+
   <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} />,
   //<Route path="/pos-login" element={<PosLogin />} />,
 
@@ -159,9 +163,8 @@ const routes = [
   <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
-  <Route path="/usuarios/cadastro/aluno" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-aluno" />,
-  <Route path="/usuarios/cadastro/coordenador" element={<CadastrarAtualizarCoordenador />} key="cadastrar-coordenador" />,
-  <Route path="/usuarios/cadastro/cre" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-cre" />,
+  <Route path="/usuarios/cadastro/:papel" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-usuarios-papel" />,
+  <Route path="/usuarios/editar/:papel/:id" element={<CadastrarAtualizarUsuarioPapel />} key="atualizar-usuarios-papel" />,
 
   
   //Mandatos
@@ -184,9 +187,18 @@ const routes = [
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />} />,
 
-  <Route path="/calendarios" element={<ListarCalendarios />} key="listar-calendarios" />,
-  <Route path="/calendarios/cadastrar" element={<CadastrarAtualizarCalendario />} key="cadastrar-calendarios" />,
-  <Route path="/calendarios/:codigo" element={<CadastrarAtualizarCalendario />} key="editar-calendarios" />,
+  <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
+  <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
+  <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
+  <Route path="formularios/indisponivel" element={<FormularioIndisponivel />} />,
+  <Route 
+    path="formularios/:tipoFormulario"
+    element={
+      <VerificadorDisponibilidade>
+        <FormularioTrancamentoMatricula />
+      </VerificadorDisponibilidade>
+    }
+  />,
 
   <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
 
@@ -200,18 +212,25 @@ const routes = [
 
   //Solicitacoes
   <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
+
+  //TELAS USERS
   
   //Tela CRE
   <Route path="/cre/home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-  
+
+  //Tela Coordenador
+  <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
+
+  //Tela Aluno
+  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
+  <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
+  <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
+
   //Form de entrega de atividades complementares
   <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
   <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-
-  <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
-  
   
  ];
 

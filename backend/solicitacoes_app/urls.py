@@ -31,9 +31,9 @@ from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
 from .views.buscar_info_usuario import * 
 
-from .views.calendario_academico_view import (
-    CalendarioAcademicoListCreateView,
-    CalendarioAcademicoRetrieveUpdateDestroyView
+from .views.disponibilidade_view import (
+    DisponibilidadeListCreateView,
+    DisponibilidadeRetrieveUpdateDestroyView
 )
 
 from .views.detalhe_formularios_view import *
@@ -43,7 +43,7 @@ from django.urls import path
 
 from .views.buscar_info_usuario import UsuarioPorEmailView
 
-from .views.buscar_info_usuario import DisciplinasPorTurmaView
+from .views.buscar_info_usuario import DisciplinasPorPPCView
 
 app_name = 'solicitacoes_app'
 
@@ -53,13 +53,14 @@ urlpatterns = [
     path('saudacao/', saudacao, name="saudacao"),
 
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
-    path('turmas/<int:turma_id>/disciplinas/', DisciplinasPorTurmaView.as_view(), name='disciplinas-por-turma'),
 
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
 
     path('ppcs/', PpcListCreateView.as_view(), name='listar_cadastrar_ppcs'),
     path('ppcs/<path:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
+
+    path('ppcs/<str:ppc_codigo>/disciplinas/', DisciplinasPorPPCView.as_view(), name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
 
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
     path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),
@@ -80,6 +81,8 @@ urlpatterns = [
 
     path('alunos/', AlunoListCreateView.as_view(), name='aluno-list'),
     path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
+    path('alunos/listar', AlunoListView.as_view(), name='aluno-list-antigo'),
+    path('alunos/listar/<int:pk>/', AlunoRetrieveView.as_view(), name='aluno-detail-antigo'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
     path('disciplinas/<str:codigo>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
@@ -137,8 +140,8 @@ urlpatterns = [
     path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
     path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
 
-    path('calendarios/', CalendarioAcademicoListCreateView.as_view(), name='calendario-list-create'),
-    path('calendarios/<str:codigo>/', CalendarioAcademicoRetrieveUpdateDestroyView.as_view(), name='calendario-detail'),
+    path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
+    path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 

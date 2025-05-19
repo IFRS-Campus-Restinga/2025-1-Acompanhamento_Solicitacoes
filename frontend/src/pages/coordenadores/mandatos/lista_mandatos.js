@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
 import Footer from '../../../components/base/footer';
-import Header from '../../../components/base/header';
-import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
+import Header from '../../../components/base/headers/header';
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
+import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+import api from '../../../services/api';
 
 // Função auxiliar para formatar a data corretamente
 const formatarDataParaExibicaoLocal = (dataString) => {

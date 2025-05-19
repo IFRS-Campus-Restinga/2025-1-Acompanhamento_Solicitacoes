@@ -3,17 +3,17 @@ import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from "react-hook-form";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
-import { validateForm } from "./validations";
+import { extractMatriculaFromEmail, validateForm, validateMatricula } from "./validations";
 
 const FormularioExercicioDomiciliar = () => {
   const { register, handleSubmit, setValue, watch, formState: { errors }, setError, clearErrors, reset } = useForm();
+
   const [cursos, setCursos] = useState([]);
-  const [turmas, setTurmas] = useState([]);
-  const [disciplinasDaTurma, setDisciplinasDaTurma] = useState([]);
-  const [turmaSelecionada, setTurmaSelecionada] = useState("");
-  //const [emailInput, setEmailInput] = useState("");
+  const [ppcs, setPpcs] = useState([]);
+  const [disciplinasDoPpc, setDisciplinasDoPpc] = useState([]);
+  const [ppcSelecionado, setPpcSelecionado] = useState("");
 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
@@ -28,6 +28,12 @@ const FormularioExercicioDomiciliar = () => {
   const documentoApresentado = watch("documento_apresentado");
   const cursoSelecionado = watch("curso");
 
+  const [periodoCalculado, setPeriodoCalculado] = useState(0);
+
+  const [alunoInfo, setAlunoInfo] = useState(null);
+  const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
+  const [filtroDisciplina, setFiltroDisciplina] = useState("");
+
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/cursos/")
       .then(res => setCursos(res.data))
@@ -39,11 +45,12 @@ const FormularioExercicioDomiciliar = () => {
         setTimeout(() => setMostrarFeedback(false), 5000);
       });
 
-    axios.get("http://localhost:8000/solicitacoes/turmas/")
-      .then(res => setTurmas(res.data))
+    // Carregar PPCs em vez de turmas
+    axios.get("http://localhost:8000/solicitacoes/ppcs/")
+      .then(res => setPpcs(res.data))
       .catch(() => {
-        console.error("Erro ao buscar turmas.");
-        setMensagemPopup("Erro ao carregar lista de turmas.");
+        console.error("Erro ao buscar PPCs.");
+        setMensagemPopup("Erro ao carregar lista de PPCs.");
         setTipoMensagem("erro");
         setMostrarFeedback(true);
         setTimeout(() => setMostrarFeedback(false), 5000);
@@ -51,48 +58,160 @@ const FormularioExercicioDomiciliar = () => {
   }, []);
 
   useEffect(() => {
+    // Verifica se há dados do usuário no localStorage
+    const googleUser = localStorage.getItem('googleUser');
+    if (googleUser) {
+      const { email, name } = JSON.parse(googleUser);
+      setValue("email", email);
+      setValue("aluno_nome", name);
+
+      // Extrai matrícula do e-mail
+      const matricula = extractMatriculaFromEmail(email);
+      if (matricula) {
+        setValue("matricula", matricula);
+        clearErrors("matricula");
+
+        buscarInfoAluno(email, matricula);
+      } else {
+        // Dispara o evento de blur para buscar a matrícula
+        const event = { target: { value: email } };
+        handleEmailBlur(event);
+      }
+    }
+  }, [setValue, clearErrors]);
+
+  const buscarInfoAluno = async (email, matricula) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/solicitacoes/alunos-info/?email=${email}&matricula=${matricula}`);
+      if (response.data) {
+        setAlunoInfo(response.data);
+        
+        // Preenche automaticamente o curso se disponível
+        if (response.data.curso) {
+          setValue("curso", response.data.curso.codigo);
+          
+          // Se o aluno tem PPC, seleciona automaticamente
+          if (response.data.ppc) {
+            setValue("ppc", response.data.ppc.codigo);
+            setPpcSelecionado(response.data.ppc.codigo);
+            
+            // Carrega as disciplinas do PPC
+            carregarDisciplinasPorPpc(response.data.ppc.codigo);
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao buscar informações do aluno:", error);
+    }
+  };
+
+  // Função para carregar disciplinas do PPC
+  const carregarDisciplinasPorPpc = async (ppcCodigo) => {
+    if (!ppcCodigo) return;
+    
+    setIsLoadingDisciplinas(true);
+    try {
+      // Usando o mesmo endpoint que o formulário de trancamento, mas adaptado para PPC
+      const response = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${ppcCodigo}/disciplinas/`);
+      if (response.data && (Array.isArray(response.data) || response.data.disciplinas)) {
+        const disciplinasData = Array.isArray(response.data) ? response.data : 
+                            response.data.disciplinas ? response.data.disciplinas : [];
+        setDisciplinasDoPpc(disciplinasData);
+        
+        // Se o aluno já tem disciplinas matriculadas, seleciona automaticamente
+        if (alunoInfo?.disciplinas) {
+          const disciplinasMatriculadas = disciplinasData
+            .filter(d => alunoInfo.disciplinas.includes(d.codigo))
+            .map(d => `${d.nome} (${d.codigo})`)
+            .join("\n");
+          setValue("componentes_curriculares", disciplinasMatriculadas);
+        }
+      } else {
+        setDisciplinasDoPpc([]);
+        setValue("componentes_curriculares", "Nenhuma disciplina encontrada para este PPC.");
+      }
+    } catch (error) {
+      console.error("Erro ao carregar disciplinas:", error);
+      setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
+      setValue("componentes_curriculares", "");
+    } finally {
+      setIsLoadingDisciplinas(false);
+    }
+  };
+
+  useEffect(() => {
     const dataInicio = watch("data_inicio_afastamento");
     const dataFim = watch("data_fim_afastamento");
+
     if (dataInicio && dataFim) {
       const inicio = new Date(dataInicio);
       const fim = new Date(dataFim);
+
       if (fim < inicio) {
-        setValue("periodo_afastamento", 0);
+        setPeriodoCalculado(0);
         setError("data_fim_afastamento", { type: "manual", message: "A data final não pode ser antes da inicial." });
       } else {
         const diffDays = Math.ceil((fim - inicio) / (1000 * 60 * 60 * 24)) + 1;
-        setValue("periodo_afastamento", diffDays);
+        setPeriodoCalculado(diffDays);
         clearErrors("data_fim_afastamento");
       }
     } else {
-      setValue("periodo_afastamento", "");
+      setPeriodoCalculado(0);
     }
-  }, [watch("data_inicio_afastamento"), watch("data_fim_afastamento"), setValue, setError, clearErrors]);
+  }, [watch("data_inicio_afastamento"), watch("data_fim_afastamento"), setError, clearErrors]);
 
   const handleEmailBlur = async (event) => {
-    const currentEmailValue = event.target.value;
+    const currentEmailValue = event.target.value.trim();
+
     if (!currentEmailValue || !currentEmailValue.includes('@')) {
       setErroBuscaUsuario("Por favor, insira um e-mail válido.");
       setValue("aluno_nome", "");
       setValue("matricula", "");
       return;
     }
+
+    // Primeiro tenta extrair matrícula do e-mail
+    const matriculaFromEmail = extractMatriculaFromEmail(currentEmailValue);
+    if (matriculaFromEmail) {
+      setValue("matricula", matriculaFromEmail);
+      clearErrors("matricula");
+      
+      // Se encontrou matrícula no e-mail, não precisa buscar na API
+      if (!watch("aluno_nome")) {
+        setIsLoadingUsuario(true);
+        try {
+          const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${currentEmailValue}`);
+          if (response.data?.length > 0) {
+            setValue("aluno_nome", response.data[0].nome || "");
+            clearErrors("aluno_nome");
+          }
+        } catch (error) {
+          console.error("Erro ao buscar nome do usuário:", error);
+        } finally {
+          setIsLoadingUsuario(false);
+        }
+      }
+      return;
+    }
+
+    // Se não encontrou matrícula no e-mail, busca completa na API
     setIsLoadingUsuario(true);
     setErroBuscaUsuario("");
+
     try {
       const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${currentEmailValue}`);
-      if (response.data && response.data.length > 0) {
+      if (response.data?.length > 0) {
         const usuario = response.data[0];
         setValue("aluno_nome", usuario.nome || "");
-        if (usuario.papel === "Aluno" && usuario.papel_detalhes && usuario.papel_detalhes.matricula) {
-          setValue("matricula", usuario.papel_detalhes.matricula || "");
-        } else {
-          setValue("matricula", "");
-          setErroBuscaUsuario("Matrícula não encontrada para este utilizador ou utilizador não é um aluno.");
+        setValue("matricula", usuario.papel_detalhes?.matricula || "");
+        clearErrors(["email", "aluno_nome", "matricula"]);
+        
+        // Se o usuário tem PPC, seleciona automaticamente
+        if (usuario.papel === "Aluno" && usuario.papel_detalhes?.ppc) {
+          setValue("ppc", usuario.papel_detalhes.ppc);
+          setPpcSelecionado(usuario.papel_detalhes.ppc);
+          carregarDisciplinasPorPpc(usuario.papel_detalhes.ppc);
         }
-        clearErrors("email");
-        clearErrors("aluno_nome");
-        clearErrors("matricula");
       } else {
         setValue("aluno_nome", "");
         setValue("matricula", "");
@@ -100,45 +219,31 @@ const FormularioExercicioDomiciliar = () => {
       }
     } catch (error) {
       console.error("Erro ao buscar dados do utilizador:", error);
-      setValue("aluno_nome", "");
-      setValue("matricula", "");
-      setErroBuscaUsuario("Erro ao buscar dados do utilizador. Tente novamente.");
+      setErroBuscaUsuario("Erro ao buscar dados. Tente novamente.");
+    } finally {
+      setIsLoadingUsuario(false);
     }
-    setIsLoadingUsuario(false);
   };
 
-  const handleTurmaChange = async (event) => {
-    const selectedTurmaId = event.target.value;
-    setTurmaSelecionada(selectedTurmaId);
+  const handlePpcChange = async (event) => {
+    const selectedPpcCodigo = event.target.value;
+    setPpcSelecionado(selectedPpcCodigo);
     setValue("componentes_curriculares", "");
-    setDisciplinasDaTurma([]);
-    if (selectedTurmaId) {
-      setIsLoadingDisciplinas(true);
-      setErroBuscaDisciplinas("");
-      try {
-        const response = await axios.get(`http://localhost:8000/solicitacoes/turmas/${selectedTurmaId}/disciplinas/`);
-        if (response.data && response.data.length > 0) {
-          setDisciplinasDaTurma(response.data);
-          const nomesDisciplinas = response.data.map(d => `${d.nome} (${d.codigo})`).join("\n");
-          setValue("componentes_curriculares", nomesDisciplinas);
-        } else {
-          setValue("componentes_curriculares", "Nenhuma disciplina encontrada para esta turma.");
-        }
-      } catch (error) {
-        console.error("Erro ao buscar disciplinas da turma:", error);
-        setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
-        setValue("componentes_curriculares", "");
-      }
-      setIsLoadingDisciplinas(false);
+    setDisciplinasDoPpc([]);
+    
+    if (selectedPpcCodigo) {
+      carregarDisciplinasPorPpc(selectedPpcCodigo);
     }
   };
 
-  const onSubmit = (data) => {
+  const onSubmit = async (data) => {
     const formErrors = validateForm(data);
+
     if (Object.keys(formErrors).length > 0) {
       Object.entries(formErrors).forEach(([fieldName, message]) => {
         setError(fieldName, { type: "manual", message: message });
       });
+
       setMensagemPopup("Preencha os campos obrigatórios corretamente.");
       setTipoMensagem("erro");
       setMostrarFeedback(true);
@@ -147,70 +252,73 @@ const FormularioExercicioDomiciliar = () => {
     }
 
     const formData = new FormData();
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "arquivos" && value instanceof FileList) {
-        Array.from(value).forEach(file => formData.append("arquivos", file));
-      } else if (value !== undefined && value !== null) {
-        formData.append(key, value);
-      }
-    });
 
-    axios.post("http://localhost:8000/solicitacoes/form_exercicio_domiciliar/", formData, {
-      headers: { "Content-Type": "multipart/form-data" }
-    })
-      .then(() => {
-        setMensagemPopup("Solicitação enviada com sucesso!");
-        setTipoMensagem("sucesso");
-        setMostrarFeedback(true);
-        reset(); // Limpa o formulário
-        // Limpar estados adicionais se necessário
-        setTurmaSelecionada("");
-        setDisciplinasDaTurma([]);
-        setValue("componentes_curriculares", "");
-        setTimeout(() => setMostrarFeedback(false), 3000);
-      })
-      .catch((err) => {
-        console.error("Erro ao enviar solicitação:", err.response?.data || err.message);
-        let errorMsg = "Erro ao enviar solicitação. Tente novamente mais tarde.";
-        if (err.response && err.response.data) {
-          const backendData = err.response.data;
-          if (typeof backendData === 'string') {
-            errorMsg = backendData;
-          } else if (typeof backendData === 'object' && backendData !== null) {
-            const errorMessages = [];
-            for (const key in backendData) {
-              if (Object.prototype.hasOwnProperty.call(backendData, key)) {
-                const value = backendData[key];
-                if (Array.isArray(value)) {
-                  errorMessages.push(`${key}: ${value.join(', ')}`);
-                } else {
-                 errorMessages.push(`${key}: ${JSON.stringify(value)}`);
-                }
-              }
-            }
-            if (errorMessages.length > 0) {
-              errorMsg = errorMessages.join('; ');
-            } else {
-              try {
-                errorMsg = JSON.stringify(backendData);
-              } catch (e) { /* Mantém a mensagem padrão */ }
-            }
-          } else if (err.message) {
-            errorMsg = err.message;
-          }
-        } else if (err.message) {
-          errorMsg = err.message;
-        }
-        setMensagemPopup(errorMsg);
-        setTipoMensagem("erro");
-        setMostrarFeedback(true);
-        setTimeout(() => setMostrarFeedback(false), 5000);
+    if (disciplinasSelecionadas.length > 0) {
+      disciplinasSelecionadas.forEach(disciplina => {
+        formData.append('disciplinas', disciplina);
       });
+    }
+
+    formData.append('aluno_email', data.email);
+    formData.append('curso_codigo', data.curso);
+    formData.append('ppc_codigo', data.ppc); // Adicionado campo PPC
+    formData.append('data_inicio_afastamento', data.data_inicio_afastamento);
+    formData.append('data_fim_afastamento', data.data_fim_afastamento);
+    formData.append('periodo_afastamento', periodoCalculado.toString()); // Convertido para string
+    formData.append('motivo_solicitacao', data.motivo_solicitacao);
+    formData.append('documento_apresentado', data.documento_apresentado);
+    formData.append('consegue_realizar_atividades', data.consegue_realizar_atividades);
+    
+    if (data.outro_motivo) formData.append('outro_motivo', data.outro_motivo);
+    if (data.outro_documento) formData.append('outro_documento', data.outro_documento);
+    if (data.componentes_curriculares) formData.append('componentes_curriculares', data.componentes_curriculares);
+    if (data.arquivos) {
+      Array.from(data.arquivos).forEach(file => {
+        formData.append('arquivos', file);
+      });
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:8000/solicitacoes/form_exercicio_domiciliar/",
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      );
+      // ... feedback de sucesso
+
+      setMensagemPopup("Solicitação enviada com sucesso!");
+      setTipoMensagem("sucesso");
+      setMostrarFeedback(true);
+      reset();
+      setPpcSelecionado("");
+      setDisciplinasDoPpc([]);
+      setValue("componentes_curriculares", "");
+      setTimeout(() => setMostrarFeedback(false), 3000);
+    } catch (err) {
+      console.error("Erro ao enviar solicitação:", err.response?.data || err.message);
+      let errorMsg = "Erro ao enviar solicitação. Tente novamente mais tarde.";
+      
+      if (err.response && err.response.data) {
+        const backendData = err.response.data;
+        if (typeof backendData === 'string') {
+          errorMsg = backendData;
+        } else if (typeof backendData === 'object') {
+          errorMsg = Object.entries(backendData)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+            .join('; ');
+        }
+      }
+      
+      setMensagemPopup(errorMsg);
+      setTipoMensagem("erro");
+      setMostrarFeedback(true);
+      setTimeout(() => setMostrarFeedback(false), 5000);
+    }
   };
 
   return (
     <div>
-      <Header />
+      <HeaderAluno />
       <main className="container">
         <h2>Solicitação de Exercícios Domiciliares</h2>
         <h6>Conforme o Art. 141. da Organização Didática do IFRS, os Exercícios Domiciliares 
@@ -222,6 +330,7 @@ const FormularioExercicioDomiciliar = () => {
           possa realizar suas atividades sem prejuízo na sua vida acadêmica. 
           A solicitação deverá ser protocolada em até 05 (cinco) dias úteis 
           subsequentes ao início da ausência às atividades letivas.</h6>
+          
         <form onSubmit={handleSubmit(onSubmit)} className="formulario" encType="multipart/form-data">
           <div className="form-group">
             <label htmlFor="email">E-mail:</label>
@@ -235,6 +344,8 @@ const FormularioExercicioDomiciliar = () => {
                 handleEmailBlur(e); // Chama a nossa função personalizada
               }}
               placeholder="Digite o e-mail do aluno"
+              readOnly={!!localStorage.getItem('googleUser')}
+              style={localStorage.getItem('googleUser') ? { backgroundColor: "#e9ecef", cursor: "not-allowed" } : {}}
             />
             {isLoadingUsuario && <p>A procurar utilizador...</p>}
             {erroBuscaUsuario && <span className="error-text">{erroBuscaUsuario}</span>}
@@ -249,45 +360,64 @@ const FormularioExercicioDomiciliar = () => {
 
           <div className="form-group">
             <label htmlFor="matricula">Número de matrícula:</label>
-            <input type="text" id="matricula" {...register("matricula", { required: "Número de matrícula é obrigatório" })} readOnly style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
-            {errors.matricula && <span className="error-text">{errors.matricula.message}</span>}
+            <input 
+              type="text" 
+              id="matricula" 
+              {...register("matricula", { 
+                required: "Número de matrícula é obrigatório",
+                validate: (value) => validateMatricula(value) || true
+              })} 
+              readOnly 
+              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} 
+            />
+              {errors.matricula && <span className="error-text">{errors.matricula.message}</span>}
           </div>
 
           <div className="form-group">
             <label htmlFor="curso">Curso:</label>
-            <select id="curso" {...register("curso", { required: "Curso é obrigatório" })}>
+            <select 
+              id="curso" 
+              {...register("curso", { required: "Curso é obrigatório" })}
+              disabled={!!alunoInfo?.curso} // Desabilita se já veio preenchido
+            >
               <option value="">Selecione o curso</option>
               {cursos.map((curso) => (
-                <option key={curso.codigo} value={curso.codigo}>{curso.nome}</option>
+                <option key={curso.codigo} value={curso.codigo}>
+                  {curso.nome}
+                </option>
               ))}
             </select>
             {errors.curso && <span className="error-text">{errors.curso.message}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="turma">Turma:</label>
+            <label htmlFor="ppc">PPC:</label>
             <select
-              id="turma"
-              {...register("turma")} // Registar para validação ou envio se necessário
-              value={turmaSelecionada}
-              onChange={handleTurmaChange}
+              id="ppc"
+              {...register("ppc", { required: "PPC é obrigatório" })}
+              value={ppcSelecionado}
+              onChange={handlePpcChange}
               disabled={!cursoSelecionado}
             >
-              <option value="">Selecione a turma</option>
-              {turmas.map((turma) => (
-                <option key={turma.id} value={turma.id}>{turma.nome}</option>
-              ))}
+              <option value="">Selecione o PPC</option>
+              {ppcs
+                .filter(ppc => !cursoSelecionado || ppc.curso.codigo === cursoSelecionado)
+                .map((ppc) => (
+                  <option key={ppc.codigo} value={ppc.codigo}>{ppc.codigo}</option>
+                ))
+              }
             </select>
             {isLoadingDisciplinas && <p>A carregar disciplinas...</p>}
             {erroBuscaDisciplinas && <span className="error-text">{erroBuscaDisciplinas}</span>}
+            {errors.ppc && <span className="error-text">{errors.ppc.message}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="componentes_curriculares">Disciplinas da Turma:</label>
+            <label htmlFor="componentes_curriculares">Disciplinas do PPC:</label>
             <textarea
               id="componentes_curriculares"
               {...register("componentes_curriculares")}
-              placeholder="As disciplinas serão preenchidas ao selecionar a turma"
+              placeholder="As disciplinas serão preenchidas ao selecionar o PPC"
               readOnly
               rows="5"
               style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
@@ -323,27 +453,12 @@ const FormularioExercicioDomiciliar = () => {
             <input
               type="text"
               id="periodo_afastamento"
-              {...register("periodo_afastamento")}
+              value={periodoCalculado}
               readOnly
               style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
             />
-
-            {/* Mostra erro vindo do back-end (como lista) */}
-            {errors.periodo_afastamento?.message && Array.isArray(errors.periodo_afastamento.message) && (
-              <div className="text-red-600 text-sm mt-1">
-                {errors.periodo_afastamento.message[0]}
-              </div>
-            )}
-
-            {/* Mostra erro padrão do react-hook-form */}
-            {!Array.isArray(errors.periodo_afastamento?.message) && (
-              <span className="text-red-600 text-sm mt-1">
-                {errors.periodo_afastamento?.message}
-              </span>
-            )}
+            {errors.periodo_afastamento && <span className="error-text">{errors.periodo_afastamento.message}</span>}
           </div>
-
-          
 
           <fieldset className="periodo-afastamento">
             <legend>Datas do Afastamento</legend>
@@ -422,7 +537,7 @@ const FormularioExercicioDomiciliar = () => {
         {mostrarFeedback && (
           <div className={`popup-feedback ${tipoMensagem}`}>
             <p>{mensagemPopup}</p>
-            {/* Botão de fechar removido, o popup some automaticamente */}
+            {/* Popup some automaticamente */}
           </div>
         )}
       </main>
@@ -432,4 +547,3 @@ const FormularioExercicioDomiciliar = () => {
 };
 
 export default FormularioExercicioDomiciliar;
-

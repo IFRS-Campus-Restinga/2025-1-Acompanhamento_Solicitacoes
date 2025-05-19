@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../../../services/api';
-import Header from '../../../components/base/header';
 import Footer from '../../../components/base/footer';
+import Header from '../../../components/base/headers/header';
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+import api from '../../../services/api';
 
 export default function SelecaoCursoMandato() {
     const [cursos, setCursos] = useState([]);

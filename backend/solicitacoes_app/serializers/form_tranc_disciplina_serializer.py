@@ -16,13 +16,9 @@ class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
     class Meta:
         model = FormTrancDisciplina
         fields = '__all__'
-        read_only_fields = ['descricao']
+        read_only_fields = ['data_solicitacao']
 
     def create(self, validated_data):
-        validated_data['descricao'] = (
-            "Este formulário destina-se à solicitação de trancamento de um ou mais "
-            "componente(s) curricular(es) do período letivo vigente."
-        )
         return super().create(validated_data)
 
     def validate(self, data):

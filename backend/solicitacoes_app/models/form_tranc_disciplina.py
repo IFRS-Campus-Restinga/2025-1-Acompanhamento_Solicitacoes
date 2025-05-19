@@ -1,10 +1,10 @@
 from django.db import models
 from .disciplina import Disciplina
-from .form_base import FormularioBase
+from .solicitacao import Solicitacao
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
-class FormTrancDisciplina(FormularioBase):
-    nome_formulario = "Formulário de Trancamento de Componente Curricular"
+class FormTrancDisciplina(Solicitacao):
     
     disciplinas = models.ManyToManyField(
         Disciplina,
@@ -17,6 +17,8 @@ class FormTrancDisciplina(FormularioBase):
         help_text="Marque se o aluno é ingressante. Essa informação é importante para limitar a quantidade de trancamentos."
     )
 
+    motivo_solicitacao = models.TextField()
+    
     def clean(self):
         super().clean()
         qtd_disciplinas = self.disciplinas.count()
@@ -32,6 +34,12 @@ class FormTrancDisciplina(FormularioBase):
                 'disciplinas': 'Pelo menos uma disciplina deve ser selecionada para trancamento.'
             })
 
+    def save(self, *args, **kwargs):
+        self.nome_formulario = "Formulário de Trancamento de Componente Curricular"
+        if not self.data_solicitacao:  # 👈 Se não tiver data, define como agora
+            self.data_solicitacao = timezone.now().date()
+        super().save(*args, **kwargs)
+        
     class Meta:
         verbose_name = "Formulário de Trancamento de Componente Curricular"
         verbose_name_plural = "Formulários de Trancamento de Componente Curricular"

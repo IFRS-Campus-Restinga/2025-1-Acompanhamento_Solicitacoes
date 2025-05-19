@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import "./../../components/base/main.css";
 import "./cruds.css";
 
@@ -17,7 +17,7 @@ const Cruds = () => {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>CRUDs Disponíveis</h2>
         <div className="grid-cruds">
@@ -48,8 +48,8 @@ const Cruds = () => {
           <Link className="crud-link" to="/cursos">
             <i className="bi bi-mortarboard"></i> Cursos
           </Link>
-          <Link className="crud-link" to="/calendarios">
-            <i className="bi bi-calendar-check"></i> Calendário Acadêmico
+          <Link className="crud-link" to="/disponibilidades">
+            <i className="bi bi-calendar-check"></i> Disponibilidade de Formulários
           </Link>
           <Link className="crud-link" to="/motivo_abono">
             <i className="bi bi-calendar-x-fill"></i> Abono de Faltas

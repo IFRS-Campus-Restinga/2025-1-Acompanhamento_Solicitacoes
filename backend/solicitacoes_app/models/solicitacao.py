@@ -9,10 +9,26 @@ from django.core.exceptions import ValidationError
 from .posse_solicitacao import PosseSolicitacao
 
 class Solicitacao(BaseModel):
+    FORMULARIO_CHOICES = [
+        ('TRANCAMENTODISCIPLINA', 'Trancamento de Disciplina'),
+        ('TRANCAMENTOMATRICULA', 'Trancamento de Matrícula'),
+        ('DISPENSAEDFISICA', 'Dispensa de Educação Física'),
+        ('DESISTENCIAVAGA', 'Desistência de Vaga'),
+        ('EXERCICIOSDOMICILIARES', 'Exercícios Domiciliares'),
+        ('ABONOFALTAS', 'Abono de Faltas'),
+        ('ENTREGACERTIFICADOS', 'Entrega de Certificados'),
+    ]
     aluno = models.ForeignKey(
         Aluno,
         related_name='aluno',
         on_delete=models.DO_NOTHING
+    )
+    
+    nome_formulario = models.CharField(
+        max_length=60,
+        choices=FORMULARIO_CHOICES,  # Adicionado choices aqui
+        null=True,
+        validators=[MinLengthValidator(10)]
     )
     
     posse_solicitacao = models.CharField(
@@ -21,28 +37,6 @@ class Solicitacao(BaseModel):
         default=PosseSolicitacao.COORDENACAO,
         verbose_name="Responsável Atual pela Solicitação"
     )
-    
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE,
-        verbose_name="Tipo de Formulário",
-        help_text="O tipo específico de formulário associado a esta solicitação.",
-        limit_choices_to=models.Q(app_label='solicitacoes_app', model='formexerciciodomiciliar') |
-                         models.Q(app_label='solicitacoes_app', model='formdispensaedfisica') |
-                         models.Q(app_label='solicitacoes_app', model='formtrancdisciplina') |
-                         models.Q(app_label='solicitacoes_app', model='formabonofalta') |
-                         models.Q(app_label='solicitacoes_app', model='formdesistenciavaga') |
-                         models.Q(app_label='solicitacoes_app', model='formulariotrancamentomatricula'),
-        related_name="formulario_associado"
-    )
-
-    object_id = models.PositiveIntegerField(
-        verbose_name="ID do Formulário Vinculado",
-        help_text="O ID da instância específica do formulário."
-    )
-
-    formulario_associado = GenericForeignKey('content_type', 'object_id')
-
     data_solicitacao = models.DateField(
         help_text="Escreva aqui a data da solicitação",
         verbose_name="Data da Solicitação:"
@@ -65,7 +59,7 @@ class Solicitacao(BaseModel):
     def save(self, *args, **kwargs):
         if self.pk:
             original = Solicitacao.objects.get(pk=self.pk)
-            campos_restritos = ['aluno', 'content_type', 'object_id', 'data_solicitacao']
+            campos_restritos = ['aluno', 'data_solicitacao']
 
             for campo in campos_restritos:
                 if getattr(self, campo) != getattr(original, campo):
@@ -76,5 +70,21 @@ class Solicitacao(BaseModel):
 
     def __str__(self):
         nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
-        nome_formulario = str(self.formulario_associado) if self.formulario_associado else "Sem Formulário"
+        nome_formulario = self.nome_formulario or "Sem Formulário"
         return f"{nome_aluno} | {nome_formulario}"
+    
+    def verificar_disponibilidade(self):
+        """Versão otimizada e segura"""
+        from .disponibilidade import Disponibilidade
+        from django.utils import timezone
+        try:
+            disp = Disponibilidade.objects.get(
+                formulario=self.nome_formulario,
+                ativo=True
+            )
+            if disp.sempre_disponivel:
+                return True
+            hoje = timezone.now().date()
+            return disp.data_inicio <= hoje <= disp.data_fim
+        except Disponibilidade.DoesNotExist:
+            return True

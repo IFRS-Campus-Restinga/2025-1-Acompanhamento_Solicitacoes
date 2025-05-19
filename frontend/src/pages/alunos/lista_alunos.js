@@ -1,7 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import Header from "../../components/base/headers/header";
 import Footer from "../../components/footer";
-import Header from "../../components/header";
 import "./lista_alunos.css";
 
 const Alunos = () => {
