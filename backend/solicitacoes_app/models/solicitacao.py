@@ -9,13 +9,27 @@ from django.core.exceptions import ValidationError
 from .posse_solicitacao import PosseSolicitacao
 
 class Solicitacao(BaseModel):
+    FORMULARIO_CHOICES = [
+        ('TRANCAMENTODISCIPLINA', 'Trancamento de Disciplina'),
+        ('TRANCAMENTOMATRICULA', 'Trancamento de Matrícula'),
+        ('DISPENSAEDFISICA', 'Dispensa de Educação Física'),
+        ('DESISTENCIAVAGA', 'Desistência de Vaga'),
+        ('EXERCICIOSDOMICILIARES', 'Exercícios Domiciliares'),
+        ('ABONOFALTAS', 'Abono de Faltas'),
+        ('ENTREGACERTIFICADOS', 'Entrega de Certificados'),
+    ]
     aluno = models.ForeignKey(
         Aluno,
         related_name='aluno',
         on_delete=models.DO_NOTHING
     )
     
-    nome_formulario = models.CharField(max_length=60, null=True, validators=[MinLengthValidator(10)])
+    nome_formulario = models.CharField(
+        max_length=60,
+        choices=FORMULARIO_CHOICES,  # Adicionado choices aqui
+        null=True,
+        validators=[MinLengthValidator(10)]
+    )
     
     posse_solicitacao = models.CharField(
         max_length=20,
@@ -58,3 +72,19 @@ class Solicitacao(BaseModel):
         nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
         nome_formulario = self.nome_formulario or "Sem Formulário"
         return f"{nome_aluno} | {nome_formulario}"
+    
+    def verificar_disponibilidade(self):
+        """Versão otimizada e segura"""
+        from .disponibilidade import Disponibilidade
+        from django.utils import timezone
+        try:
+            disp = Disponibilidade.objects.get(
+                formulario=self.nome_formulario,
+                ativo=True
+            )
+            if disp.sempre_disponivel:
+                return True
+            hoje = timezone.now().date()
+            return disp.data_inicio <= hoje <= disp.data_fim
+        except Disponibilidade.DoesNotExist:
+            return True

@@ -64,6 +64,8 @@ import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulari
 // Disponibilidade
 import CadastrarAtualizarDisponibilidade from "../pages/disponibilidade/cadastrar_atualizar.js";
 import ListarDisponibilidades from "../pages/disponibilidade/listar.js";
+import VerificadorDisponibilidade from '../pages/disponibilidade/VerificadorDisponibilidade.js';
+import FormularioIndisponivel from '../pages/disponibilidade/FormularioIndisponivel.js';
 
 // Formulário de Abono de Falta
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
@@ -190,6 +192,15 @@ const routes = [
   <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
   <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
   <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
+  <Route path="formularios/indisponivel" element={<FormularioIndisponivel />} />,
+  <Route 
+    path="formularios/:tipoFormulario"
+    element={
+      <VerificadorDisponibilidade>
+        <FormularioTrancamentoMatricula />
+      </VerificadorDisponibilidade>
+    }
+  />,
 
   <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
 
