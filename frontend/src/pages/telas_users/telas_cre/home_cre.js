@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import HeaderCRE from "../../../components/base/cre/header_cre";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
 import "../../../components/formulario.css";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
@@ -33,7 +33,7 @@ const HomeCRE = () => {
 
     return (
         <div>
-            <Header />
+            <HeaderCRE />
             <main className="container">
                 <h2>Painel do CRE</h2>
 
