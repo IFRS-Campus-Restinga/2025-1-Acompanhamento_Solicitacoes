@@ -68,7 +68,7 @@ const HeaderAluno = () => {
               <Link to="/aluno/nova-solicitacao">Nova Solicitação</Link>
             </li>
             <li>
-              <Link to="/todas-solicitacoes">Minhas Solicitações</Link>
+              <Link to="/aluno/minhas-solicitacoes">Minhas Solicitações</Link>
             </li>
           </ul>
         </nav>
