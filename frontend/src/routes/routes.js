@@ -8,7 +8,6 @@ import Perfil from "../pages/perfil/perfil.js";
 //import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import ListarSolicitacoes from "../pages/solicitacoes/listar_solicitacoes";
-import NovaSolicitacao from "../pages/solicitacoes/nova_solicitacao.js";
 import Home from "./../pages/home";
 
 
@@ -63,15 +62,14 @@ import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulari
 
 // Disponibilidade
 import CadastrarAtualizarDisponibilidade from "../pages/disponibilidade/cadastrar_atualizar.js";
+import FormularioIndisponivel from '../pages/disponibilidade/FormularioIndisponivel.js';
 import ListarDisponibilidades from "../pages/disponibilidade/listar.js";
 import VerificadorDisponibilidade from '../pages/disponibilidade/VerificadorDisponibilidade.js';
-import FormularioIndisponivel from '../pages/disponibilidade/FormularioIndisponivel.js';
 
 // Formulário de Abono de Falta
 import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
-import CadastrarAtualizarCoordenador from "../pages/coordenadores/cadastrar_atualizar_coordenadores.js";
 
 //Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
@@ -101,6 +99,7 @@ import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenad
 //Telas Aluno
 import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
 import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
+import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
 
 //Form Entrega de Atividades Complementares
 import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
@@ -119,7 +118,7 @@ const routes = [
   <Route path="/" element={<Home />} key="home" />,
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
-  <Route path="/nova-solicitacao" element={<NovaSolicitacao />} key="nova-solicitacao" />,
+
   <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} />,
   //<Route path="/pos-login" element={<PosLogin />} />,
 
@@ -224,6 +223,7 @@ const routes = [
   <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
 
   //Tela Aluno
+  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
   <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
   <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
 
