@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/headers/header";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 
 export default function FormularioTrancamentoMatricula() {
@@ -91,7 +91,7 @@ export default function FormularioTrancamentoMatricula() {
 
   return (
     <div>
-      <Header />
+      <HeaderAluno />
       <main className="container">
         <h2>Solicitação de Trancamento de Matrícula</h2>
 

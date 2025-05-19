@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/headers/header";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
@@ -155,7 +155,7 @@ export default function FormularioAbonoFaltas() {
 
   return (
     <div>
-      <Header />
+      <HeaderAluno />
       <main className="container">
         <h2>Formulário de Abono e Justificativa de Faltas</h2>
         <div className="descricao-formulario">

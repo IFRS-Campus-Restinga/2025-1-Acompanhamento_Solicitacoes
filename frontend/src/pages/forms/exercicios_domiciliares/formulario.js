@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from "react-hook-form";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/headers/header";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import { extractMatriculaFromEmail, validateForm, validateMatricula } from "./validations";
 
@@ -318,7 +318,7 @@ const FormularioExercicioDomiciliar = () => {
 
   return (
     <div>
-      <Header />
+      <HeaderAluno />
       <main className="container">
         <h2>Solicitação de Exercícios Domiciliares</h2>
         <h6>Conforme o Art. 141. da Organização Didática do IFRS, os Exercícios Domiciliares 

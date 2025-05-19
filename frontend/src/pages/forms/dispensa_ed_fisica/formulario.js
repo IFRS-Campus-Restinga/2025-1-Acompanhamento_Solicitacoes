@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/headers/header";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
@@ -152,7 +152,7 @@ export default function Formulario() {
 
     return (
         <div>
-            <Header />
+            <HeaderAluno />
             <main className="container">
                 <h2>Formulário de Dispensa de Educação Física</h2>
                 <div className="descricao-formulario">
