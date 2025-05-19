@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-//import "./../header_nav";
+import "./../header_nav.css";
 
 const HeaderAluno = () => {
   const [userData, setUserData] = useState(null);
