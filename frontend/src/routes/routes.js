@@ -7,7 +7,7 @@ import Perfil from "../pages/perfil/perfil.js";
 
 //import Cruds from "../pages/configuracoes/cruds.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
-import ListarSolicitacoes from "../pages/solicitacoes/listar_solicitacoes";
+import ListarSolicitacoes from "../listar_solicitacoes.js";
 import Home from "./../pages/home";
 
 
