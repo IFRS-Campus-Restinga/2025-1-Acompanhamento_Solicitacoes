@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import "./../../components/base/main.css";
 import "./cruds.css";
 
@@ -17,7 +17,7 @@ const Cruds = () => {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>CRUDs Disponíveis</h2>
         <div className="grid-cruds">
