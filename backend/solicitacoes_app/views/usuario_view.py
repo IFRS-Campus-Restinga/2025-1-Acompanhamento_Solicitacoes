@@ -1,7 +1,7 @@
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-from ..serializers.usuario_serializer import UsuarioSerializer
+from ..serializers.usuario_serializer import UsuarioSerializerComPapeis, UsuarioSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
 
 
@@ -12,7 +12,7 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     """
 
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
-    serializer_class = UsuarioSerializer
+    serializer_class = UsuarioSerializerComPapeis
     permission_classes = [AllowAny]
 
 class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -22,7 +22,7 @@ class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
 
     queryset = Usuario.objects.filter(is_superuser=False)
-    serializer_class = UsuarioSerializer
+    serializer_class = UsuarioSerializerComPapeis
     permission_classes = [AllowAny]
 
     def update(self, request, *args, **kwargs): #para update de usuarios inativos e reativação
@@ -43,5 +43,5 @@ class UsuariosInativosView(generics.ListAPIView):
     Endpoint para listar usuários inativos.
     """
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
-    serializer_class = UsuarioSerializer
+    serializer_class = UsuarioSerializerComPapeis
     permission_classes = [AllowAny]

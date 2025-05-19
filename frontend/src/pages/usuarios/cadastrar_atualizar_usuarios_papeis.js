@@ -4,26 +4,32 @@ import { useNavigate, useLocation, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/header";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 const initialFormState = {
   nome: "", email: "", cpf: "", telefone: "", data_nascimento: "",
   curso: "", ppc: "", matricula: "", ano_ingresso: "",
+  siape: "", inicio_mandato: "", fim_mandato: ""
 };
 
+// Mapeamento de papéis para endpoints atômicos
+const PAPEL_ENDPOINTS = {
+  aluno: "alunos/",
+  coordenador: "coordenadores/",
+  cre: "cres/"
+};
+
+// Mapeamento de campos para validação
 const getValidationUrl = (fieldName, papel) => {
-  const base = "usuarios/";
   switch (fieldName) {
-    case "matricula": case "ppc": case "ano_ingresso": return "alunos/";
-    default: return base;
-  }
-};
-
-const getEntityEndpoint = (papel) => {
-  switch (papel) {
-    case "aluno": return "alunos/";
-    case "coordenador": return "coordenadores/";
-    case "cre": return "cres/";
-    default: return "usuarios/";
+    case "matricula": case "ppc": case "ano_ingresso": 
+      return "alunos/";
+    case "siape":
+      return papel === "cre" ? "cres/" : "coordenadores/";
+    case "inicio_mandato": case "fim_mandato":
+      return "mandatos/";
+    default: 
+      return "usuarios/";
   }
 };
 
@@ -35,10 +41,12 @@ export default function CadastrarAtualizarUsuarioPapel() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [feedbackType, setFeedbackType] = useState("sucesso");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { pathname } = useLocation();
-  const papel = pathname.split("/").pop();
-  const { id } = useParams();
+  //const papel = pathname.split("/").pop();
+  const { id, papel } = useParams();
   const navigate = useNavigate();
+  const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
 
   const isEditing = !!id;
   const title = isEditing ? `Editar ${papel.charAt(0).toUpperCase() + papel.slice(1)}` : `Cadastrar Novo ${papel.charAt(0).toUpperCase() + papel.slice(1)}`;
@@ -49,7 +57,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
       try {
         const response = await api.get("cursos/");
         setCursosComPpcs(response.data);
-        console.log("Estrutura de cursosComPpcs:", response.data); //deletar
+        console.log("Estrutura de cursosComPpcs:", response.data);
       } catch (error) {
         console.error("Erro ao carregar cursos com PPCs:", error);
         setFeedbackType("erro");
@@ -61,14 +69,33 @@ export default function CadastrarAtualizarUsuarioPapel() {
     async function loadEntityDataForEdit(entityId) {
       if (!entityId) return;
       try {
-        const entityEndpoint = getEntityEndpoint(papel);
+        const entityEndpoint = PAPEL_ENDPOINTS[papel];
         const entityResponse = await api.get(`${entityEndpoint}${entityId}/`);
-        const userId = entityResponse.data.usuario;
-        const userResponse = await api.get(`usuarios/${userId}/`);
-        setFormData({ ...userResponse.data, ...entityResponse.data });
+        
+        // Extrair dados do usuário e da entidade específica
+        let userData = {};
+        let entityData = {};
+        
+        if (papel === "coordenador") {
+          // Para coordenador, a estrutura pode ser diferente devido ao mandato
+          userData = entityResponse.data.usuario || {};
+          entityData = {
+            ...entityResponse.data.coordenador || {},
+            curso: entityResponse.data.mandato?.curso || "",
+            inicio_mandato: entityResponse.data.mandato?.inicio_mandato || "",
+            fim_mandato: entityResponse.data.mandato?.fim_mandato || ""
+          };
+        } else {
+          // Para aluno e CRE
+          userData = entityResponse.data.usuario || {};
+          entityData = entityResponse.data[papel] || {};
+        }
+        
+        setFormData({ ...userData, ...entityData });
+        
         // Carregar PPCs do curso do aluno para edição
-        if (entityResponse.data.ppc) {
-          const cursoDoAluno = cursosComPpcs.find(curso => curso.codigo === entityResponse.data.ppc.curso);
+        if (papel === "aluno" && entityData.ppc) {
+          const cursoDoAluno = cursosComPpcs.find(curso => curso.codigo === entityData.ppc.curso);
           setPpcsDoCurso(cursoDoAluno?.ppcs || []);
         }
       } catch (error) {
@@ -78,7 +105,6 @@ export default function CadastrarAtualizarUsuarioPapel() {
         setShowFeedback(true);
       }
     }
-
 
     if (papel === "aluno" || papel === "coordenador") {
       loadCursosComPpcs();
@@ -94,9 +120,12 @@ export default function CadastrarAtualizarUsuarioPapel() {
     // Atualiza a lista de PPCs quando o curso selecionado muda
     const cursoSelecionado = cursosComPpcs.find(curso => curso.codigo === formData.curso);
     setPpcsDoCurso(cursoSelecionado?.ppcs || []);
-    // Limpar o PPC selecionado ao mudar o curso
-    setFormData(prev => ({ ...prev, ppc: "" }));
-  }, [formData.curso, cursosComPpcs]);
+    
+    // Limpar o PPC selecionado ao mudar o curso (apenas para novos cadastros)
+    if (!isEditing) {
+      setFormData(prev => ({ ...prev, ppc: "" }));
+    }
+  }, [formData.curso, cursosComPpcs, isEditing]);
 
   async function validateField(fieldName, value) {
     setErrors(prev => ({ ...prev, [fieldName]: null }));
@@ -116,8 +145,8 @@ export default function CadastrarAtualizarUsuarioPapel() {
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: null }));
     if (name === "curso") {  
-    console.log("Curso selecionado:", value);
-  }
+      console.log("Curso selecionado:", value);
+    }
   };
 
   const handleBlur = (e) => {
@@ -126,36 +155,97 @@ export default function CadastrarAtualizarUsuarioPapel() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmissionSuccessful(false);
+    
     const papelTexto = papel.charAt(0).toUpperCase() + papel.slice(1);
     const operacaoTexto = isEditing ? "atualizado" : "criado";
-    const entityEndpoint = getEntityEndpoint(papel);
-    const url = isEditing ? `${entityEndpoint}${id}/` : entityEndpoint;
-    const { nome, email, cpf, telefone, data_nascimento, curso, ppc, usuario, ...papelData } = formData;
-    const userPayload = { nome, email, cpf, telefone, data_nascimento };
-    const alunoPayload = { ...papelData, ppc: ppc };
 
+    const usuario = {
+      nome: formData.nome,
+      email: formData.email,
+      cpf: formData.cpf,
+      telefone: formData.telefone,
+      data_nascimento: formData.data_nascimento,
+    }
+
+    
     try {
-      const requestMethod = isEditing ? api.patch : api.post;
+      let response;
+      
+      
       if (isEditing) {
-        const entityResponse = await api.get(`${entityEndpoint}${id}/`);
-        const userId = entityResponse.data.usuario;
-        await api.patch(`usuarios/${userId}/`, userPayload);
-        await requestMethod(url, alunoPayload);
-      } else if (papel === "aluno") {
-        const userResponse = await api.post("usuarios/", userPayload);
-        const userId = userResponse.data.id;
-        await requestMethod(url, { ...alunoPayload, curso: curso, ppc: ppc, usuario: userId });
-      } else {
-        // Lógica para outros papéis (coordenador, cre) se necessário
-        const userResponse = await api.post("usuarios/", userPayload);
-        const userId = userResponse.data.id;
-        await requestMethod(url, { ...papelData, usuario: userId });
+        // Lógica para edição
+        const entityEndpoint = PAPEL_ENDPOINTS[papel];
+        
+        // Preparar payload baseado no papel
+        let payload = {};
+        
+        
+        if (papel === "aluno") {
+          payload = {
+            usuario,
+            matricula: formData.matricula,
+            ppc: formData.ppc,
+            ano_ingresso: formData.ano_ingresso
+          };
+        } else if (papel === "coordenador") {
+          payload = {
+            usuario,
+            siape: formData.siape,
+            curso: formData.curso,
+            inicio_mandato: formData.inicio_mandato,
+            fim_mandato: formData.fim_mandato
+          };
+        } else if (papel === "cre") {
+          payload = {
+            usuario,
+            siape: formData.siape
+          };
+        }
+        
+        response = await api.patch(`${entityEndpoint}${id}/`, payload);
+      } 
+      else {
+        // Lógica para criação usando endpoints atômicos
+        const entityEndpoint = PAPEL_ENDPOINTS[papel];
+        
+        // Preparar payload baseado no papel
+        let payload = {};
+        
+        if (papel === "aluno") {
+          payload = {
+            usuario,
+            matricula: formData.matricula,
+            ppc: formData.ppc,
+            ano_ingresso: formData.ano_ingresso
+          };
+        } else if (papel === "coordenador") {
+          payload = {
+            usuario,
+            siape: formData.siape,
+            curso: formData.curso,
+            inicio_mandato: formData.inicio_mandato,
+            fim_mandato: formData.fim_mandato
+          };
+        } else if (papel === "cre") {
+          payload = {
+            usuario,
+            siape: formData.siape
+          };
+        }
+        
+        console.log(`Enviando payload para criação atômica de ${papel}:`, payload);
+        response = await api.post(entityEndpoint, payload);
       }
+      
       setFeedbackType("sucesso");
       setFeedbackMessage(`${papelTexto} ${operacaoTexto} com sucesso!`);
       setShowFeedback(true);
       setFormData(initialFormState);
       setErrors({});
+      setSubmissionSuccessful(true);
     } catch (error) {
       console.error(`Erro ao ${operacaoTexto.toLowerCase()} ${papel}:`, error);
       const errorData = error.response?.data;
@@ -163,42 +253,47 @@ export default function CadastrarAtualizarUsuarioPapel() {
       setFeedbackMessage(`Erro ao ${operacaoTexto.toLowerCase()} ${papelTexto.toLowerCase()}. ${errorData ? JSON.stringify(errorData) : ""}`);
       setShowFeedback(true);
       if (errorData) setErrors(errorData);
+      setSubmissionSuccessful(false);
+    } finally {
+      setIsSubmitting(false);
     }
   }
 
   const closeFeedback = () => {
     setShowFeedback(false);
-    navigate("/usuarios");
+    if (submissionSuccessful) {
+      navigate("/usuarios");
+    }
   };
 
   const renderField = (field, label, type = "text", options = [], optionLabelKey = "nome", optionValueKey = "codigo") => (
-  <div className="form-group" key={field}>
-    <label>{label}:</label>
-    {type === "select" ? (
-      <select
-        name={field}
-        className={`input-text ${errors[field] ? "input-error" : ""}`}
-        value={formData[field] || ""}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      >
-        <option value="">Selecione</option>
-        {field === "ppc" &&
-          options.map(option => {
-            console.log("Opção do PPC no render:", option);
-            return (
+    <div className="form-group" key={field}>
+      <label>{label}:</label>
+      {type === "select" ? (
+        <select
+          name={field}
+          className={`input-text ${errors[field] ? "input-error" : ""}`}
+          value={formData[field] || ""}
+          onChange={handleChange}
+          onBlur={handleBlur}
+        >
+          <option value="">Selecione</option>
+          {field === "ppc" && ppcsDoCurso.length > 0 &&
+            ppcsDoCurso.map(option => (
               <option key={option} value={option}>
                 {option}
               </option>
-            );
-          })}
-
-        {options.map(option => (
-          <option key={option?.codigo} value={option?.codigo}>
-            {option?.nome}
-          </option>
-        ))}
-      </select>
+            ))
+          }
+          
+          {field !== "ppc" && options.length > 0 &&
+            options.map(option => (
+              <option key={option?.codigo} value={option?.codigo}>
+                {option?.nome}
+              </option>
+            ))
+          }
+        </select>
       ) : (
         <input
           type={type}
@@ -207,7 +302,6 @@ export default function CadastrarAtualizarUsuarioPapel() {
           value={formData[field] || ""}
           onChange={handleChange}
           onBlur={handleBlur}
-          required={["nome", "email", "cpf", "telefone", "data_nascimento"].includes(field)}
         />
       )}
       {errors[field] && <div className="error-text">{errors[field]}</div>}
@@ -228,7 +322,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
 
           {papel === "aluno" && (
             <>
-              {renderField("curso", "Curso", "select", cursosComPpcs, "nome", "codigo")}
+              {renderField("curso", "Curso", "select", cursosComPpcs)}
               {renderField("ppc", "PPC", "select", ppcsDoCurso)}
               {renderField("matricula", "Matrícula", "text")}
               {renderField("ano_ingresso", "Ano de Ingresso", "number")}
@@ -241,13 +335,19 @@ export default function CadastrarAtualizarUsuarioPapel() {
 
           {papel === "coordenador" && (
             <>
-              {renderField("curso", "Curso", "select", cursosComPpcs, "nome", "codigo")}
+              {renderField("curso", "Curso", "select", cursosComPpcs)}
               {renderField("inicio_mandato", "Início do Mandato", "date")}
               {renderField("fim_mandato", "Fim do Mandato", "date")}
             </>
           )}
 
-          <button type="submit" className="submit-button">{submitButtonText}</button>
+          <button 
+            type="submit" 
+            className="submit-button"
+            disabled={isSubmitting}
+          >
+            {isSubmitting ? "Processando..." : submitButtonText}
+          </button>
         </form>
 
         <PopupFeedback
@@ -256,6 +356,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
           tipo={feedbackType}
           onClose={closeFeedback}
         />
+        <BotaoVoltar onClick={() => navigate(-1)} />
       </main>
       <Footer />
     </div>

@@ -9,6 +9,57 @@ class UsuarioMinimoSerializer(serializers.ModelSerializer):
 
 
 class UsuarioSerializer(serializers.ModelSerializer):
+    """
+    Serializer para o modelo Usuario.
+    """
+    class Meta:
+        model = Usuario
+        fields = [
+            'id', 'nome', 'email', 'cpf', 'telefone', 
+            'data_nascimento', 'status_usuario', 'is_active'
+        ]
+        read_only_fields = ['id', 'status_usuario', 'is_active']
+    
+    def validate_email(self, value):
+        """
+        Valida se o email é único, considerando o contexto de atualização.
+        """
+        instance = getattr(self, 'instance', None)
+        if instance and instance.email == value:
+            # Se estamos atualizando e o email não mudou, é válido
+            return value
+            
+        if Usuario.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Este email já está em uso.")
+        return value
+    
+    def validate_cpf(self, value):
+        """
+        Valida se o CPF é único, considerando o contexto de atualização.
+        Permite CPF em branco ou nulo.
+        """
+        if not value:  # CPF é opcional
+            return value
+            
+        instance = getattr(self, 'instance', None)
+        if instance and instance.cpf == value:
+            # Se estamos atualizando e o CPF não mudou, é válido
+            return value
+            
+        if Usuario.objects.filter(cpf=value).exists():
+            raise serializers.ValidationError("Este CPF já está em uso.")
+        return value
+    
+    def validate(self, data):
+     # Executa as validações do model
+        instance = self.instance or self.Meta.model(**data)
+        instance.password = "Teste123"
+        instance.full_clean() 
+        return data
+    
+
+
+class UsuarioSerializerComPapeis(serializers.ModelSerializer):
     papel = serializers.SerializerMethodField()
     papel_detalhes = serializers.SerializerMethodField()
 
@@ -71,4 +122,16 @@ class UsuarioSerializer(serializers.ModelSerializer):
         instance.password = "Teste123"
         instance.full_clean() 
         return data
+
+
+class UsuarioWriteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Usuario
+        fields = ['nome', 'email', 'cpf', 'telefone', 'data_nascimento']
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['email'].validators = []
+        self.fields['cpf'].validators = []
 
