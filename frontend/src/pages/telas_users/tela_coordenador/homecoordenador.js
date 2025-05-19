@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import HeaderCoordenador from "../../../components/base/coordenador/header_coordenador";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
 
@@ -36,7 +36,7 @@ const HomeCoordenador = () => {
 
   return (
     <div>
-      <Header />
+      <HeaderCoordenador />
       <main className="container">
         <h2>Painel da Coordenação</h2>
 
