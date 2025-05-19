@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./../header_nav.css";
+import "./header_nav.css";
 
-
-const HeaderCoordenador = () => {
+const Header = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate(); 
 
@@ -54,7 +53,7 @@ const HeaderCoordenador = () => {
     <header className="header">
       <div className="header-container">
         <div className="left">
-          <Link to="/coordenador_home">
+          <Link to="/">
             <img
               src="/img/logo-ifrs-branco.png" 
               alt="logotipo do ifrs campus restinga"
@@ -65,17 +64,7 @@ const HeaderCoordenador = () => {
 
         <nav className="center">
           <ul className="nav-links">
-            <li>
-              <Link to="/nova-solicitacao">Nova Solicitação</Link>
-            </li>
-            <li>
-              <Link to="/todas-solicitacoes">Minhas Solicitações</Link>
-            </li>
-            <li>
-              <Link to="/configuracoes" className="configuracoes-link">
-                Configurações
-              </Link>
-            </li>
+           
           </ul>
         </nav>
 
@@ -110,5 +99,5 @@ const HeaderCoordenador = () => {
   );
 };
 
-export default HeaderCoordenador;
+export default Header;
 

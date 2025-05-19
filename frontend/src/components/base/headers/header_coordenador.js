@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "./../header_nav.css";
+import "./../headers/header_nav.css";
 
-const HeaderAluno = () => {
+
+const HeaderCoordenador = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate(); 
 
@@ -53,7 +54,7 @@ const HeaderAluno = () => {
     <header className="header">
       <div className="header-container">
         <div className="left">
-          <Link to="/aluno/minhas-solicitacoes">
+          <Link to="/coordenador_home">
             <img
               src="/img/logo-ifrs-branco.png" 
               alt="logotipo do ifrs campus restinga"
@@ -69,6 +70,11 @@ const HeaderAluno = () => {
             </li>
             <li>
               <Link to="/todas-solicitacoes">Minhas Solicitações</Link>
+            </li>
+            <li>
+              <Link to="/configuracoes" className="configuracoes-link">
+                Configurações
+              </Link>
             </li>
           </ul>
         </nav>
@@ -94,7 +100,7 @@ const HeaderAluno = () => {
             // Se não houver dados do usuário, pode mostrar um link de login
             // ou manter a informação padrão se preferir que o redirecionamento cuide disso
             <>
-              <p className="mensagem-usuario">Bem-vindo</p> 
+
               {/* <Link to="/login">Entrar</Link> */}
             </>
           )}
@@ -104,5 +110,5 @@ const HeaderAluno = () => {
   );
 };
 
-export default HeaderAluno;
+export default HeaderCoordenador;
 
