@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { useForm } from "react-hook-form";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import Header from "../../../components/base/headers/header";
 import "../../../components/formulario.css";
 import { extractMatriculaFromEmail, validateForm, validateMatricula } from "./validations";
 

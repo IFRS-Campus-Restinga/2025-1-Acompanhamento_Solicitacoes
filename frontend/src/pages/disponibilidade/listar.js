@@ -2,15 +2,15 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/header";
+import Header from "../../components/base/headers/header";
 
 // Componentes UI
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
-import Paginacao from "../../components/UI/paginacao";
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+import Paginacao from "../../components/UI/paginacao";
 
 export default function ListarDisponibilidades() {
   const navigate = useNavigate();

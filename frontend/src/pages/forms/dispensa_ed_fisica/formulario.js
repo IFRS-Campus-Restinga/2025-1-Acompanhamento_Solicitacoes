@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
-import Header from "../../../components/base/header";
-import Footer from "../../../components/base/footer";
-import Options from "../../../components/options";
-import Feedback from "../../../components/pop_ups/popup_feedback"
 import { useNavigate } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/headers/header";
 import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
+import Options from "../../../components/options";
+import Feedback from "../../../components/pop_ups/popup_feedback";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);

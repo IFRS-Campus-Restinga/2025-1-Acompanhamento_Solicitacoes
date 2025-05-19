@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Header from "../../../components/base/header";
-import Footer from "../../../components/base/footer";
-import PopupFeedback from "../../../components/pop_ups/popup_feedback"; 
 import { useNavigate } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import Header from "../../../components/base/headers/header";
 import "../../../components/formulario.css";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
 export default function Formulario() {
     const [alunos, setAlunos] = useState([]);

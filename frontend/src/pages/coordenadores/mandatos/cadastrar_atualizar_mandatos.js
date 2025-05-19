@@ -1,9 +1,9 @@
-import api from "../../../services/api";
-import React, { useEffect, useState } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import Header from "../../../components/base/headers/header";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import api from "../../../services/api";
 
 const initialFormState = {
   coordenador: "",

@@ -1,8 +1,8 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import Header from "../../../components/base/headers/header";
 
 // POPUPS
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";

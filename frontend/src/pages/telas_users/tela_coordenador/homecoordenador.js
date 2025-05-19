@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import HeaderCoordenador from "../../../components/base/coordenador/header_coordenador";
 import Footer from "../../../components/base/footer";
+import HeaderCoordenador from "../../../components/base/headers/header_coordenador";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
 

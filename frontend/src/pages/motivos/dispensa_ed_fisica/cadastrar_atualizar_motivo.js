@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/header";
+import Header from "../../../components/base/headers/header";
 
 //POP-UPS IMPORTAÇÃO
 

@@ -1,8 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import HeaderAluno from "../../../components/base/aluno/header_aluno";
 import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
