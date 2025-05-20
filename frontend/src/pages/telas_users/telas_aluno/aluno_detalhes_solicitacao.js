@@ -1,9 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+
+//Components
 import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
-//import "../../../components/detalhes_solicitacao.css";
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+
+//CSS
+import "../../../components/detalhes_solicitacao.css";
 
 export default function DetalhesSolicitacao() {
     const { id } = useParams();
@@ -13,26 +18,26 @@ export default function DetalhesSolicitacao() {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        const fetchSolicitacao = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const response = await axios.get(`http://localhost:8000/solicitacoes/detalhes/${id}/`);
-                
-                if (!response.data) {
-                    throw new Error("Dados da solicitação não encontrados");
-                }
-                
-                setSolicitacao(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar detalhes:", error);
-                setError(error.message || "Não foi possível carregar os detalhes da solicitação.");
-            } finally {
-                setLoading(false);
+    const fetchSolicitacao = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`);
+            
+            if (!response.data) {
+                throw new Error("Dados da solicitação não encontrados");
             }
-        };
+            
+            setSolicitacao(response.data);
+        } catch (error) {
+            console.error("Erro ao buscar detalhes:", error);
+            setError(error.message || "Não foi possível carregar os detalhes da solicitação.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
-        fetchSolicitacao();
+    fetchSolicitacao();
     }, [id]);
 
     const formatarData = (dataString) => {
@@ -133,14 +138,7 @@ export default function DetalhesSolicitacao() {
                     )}
                 </div>
 
-                <div className="detalhes-actions">
-                    <button 
-                        onClick={handleVoltar} 
-                        className="btn-voltar"
-                    >
-                        Voltar para Minhas Solicitações
-                    </button>
-                </div>
+                <BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />
             </main>
             <Footer />
         </div>

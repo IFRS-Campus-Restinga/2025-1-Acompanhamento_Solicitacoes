@@ -1,17 +1,18 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import Footer from "../../../components/base/footer";
-import HeaderAluno from "../../../components/base/headers/header_aluno";
+import api from "../../../services/api";
+
+//CSS
 import "../../../components/formulario.css";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
-import api from "../../../services/api";
 
-
+//COMPONENTS
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
-//import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../../components/UI/paginacao";
 
 
@@ -94,59 +95,6 @@ const MinhasSolicitacoesAluno = () => {
     return (
         <div>
             <HeaderAluno />
-            {/* Main ANTIGO
-            <main className="container">
-                <h2>Lista de Solicitações</h2>
-
-                {loading ? (
-                    <p>Carregando solicitações...</p>
-                ) : error ? (
-                    <p style={{ color: "red" }}>{error}</p>
-                ) : solicitacoes.length > 0 ? (
-                    <table className="tabela-cruds">
-                        <thead>
-                            <tr>
-                                <th>Documento solicitado</th>
-                                <th>Status</th>
-                                <th>Responsável</th>
-                                <th>Data da Solicitação:</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {solicitacoes.map((solicitacao, index) => (
-                                <tr key={solicitacao.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                                    
-                                    <td>{solicitacao.tipo}</td>
-                                    <td>
-                                        <span className={`status-badge ${solicitacao.status.toLowerCase().replace(' ', '-')}`}>
-                                            {solicitacao.status}
-                                        </span>
-                                    </td>
-                                    <td>{solicitacao.posse_solicitacao}</td>
-                                    <td>{formatarData(solicitacao.data_solicitacao)}</td>
-                                    <td>
-                                        <Link 
-                                            to={`/aluno/detalhes-solicitacao/${solicitacao.id}`} 
-                                            className="btn-detalhes"
-                                            title="Ver detalhes">
-                                            <i className="bi bi-eye-fill"></i>
-                                        </Link>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                ) : (
-                    <div className="no-requests">
-                        <p>Nenhuma solicitação encontrada.</p>
-                        <Link to="/nova-solicitacao" className="btn-primary">
-                            Criar nova solicitação
-                        </Link>
-                    </div>
-                )}
-            </main>
-            */}
              <main className="container">
                 <h2>Solicitações</h2>
 
@@ -194,7 +142,7 @@ const MinhasSolicitacoesAluno = () => {
                         {/*   to={`/solicitacoes/${solicitacao.id}`}  */}
                         <td>
                             <div className="botoes-acoes">
-                                <Link 
+                               <Link 
                                     to={`/aluno/detalhes-solicitacao/${solicitacao.id}`} 
                                     className="btn-detalhes"
                                     title="Ver detalhes">
@@ -236,8 +184,6 @@ const MinhasSolicitacoesAluno = () => {
                 tipo={tipoMensagem}
                 onClose={() => setMostrarFeedback(false)}
                 />
-
-                {/*<BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />*/}
                 
             </main>
             <Footer />
