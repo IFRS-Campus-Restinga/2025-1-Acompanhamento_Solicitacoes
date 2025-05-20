@@ -101,7 +101,7 @@ export default function ListarPpc() {
             {ppcsPaginados.map((ppc, index) => (
               <tr key={ppc.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{ppc.codigo}</td>
-                <td>{ppc.curso.nome}</td>
+                <td>{ppc.curso_details.nome}</td>
                 <td>
                   <div className="botoes-acoes">
                     <Link to={`/ppcs/${encodeURIComponent(ppc.codigo)}`} title="Editar">
