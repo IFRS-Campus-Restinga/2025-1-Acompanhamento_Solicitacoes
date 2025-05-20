@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import api from "../../services/api";
@@ -311,7 +311,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{title}</h2>
         <form className="form-box" onSubmit={handleSubmit}>

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function CadastrarAtualizarDisponibilidade() {
@@ -95,7 +95,7 @@ export default function CadastrarAtualizarDisponibilidade() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{id ? "Editar Prazo" : "Prazos de Formulários"}</h2>
         

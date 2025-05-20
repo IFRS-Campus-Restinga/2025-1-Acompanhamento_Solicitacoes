@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/headers/header";
+import HeaderCRE from "../../../components/base/headers/header_cre";
 
 // POPUPS
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
@@ -16,7 +16,6 @@ import BarraPesquisa from "../../../components/UI/barra_pesquisa";
 //BOTÕES
 import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
-
 
 
 export default function ListarMotivosExercicios() {
@@ -83,7 +82,7 @@ export default function ListarMotivosExercicios() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>Motivos de Exercícios</h2>
 

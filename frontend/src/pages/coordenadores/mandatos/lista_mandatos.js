@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../../../components/base/footer';
-import Header from '../../../components/base/headers/header';
+import HeaderCRE from "../../../components/base/headers/header_cre";
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
 import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
@@ -68,7 +68,7 @@ export default function HistoricoMandatos() {
 
     return (
         <div>
-            <Header />
+            <HeaderCRE />
             <main className="container">
                 <h2>Lista de Mandatos por Curso</h2>
 
