@@ -45,6 +45,8 @@ from .views.buscar_info_usuario import UsuarioPorEmailView
 
 from .views.buscar_info_usuario import DisciplinasPorPPCView
 
+from .views.permissoes_view import PermissaoListView
+
 app_name = 'solicitacoes_app'
 
        
@@ -145,4 +147,8 @@ urlpatterns = [
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 
-    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),]
+    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
+    
+    path('solicitacoes/permissoes/', PermissaoListView.as_view()),
+
+    ]
