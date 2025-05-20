@@ -24,12 +24,14 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
     matricula = serializers.CharField(read_only=True)
     periodo_afastamento = serializers.SerializerMethodField()
     ppc = serializers.PrimaryKeyRelatedField(queryset=Ppc.objects.all(), required=False)
+     periodo = serializers.CharField(required=True) 
 
     class Meta:
         model = FormExercicioDomiciliar
         fields = [
             'id',
             'ppc',
+            'periodo',
             'aluno_email',
             'aluno_nome',
             'email',
@@ -48,6 +50,21 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
             'consegue_realizar_atividades',
         ]
 
+     def get_aluno_nome(self, obj):
+        if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
+            return obj.solicitacao.aluno.usuario.nome
+        return None
+        
+    def get_email(self, obj):
+        if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
+            return obj.solicitacao.aluno.usuario.email
+        return None
+        
+    def get_matricula(self, obj):
+        if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
+            return obj.solicitacao.aluno.matricula
+        return None
+
     def get_periodo_afastamento(self, obj):
         return obj.periodo_afastamento
 
@@ -56,19 +73,22 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
         curso_codigo = validated_data.pop('curso_codigo', None)
         validated_data['data_solicitacao'] = date.today()
         
+        # Busca o aluno pelo email para criar a relação
         if email:
             try:
                 user = User.objects.get(email=email)
-                # Método seguro para obter o nome completo
-                full_name = f"{getattr(user, 'first_name', '')} {getattr(user, 'last_name', '')}".strip()
-                validated_data.update({
-                    'aluno_nome': full_name or user.username,
-                    'email': user.email,
-                    'matricula': getattr(user, 'matricula', '')
-                })
+                aluno = Aluno.objects.get(usuario=user)
+                
+                # A relação com o aluno será estabelecida pela Solicitação
+                # Não precisamos mais definir aluno_nome, email e matricula aqui
+                
             except User.DoesNotExist:
                 raise serializers.ValidationError({
                     "aluno_email": "Usuário não encontrado com este email."
+                })
+            except Aluno.DoesNotExist:
+                raise serializers.ValidationError({
+                    "aluno_email": "Aluno não encontrado para este usuário."
                 })
         
         return super().create(validated_data)
