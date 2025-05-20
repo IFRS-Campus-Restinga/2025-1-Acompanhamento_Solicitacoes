@@ -2,6 +2,7 @@ from django.db import models
 from datetime import date
 from django.contrib.auth import get_user_model
 
+from ..periodo_disciplina import PeriodoDisciplina
 from ..ppc import Ppc
 from ..curso import Curso
 from ..solicitacao import Solicitacao
@@ -34,28 +35,19 @@ class FormExercicioDomiciliar(Solicitacao):
         ("outro", "Outro")
     ]
 
-    aluno_nome = models.CharField(
-        max_length=100,
-        validators=[MinLengthValidator(1)],
-        verbose_name="Nome do Aluno"
-    )
-    
-    email = models.EmailField(
-        validators=[EmailValidator()],
-        verbose_name="E-mail"
-    )
-    
-    matricula = models.CharField(
-        max_length=20,
-        validators=[MinLengthValidator(1)],
-        verbose_name="Matrícula"
-    )
-
     curso = models.ForeignKey(
     Curso,
     on_delete=models.CASCADE,
     related_name="formularios_exercicios_domiciliares",
     verbose_name="Curso"
+    )
+
+    periodo = models.CharField(
+        max_length=20,
+        choices=PeriodoDisciplina.choices,
+        default=PeriodoDisciplina.PRIMEIRO_SEMESTRE,
+        verbose_name="Período",
+        help_text="Período das disciplinas"
     )
 
     ppc = models.ForeignKey(
@@ -117,7 +109,10 @@ class FormExercicioDomiciliar(Solicitacao):
     )
 
     def __str__(self):
-        return f"Exercício Domiciliar - {self.aluno_nome} ({self.curso.nome})"
+         # Acessa o nome do aluno através da relação com Solicitação
+        aluno_nome = self.solicitacao.aluno.usuario.nome if hasattr(self, 'solicitacao') and self.solicitacao.aluno else "Aluno não identificado"
+        return f"Exercício Domiciliar - {aluno_nome} ({self.curso.nome})"
+    
     
     @property
     def periodo_afastamento(self):
@@ -125,12 +120,3 @@ class FormExercicioDomiciliar(Solicitacao):
         if self.data_inicio_afastamento and self.data_fim_afastamento:
             return (self.data_fim_afastamento - self.data_inicio_afastamento).days + 1
         return 0
-
-    def save(self, *args, **kwargs):
-        if hasattr(self, 'aluno') and self.aluno:
-            # Usamos first_name e last_name diretamente como fallback
-            full_name = f"{getattr(self.aluno, 'first_name', '')} {getattr(self.aluno, 'last_name', '')}".strip()
-            self.aluno_nome = full_name or getattr(self.aluno, 'username', '')
-            self.email = getattr(self.aluno, 'email', '')
-            self.matricula = getattr(self.aluno, 'matricula', '')
-        super().save(*args, **kwargs)
