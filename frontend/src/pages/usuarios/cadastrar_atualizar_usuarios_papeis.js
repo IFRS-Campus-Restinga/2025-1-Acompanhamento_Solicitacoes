@@ -70,7 +70,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
       if (!entityId) return;
       try {
         const entityEndpoint = PAPEL_ENDPOINTS[papel];
-        const entityResponse = await api.get(`${entityEndpoint}${entityId}/`);
+        const entityResponse = await api.get(`${entityEndpoint}${entityId}`); //tirei a barra depois do entityId
         
         // Extrair dados do usuário e da entidade específica
         let userData = {};
@@ -127,6 +127,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
     }
   }, [formData.curso, cursosComPpcs, isEditing]);
 
+  // Valida campo a campo no backend e é chamando no handleBlur
   async function validateField(fieldName, value) {
     setErrors(prev => ({ ...prev, [fieldName]: null }));
     const url = getValidationUrl(fieldName, papel);
@@ -205,7 +206,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
           };
         }
         
-        response = await api.patch(`${entityEndpoint}${id}/`, payload);
+        response = await api.patch(`${entityEndpoint}${id}`, payload);  //retirei a barra aqui também, após o id
       } 
       else {
         // Lógica para criação usando endpoints atômicos
