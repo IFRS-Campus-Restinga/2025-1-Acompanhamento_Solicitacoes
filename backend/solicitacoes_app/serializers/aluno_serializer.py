@@ -28,6 +28,9 @@ class AlunoSerializerAntigo(serializers.ModelSerializer):
             raise serializers.ValidationError({"ppc": "Um PPC deve ser selecionado."})
         return data
 
+    #def save(): ver como implementar para o write
+     #   model.full_clean()
+     #   super().save()
 
 class AlunoSerializer(serializers.ModelSerializer):
 

@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
@@ -108,7 +108,7 @@ export default function CadastrarAtualizarDisciplina() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{codigoParam ? "Editar Disciplina" : "Cadastrar Nova Disciplina"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>

@@ -4,7 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 // COMPONENTES BASE
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import "./grupo.css"; // Certifique-se que este CSS existe ou remova se não for usado
 
 // POPUPS
@@ -92,7 +92,7 @@ export default function ListarGrupos() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>Grupos</h2>
 
@@ -178,7 +178,7 @@ export default function ListarGrupos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
       <Footer />
     </div>

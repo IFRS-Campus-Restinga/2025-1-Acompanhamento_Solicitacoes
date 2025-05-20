@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 
 export default function DetalhesUsuario() {
   const { id } = useParams();
@@ -20,7 +20,7 @@ export default function DetalhesUsuario() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>Detalhes do Usuário</h2>
 

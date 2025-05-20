@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
@@ -67,7 +67,7 @@ export default function ListarCursos() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>Cursos</h2>
 
@@ -140,7 +140,7 @@ export default function ListarCursos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
       <Footer />
     </div>

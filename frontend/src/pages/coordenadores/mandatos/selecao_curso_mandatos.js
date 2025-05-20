@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../../../components/base/footer';
-import Header from '../../../components/base/headers/header';
+import HeaderCRE from "../../../components/base/headers/header_cre";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 import api from '../../../services/api';
 
@@ -39,7 +39,7 @@ export default function SelecaoCursoMandato() {
 
     return (
         <div>
-            <Header />
+            <HeaderCRE />
             <main className="container">
                 <h2>Selecione o Curso</h2>
 
@@ -61,7 +61,7 @@ export default function SelecaoCursoMandato() {
                 ) : (
                     <p>Carregando lista de cursos...</p>
                 )}
-                <BotaoVoltar onClick={() => navigate("/")} />
+                <BotaoVoltar onClick={() => navigate("/configuracoes")} />
             </main>
             <Footer />
         </div>

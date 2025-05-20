@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import Footer from "../../../components/base/footer";
-import Header from "../../../components/base/headers/header";
+import HeaderCRE from "../../../components/base/headers/header_cre";
 
 //POP-UPS IMPORTAÇÃO
 
@@ -62,7 +62,7 @@ export default function CadastrarAtualizarMotivoDispensa() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{id ? "Editar Motivo de Dispensa de Educação Física" : "Cadastrar Novo Motivo de Dispensa de Educação Física"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>

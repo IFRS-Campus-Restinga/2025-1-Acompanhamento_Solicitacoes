@@ -6,8 +6,6 @@ from django.db import transaction
 from ..models import Aluno, Usuario
 from ..serializers.aluno_serializer import AlunoSerializer, AlunoWriteSerializer, AlunoSerializerAntigo, AlunoReadSerializer
 
-from ..serializers.usuario_serializer import UsuarioSerializer
-
 #podem mexer
 class AlunoListView(generics.ListAPIView):
     queryset = Aluno.objects.all()
