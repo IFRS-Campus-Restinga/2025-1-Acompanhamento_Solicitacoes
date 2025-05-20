@@ -14,6 +14,7 @@ const FormularioExercicioDomiciliar = () => {
   const [ppcs, setPpcs] = useState([]);
   const [disciplinasDoPpc, setDisciplinasDoPpc] = useState([]);
   const [ppcSelecionado, setPpcSelecionado] = useState("");
+  const [periodoSelecionado, setPeriodoSelecionado] = useState("");
 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
@@ -204,25 +205,22 @@ const FormularioExercicioDomiciliar = () => {
     if (!ppcCodigo) return;
     
     setIsLoadingDisciplinas(true);
+    setErroBuscaDisciplinas("");
+    
     try {
-      // Usando o mesmo endpoint que o formulário de trancamento, mas adaptado para PPC
       const response = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${ppcCodigo}/disciplinas/`);
-      if (response.data && (Array.isArray(response.data) || response.data.disciplinas)) {
-        const disciplinasData = Array.isArray(response.data) ? response.data : 
-                            response.data.disciplinas ? response.data.disciplinas : [];
-        setDisciplinasDoPpc(disciplinasData);
+      
+      if (response.data && response.data.length > 0) {
+        setDisciplinasDoPpc(response.data);
         
-        // Se o aluno já tem disciplinas matriculadas, seleciona automaticamente
-        if (alunoInfo?.disciplinas) {
-          const disciplinasMatriculadas = disciplinasData
-            .filter(d => alunoInfo.disciplinas.includes(d.codigo))
-            .map(d => `${d.nome} (${d.codigo})`)
-            .join("\n");
-          setValue("componentes_curriculares", disciplinasMatriculadas);
-        }
+        // Atualize o campo de componentes curriculares
+        setValue("componentes_curriculares", 
+          response.data.map(d => `${d.nome} (${d.codigo})`).join("\n")
+        );
       } else {
         setDisciplinasDoPpc([]);
         setValue("componentes_curriculares", "Nenhuma disciplina encontrada para este PPC.");
+        setErroBuscaDisciplinas("Nenhuma disciplina encontrada para este PPC.");
       }
     } catch (error) {
       console.error("Erro ao carregar disciplinas:", error);
@@ -296,13 +294,14 @@ const FormularioExercicioDomiciliar = () => {
 
   const handlePpcChange = async (event) => {
     const selectedPpcCodigo = event.target.value;
-    setPpcSelecionado(selectedPpcCodigo);
-    setValue("componentes_curriculares", "");
-    setDisciplinasDoPpc([]);
     
-    if (selectedPpcCodigo) {
-      carregarDisciplinasPorPpc(selectedPpcCodigo);
+    if (!selectedPpcCodigo) {
+      setErroBuscaDisciplinas("Selecione um PPC válido");
+      return;
     }
+    
+    setPpcSelecionado(selectedPpcCodigo);
+    await carregarDisciplinasPorPpc(selectedPpcCodigo);
   };
 
   const onSubmit = async (data) => {
@@ -322,15 +321,14 @@ const FormularioExercicioDomiciliar = () => {
 
     const formData = new FormData();
 
-    if (disciplinasSelecionadas.length > 0) {
-      disciplinasSelecionadas.forEach(disciplina => {
-        formData.append('disciplinas', disciplina);
-      });
-    }
+    disciplinasDoPpc
+    .filter(d => data.componentes_curriculares.includes(d.codigo))
+    .forEach(d => formData.append('disciplinas', d.codigo));
 
     formData.append('aluno_email', data.email);
     formData.append('curso_codigo', data.curso);
     formData.append('ppc_codigo', data.ppc); // Adicionado campo PPC
+    formData.append('periodo', periodoSelecionado);
     formData.append('data_inicio_afastamento', data.data_inicio_afastamento);
     formData.append('data_fim_afastamento', data.data_fim_afastamento);
     formData.append('periodo_afastamento', periodoCalculado.toString()); // Convertido para string
@@ -437,62 +435,66 @@ const FormularioExercicioDomiciliar = () => {
                 validate: (value) => validateMatricula(value) || true
               })} 
               readOnly 
-              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} 
-            />
+              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
               {errors.matricula && <span className="error-text">{errors.matricula.message}</span>}
           </div>
 
           <div className="form-group">
-            <label htmlFor="curso">Curso:</label>
-            <select 
-              id="curso" 
-              {...register("curso", { required: "Curso é obrigatório" })}
-              disabled={!!alunoInfo?.curso} // Desabilita se já veio preenchido
-            >
-              <option value="">Selecione o curso</option>
-              {cursos.map((curso) => (
-                <option key={curso.codigo} value={curso.codigo}>
-                  {curso.nome}
-                </option>
-              ))}
-            </select>
-            {errors.curso && <span className="error-text">{errors.curso.message}</span>}
+            <label>Curso:</label>
+            <input 
+              type="text" 
+              value={watch('curso_nome') || ''} 
+              readOnly/>
           </div>
 
           <div className="form-group">
-            <label htmlFor="ppc">PPC:</label>
-            <select
-              id="ppc"
+            <label>PPC:</label>
+            <input 
+              type="text" 
               {...register("ppc", { required: "PPC é obrigatório" })}
-              value={ppcSelecionado}
-              onChange={handlePpcChange}
-              disabled={!cursoSelecionado}
-            >
-              <option value="">Selecione o PPC</option>
-              {ppcs
-                .filter(ppc => !cursoSelecionado || ppc.curso.codigo === cursoSelecionado)
-                .map((ppc) => (
-                  <option key={ppc.codigo} value={ppc.codigo}>{ppc.codigo}</option>
-                ))
-              }
-            </select>
-            {isLoadingDisciplinas && <p>A carregar disciplinas...</p>}
-            {erroBuscaDisciplinas && <span className="error-text">{erroBuscaDisciplinas}</span>}
-            {errors.ppc && <span className="error-text">{errors.ppc.message}</span>}
+              value={watch('ppc_codigo') || ''} 
+              readOnly />
           </div>
 
           <div className="form-group">
-            <label htmlFor="componentes_curriculares">Disciplinas do PPC:</label>
-            <textarea
-              id="componentes_curriculares"
-              {...register("componentes_curriculares")}
-              placeholder="As disciplinas serão preenchidas ao selecionar o PPC"
-              readOnly
-              rows="5"
-              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
-            />
-            {errors.componentes_curriculares && <span className="error-text">{errors.componentes_curriculares.message}</span>}
+            <label htmlFor="periodo">Período Letivo:</label>
+            <select
+              id="periodo"
+              {...register("periodo", { required: "Período é obrigatório" })}
+              value={periodoSelecionado}
+              onChange={(e) => setPeriodoSelecionado(e.target.value)}>
+              <option value="">Selecione o período</option>
+              <option value="PRIMEIRO_ANO">1º Ano</option>
+              <option value="SEGUNDO_ANO">2º Ano</option>
+              <option value="TERCEIRO_ANO">3º Ano</option>
+              <option value="QUARTO_ANO">4º Ano</option>
+              <option value="PRIMEIRO_SEMESTRE">1º Semestre</option>
+              <option value="SEGUNDO_SEMESTRE">2º Semestre</option>
+              <option value="TERCEIRO_SEMESTRE">3º Semestre</option>
+              <option value="QUARTO_SEMESTRE">4º Semestre</option>
+              <option value="QUINTO_SEMESTRE">5º Semestre</option>
+              <option value="SEXTO_SEMESTRE">6º Semestre</option>
+              <option value="SETIMO_SEMESTRE">7º Semestre</option>
+              <option value="OITAVO_SEMESTRE">8º Semestre</option>
+              <option value="NONO_SEMESTRE">9º Semestre</option>
+              <option value="DECIMO_SEMESTRE">10º Semestre</option>
+
+            </select>
+            {errors.periodo && <span className="error-text">{errors.periodo.message}</span>}
           </div>
+        
+
+          <div className="form-group">
+            <label>Disciplinas Selecionadas:</label>
+            {disciplinasDoPpc
+              .filter(d => watch("componentes_curriculares")?.includes(d.codigo))
+              .map(d => (
+                <div key={d.codigo}>
+                  {d.nome} ({d.codigo})
+                </div>
+              ))}
+         </div>
+
 
           <div className="form-group">
             <label htmlFor="motivo_solicitacao">Motivo da solicitação:</label>
