@@ -157,7 +157,7 @@ export default function ListarMotivosAbono() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
           
       </main>
       <Footer />

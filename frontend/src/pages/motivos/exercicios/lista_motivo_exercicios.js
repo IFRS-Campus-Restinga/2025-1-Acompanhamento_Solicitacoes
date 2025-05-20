@@ -156,7 +156,7 @@ export default function ListarMotivosExercicios() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
         
       </main>
       <Footer />

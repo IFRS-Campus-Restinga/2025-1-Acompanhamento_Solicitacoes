@@ -61,7 +61,7 @@ export default function SelecaoCursoMandato() {
                 ) : (
                     <p>Carregando lista de cursos...</p>
                 )}
-                <BotaoVoltar onClick={() => navigate("/")} />
+                <BotaoVoltar onClick={() => navigate("/configuracoes")} />
             </main>
             <Footer />
         </div>

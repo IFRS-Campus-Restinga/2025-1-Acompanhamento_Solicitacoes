@@ -140,7 +140,7 @@ export default function ListarCursos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
       <Footer />
     </div>

@@ -142,7 +142,7 @@ export default function ListarDisciplinas() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
 
         <Paginacao
           dados={disciplinasFiltradas}

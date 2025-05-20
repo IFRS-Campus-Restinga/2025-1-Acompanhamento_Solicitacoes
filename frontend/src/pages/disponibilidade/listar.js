@@ -153,7 +153,7 @@ export default function ListarDisponibilidades() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
 
         {disponibilidadesFiltradas.length > 0 && (
           <Paginacao
