@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
-import "./grupo.css";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import "./grupo.css";
 
 export default function CadastrarAtualizarGrupo() {
   const [nome, setNome] = useState("");
@@ -269,7 +269,7 @@ export default function CadastrarAtualizarGrupo() {
   if (carregando) {
     return (
       <div>
-        <Header />
+        <HeaderCRE />
         <main className="container form-container">
           <h2>Carregando...</h2>
         </main>
