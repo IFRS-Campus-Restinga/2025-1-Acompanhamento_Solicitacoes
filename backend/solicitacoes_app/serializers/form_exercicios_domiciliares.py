@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from ..models import FormExercicioDomiciliar, Curso
+from ..models import FormExercicioDomiciliar, Curso, Disciplina
 from datetime import date  
 from django.contrib.auth import get_user_model
 from ..models.ppc import Ppc
@@ -7,12 +7,20 @@ from ..models.ppc import Ppc
 User = get_user_model()
 
 class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
-    # Campos para escrita
+
+     # Campos para escrita
     curso_codigo = serializers.SlugRelatedField(
         source='curso',
         queryset=Curso.objects.all(),
         slug_field='codigo',
         write_only=True
+    )
+    
+    disciplinas = serializers.PrimaryKeyRelatedField(
+        queryset=Disciplina.objects.all(),
+        many=True,
+        write_only=True,
+        required=False
     )
     
     aluno_email = serializers.EmailField(write_only=True)
@@ -23,14 +31,14 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
     email = serializers.CharField(read_only=True)
     matricula = serializers.CharField(read_only=True)
     periodo_afastamento = serializers.SerializerMethodField()
-    ppc = serializers.PrimaryKeyRelatedField(queryset=Ppc.objects.all(), required=False)
-    periodo = serializers.CharField(required=True) 
+    ppc_codigo = serializers.CharField(source='ppc.codigo', read_only=True)
+    periodo = serializers.CharField(required=True)
+    disciplinas_info = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = FormExercicioDomiciliar
         fields = [
             'id',
-            'ppc',
             'periodo',
             'aluno_email',
             'aluno_nome',
@@ -38,7 +46,9 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
             'matricula',
             'curso_codigo',
             'curso_nome',
-            'componentes_curriculares',
+            'ppc_codigo',
+            'disciplinas',  # Para escrita
+            'disciplinas_info',  # Para leitura
             'motivo_solicitacao',
             'outro_motivo',
             'data_inicio_afastamento',
@@ -67,10 +77,17 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
 
     def get_periodo_afastamento(self, obj):
         return obj.periodo_afastamento
+        
+    def get_disciplinas_info(self, obj):
+        return [
+            {'codigo': d.codigo, 'nome': d.nome} 
+            for d in obj.disciplinas.all()
+        ]
 
     def create(self, validated_data):
+        # Extrai os dados específicos
+        disciplinas_data = validated_data.pop('disciplinas', [])
         email = validated_data.pop('aluno_email', None)
-        curso_codigo = validated_data.pop('curso_codigo', None)
         validated_data['data_solicitacao'] = date.today()
         
         # Busca o aluno pelo email para criar a relação
@@ -78,10 +95,6 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
             try:
                 user = User.objects.get(email=email)
                 aluno = Aluno.objects.get(usuario=user)
-                
-                # A relação com o aluno será estabelecida pela Solicitação
-                # Não precisamos mais definir aluno_nome, email e matricula aqui
-                
             except User.DoesNotExist:
                 raise serializers.ValidationError({
                     "aluno_email": "Usuário não encontrado com este email."
@@ -91,7 +104,26 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
                     "aluno_email": "Aluno não encontrado para este usuário."
                 })
         
-        return super().create(validated_data)
+        # Cria o formulário
+        instance = super().create(validated_data)
+        
+        # Associa as disciplinas
+        if disciplinas_data:
+            instance.disciplinas.set(disciplinas_data)
+        
+        return instance
+
+    def update(self, instance, validated_data):
+        disciplinas_data = validated_data.pop('disciplinas', None)
+        
+        # Atualiza os campos normais
+        instance = super().update(instance, validated_data)
+        
+        # Atualiza as disciplinas se fornecidas
+        if disciplinas_data is not None:
+            instance.disciplinas.set(disciplinas_data)
+        
+        return instance
 
     def validate(self, data):
         inicio = data.get('data_inicio_afastamento')

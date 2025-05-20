@@ -1,4 +1,5 @@
 from django.urls import path
+
 from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
 from .views.ppc_view import *
@@ -20,16 +21,18 @@ from .views.anexo_view import *
 from .views.form_abono_falta_view import *
 from .views.mandato_view import HistoricoMandatosPorCursoView,HistoricoMandatosPorCursoDetailView, MandatoListCreateView, MandatoRetrieveUpdateDestroyView
 from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, FormTrancDisciplinaDetail, disciplinas_por_curso
+
 from .views.form_exercicios_domiciliares import (
-    FormExercicioDomiciliarListCreate,
-    FormExercicioDomiciliarDetail
+    UsuarioPorEmailView,
+    DisciplinasPorPPCView,
+    FormExercicioDomiciliarViewSet
 )
+
 from .views.form_desistencia_vaga_view import *
 from .views.nome_view import *
 from .views.perfil_usuario_view import *
 from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
-from .views.buscar_info_usuario import * 
 
 from .views.disponibilidade_view import (
     DisponibilidadeListCreateView,
@@ -41,9 +44,9 @@ from .views.atualizar_status_view import *
 
 from django.urls import path
 
-from .views.buscar_info_usuario import UsuarioPorEmailView
+from rest_framework.routers import DefaultRouter
 
-from .views.buscar_info_usuario import DisciplinasPorPPCView
+from .views.permissoes_view import PermissaoListView
 
 app_name = 'solicitacoes_app'
 
@@ -52,7 +55,22 @@ urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
 
+    #VIEWS DE FORM EXERCICIO DOM
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
+    path('ppcs/<str:ppc_codigo>/disciplinas/', DisciplinasPorPPCView.as_view(), name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
+
+    path('form_exercicio_domiciliar/', FormExercicioDomiciliarViewSet.as_view({
+        'get': 'list',
+        'post': 'create'
+    }), name='exercicios-domiciliares-list-create'),
+    
+    path('form_exercicio_domiciliar/<int:pk>/', FormExercicioDomiciliarViewSet.as_view({
+        'get': 'retrieve',
+        'put': 'update',
+        'patch': 'partial_update',
+        'delete': 'destroy'
+    }), name='exercicios-domiciliares-detail'),
+#
 
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
@@ -60,7 +78,7 @@ urlpatterns = [
     path('ppcs/', PpcListCreateView.as_view(), name='listar_cadastrar_ppcs'),
     path('ppcs/<path:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
 
-    path('ppcs/<str:ppc_codigo>/disciplinas/', DisciplinasPorPPCView.as_view(), name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
+
 
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
     path('motivo_abono/<int:pk>/', MotivoAbonoRetrieveUpdateDestroyView.as_view(), name='motivo_abono_detail'),
@@ -125,9 +143,6 @@ urlpatterns = [
     path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
 
-    path('form_exercicio_domiciliar/', FormExercicioDomiciliarListCreate.as_view(), name='exercicios-domiciliares-list-create'),
-    path('form_exercicio_domiciliar/<int:id>/', FormExercicioDomiciliarDetail.as_view(), name='exercicios-domiciliares-detail'),
-
     path('form_desistencia_vaga/', FormDesistenciaVagaListCreate.as_view(), name='form_desistencia_vaga_create'),
     path('form_desistencia_vaga/<int:id>/', FormDesistenciaVagaDetail.as_view(), name='form_desistencia_vaga_detail'),
 
@@ -145,4 +160,8 @@ urlpatterns = [
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 
-    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),]
+    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
+    
+    path('solicitacoes/permissoes/', PermissaoListView.as_view()),
+
+    ]

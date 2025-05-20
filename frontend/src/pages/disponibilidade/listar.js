@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 
 // Componentes UI
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -71,7 +71,7 @@ export default function ListarDisponibilidades() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>Disponibilidade de Formulários</h2>
 
@@ -153,7 +153,7 @@ export default function ListarDisponibilidades() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
 
         {disponibilidadesFiltradas.length > 0 && (
           <Paginacao

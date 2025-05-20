@@ -57,8 +57,9 @@ class FormExercicioDomiciliar(Solicitacao):
         null=True
     )
 
-    componentes_curriculares = models.TextField(
-        verbose_name="Componentes Curriculares"
+    disciplinas = models.ManyToManyField(
+        'Disciplina',
+        verbose_name="Disciplinas relacionadas"
     )
 
     motivo_solicitacao = models.CharField(

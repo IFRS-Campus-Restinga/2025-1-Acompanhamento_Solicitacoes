@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
+import HeaderCRE from "../../components/base/headers/header_cre";
 
 // POPUPS
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -92,7 +92,7 @@ export default function ListarUsuarios() {
 
   return (
     <div>
-      <Header />
+      <HeaderCRE />
       <main className="container">
         <h2>Usuários</h2>
 
@@ -189,7 +189,7 @@ export default function ListarUsuarios() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
       <Footer />
     </div>
