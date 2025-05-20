@@ -24,7 +24,7 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
     matricula = serializers.CharField(read_only=True)
     periodo_afastamento = serializers.SerializerMethodField()
     ppc = serializers.PrimaryKeyRelatedField(queryset=Ppc.objects.all(), required=False)
-     periodo = serializers.CharField(required=True) 
+    periodo = serializers.CharField(required=True) 
 
     class Meta:
         model = FormExercicioDomiciliar
@@ -50,7 +50,7 @@ class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
             'consegue_realizar_atividades',
         ]
 
-     def get_aluno_nome(self, obj):
+    def get_aluno_nome(self, obj):
         if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
             return obj.solicitacao.aluno.usuario.nome
         return None

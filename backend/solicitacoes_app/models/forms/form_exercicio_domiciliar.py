@@ -2,7 +2,7 @@ from django.db import models
 from datetime import date
 from django.contrib.auth import get_user_model
 
-from ..periodo import PeriodoDisciplina
+from ..periodo_disciplina import PeriodoDisciplina
 from ..ppc import Ppc
 from ..curso import Curso
 from ..solicitacao import Solicitacao
@@ -45,6 +45,7 @@ class FormExercicioDomiciliar(Solicitacao):
     periodo = models.CharField(
         max_length=20,
         choices=PeriodoDisciplina.choices,
+        default=PeriodoDisciplina.PRIMEIRO_SEMESTRE,
         verbose_name="Período",
         help_text="Período das disciplinas"
     )
