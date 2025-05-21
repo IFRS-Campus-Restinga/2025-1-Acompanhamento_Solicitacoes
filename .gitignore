@@ -182,11 +182,11 @@ frontend/node_modules/
 # # Ruff stuff:
 # .ruff_cache/
 
+
+
 # # PyPI configuration file
 # .pypirc
 /.idea
 backend/backend/local_settings.py
-/.idea
-
 backend/uploads/
 backend/solicitacoes_app/utils/credentials.json
