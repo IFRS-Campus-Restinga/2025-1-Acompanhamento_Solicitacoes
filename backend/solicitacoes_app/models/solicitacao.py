@@ -7,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from .aluno import Aluno
 from django.core.exceptions import ValidationError
 from .posse_solicitacao import PosseSolicitacao
+from datetime import date
 
 class Solicitacao(BaseModel):
     FORMULARIO_CHOICES = [
