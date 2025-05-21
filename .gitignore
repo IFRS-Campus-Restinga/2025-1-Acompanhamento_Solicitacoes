@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 *.sqlite3
+migrations/
 # *.py[cod]
 # *$py.class
 
