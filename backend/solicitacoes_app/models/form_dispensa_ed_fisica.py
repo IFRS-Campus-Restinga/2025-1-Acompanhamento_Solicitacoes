@@ -45,7 +45,7 @@ class FormDispensaEdFisica(Solicitacao):
         if not self.data_solicitacao:  # 👈 Se não tiver data, define como agora
             self.data_solicitacao = date.isoformat()
         
-
+        """Método para salvar anexos no Google Drive"""
         for path in self.anexos:
             local_path = os.path.join(settings.MEDIA_ROOT, path)
             if os.path.exists(local_path):
