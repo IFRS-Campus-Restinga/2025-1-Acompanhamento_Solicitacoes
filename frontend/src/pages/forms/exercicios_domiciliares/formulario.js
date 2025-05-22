@@ -287,32 +287,33 @@ const FormularioExercicioDomiciliar = () => {
     }
   };
 
-  // Função para carregar disciplinas do PPC
-  const carregarDisciplinasPorPpc = async (ppcCodigo) => {
-    if (!ppcCodigo) return;
+// Função para carregar disciplinas do PPC
+const carregarDisciplinasPorPpc = async (ppcCodigo) => {
+  if (!ppcCodigo) return;
+  
+  setIsLoadingDisciplinas(true);
+  setErroBuscaDisciplinas("");
+  
+  try {
+    // Use um endpoint que aceita o código do PPC como parâmetro de consulta
+    const response = await axios.get(`http://localhost:8000/solicitacoes/disciplinas-por-ppc/?ppc_codigo=${encodeURIComponent(ppcCodigo )}`);
+    console.log("Resposta da API de disciplinas por PPC:", response.data);
     
-    setIsLoadingDisciplinas(true);
-    setErroBuscaDisciplinas("");
-    
-    try {
-      const response = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${ppcCodigo}/disciplinas/`);
-      console.log("Resposta da API de disciplinas por PPC:", response.data);
-      
-      if (response.data && response.data.length > 0) {
-        setDisciplinasDoPpc(response.data);
-        // Não filtramos ainda por período, isso será feito quando o usuário selecionar um período
-      } else {
-        setDisciplinasDoPpc([]);
-        setDisciplinasFiltradas([]);
-        setErroBuscaDisciplinas("Nenhuma disciplina encontrada para este PPC.");
-      }
-    } catch (error) {
-      console.error("Erro ao carregar disciplinas:", error);
-      setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
-    } finally {
-      setIsLoadingDisciplinas(false);
+    if (response.data && response.data.length > 0) {
+      setDisciplinasDoPpc(response.data);
+    } else {
+      setDisciplinasDoPpc([]);
+      setDisciplinasFiltradas([]);
+      setErroBuscaDisciplinas("Nenhuma disciplina encontrada para este PPC.");
     }
-  };
+  } catch (error) {
+    console.error("Erro ao carregar disciplinas:", error);
+    setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
+  } finally {
+    setIsLoadingDisciplinas(false);
+  }
+};
+
 
   // Função para filtrar disciplinas por período
   const handlePeriodoChange = (event) => {

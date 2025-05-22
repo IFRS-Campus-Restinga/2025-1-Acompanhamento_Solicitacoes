@@ -26,7 +26,8 @@ from .views.form_exercicios_domiciliares import (
     UsuarioPorEmailView,
     DisciplinasPorCursoView,
     FormExercicioDomiciliarViewSet,
-    AlunoInfoPorEmailView
+    AlunoInfoPorEmailView,
+    disciplinas_por_ppc
 )
 
 from .views.form_desistencia_vaga_view import *
@@ -60,6 +61,8 @@ urlpatterns = [
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
     path('cursos/disciplinas-por-curso/<str:curso_codigo>/', DisciplinasPorCursoView.as_view(), name='disciplinas-por-curso'), 
     path('alunos-info/', AlunoInfoPorEmailView.as_view(), name='aluno-info-por-email'),
+    path('disciplinas-por-ppc/', disciplinas_por_ppc, name='disciplinas-por-ppc'),
+
 
 
     path('form_exercicio_domiciliar/', FormExercicioDomiciliarViewSet.as_view({

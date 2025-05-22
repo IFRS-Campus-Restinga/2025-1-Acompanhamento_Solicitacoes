@@ -1,7 +1,8 @@
 
 from rest_framework import viewsets, status, generics
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..models import FormExercicioDomiciliar, Disciplina, Usuario,  PeriodoDisciplina, Curso
+from ..models import FormExercicioDomiciliar, Disciplina, Usuario,  PeriodoDisciplina, Curso, Ppc
 
 from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
 from ..serializers.disciplina_serializer import DisciplinaSerializer 
@@ -74,6 +75,20 @@ class AlunoInfoPorEmailView(generics.ListAPIView):
                 
         except Usuario.DoesNotExist:
             return Response({"erro": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
+@api_view(['GET'])
+def disciplinas_por_ppc(request):
+    ppc_codigo = request.query_params.get('ppc_codigo')
+    if not ppc_codigo:
+        return Response({"erro": "Código do PPC não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
+    
+    try:
+        ppc = Ppc.objects.get(codigo=ppc_codigo)
+        disciplinas = Disciplina.objects.filter(ppc=ppc)
+        serializer = DisciplinaSerializer(disciplinas, many=True)
+        return Response(serializer.data)
+    except Ppc.DoesNotExist:
+        return Response({"erro": "PPC não encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 
 class FormExercicioDomiciliarViewSet(viewsets.ModelViewSet):
