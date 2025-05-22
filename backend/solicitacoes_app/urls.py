@@ -24,8 +24,9 @@ from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, For
 
 from .views.form_exercicios_domiciliares import (
     UsuarioPorEmailView,
-    DisciplinasPorPPCView,
-    FormExercicioDomiciliarViewSet
+    DisciplinasPorCursoView,
+    FormExercicioDomiciliarViewSet,
+    AlunoInfoPorEmailView
 )
 
 from .views.form_desistencia_vaga_view import *
@@ -57,7 +58,9 @@ urlpatterns = [
 
     #VIEWS DE FORM EXERCICIO DOM
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
-    path('ppcs/<str:ppc_codigo>/disciplinas/', DisciplinasPorPPCView.as_view(), name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
+    path('cursos/disciplinas-por-curso/<str:curso_codigo>/', DisciplinasPorCursoView.as_view(), name='disciplinas-por-curso'), 
+    path('alunos-info/', AlunoInfoPorEmailView.as_view(), name='aluno-info-por-email'),
+
 
     path('form_exercicio_domiciliar/', FormExercicioDomiciliarViewSet.as_view({
         'get': 'list',
