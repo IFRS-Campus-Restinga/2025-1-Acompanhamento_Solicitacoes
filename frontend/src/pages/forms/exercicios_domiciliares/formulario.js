@@ -11,10 +11,11 @@ const FormularioExercicioDomiciliar = () => {
   const { register, handleSubmit, setValue, watch, formState: { errors }, setError, clearErrors, reset } = useForm();
 
   const [cursos, setCursos] = useState([]);
-  const [ppcs, setPpcs] = useState([]);
   const [disciplinasDoPpc, setDisciplinasDoPpc] = useState([]);
-  const [ppcSelecionado, setPpcSelecionado] = useState("");
+  const [disciplinasFiltradas, setDisciplinasFiltradas] = useState([]);
+  const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
   const [periodoSelecionado, setPeriodoSelecionado] = useState("");
+  const [periodosDisponiveis, setPeriodosDisponiveis] = useState([]);
 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
@@ -31,28 +32,40 @@ const FormularioExercicioDomiciliar = () => {
   const cursoSelecionado = watch("curso");
 
   const [periodoCalculado, setPeriodoCalculado] = useState(0);
-
   const [alunoInfo, setAlunoInfo] = useState(null);
-  const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]);
-  const [filtroDisciplina, setFiltroDisciplina] = useState("");
+  const [tipoPeriodoCurso, setTipoPeriodoCurso] = useState(null); // "ANUAL" ou "SEMESTRAL"
+  const [cursoNome, setCursoNome] = useState(""); // Estado para armazenar o nome do curso
+
+  // Períodos anuais e semestrais
+  const PERIODOS_ANUAIS = [
+    { value: "1º Ano", label: "1º Ano" },
+    { value: "2º Ano", label: "2º Ano" },
+    { value: "3º Ano", label: "3º Ano" },
+    { value: "4º Ano", label: "4º Ano" },
+  ];
+
+  const PERIODOS_SEMESTRAIS = [
+    { value: "1º Semestre", label: "1º Semestre" },
+    { value: "2º Semestre", label: "2º Semestre" },
+    { value: "3º Semestre", label: "3º Semestre" },
+    { value: "4º Semestre", label: "4º Semestre" },
+    { value: "5º Semestre", label: "5º Semestre" },
+    { value: "6º Semestre", label: "6º Semestre" },
+    { value: "7º Semestre", label: "7º Semestre" },
+    { value: "8º Semestre", label: "8º Semestre" },
+    { value: "9º Semestre", label: "9º Semestre" },
+    { value: "10º Semestre", label: "10º Semestre" },
+  ];
 
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/cursos/")
-      .then(res => setCursos(res.data))
-      .catch(() => {
-        console.error("Erro ao buscar cursos.");
+      .then(res => {
+        console.log("Cursos carregados:", res.data);
+        setCursos(res.data);
+      })
+      .catch((error) => {
+        console.error("Erro ao buscar cursos:", error);
         setMensagemPopup("Erro ao carregar lista de cursos.");
-        setTipoMensagem("erro");
-        setMostrarFeedback(true);
-        setTimeout(() => setMostrarFeedback(false), 5000);
-      });
-
-    // Carregar PPCs em vez de turmas
-    axios.get("http://localhost:8000/solicitacoes/ppcs/")
-      .then(res => setPpcs(res.data))
-      .catch(() => {
-        console.error("Erro ao buscar PPCs.");
-        setMensagemPopup("Erro ao carregar lista de PPCs.");
         setTipoMensagem("erro");
         setMostrarFeedback(true);
         setTimeout(() => setMostrarFeedback(false), 5000);
@@ -89,6 +102,8 @@ const FormularioExercicioDomiciliar = () => {
     setIsLoadingUsuario(true);
     try {
       const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${email}`);
+      console.log("Resposta da API de usuários:", response.data);
+      
       if (response.data?.length > 0) {
         const usuario = response.data[0];
         
@@ -113,6 +128,8 @@ const FormularioExercicioDomiciliar = () => {
     try {
       // Busca todos os alunos
       const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/listar`);
+      console.log("Resposta da API de alunos:", response.data);
+      
       if (response.data && Array.isArray(response.data)) {
         // Procura por um aluno com nome similar
         const alunoEncontrado = response.data.find(aluno => 
@@ -140,63 +157,133 @@ const FormularioExercicioDomiciliar = () => {
   };
 
   const buscarInfoAluno = async (email, matricula) => {
-    try {
-      // Primeiro tenta buscar pelo endpoint específico de informações do aluno
-      const response = await axios.get(`http://localhost:8000/solicitacoes/alunos-info/?email=${email}&matricula=${matricula}`);
-      if (response.data) {
-        setAlunoInfo(response.data);
-        
-        // Preenche automaticamente o curso se disponível
-        if (response.data.curso) {
-          setValue("curso", response.data.curso.codigo);
-          
-          // Se o aluno tem PPC, seleciona automaticamente
-          if (response.data.ppc) {
-            setValue("ppc", response.data.ppc.codigo);
-            setPpcSelecionado(response.data.ppc.codigo);
-            
-            // Carrega as disciplinas do PPC
-            carregarDisciplinasPorPpc(response.data.ppc.codigo);
-          }
-        }
-        return;
-      }
-    } catch (error) {
-      console.error("Erro ao buscar informações do aluno pelo endpoint alunos-info:", error);
-    }
+  try {
+    // Primeiro tenta buscar pelo novo endpoint específico de informações do aluno
+    const response = await axios.get(`http://localhost:8000/solicitacoes/alunos-info/?email=${email}` );
+    console.log("Resposta da API alunos-info:", response.data);
     
-    // Se não conseguiu pelo endpoint específico, tenta buscar pelo endpoint de alunos
-    try {
-      // Busca todos os alunos
-      const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/listar`);
-      if (response.data && Array.isArray(response.data)) {
-        // Procura por um aluno com a matrícula correspondente
-        const alunoEncontrado = response.data.find(aluno => aluno.matricula === matricula);
+    if (response.data) {
+      setAlunoInfo(response.data);
+      
+      // Verifica se temos informações do PPC e do curso
+      if (response.data.ppc) {
+        console.log("PPC encontrado:", response.data.ppc);
         
-        if (alunoEncontrado) {
-          setAlunoInfo({
-            ...alunoEncontrado,
-            curso: alunoEncontrado.ppc?.curso,
-            ppc: alunoEncontrado.ppc
-          });
+        // Armazena o código do PPC em um campo oculto
+        setValue("ppc_codigo", response.data.ppc.codigo);
+        
+        // Verifica se o PPC tem curso
+        if (response.data.ppc.curso) {
+          console.log("Curso encontrado via PPC:", response.data.ppc.curso);
+          setValue("curso", response.data.ppc.curso.codigo);
+          setCursoNome(response.data.ppc.curso.nome);
           
-          // Preenche automaticamente o curso se disponível
-          if (alunoEncontrado.ppc?.curso) {
-            setValue("curso", alunoEncontrado.ppc.curso.codigo);
+          // Define o tipo de período do curso (anual ou semestral)
+          if (response.data.ppc.curso.tipo_periodo) {
+            setTipoPeriodoCurso(response.data.ppc.curso.tipo_periodo);
             
-            // Se o aluno tem PPC, seleciona automaticamente
-            if (alunoEncontrado.ppc) {
-              setValue("ppc", alunoEncontrado.ppc.codigo);
-              setPpcSelecionado(alunoEncontrado.ppc.codigo);
-              
-              // Carrega as disciplinas do PPC
-              carregarDisciplinasPorPpc(alunoEncontrado.ppc.codigo);
+            // Define os períodos disponíveis com base no tipo de período
+            if (response.data.ppc.curso.tipo_periodo === "ANUAL") {
+              setPeriodosDisponiveis(PERIODOS_ANUAIS);
+            } else if (response.data.ppc.curso.tipo_periodo === "SEMESTRAL") {
+              setPeriodosDisponiveis(PERIODOS_SEMESTRAIS);
             }
           }
+          
+          // Carrega as disciplinas do PPC
+          carregarDisciplinasPorPpc(response.data.ppc.codigo);
+        }
+      }
+      return;
+    }
+  } catch (error) {
+    console.error("Erro ao buscar informações do aluno pelo endpoint alunos-info:", error);
+  }
+  
+  // Se não conseguiu pelo endpoint específico, tenta o fallback
+  try {
+    // Busca todos os alunos
+    const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/listar` );
+    console.log("Resposta da API alunos/listar:", response.data);
+    
+    if (response.data && Array.isArray(response.data)) {
+      // Procura por um aluno com a matrícula correspondente
+      const alunoEncontrado = response.data.find(aluno => aluno.matricula === matricula);
+      
+      if (alunoEncontrado) {
+        console.log("Aluno encontrado na lista:", alunoEncontrado);
+        setAlunoInfo(alunoEncontrado);
+        
+        // Verifica se temos informações do PPC
+        if (alunoEncontrado.ppc) {
+          console.log("PPC encontrado:", alunoEncontrado.ppc);
+          
+          // Se o PPC é apenas um código (não um objeto completo)
+          if (typeof alunoEncontrado.ppc === 'string' || typeof alunoEncontrado.ppc === 'number') {
+            // Armazena o código do PPC em um campo oculto
+            setValue("ppc_codigo", alunoEncontrado.ppc);
+            
+            // Busca o curso pelo código do PPC
+            buscarCursoPorPpc(alunoEncontrado.ppc);
+          } else {
+            // Se o PPC é um objeto completo
+            setValue("ppc_codigo", alunoEncontrado.ppc.codigo);
+            
+            if (alunoEncontrado.ppc.curso) {
+              setValue("curso", alunoEncontrado.ppc.curso.codigo);
+              setCursoNome(alunoEncontrado.ppc.curso.nome);
+              
+              // Define o tipo de período do curso
+              if (alunoEncontrado.ppc.curso.tipo_periodo) {
+                setTipoPeriodoCurso(alunoEncontrado.ppc.curso.tipo_periodo);
+                
+                if (alunoEncontrado.ppc.curso.tipo_periodo === "ANUAL") {
+                  setPeriodosDisponiveis(PERIODOS_ANUAIS);
+                } else if (alunoEncontrado.ppc.curso.tipo_periodo === "SEMESTRAL") {
+                  setPeriodosDisponiveis(PERIODOS_SEMESTRAIS);
+                }
+              }
+            } else {
+              buscarCursoPorPpc(alunoEncontrado.ppc.codigo);
+            }
+          }
+          
+          // Carrega as disciplinas do PPC
+          carregarDisciplinasPorPpc(typeof alunoEncontrado.ppc === 'object' ? alunoEncontrado.ppc.codigo : alunoEncontrado.ppc);
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao buscar alunos pelo endpoint listar:", error);
+  }
+};
+
+
+  // Nova função para buscar curso por PPC
+  const buscarCursoPorPpc = async (ppcCodigo) => {
+    try {
+      const response = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${ppcCodigo}/`);
+      console.log("Resposta da API de PPC:", response.data);
+      
+      if (response.data && response.data.curso) {
+        console.log("Curso encontrado via API de PPC:", response.data.curso);
+        setValue("curso", response.data.curso.codigo);
+        setCursoNome(response.data.curso.nome);
+        
+        // Define o tipo de período do curso (anual ou semestral)
+        if (response.data.curso.tipo_periodo) {
+          setTipoPeriodoCurso(response.data.curso.tipo_periodo);
+          
+          // Define os períodos disponíveis com base no tipo de período
+          if (response.data.curso.tipo_periodo === "ANUAL") {
+            setPeriodosDisponiveis(PERIODOS_ANUAIS);
+          } else if (response.data.curso.tipo_periodo === "SEMESTRAL") {
+            setPeriodosDisponiveis(PERIODOS_SEMESTRAIS);
+          }
         }
       }
     } catch (error) {
-      console.error("Erro ao buscar alunos pelo endpoint listar:", error);
+      console.error("Erro ao buscar curso por PPC:", error);
     }
   };
 
@@ -209,25 +296,53 @@ const FormularioExercicioDomiciliar = () => {
     
     try {
       const response = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${ppcCodigo}/disciplinas/`);
+      console.log("Resposta da API de disciplinas por PPC:", response.data);
       
       if (response.data && response.data.length > 0) {
         setDisciplinasDoPpc(response.data);
-        
-        // Atualize o campo de componentes curriculares
-        setValue("componentes_curriculares", 
-          response.data.map(d => `${d.nome} (${d.codigo})`).join("\n")
-        );
+        // Não filtramos ainda por período, isso será feito quando o usuário selecionar um período
       } else {
         setDisciplinasDoPpc([]);
-        setValue("componentes_curriculares", "Nenhuma disciplina encontrada para este PPC.");
+        setDisciplinasFiltradas([]);
         setErroBuscaDisciplinas("Nenhuma disciplina encontrada para este PPC.");
       }
     } catch (error) {
       console.error("Erro ao carregar disciplinas:", error);
       setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
-      setValue("componentes_curriculares", "");
     } finally {
       setIsLoadingDisciplinas(false);
+    }
+  };
+
+  // Função para filtrar disciplinas por período
+  const handlePeriodoChange = (event) => {
+    const periodo = event.target.value;
+    setPeriodoSelecionado(periodo);
+    
+    if (!periodo) {
+      setDisciplinasFiltradas([]);
+      setDisciplinasSelecionadas([]);
+      return;
+    }
+    
+    // Filtra as disciplinas pelo período selecionado
+    const disciplinasFiltradas = disciplinasDoPpc.filter(
+      disciplina => disciplina.periodo === periodo
+    );
+    
+    console.log("Disciplinas filtradas por período:", disciplinasFiltradas);
+    setDisciplinasFiltradas(disciplinasFiltradas);
+    setDisciplinasSelecionadas([]); // Limpa as seleções anteriores
+  };
+
+  // Função para lidar com a seleção de disciplinas (checkboxes)
+  const handleDisciplinaChange = (event, disciplina) => {
+    const { checked } = event.target;
+    
+    if (checked) {
+      setDisciplinasSelecionadas(prev => [...prev, disciplina]);
+    } else {
+      setDisciplinasSelecionadas(prev => prev.filter(d => d.codigo !== disciplina.codigo));
     }
   };
 
@@ -268,6 +383,8 @@ const FormularioExercicioDomiciliar = () => {
     
     try {
       const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${currentEmailValue}`);
+      console.log("Resposta da API de usuários por email:", response.data);
+      
       if (response.data?.length > 0) {
         const usuario = response.data[0];
         nomeUsuario = usuario.nome || "";
@@ -292,19 +409,17 @@ const FormularioExercicioDomiciliar = () => {
     setIsLoadingUsuario(false);
   };
 
-  const handlePpcChange = async (event) => {
-    const selectedPpcCodigo = event.target.value;
-    
-    if (!selectedPpcCodigo) {
-      setErroBuscaDisciplinas("Selecione um PPC válido");
+  const onSubmit = async (data) => {
+    // Verificar se pelo menos uma disciplina foi selecionada
+    if (disciplinasSelecionadas.length === 0) {
+      setError("disciplinas", { type: "manual", message: "Selecione pelo menos uma disciplina." });
+      setMensagemPopup("Selecione pelo menos uma disciplina.");
+      setTipoMensagem("erro");
+      setMostrarFeedback(true);
+      setTimeout(() => setMostrarFeedback(false), 5000);
       return;
     }
-    
-    setPpcSelecionado(selectedPpcCodigo);
-    await carregarDisciplinasPorPpc(selectedPpcCodigo);
-  };
 
-  const onSubmit = async (data) => {
     const formErrors = validateForm(data);
 
     if (Object.keys(formErrors).length > 0) {
@@ -321,14 +436,21 @@ const FormularioExercicioDomiciliar = () => {
 
     const formData = new FormData();
 
-    disciplinasDoPpc
-    .filter(d => data.componentes_curriculares.includes(d.codigo))
-    .forEach(d => formData.append('disciplinas', d.codigo));
+    // Adiciona as disciplinas selecionadas
+    disciplinasSelecionadas.forEach(disciplina => {
+      formData.append('disciplinas', disciplina.codigo);
+    });
 
+    // Cria uma string com as disciplinas selecionadas para o campo componentes_curriculares
+    const disciplinasTexto = disciplinasSelecionadas
+      .map(d => `${d.nome} (${d.codigo})`)
+      .join("\n");
+    
     formData.append('aluno_email', data.email);
     formData.append('curso_codigo', data.curso);
-    formData.append('ppc_codigo', data.ppc); // Adicionado campo PPC
-    formData.append('periodo', periodoSelecionado);
+    formData.append('ppc_codigo', data.ppc_codigo); // Campo PPC oculto
+    formData.append('periodo', periodoSelecionado); // Período selecionado
+    formData.append('componentes_curriculares', disciplinasTexto); // Texto das disciplinas selecionadas
     formData.append('data_inicio_afastamento', data.data_inicio_afastamento);
     formData.append('data_fim_afastamento', data.data_fim_afastamento);
     formData.append('periodo_afastamento', periodoCalculado.toString()); // Convertido para string
@@ -338,7 +460,6 @@ const FormularioExercicioDomiciliar = () => {
     
     if (data.outro_motivo) formData.append('outro_motivo', data.outro_motivo);
     if (data.outro_documento) formData.append('outro_documento', data.outro_documento);
-    if (data.componentes_curriculares) formData.append('componentes_curriculares', data.componentes_curriculares);
     if (data.arquivos) {
       Array.from(data.arquivos).forEach(file => {
         formData.append('arquivos', file);
@@ -346,20 +467,28 @@ const FormularioExercicioDomiciliar = () => {
     }
 
     try {
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/solicitacoes/form_exercicio_domiciliar/",
         formData,
         { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-      // ... feedback de sucesso
+      
+      console.log("Resposta do envio do formulário:", response.data);
 
       setMensagemPopup("Solicitação enviada com sucesso!");
       setTipoMensagem("sucesso");
       setMostrarFeedback(true);
+      
+      // Limpa o formulário
       reset();
-      setPpcSelecionado("");
+      setPeriodoSelecionado("");
       setDisciplinasDoPpc([]);
-      setValue("componentes_curriculares", "");
+      setDisciplinasFiltradas([]);
+      setDisciplinasSelecionadas([]);
+      setPeriodosDisponiveis([]);
+      setTipoPeriodoCurso(null);
+      setCursoNome("");
+      
       setTimeout(() => setMostrarFeedback(false), 3000);
     } catch (err) {
       console.error("Erro ao enviar solicitação:", err.response?.data || err.message);
@@ -406,9 +535,9 @@ const FormularioExercicioDomiciliar = () => {
               id="email"
               {...register("email", { required: "E-mail é obrigatório" })}
               onBlur={(e) => {
-                const { onBlur } = register("email"); // Obtém o onBlur original do react-hook-form
-                if (onBlur) onBlur(e); // Chama o onBlur original
-                handleEmailBlur(e); // Chama a nossa função personalizada
+                const { onBlur } = register("email");
+                if (onBlur) onBlur(e);
+                handleEmailBlur(e);
               }}
               placeholder="Digite o e-mail do aluno"
               readOnly={!!localStorage.getItem('googleUser')}
@@ -421,7 +550,13 @@ const FormularioExercicioDomiciliar = () => {
 
           <div className="form-group">
             <label htmlFor="aluno_nome">Nome completo:</label>
-            <input type="text" id="aluno_nome" {...register("aluno_nome", { required: "Nome completo é obrigatório" })} readOnly style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
+            <input 
+              type="text" 
+              id="aluno_nome" 
+              {...register("aluno_nome", { required: "Nome completo é obrigatório" })} 
+              readOnly 
+              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} 
+            />
             {errors.aluno_nome && <span className="error-text">{errors.aluno_nome.message}</span>}
           </div>
 
@@ -435,66 +570,82 @@ const FormularioExercicioDomiciliar = () => {
                 validate: (value) => validateMatricula(value) || true
               })} 
               readOnly 
-              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} />
-              {errors.matricula && <span className="error-text">{errors.matricula.message}</span>}
+              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} 
+            />
+            {errors.matricula && <span className="error-text">{errors.matricula.message}</span>}
           </div>
 
           <div className="form-group">
-            <label>Curso:</label>
+            <label htmlFor="curso">Curso:</label>
             <input 
               type="text" 
-              value={watch('curso_nome') || ''} 
-              readOnly/>
-          </div>
-
-          <div className="form-group">
-            <label>PPC:</label>
+              id="curso_nome" 
+              value={cursoNome}
+              readOnly 
+              style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }} 
+            />
             <input 
-              type="text" 
-              {...register("ppc", { required: "PPC é obrigatório" })}
-              value={watch('ppc_codigo') || ''} 
-              readOnly />
+              type="hidden" 
+              id="curso" 
+              {...register("curso", { required: "Curso é obrigatório" })} 
+            />
+            {errors.curso && <span className="error-text">{errors.curso.message}</span>}
           </div>
 
+          {/* Campo PPC oculto */}
+          <input 
+            type="hidden" 
+            id="ppc_codigo" 
+            {...register("ppc_codigo")} 
+          />
+
           <div className="form-group">
-            <label htmlFor="periodo">Período Letivo:</label>
+            <label htmlFor="periodo">Período:</label>
             <select
               id="periodo"
               {...register("periodo", { required: "Período é obrigatório" })}
               value={periodoSelecionado}
-              onChange={(e) => setPeriodoSelecionado(e.target.value)}>
+              onChange={handlePeriodoChange}
+              disabled={!tipoPeriodoCurso || periodosDisponiveis.length === 0}
+            >
               <option value="">Selecione o período</option>
-              <option value="PRIMEIRO_ANO">1º Ano</option>
-              <option value="SEGUNDO_ANO">2º Ano</option>
-              <option value="TERCEIRO_ANO">3º Ano</option>
-              <option value="QUARTO_ANO">4º Ano</option>
-              <option value="PRIMEIRO_SEMESTRE">1º Semestre</option>
-              <option value="SEGUNDO_SEMESTRE">2º Semestre</option>
-              <option value="TERCEIRO_SEMESTRE">3º Semestre</option>
-              <option value="QUARTO_SEMESTRE">4º Semestre</option>
-              <option value="QUINTO_SEMESTRE">5º Semestre</option>
-              <option value="SEXTO_SEMESTRE">6º Semestre</option>
-              <option value="SETIMO_SEMESTRE">7º Semestre</option>
-              <option value="OITAVO_SEMESTRE">8º Semestre</option>
-              <option value="NONO_SEMESTRE">9º Semestre</option>
-              <option value="DECIMO_SEMESTRE">10º Semestre</option>
-
+              {periodosDisponiveis.map((periodo) => (
+                <option key={periodo.value} value={periodo.value}>{periodo.label}</option>
+              ))}
             </select>
+            {isLoadingDisciplinas && <p>A carregar períodos...</p>}
             {errors.periodo && <span className="error-text">{errors.periodo.message}</span>}
           </div>
-        
 
           <div className="form-group">
-            <label>Disciplinas Selecionadas:</label>
-            {disciplinasDoPpc
-              .filter(d => watch("componentes_curriculares")?.includes(d.codigo))
-              .map(d => (
-                <div key={d.codigo}>
-                  {d.nome} ({d.codigo})
-                </div>
-              ))}
-         </div>
-
+            <label>Disciplinas do Período:</label>
+            {isLoadingDisciplinas ? (
+              <p>A carregar disciplinas...</p>
+            ) : erroBuscaDisciplinas ? (
+              <span className="error-text">{erroBuscaDisciplinas}</span>
+            ) : disciplinasFiltradas.length > 0 ? (
+              <div className="disciplinas-container">
+                {disciplinasFiltradas.map((disciplina) => (
+                  <div key={disciplina.codigo} className="disciplina-checkbox">
+                    <input
+                      type="checkbox"
+                      id={`disciplina-${disciplina.codigo}`}
+                      checked={disciplinasSelecionadas.some(d => d.codigo === disciplina.codigo)}
+                      onChange={(e) => handleDisciplinaChange(e, disciplina)}
+                    />
+                    <label htmlFor={`disciplina-${disciplina.codigo}`}>
+                      {disciplina.nome} ({disciplina.codigo})
+                    </label>
+                  </div>
+                ))}
+              </div>
+            ) : periodoSelecionado ? (
+              <p>Nenhuma disciplina encontrada para este período.</p>
+            ) : (
+              <p>Selecione um período para ver as disciplinas disponíveis.</p>
+            )}
+            {errors.disciplinas && <span className="error-text">{errors.disciplinas.message}</span>}
+          </div>
 
           <div className="form-group">
             <label htmlFor="motivo_solicitacao">Motivo da solicitação:</label>

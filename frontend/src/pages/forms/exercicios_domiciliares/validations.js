@@ -26,11 +26,18 @@ export const validateField = (name, value, formData) => {
       if (formData.data_inicio_afastamento) {
         const inicio = new Date(formData.data_inicio_afastamento);
         const fim = new Date(value);
+
         if (fim < inicio) {
           newErrors.data_fim_afastamento = "A data final não pode ser antes da inicial.";
+        }else{
+          const diffInTime = fim.getTime() - inicio.getTime();
+          const diffInDays = diffInTime / (1000 * 3600 * 24);
+          if (diffInDays < 15) {
+            newErrors.data_fim_afastamento = "O afastamento deve ter pelo menos 15 dias.";
         }
       }
-      break;
+    }
+    break;
       
     default:
       break;
@@ -69,6 +76,12 @@ export const validateForm = (formData) => {
     const fim = new Date(formData.data_fim_afastamento);
     if (fim < inicio) {
       newErrors.data_fim_afastamento = "A data final não pode ser antes da inicial.";
+    }else{
+      const diffInTime = fim.getTime() - inicio.getTime();
+      const diffInDays = diffInTime / (1000 * 3600 * 24);
+      if (diffInDays < 15) {
+        newErrors.data_fim_afastamento = "O afastamento deve ter pelo menos 15 dias.";
+      }
     }
   }
 
@@ -84,14 +97,14 @@ export const validateForm = (formData) => {
   return newErrors;
 };
 
-export const extractMatriculaFromEmail = (email) => {
-  if (!email) return null;
-  
-  // Padrão para e-mails institucionais: matricula@dominio.ifrs.edu.br
-  const matriculaRegex = /^(\d+)@.*ifrs\./i;
-  const match = email.match(matriculaRegex);
-  
-  return match ? match[1] : null;
+  export const extractMatriculaFromEmail = (email) => {
+    if (!email) return null;
+    
+    // Padrão para e-mails institucionais: matricula@dominio.ifrs.edu.br
+    const matriculaRegex = /^(\d+)@.*ifrs\./i;
+    const match = email.match(matriculaRegex);
+    
+    return match ? match[1] : null;
 };
 
   export const validateMatricula = (value) => {
