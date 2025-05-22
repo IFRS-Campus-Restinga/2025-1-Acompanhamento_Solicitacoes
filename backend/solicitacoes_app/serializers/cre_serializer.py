@@ -31,7 +31,7 @@ class CRESerializer(serializers.ModelSerializer):
 
 class CREReadSerializer(serializers.ModelSerializer):
     """
-    Serializer para leitura de Aluno, incluindo dados do usuário.
+    Serializer para leitura de CRE, incluindo dados do usuário.
     """
     # Inclui todos os dados do usuário de forma aninhada
     usuario = UsuarioSerializer(read_only=True)

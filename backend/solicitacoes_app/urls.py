@@ -91,15 +91,15 @@ urlpatterns = [
     path('motivo_exercicios/<int:pk>/', MotivoExerciciosRetrieveUpdateDestroyView.as_view(), name="crud_motivo_exercicios"),
 
     path('coordenadores/', CoordenadorListCreateView.as_view(), name='coordenador-list'),
-    path('coordenadores/<int:pk>', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
+    path('coordenadores/<int:pk>/', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
     path('coordenadores/cadastro-coordenador-mandato/', CadastroCoordenadorMandatoView.as_view(), name='cadastro-coordenador-mandato'),
 
     path('cres/', CREListCreateView.as_view(), name='cre-list'),
-    path('cres/<int:pk>', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
+    path('cres/<int:pk>/', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
 
     path('alunos/', AlunoListCreateView.as_view(), name='aluno-list'),
     path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
-    path('alunos/listar', AlunoListView.as_view(), name='aluno-list-antigo'),
+    path('alunos/listar/', AlunoListView.as_view(), name='aluno-list-antigo'),
     path('alunos/listar/<int:pk>/', AlunoRetrieveView.as_view(), name='aluno-detail-antigo'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
@@ -136,7 +136,7 @@ urlpatterns = [
     path("mandatos/", MandatoListCreateView.as_view(), name='mandato-list'),
     path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
     path('mandatos/historico/', HistoricoMandatosPorCursoView.as_view(), name='historico_mandatos_por_curso'),
-    path('mandatos/historico/<str:codigo>', HistoricoMandatosPorCursoDetailView.as_view(), name='historico_mandatos_por_curso_detail'),
+    path('mandatos/historico/<str:codigo>/', HistoricoMandatosPorCursoDetailView.as_view(), name='historico_mandatos_por_curso_detail'),
     
     
     path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),

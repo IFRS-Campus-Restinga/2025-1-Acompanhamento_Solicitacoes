@@ -43,10 +43,10 @@ export default function CadastrarAtualizarUsuarioPapel() {
   const [feedbackType, setFeedbackType] = useState("sucesso");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { pathname } = useLocation();
-  //const papel = pathname.split("/").pop();
   const { id, papel } = useParams();
   const navigate = useNavigate();
   const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
 
   const isEditing = !!id;
   const title = isEditing ? `Editar ${papel.charAt(0).toUpperCase() + papel.slice(1)}` : `Cadastrar Novo ${papel.charAt(0).toUpperCase() + papel.slice(1)}`;
@@ -66,60 +66,108 @@ export default function CadastrarAtualizarUsuarioPapel() {
       }
     }
 
-    async function loadEntityDataForEdit(entityId) {
-      if (!entityId) return;
-      try {
-        const entityEndpoint = PAPEL_ENDPOINTS[papel];
-        const entityResponse = await api.get(`${entityEndpoint}${entityId}`); //tirei a barra depois do entityId
-        
-        // Extrair dados do usuário e da entidade específica
-        let userData = {};
-        let entityData = {};
-        
-        if (papel === "coordenador") {
-          // Para coordenador, a estrutura pode ser diferente devido ao mandato
-          userData = entityResponse.data.usuario || {};
-          entityData = {
-            ...entityResponse.data.coordenador || {},
-            curso: entityResponse.data.mandato?.curso || "",
-            inicio_mandato: entityResponse.data.mandato?.inicio_mandato || "",
-            fim_mandato: entityResponse.data.mandato?.fim_mandato || ""
-          };
-        } else {
-          // Para aluno e CRE
-          userData = entityResponse.data.usuario || {};
-          entityData = entityResponse.data[papel] || {};
-        }
-        
-        setFormData({ ...userData, ...entityData });
-        
-        // Carregar PPCs do curso do aluno para edição
-        if (papel === "aluno" && entityData.ppc) {
-          const cursoDoAluno = cursosComPpcs.find(curso => curso.codigo === entityData.ppc.curso);
-          setPpcsDoCurso(cursoDoAluno?.ppcs || []);
-        }
-      } catch (error) {
-        console.error(`Erro ao carregar dados para edição de ${papel}:`, error);
-        setFeedbackType("erro");
-        setFeedbackMessage(`Erro ao carregar dados para edição de ${papel}.`);
-        setShowFeedback(true);
-      }
-    }
-
     if (papel === "aluno" || papel === "coordenador") {
       loadCursosComPpcs();
     }
-    if (id) {
+    
+    // Carregar dados de edição para CRE imediatamente, pois não depende de cursos
+    if (id && papel === "cre") {
       loadEntityDataForEdit(id);
-    } else {
-      setFormData(initialFormState);
     }
-  }, [id, papel]);
+  }, [papel, id]);
+
+  // Efeito separado para carregar dados de edição após cursosComPpcs estar disponível
+  useEffect(() => {
+    if (id && (papel === "aluno" || papel === "coordenador") && cursosComPpcs.length > 0 && !dataLoaded) {
+      loadEntityDataForEdit(id);
+      setDataLoaded(true);
+    }
+  }, [id, papel, cursosComPpcs, dataLoaded]);
+
+  async function loadEntityDataForEdit(entityId) {
+    if (!entityId) return;
+    try {
+      const entityEndpoint = PAPEL_ENDPOINTS[papel];
+      const entityResponse = await api.get(`${entityEndpoint}${entityId}`);
+      
+      console.log("Resposta da API para edição:", entityResponse.data);
+      
+      // Extrair dados do usuário
+      const userData = entityResponse.data.usuario || {};
+      
+      // Extrair dados específicos do papel
+      let entityData = {};
+      
+      if (papel === "aluno") {
+        entityData = {
+          matricula: entityResponse.data.matricula,
+          ppc: entityResponse.data.ppc,
+          ano_ingresso: entityResponse.data.ano_ingresso
+        };
+        
+        // Extrair o código do curso do PPC (assumindo formato "curso/numero")
+        if (entityData.ppc && entityData.ppc.includes('/')) {
+          const cursoCodigo = entityData.ppc.split('/')[0];
+          entityData.curso = cursoCodigo;
+          
+          // Atualizar PPCs do curso
+          const cursoDoAluno = cursosComPpcs.find(curso => curso.codigo === cursoCodigo);
+          if (cursoDoAluno) {
+            setPpcsDoCurso(cursoDoAluno.ppcs || []);
+          }
+        }
+      } else if (papel === "coordenador") {
+        entityData = {
+          siape: entityResponse.data.siape
+        };
+        
+        // Tratar os dados do mandato (pegar o mandato mais recente)
+        if (entityResponse.data.mandatos_coordenador && entityResponse.data.mandatos_coordenador.length > 0) {
+          // Ordenar mandatos por data de início (mais recente primeiro)
+          const mandatos = [...entityResponse.data.mandatos_coordenador].sort((a, b) => {
+            // Converter datas para formato comparável
+            const dataA = a.inicio_mandato.split('-').reverse().join('-');
+            const dataB = b.inicio_mandato.split('-').reverse().join('-');
+            return new Date(dataB) - new Date(dataA);
+          });
+          
+          const mandatoAtual = mandatos[0];
+          entityData.curso = mandatoAtual.curso;
+          
+          // Converter formato de data de DD-MM-YYYY para YYYY-MM-DD
+          if (mandatoAtual.inicio_mandato) {
+            const [dia, mes, ano] = mandatoAtual.inicio_mandato.split('-');
+            entityData.inicio_mandato = `${ano}-${mes}-${dia}`;
+          }
+          
+          if (mandatoAtual.fim_mandato) {
+            const [dia, mes, ano] = mandatoAtual.fim_mandato.split('-');
+            entityData.fim_mandato = `${ano}-${mes}-${dia}`;
+          }
+        }
+      } else if (papel === "cre") {
+        entityData = {
+          siape: entityResponse.data.siape
+        };
+      }
+      
+      console.log("Dados extraídos para o formulário:", { ...userData, ...entityData });
+      setFormData({ ...userData, ...entityData });
+      
+    } catch (error) {
+      console.error(`Erro ao carregar dados para edição de ${papel}:`, error);
+      setFeedbackType("erro");
+      setFeedbackMessage(`Erro ao carregar dados para edição de ${papel}.`);
+      setShowFeedback(true);
+    }
+  }
 
   useEffect(() => {
     // Atualiza a lista de PPCs quando o curso selecionado muda
     const cursoSelecionado = cursosComPpcs.find(curso => curso.codigo === formData.curso);
-    setPpcsDoCurso(cursoSelecionado?.ppcs || []);
+    if (cursoSelecionado) {
+      setPpcsDoCurso(cursoSelecionado.ppcs || []);
+    }
     
     // Limpar o PPC selecionado ao mudar o curso (apenas para novos cadastros)
     if (!isEditing) {
@@ -171,18 +219,18 @@ export default function CadastrarAtualizarUsuarioPapel() {
       data_nascimento: formData.data_nascimento,
     }
 
-    
+
     try {
       let response;
       
-      
+
       if (isEditing) {
         // Lógica para edição
         const entityEndpoint = PAPEL_ENDPOINTS[papel];
         
         // Preparar payload baseado no papel
         let payload = {};
-        
+
         
         if (papel === "aluno") {
           payload = {
@@ -191,13 +239,31 @@ export default function CadastrarAtualizarUsuarioPapel() {
             ppc: formData.ppc,
             ano_ingresso: formData.ano_ingresso
           };
+
+         
+          console.log("Payload formatado para edição de aluno:", payload);
+
         } else if (papel === "coordenador") {
+          // Converter datas de volta para o formato esperado pelo backend (DD-MM-YYYY)
+          let inicio_mandato = formData.inicio_mandato;
+          let fim_mandato = formData.fim_mandato;
+          
+          if (inicio_mandato && inicio_mandato.includes('-')) {
+            const [ano, mes, dia] = inicio_mandato.split('-');
+            inicio_mandato = `${dia}-${mes}-${ano}`;
+          }
+          
+          if (fim_mandato && fim_mandato.includes('-')) {
+            const [ano, mes, dia] = fim_mandato.split('-');
+            fim_mandato = `${dia}-${mes}-${ano}`;
+          }
+          
           payload = {
             usuario,
             siape: formData.siape,
             curso: formData.curso,
-            inicio_mandato: formData.inicio_mandato,
-            fim_mandato: formData.fim_mandato
+            inicio_mandato,
+            fim_mandato
           };
         } else if (papel === "cre") {
           payload = {
@@ -206,7 +272,8 @@ export default function CadastrarAtualizarUsuarioPapel() {
           };
         }
         
-        response = await api.patch(`${entityEndpoint}${id}`, payload);  //retirei a barra aqui também, após o id
+        console.log(`Enviando payload para edição de ${papel}:`, payload);
+        response = await api.patch(`${entityEndpoint}${id}/`, payload);
       } 
       else {
         // Lógica para criação usando endpoints atômicos
@@ -223,12 +290,26 @@ export default function CadastrarAtualizarUsuarioPapel() {
             ano_ingresso: formData.ano_ingresso
           };
         } else if (papel === "coordenador") {
+          // Converter datas para o formato esperado pelo backend (DD-MM-YYYY)
+          let inicio_mandato = formData.inicio_mandato;
+          let fim_mandato = formData.fim_mandato;
+          
+          if (inicio_mandato && inicio_mandato.includes('-')) {
+            const [ano, mes, dia] = inicio_mandato.split('-');
+            inicio_mandato = `${dia}-${mes}-${ano}`;
+          }
+          
+          if (fim_mandato && fim_mandato.includes('-')) {
+            const [ano, mes, dia] = fim_mandato.split('-');
+            fim_mandato = `${dia}-${mes}-${ano}`;
+          }
+          
           payload = {
             usuario,
             siape: formData.siape,
             curso: formData.curso,
-            inicio_mandato: formData.inicio_mandato,
-            fim_mandato: formData.fim_mandato
+            inicio_mandato,
+            fim_mandato
           };
         } else if (papel === "cre") {
           payload = {
