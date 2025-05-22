@@ -21,7 +21,7 @@ class FormEntregaAtivCompl(Solicitacao):
     anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos")
 
     def save(self, *args, **kwargs):
-        self.nome_formulario = "Formulário de Atividades Complementares"
+        self.nome_formulario = "Entrega de Atividades Complementares"
         if not self.data_solicitacao:  # 👈 Se não tiver data, define como agora
             self.data_solicitacao = date.isoformat()
         

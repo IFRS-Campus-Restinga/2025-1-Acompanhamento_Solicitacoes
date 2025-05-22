@@ -77,20 +77,17 @@ export default function Formulario() {
             const response = await axios.get(`http://localhost:8000/solicitacoes/alunos/${alunoId}/`);
             const alunoDetails = response.data;
 
-            // Assumindo que a API retorna algo como:
-            // { id: 1, matricula: '12345', usuario: { nome: 'Nome do Aluno', email: 'email@example.com' } }
 
             setNomeAluno(alunoDetails.usuario.nome);
             setEmailAluno(alunoDetails.usuario.email);
             setMatriculaAluno(alunoDetails.matricula);
 
-            // Atualiza o estado 'dados' com as informações do aluno
             setDados(prevDados => ({
                 ...prevDados,
-                nome_aluno: alunoDetails.usuario.nome, // Use os names corretos dos seus campos
+                nome_aluno: alunoDetails.usuario.nome, 
                 email_aluno: alunoDetails.usuario.email,
                 matricula_aluno: alunoDetails.matricula,
-                aluno: alunoId // Mantém o ID do aluno selecionado
+                aluno: alunoId 
             }));
         } catch (err) {
             console.error("Erro ao buscar detalhes do aluno:", err);
