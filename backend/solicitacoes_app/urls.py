@@ -38,7 +38,8 @@ from .views.solicitacao_view import *
 
 from .views.disponibilidade_view import (
     DisponibilidadeListCreateView,
-    DisponibilidadeRetrieveUpdateDestroyView
+    DisponibilidadeRetrieveUpdateDestroyView,
+    VerificarDisponibilidadeView
 )
 
 from .views.detalhe_formularios_view import *
@@ -162,6 +163,7 @@ urlpatterns = [
 
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
+    path('disponibilidades/verificar/', VerificarDisponibilidadeView.as_view(), name='verificar-disponibilidade'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 
