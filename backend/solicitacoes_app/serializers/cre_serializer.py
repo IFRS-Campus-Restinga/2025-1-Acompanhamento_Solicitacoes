@@ -68,7 +68,7 @@ class CREWriteSerializer(serializers.ModelSerializer):
             usuario_serializer = UsuarioWriteSerializer(
                 instance=instance.usuario,
                 data=usuario_data,
-                partial=True  # Allows partial updates; adjust if needed
+                partial=True 
             )
             usuario_serializer.is_valid(raise_exception=True)
             usuario_serializer.save()

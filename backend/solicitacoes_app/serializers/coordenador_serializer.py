@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from ..models import Coordenador, Usuario, Mandato, Curso
-from ..serializers.usuario_serializer import UsuarioSerializer, UsuarioMinimoSerializer
+from ..serializers.usuario_serializer import UsuarioSerializer, UsuarioMinimoSerializer, UsuarioWriteSerializer
 from ..serializers.mandato_serializer import MandatoSerializer
 from django.core.exceptions import ValidationError
 
@@ -99,3 +99,103 @@ class CadastroCoordenadorMandatoSerializer(serializers.Serializer):
             'coordenador': CoordenadorSerializer(coordenador).data,
             'mandato': MandatoSerializer(mandato).data
         }
+        
+        
+        
+#########################################################
+
+class CoordenadorReadSerializer(serializers.ModelSerializer):
+    """
+    Serializer para leitura de Coordenador, incluindo dados do usuário e mandatos.
+    """
+    mandatos_coordenador = serializers.SerializerMethodField(read_only=True)
+    usuario = UsuarioSerializer(read_only=True)
+
+    class Meta:
+        model = Coordenador
+        fields = ['usuario', 'id', 'siape', 'mandatos_coordenador']
+        read_only_fields = fields
+
+    def get_mandatos_coordenador(self, obj):
+        return [
+            {
+                'curso': mandato.curso.codigo,
+                'inicio_mandato': mandato.inicio_mandato.strftime("%d-%m-%Y") if mandato.inicio_mandato else None,
+                'fim_mandato': mandato.fim_mandato.strftime("%d-%m-%Y") if mandato.fim_mandato else None
+            }
+            for mandato in obj.mandatos_coordenador.all()
+        ]
+
+
+class CoordenadorWriteSerializer(serializers.ModelSerializer):
+    """
+    Serializer unificado para criação e atualização de Coordenador com Mandato.
+    """
+    usuario = UsuarioWriteSerializer()
+    curso = serializers.CharField(max_length=10, write_only=True)  # Código do curso
+    inicio_mandato = serializers.DateField(input_formats=["%Y-%m-%d", "%d-%m-%Y"],  write_only=True)
+    fim_mandato = serializers.DateField(input_formats=["%Y-%m-%d", "%d-%m-%Y"],required=False, allow_null=True,  write_only=True)
+    
+    class Meta:
+        model = Coordenador
+        fields = ['usuario', 'siape', 'curso', 'inicio_mandato', 'fim_mandato']
+    
+    
+    def validate_siape(self, value):
+        coordenador_id = self.instance.id if self.instance else None
+
+        if coordenador_id and Coordenador.objects.get(id=coordenador_id).siape == value:
+            return value
+
+        if Coordenador.objects.filter(siape=value).exists():
+            raise serializers.ValidationError("Este SIAPE já está em uso.")
+        return value    
+    
+    def validate_curso(self, value):
+        try:
+            curso = Curso.objects.get(codigo=value)
+            return curso
+        except Curso.DoesNotExist:
+            raise serializers.ValidationError(f"Curso com código '{value}' não encontrado.")
+    
+    def validate(self, data):
+        # Validações específicas para o mandato
+        if data['inicio_mandato'] and data.get('fim_mandato') and data['inicio_mandato'] >= data.get('fim_mandato'):
+            raise serializers.ValidationError({"fim_mandato": "A data de início do mandato deve ser anterior à data de fim."})
+
+        return data
+    
+    def update(self, instance, validated_data):
+        # Atualizar o Usuario
+        usuario_data = validated_data.pop('usuario', None)
+        if usuario_data:
+            usuario_serializer = UsuarioSerializer(instance.usuario, data=usuario_data, partial=True)
+            usuario_serializer.is_valid(raise_exception=True)
+            usuario_serializer.save()
+
+        # Atualizar campos do Coordenador (siape)
+        instance.siape = validated_data.get('siape', instance.siape)
+        instance.save()
+
+        # Atualizar ou criar Mandato
+        curso = validated_data.get('curso')
+        inicio_mandato = validated_data.get('inicio_mandato')
+        fim_mandato = validated_data.get('fim_mandato')
+
+        if curso: # Só processa se o curso for fornecido na requisição
+            mandato = Mandato.objects.filter(coordenador=instance, curso=curso).first()
+
+            if mandato:
+                mandato.inicio_mandato = inicio_mandato if inicio_mandato is not None else mandato.inicio_mandato
+                mandato.fim_mandato = fim_mandato if fim_mandato is not None else mandato.fim_mandato
+                mandato.save()
+            else:
+                # Criar novo mandato se o curso for novo para este coordenador
+                Mandato.objects.create(
+                    coordenador=instance,
+                    curso=curso,
+                    inicio_mandato=inicio_mandato,
+                    fim_mandato=fim_mandato
+                )
+        
+        return instance
