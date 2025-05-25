@@ -190,7 +190,7 @@ const routes = [
   <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
   <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
   <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
-  <Route path="formularios/indisponivel" element={<FormularioIndisponivel />} />,
+  <Route path="/indisponivel" element={<FormularioIndisponivel />} key="indisponivel" />,
   <Route 
     path="formularios/:tipoFormulario"
     element={
