@@ -47,6 +47,33 @@ class UsuariosInativosView(generics.ListAPIView):
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComPapeis
     permission_classes = [AllowAny]
+    
+    
+class UsuarioReativarView(generics.GenericAPIView):
+    """
+    Endpoint para reativar um usuário inativo.
+    Aceita requisições PATCH para a URL /usuarios/inativos/{id}
+    """
+    queryset = Usuario.objects.inativos().filter(is_superuser=False)
+    serializer_class = UsuarioSerializerComPapeis
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
+
+    def patch(self, request, *args, **kwargs):
+        try:
+            usuario = self.get_object()
+        except Usuario.DoesNotExist:
+            return Response({"detail": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Reativa o usuário
+        usuario.is_active = True
+        usuario.status_usuario = StatusUsuario.ATIVO
+        usuario.save(update_fields=['is_active', 'status_usuario'])
+
+        serializer = UsuarioSerializerComPapeis(usuario)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
 
 class AlunoEmailListView(generics.ListAPIView):
     """

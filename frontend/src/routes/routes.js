@@ -46,7 +46,8 @@ import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
 import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
 import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
-import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
+import ListarUsuariosAtivos from "../pages/usuarios/listar_usuarios_ativos.js";
+import ListarUsuariosInativos from "../pages/usuarios/listar_usuarios_inativos.js";
 import SelecionarPapelUsuario from "../pages/usuarios/selecionar_papel.js";
 
 //Grupos
@@ -158,7 +159,8 @@ const routes = [
   <Route path="/ppcs/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />,
 
   // Usuarios
-  <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
+  <Route path="/usuarios" element={<ListarUsuariosAtivos />} key="listar-usuarios-ativos" />,
+  <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
   <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
