@@ -139,7 +139,11 @@ export default function ListarUsuarios() {
                   <td>{usuario.cpf}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.telefone}</td>
-                  <td>{usuario.papel}</td>
+                  <td>
+                    {usuario.papel === "Externo" && usuario.papel_detalhes?.aluno 
+                      ? "Responsável" 
+                      : usuario.papel}
+                  </td>
                   <td>{usuario.status_usuario}</td>
 
                   <td>
