@@ -20,6 +20,7 @@ export default function CadastrarAtualizarUsuario() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+  const [alunosCadastrados, setAlunosCadastrados] = useState([]);
 
   const navigate = useNavigate();
   const { id } = useParams();
@@ -48,6 +49,19 @@ export default function CadastrarAtualizarUsuario() {
     }
   }, [id, carregarUsuario]);
 
+  useEffect(() => {
+    // Busca e-mails de alunos ao carregar o componente
+    const fetchAlunos = async () => {
+      try {
+        const response = await api.get('usuarios/emails-alunos/');
+        setAlunosCadastrados(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar alunos:", error);
+      }
+    };
+    fetchAlunos();
+  }, []);
+
   const validarCampo = useCallback(async (fieldName, value) => {
     try {
       const data = { [fieldName]: value };
@@ -74,6 +88,11 @@ export default function CadastrarAtualizarUsuario() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // Validação adicional para responsáveis
+    if (formData.is_responsavel && !formData.email_aluno) {
+      setErrors({ ...errors, email_aluno: "Informe o e-mail do aluno" });
+      return;
+    }
     const url = id ? `usuarios/${id}/` : "usuarios/";
     const request = id ? api.put(url, formData) : api.post(url, formData);
 
@@ -121,6 +140,37 @@ export default function CadastrarAtualizarUsuario() {
                 {errors[field] && <div className="error-text">{errors[field]}</div>}
               </div>
             ))}
+          {/* Checkbox "É responsável?" */}
+          <div className="form-group">
+            <label>
+              <input
+                type="checkbox"
+                name="is_responsavel"
+                checked={formData.is_responsavel || false}
+                onChange={handleChange}
+              />
+              É responsável por um aluno?
+            </label>
+          </div>
+          {/* Campo condicional para e-mail do aluno */}
+          {formData.is_responsavel && (
+            <div className="form-group">
+              <label>E-mail do Aluno:</label>
+              <select
+                name="email_aluno"
+                className={`input-text ${errors.email_aluno ? "input-error" : ""}`}
+                value={formData.email_aluno || ""}
+                onChange={handleChange}
+                required={formData.is_responsavel}
+              >
+                <option value="">Selecione um aluno</option>
+                {alunosCadastrados.map((email) => (
+                  <option key={email} value={email}>{email}</option>
+                ))}
+              </select>
+              {errors.email_aluno && <div className="error-text">{errors.email_aluno}</div>}
+            </div>
+          )}
 
           <button type="submit" className="submit-button">
             {id ? "Atualizar" : "Cadastrar"}
