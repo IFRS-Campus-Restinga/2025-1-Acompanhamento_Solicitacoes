@@ -8,7 +8,7 @@ class MotivoAbonoListCreateView(generics.ListCreateAPIView):
     """
     Para listar e criar motivo de abono de faltas.
     """
-    queryset = MotivoAbono.objects.all()
+    queryset = MotivoAbono.objects.order_by('tipo_falta', 'descricao')
     serializer_class = MotivoAbonoSerializer
     permission_classes = [AllowAny]
 

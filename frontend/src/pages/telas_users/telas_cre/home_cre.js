@@ -45,8 +45,8 @@ const HomeCRE = () => {
                     <table className="tabela-cruds">
                         <thead>
                             <tr>
-                                <th>Nome do Formulário</th>
-                                <th>Aluno que Criou</th>
+                                <th>Tipo de Formulário</th>
+                                <th>Aluno</th>
                                 <th>Data de Criação</th>
                                 <th>Status</th>
                                 <th>Responsável</th>

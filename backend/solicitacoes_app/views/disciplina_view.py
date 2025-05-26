@@ -12,6 +12,12 @@ class DisciplinaListCreateView(generics.ListCreateAPIView):
     serializer_class = DisciplinaSerializer
     permission_classes = [AllowAny]
 
+    def get_queryset(self):
+        ppc_id = self.request.GET.get("ppc_id")
+        if ppc_id:
+            return Disciplina.objects.filter(ppc__codigo=ppc_id)  # Certifique-se que "codigo" é o campo correto
+        return Disciplina.objects.all()
+
 
 class DisciplinaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """

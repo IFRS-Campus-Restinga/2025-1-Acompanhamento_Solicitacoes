@@ -1,9 +1,24 @@
 from rest_framework import serializers
-from ..models import MotivoAbono, FormAbonoFalta, Anexo, Curso
+from ..models import MotivoAbono, FormAbonoFalta, Anexo, Curso, Disciplina
 from .motivo_abono_serializer import MotivoAbonoSerializer
 
 class FormAbonoFaltaSerializer(serializers.ModelSerializer):
-    curso = serializers.PrimaryKeyRelatedField(queryset=Curso.objects.all())
+
+    curso_codigo = serializers.SlugRelatedField(
+        source='curso',
+        queryset=Curso.objects.all(),
+        slug_field='codigo',
+        write_only=True
+    )
+
+    disciplinas = serializers.PrimaryKeyRelatedField(
+        queryset=Disciplina.objects.all(),
+        many=True,
+        write_only=True,
+        required=False
+    )
+
+    aluno_email = serializers.EmailField(write_only=True)
 
     motivo_solicitacao = MotivoAbonoSerializer(read_only=True)
     motivo_solicitacao_id = serializers.PrimaryKeyRelatedField(
@@ -19,14 +34,27 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
         required=False
     )
 
+    curso_nome = serializers.StringRelatedField(source='curso', read_only=True)
+    aluno_nome = serializers.CharField(read_only=True)
+    email = serializers.CharField(read_only=True)
+    matricula = serializers.CharField(read_only=True)
+    periodo_afastamento = serializers.SerializerMethodField()
+    ppc_codigo = serializers.CharField(source='ppc.codigo', read_only=True)
+    disciplinas_info = serializers.SerializerMethodField(read_only=True)
+
     class Meta:
         model = FormAbonoFalta
         fields = [
             'id',
-            'email',
+            'aluno_email',
             'aluno_nome',
+            'email',
             'matricula',
-            'curso',
+            'curso_codigo',
+            'curso_nome',
+            'ppc_codigo',
+            'disciplinas', 
+            'disciplinas_info',
             'motivo_solicitacao',
             'motivo_solicitacao_id',
             'data_inicio_afastamento',
@@ -35,6 +63,71 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
             'acesso_moodle',
             'perdeu_atividades'
         ]
+
+    def get_aluno_nome(self, obj):
+        if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
+            return obj.solicitacao.aluno.usuario.nome
+        return None
+        
+    def get_email(self, obj):
+        if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
+            return obj.solicitacao.aluno.usuario.email
+        return None
+        
+    def get_matricula(self, obj):
+        if hasattr(obj, 'solicitacao') and obj.solicitacao.aluno:
+            return obj.solicitacao.aluno.matricula
+        return None
+
+    def get_periodo_afastamento(self, obj):
+        return obj.periodo_afastamento
+        
+    def get_disciplinas_info(self, obj):
+        return [
+            {'codigo': d.codigo, 'nome': d.nome} 
+            for d in obj.disciplinas.all()
+        ]
+
+    def create(self, validated_data):
+        # Extrai os dados específicos
+        disciplinas_data = validated_data.pop('disciplinas', [])
+        email = validated_data.pop('aluno_email', None)
+        validated_data['data_solicitacao'] = date.today()
+        
+        # Busca o aluno pelo email para criar a relação
+        if email:
+            try:
+                user = User.objects.get(email=email)
+                aluno = Aluno.objects.get(usuario=user)
+            except User.DoesNotExist:
+                raise serializers.ValidationError({
+                    "aluno_email": "Usuário não encontrado com este email."
+                })
+            except Aluno.DoesNotExist:
+                raise serializers.ValidationError({
+                    "aluno_email": "Aluno não encontrado para este usuário."
+                })
+        
+        # Cria o formulário
+        instance = super().create(validated_data)
+        
+        # Associa as disciplinas
+        if disciplinas_data:
+            instance.disciplinas.set(disciplinas_data)
+        
+        return instance
+
+    def update(self, instance, validated_data):
+        disciplinas_data = validated_data.pop('disciplinas', None)
+        
+        # Atualiza os campos normais
+        instance = super().update(instance, validated_data)
+        
+        # Atualiza as disciplinas se fornecidas
+        if disciplinas_data is not None:
+            instance.disciplinas.set(disciplinas_data)
+        
+        return instance
 
     def validate_anexos(self, value):
         """
@@ -62,18 +155,4 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
             })
         return data
 
-    def create(self, validated_data):
-        """
-        Criação de um registro de FormAbonoFalta com anexos.
-        """
-        anexos_data = validated_data.pop('anexos', [])
-        instance = FormAbonoFalta.objects.create(**validated_data)
-
-        # Criar os anexos vinculados ao formulário
-        for arquivo in anexos_data:
-            Anexo.objects.create(
-                anexo=arquivo,
-                form_abono_falta=instance
-            )
-
-        return instance
+    
