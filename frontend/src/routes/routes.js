@@ -104,6 +104,9 @@ import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_so
 //Form Entrega de Atividades Complementares
 import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
 
+//Tela de gerenciamento de Exercícios Domiciliares
+import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
+
 const token = localStorage.getItem("token");
 
 const routes = [
@@ -232,6 +235,8 @@ const routes = [
   <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
   
+  //Tela gerenciamento Exerciícios Domiciliares
+  <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
  ];
 
 export default routes;
