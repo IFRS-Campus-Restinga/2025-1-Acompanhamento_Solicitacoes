@@ -54,7 +54,7 @@ app_name = 'solicitacoes_app'
 urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
-    path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
+    #path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
 
     #VIEWS DE FORM EXERCICIO DOM
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),

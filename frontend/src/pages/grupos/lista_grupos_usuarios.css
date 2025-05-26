@@ -1,0 +1,122 @@
+/* modal.css */
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Garante que o modal fique sobre outros elementos */
+}
+
+.modal-content {
+  background-color: white;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 600px; /* Largura máxima do modal */
+  max-height: 80vh; /* Altura máxima, com scroll interno */
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-content h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 1.4em;
+  text-align: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.modal-search {
+  margin-bottom: 15px;
+}
+
+.modal-search .input-area {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.modal-body {
+  overflow-y: auto; /* Habilita scroll se a lista for grande */
+  margin-bottom: 20px;
+  flex-grow: 1; /* Faz o corpo do modal ocupar o espaço disponível */
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 5px;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95em;
+}
+
+.user-list-item:last-child {
+  border-bottom: none;
+}
+
+.user-name {
+  font-weight: bold;
+  flex-basis: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-email {
+  color: #555;
+  flex-basis: 40%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-role {
+  color: #777;
+  font-style: italic;
+  flex-basis: 20%;
+  text-align: right;
+}
+
+.modal-footer {
+  text-align: right;
+  border-top: 1px solid #eee;
+  padding-top: 15px;
+}
+
+.close-button {
+  background-color: #0e6c1f;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  transition: background-color 0.2s;
+}
+
+.close-button:hover {
+  background-color: #5a6268;
+}
+
+.error-message {
+  color: #dc3545; /* Vermelho para erros */
+  text-align: center;
+}
+

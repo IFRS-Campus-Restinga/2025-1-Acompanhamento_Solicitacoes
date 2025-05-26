@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 // COMPONENTES BASE
 import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
-import "./grupo.css"; // Certifique-se que este CSS existe ou remova se não for usado
+// Ajuste na importação do Header conforme o último arquivo do usuário
+import HeaderCRE from "../../components/base/headers/header_cre"; 
+import "./grupo.css"; 
 
 // POPUPS
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -21,17 +22,24 @@ import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 // BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
+import VisualizarUsuariosGrupoModal from "./vizualizar_grupos_usuarios.js"; 
+import './lista_grupos_usuarios.css';
+
 export default function ListarGrupos() {
   const navigate = useNavigate();
   const [grupos, setGrupos] = useState([]);
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [grupoSelecionado, setGrupoSelecionado] = useState(null);
-  const [mostrarPopup, setMostrarPopup] = useState(false);
+  const [grupoParaExcluir, setGrupoParaExcluir] = useState(null); // Renomeado para clareza
+  const [mostrarPopupConfirmacao, setMostrarPopupConfirmacao] = useState(false);
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const itensPorPagina = 10;
+
+  // *** NOVO: Estados para o modal de visualização ***
+  const [mostrarModalUsuarios, setMostrarModalUsuarios] = useState(false);
+  const [grupoSelecionadoParaVer, setGrupoSelecionadoParaVer] = useState(null);
 
   useEffect(() => {
     axios
@@ -68,11 +76,11 @@ export default function ListarGrupos() {
   );
 
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/grupos/${grupoSelecionado}/`)
+    axios.delete(`http://localhost:8000/solicitacoes/grupos/${grupoParaExcluir}/`)
       .then(() => {
         setMensagemPopup("Grupo excluído com sucesso.");
         setTipoMensagem("sucesso");
-        setGrupos(grupos.filter((g) => g.id !== grupoSelecionado));
+        setGrupos(grupos.filter((g) => g.id !== grupoParaExcluir));
         if (gruposPaginados.length === 1 && paginaAtual > 1) {
           setPaginaAtual(paginaAtual - 1);
         }
@@ -84,20 +92,34 @@ export default function ListarGrupos() {
         setTipoMensagem("erro");
       })
       .finally(() => {
-        setMostrarPopup(false);
+        setMostrarPopupConfirmacao(false);
         setMostrarFeedback(true);
-        setGrupoSelecionado(null);
+        setGrupoParaExcluir(null);
       });
+  };
+
+  // *** NOVO: Função para abrir o modal de visualização ***
+  const handleAbrirModalUsuarios = (grupo) => {
+    setGrupoSelecionadoParaVer(grupo);
+    setMostrarModalUsuarios(true);
+  };
+
+  // *** NOVO: Função para fechar o modal de visualização ***
+  const handleFecharModalUsuarios = () => {
+    setMostrarModalUsuarios(false);
+    setGrupoSelecionadoParaVer(null);
   };
 
   return (
     <div>
-      <HeaderCRE />
+      {/* Usando HeaderCRE conforme o último arquivo do usuário */}
+      <HeaderCRE /> 
       <main className="container">
         <h2>Grupos</h2>
 
         <div className="botoes-wrapper" style={{ marginBottom: "20px", marginTop: "20px" }}>
-          <BotaoCadastrar to="/grupos/cadastrar" title="Criar Novo Grupo" />
+          {/* Assumindo que a rota de cadastro é /grupos/cadastrar */}
+          <BotaoCadastrar to="/grupos/cadastrar" title="Criar Novo Grupo" /> 
         </div>
 
         <BarraPesquisa
@@ -129,17 +151,22 @@ export default function ListarGrupos() {
                   <td>{grupo.name}</td> 
                   <td>
                     <div className="botoes-acoes">
-                      <Link to={`/grupos/${grupo.id}`} title="Ver detalhes" className="icone-botao">
+                      {/* *** ALTERADO: Botão de olho agora abre o modal *** */}
+                      <button 
+                        onClick={() => handleAbrirModalUsuarios(grupo)} 
+                        title="Ver usuários do grupo" 
+                        className="icone-botao"
+                      >
                         <i className="bi bi-eye-fill icone-olho"></i>
-                      </Link>
-                      {/* Link de Edição CORRIGIDO */}
+                      </button>
+                      {/* Link de Edição continua apontando para /grupos/:id */}
                       <Link to={`/grupos/${grupo.id}`} title="Editar" className="icone-botao">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button
                         onClick={() => {
-                          setGrupoSelecionado(grupo.id);
-                          setMostrarPopup(true);
+                          setGrupoParaExcluir(grupo.id);
+                          setMostrarPopupConfirmacao(true);
                         }}
                         title="Excluir"
                         className="icone-botao"
@@ -165,10 +192,10 @@ export default function ListarGrupos() {
         )}
 
         <PopupConfirmacao
-          show={mostrarPopup}
+          show={mostrarPopupConfirmacao}
           mensagem="Tem certeza que deseja excluir este grupo?"
           onConfirm={confirmarExclusao}
-          onCancel={() => setMostrarPopup(false)}
+          onCancel={() => setMostrarPopupConfirmacao(false)}
         />
 
         <PopupFeedback
@@ -178,7 +205,15 @@ export default function ListarGrupos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
+        {/* *** NOVO: Renderizar o Modal de Visualização *** */}
+        <VisualizarUsuariosGrupoModal 
+          show={mostrarModalUsuarios}
+          onClose={handleFecharModalUsuarios}
+          grupo={grupoSelecionadoParaVer}
+        />
+
+        {/* Usando a navegação do último arquivo do usuário */}
+        <BotaoVoltar onClick={() => navigate("/configuracoes")} /> 
       </main>
       <Footer />
     </div>
