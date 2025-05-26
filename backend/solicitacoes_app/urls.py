@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
@@ -13,7 +13,7 @@ from .views.disciplina_view import *
 from .views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
-from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView
+from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView
 from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
@@ -38,24 +38,23 @@ from .views.solicitacao_view import *
 
 from .views.disponibilidade_view import (
     DisponibilidadeListCreateView,
-    DisponibilidadeRetrieveUpdateDestroyView
+    DisponibilidadeRetrieveUpdateDestroyView,
+    VerificarDisponibilidadeView
 )
 
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
-
-from django.urls import path
 
 from rest_framework.routers import DefaultRouter
 
 from .views.permissoes_view import PermissaoListView
 
 app_name = 'solicitacoes_app'
-
        
 urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
+    path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
 
     #VIEWS DE FORM EXERCICIO DOM
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
@@ -119,6 +118,8 @@ urlpatterns = [
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
+    path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
+    path('usuarios/emails-alunos/', AlunoEmailListView.as_view(), name='aluno-emails-list'),
 
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
@@ -162,6 +163,7 @@ urlpatterns = [
 
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
+    path('disponibilidades/verificar/', VerificarDisponibilidadeView.as_view(), name='verificar-disponibilidade'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 

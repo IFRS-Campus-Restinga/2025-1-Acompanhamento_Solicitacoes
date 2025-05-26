@@ -1,56 +1,53 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 
 // POPUPS
-import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 // PAGINAÇÃO
 import Paginacao from "../../components/UI/paginacao";
 
 // BOTÕES
-import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
-export default function ListarUsuarios() {
+export default function ListarUsuariosInativos() {
   const [usuarios, setUsuarios] = useState([]);
-  const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [exibirInativos, setExibirInativos] = useState(false);
   const navigate = useNavigate();
   const itensPorPagina = 10;
 
-  useEffect(() => {
-    const url = exibirInativos
-      ? "http://localhost:8000/solicitacoes/usuarios/inativos/"
-      : "http://localhost:8000/solicitacoes/usuarios/";
-
-    axios
-      .get(url)
+  // Função para buscar usuários inativos
+  const fetchUsuariosInativos = () => {
+    api.get("/usuarios/inativos/") 
       .then((res) => {
         setUsuarios(res.data);
-        setPaginaAtual(1);
+        setPaginaAtual(1); 
       })
       .catch((err) => {
+        console.error("Erro ao carregar usuários inativos:", err);
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários."}`
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários inativos."}`
         );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
-  }, [exibirInativos]);
+  };
 
+  useEffect(() => {
+    fetchUsuariosInativos();
+  }, []);
+
+  // Função para filtrar usuários
   const filtrarUsuarios = () => {
     const termo = filtro.toLowerCase();
     return usuarios.filter((usuario) =>
@@ -58,35 +55,39 @@ export default function ListarUsuarios() {
         (usuario.email || '').toLowerCase().includes(termo) ||
         (usuario.cpf || '').toLowerCase().includes(termo) ||
         (usuario.telefone || '').toLowerCase().includes(termo) ||
-        (usuario.data_nascimento || '').toLowerCase().includes(termo) ||
         (usuario.papel || '').toLowerCase().includes(termo) ||
         (usuario.status_usuario || '').toLowerCase().includes(termo)
     );
-};
+  };
   const usuariosFiltrados = filtrarUsuarios();
 
+  // Paginação
   const usuariosPaginados = usuariosFiltrados.slice(
     (paginaAtual - 1) * itensPorPagina,
     paginaAtual * itensPorPagina
   );
 
-  const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/usuarios/${usuarioSelecionado}/`)
+  // Função para reativar usuário
+  const handleReativarUsuario = (usuarioId) => {
+    const reativarUrl = `/usuarios/inativos/${usuarioId}/`;
+
+    api.patch(reativarUrl)
       .then(() => {
-        setMensagemPopup("Usuário excluído com sucesso.");
+        setMensagemPopup("Usuário reativado com sucesso!");
         setTipoMensagem("sucesso");
-        setUsuarios(usuarios.filter((u) => u.id !== usuarioSelecionado));
+        // Remove o usuário da lista de inativos no frontend
+        setUsuarios(prevUsuarios => prevUsuarios.filter(u => u.id !== usuarioId));
+        // Opcional: Atualizar a contagem total ou forçar recarregamento se necessário
       })
       .catch((err) => {
+        console.error("Erro ao reativar usuário:", err);
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao reativar usuário."}`
         );
         setTipoMensagem("erro");
       })
       .finally(() => {
-        setMostrarPopup(false);
         setMostrarFeedback(true);
-        setUsuarioSelecionado(null);
       });
   };
 
@@ -94,17 +95,13 @@ export default function ListarUsuarios() {
     <div>
       <HeaderCRE />
       <main className="container">
-        <h2>Usuários</h2>
-
-        <div className="botoes-wrapper">
-
-        <BotaoCadastrar to="/usuarios/cadastro" title="Criar Novo Usuário" />
-          <div className="botao-inativos-wrapper">
+        <h2>Usuários Inativos</h2>
+         <div className="botoes-wrapper">
+        <div className="botao-inativos-wrapper">
             <button
-              onClick={() => setExibirInativos(!exibirInativos)}
-              className="btn btn-secondary"
-            >
-              {exibirInativos ? "Mostrar Ativos" : "Mostrar Inativos"}
+              onClick={() => navigate("/usuarios")}
+              className="submit-button">
+              Mostrar Usuários Ativos
             </button>
           </div>
         </div>
@@ -112,13 +109,13 @@ export default function ListarUsuarios() {
         <BarraPesquisa
           value={filtro}
           onChange={(e) => {
-          setFiltro(e.target.value);
-          setPaginaAtual(1);
+            setFiltro(e.target.value);
+            setPaginaAtual(1); // Reseta paginação ao filtrar
           }}
         />
 
         {usuariosFiltrados.length === 0 ? (
-          <p><br />Nenhum usuário encontrado!</p>
+          <p><br />Nenhum usuário inativo encontrado!</p>
         ) : (
           <table className="tabela-cruds">
             <thead>
@@ -139,30 +136,22 @@ export default function ListarUsuarios() {
                   <td>{usuario.cpf}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.telefone}</td>
-                  <td>
-                    {usuario.papel === "Externo" && usuario.papel_detalhes?.aluno 
-                      ? "Responsável" 
-                      : usuario.papel}
-                  </td>
+                  <td>{usuario.papel}</td>
                   <td>{usuario.status_usuario}</td>
-
                   <td>
                     <div className="botoes-acoes">
+                      {/* Botão Visualizar Detalhes */}
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/editar/${usuario.papel.toLowerCase()}/${usuario.papel_detalhes?.id}`} title="Editar">
-                        <i className="bi bi-pencil-square icone-editar"></i>
-                      </Link>
+                      {/* Botão Reativar Usuário */}
                       <button
-                        onClick={() => {
-                          setUsuarioSelecionado(usuario.id);
-                          setMostrarPopup(true);
-                        }}
-                        title="Excluir"
+                        onClick={() => handleReativarUsuario(usuario.id)}
+                        title="Reativar Usuário"
                         className="icone-botao"
                       >
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
+                        {/* Use um ícone apropriado, ex: bi-arrow-clockwise, bi-person-check-fill */}
+                        <i className="bi bi-arrow-clockwise icone-reativar"></i>
                       </button>
                     </div>
                   </td>
@@ -178,12 +167,6 @@ export default function ListarUsuarios() {
           setPaginaAtual={setPaginaAtual}
           itensPorPagina={itensPorPagina}
           onDadosPaginados={() => {}}
-        />
-
-        <PopupConfirmacao
-          show={mostrarPopup}
-          onConfirm={confirmarExclusao}
-          onCancel={() => setMostrarPopup(false)}
         />
 
         <PopupFeedback

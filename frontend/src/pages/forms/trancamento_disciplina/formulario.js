@@ -5,6 +5,7 @@ import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 
 export default function Formulario() {
     const [alunos, setAlunos] = useState([]);
@@ -112,158 +113,160 @@ export default function Formulario() {
     );
 
     return (
-        <div>
-            <HeaderAluno />
-            <main className="container">
-                <h2>Solicitação de Trancamento de Componente Curricular</h2>
-                <div className="descricao-formulario">
-                    <p>Este formulário destina-se à solicitação de trancamento de um ou mais componente(s) curricular(es) do período letivo vigente.</p>
-                    <p>Conforme art. 122 da Organização Didática, entende-se por trancamento de componente curricular o ato formal pelo qual o estudante solicita a desistência de um ou mais componentes curriculares do curso.</p>
-                    <p>Ainda, quando o estudante for ingressante será permitido o trancamento de até 2 (dois) componentes curriculares matriculados (art. 8º da Organização Didática).</p>
-                    <p>QUEM: Estudantes dos cursos subsequentes e do superior.</p>
-                    <p>QUANDO: A solicitação de trancamento de componente curricular poderá ser feita dentro de cada período letivo, conforme prazo estabelecido em nosso calendário acadêmico.</p>
-                </div>
-
-                <form className="formulario formulario-largo" onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label>Aluno:</label>
-                        <select onChange={handleAlunoChange} required>
-                            <option value="">Selecione o aluno</option>
-                            {alunos.map((aluno) => (
-                                <option key={aluno.id} value={aluno.id}>
-                                    {aluno.usuario.nome}
-                                </option>
-                            ))}
-                        </select>
+        <VerificadorDisponibilidade tipoFormulario="TRANCAMENTODISCIPLINA">
+            <div>
+                <HeaderAluno />
+                <main className="container">
+                    <h2>Solicitação de Trancamento de Componente Curricular</h2>
+                    <div className="descricao-formulario">
+                        <p>Este formulário destina-se à solicitação de trancamento de um ou mais componente(s) curricular(es) do período letivo vigente.</p>
+                        <p>Conforme art. 122 da Organização Didática, entende-se por trancamento de componente curricular o ato formal pelo qual o estudante solicita a desistência de um ou mais componentes curriculares do curso.</p>
+                        <p>Ainda, quando o estudante for ingressante será permitido o trancamento de até 2 (dois) componentes curriculares matriculados (art. 8º da Organização Didática).</p>
+                        <p>QUEM: Estudantes dos cursos subsequentes e do superior.</p>
+                        <p>QUANDO: A solicitação de trancamento de componente curricular poderá ser feita dentro de cada período letivo, conforme prazo estabelecido em nosso calendário acadêmico.</p>
                     </div>
 
-                    {alunoSelecionado && (
-                        <>
-                            <div className="form-group">
-                                <label>Curso:</label>
+                    <form className="formulario formulario-largo" onSubmit={handleSubmit}>
+                        <div className="form-group">
+                            <label>Aluno:</label>
+                            <select onChange={handleAlunoChange} required>
+                                <option value="">Selecione o aluno</option>
+                                {alunos.map((aluno) => (
+                                    <option key={aluno.id} value={aluno.id}>
+                                        {aluno.usuario.nome}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {alunoSelecionado && (
+                            <>
+                                <div className="form-group">
+                                    <label>Curso:</label>
+                                    <input
+                                        type="text"
+                                        value={alunoSelecionado.ppc?.curso?.nome || "Não informado"}
+                                        readOnly
+                                    />
+                                </div>
+                                <div className="form-group">
+                                    <label>PPC:</label>
+                                    <input
+                                        type="text"
+                                        value={alunoSelecionado.ppc?.codigo || "Não informado"}
+                                        readOnly
+                                    />
+                                </div>
+                            </>
+                        )}
+
+                        <div className="form-group">
+                            <label>
+                                <input
+                                    type="checkbox"
+                                    checked={dados.ingressante}
+                                    onChange={(e) => {
+                                        const isIngressante = e.target.checked;
+                                        const novoLimite = isIngressante ? 2 : 5;
+                                        setDados({
+                                            ...dados,
+                                            ingressante: isIngressante,
+                                            disciplinas: isIngressante ? dados.disciplinas.slice(0, 2) : dados.disciplinas
+                                        });
+                                    
+                                        if (dados.disciplinas.length > novoLimite) {
+                                            setMensagemErro(`Você só pode selecionar no máximo ${novoLimite} disciplinas.`);
+                                        } else {
+                                            setMensagemErro("");
+                                        }
+                                    }}
+                                />
+                                <span> Estou no primeiro semestre </span>
+                            </label>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Disciplinas Disponíveis:</label>
+                            <div className="barra-pesquisa">
+                                <i className="bi bi-search icone-pesquisa"></i>
                                 <input
                                     type="text"
-                                    value={alunoSelecionado.ppc?.curso?.nome || "Não informado"}
-                                    readOnly
+                                    placeholder="Buscar disciplinas..."
+                                    value={filtroDisciplina}
+                                    onChange={(e) => setFiltroDisciplina(e.target.value)}
+                                    className="input-pesquisa"
+                                    disabled={!alunoSelecionado || disciplinas.length === 0}
+                                    style={{ paddingLeft: '30px', height: '38px' }} 
                                 />
                             </div>
-                            <div className="form-group">
-                                <label>PPC:</label>
-                                <input
-                                    type="text"
-                                    value={alunoSelecionado.ppc?.codigo || "Não informado"}
-                                    readOnly
-                                />
-                            </div>
-                        </>
-                    )}
-
-                    <div className="form-group">
-                        <label>
-                            <input
-                                type="checkbox"
-                                checked={dados.ingressante}
-                                onChange={(e) => {
-                                    const isIngressante = e.target.checked;
-                                    const novoLimite = isIngressante ? 2 : 5;
-                                    setDados({
-                                        ...dados,
-                                        ingressante: isIngressante,
-                                        disciplinas: isIngressante ? dados.disciplinas.slice(0, 2) : dados.disciplinas
-                                    });
-                                
-                                    if (dados.disciplinas.length > novoLimite) {
-                                        setMensagemErro(`Você só pode selecionar no máximo ${novoLimite} disciplinas.`);
-                                    } else {
-                                        setMensagemErro("");
-                                    }
-                                }}
-                            />
-                            <span> Estou no primeiro semestre </span>
-                        </label>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Disciplinas Disponíveis:</label>
-                        <div className="barra-pesquisa">
-                            <i className="bi bi-search icone-pesquisa"></i>
-                            <input
-                                type="text"
-                                placeholder="Buscar disciplinas..."
-                                value={filtroDisciplina}
-                                onChange={(e) => setFiltroDisciplina(e.target.value)}
-                                className="input-pesquisa"
+                            <select
+                                multiple
+                                size="5"
+                                value={dados.disciplinas}
+                                onChange={handleDisciplinasChange}
                                 disabled={!alunoSelecionado || disciplinas.length === 0}
-                                style={{ paddingLeft: '30px', height: '38px' }} 
+                                required
+                            >
+                                {disciplinasFiltradas.map((disciplina) => (
+                                    <option key={disciplina.codigo} value={disciplina.codigo}>
+                                        {disciplina.nome} ({disciplina.codigo})
+                                    </option>
+                                ))}
+                            </select>
+                            {mensagemErro && <div className="erro">{mensagemErro}</div>}
+                            {disciplinas.length === 0 && alunoSelecionado && (
+                                <div className="aviso">Nenhuma disciplina disponível para trancamento.</div>
+                            )}
+                        </div>
+
+                        <div className="form-group">
+                            <label>Disciplinas Selecionadas:</label>
+                            <ul>
+                                {dados.disciplinas.map((codigo) => {
+                                    const disciplina = disciplinas.find(d => d.codigo === codigo);
+                                    return (
+                                        <li key={codigo}>
+                                            {disciplina ? `${disciplina.nome} (${codigo})` : codigo}
+                                            <button
+                                                type="button"
+                                                onClick={() => handleRemoveDisciplina(codigo)}
+                                                className="remove-btn"
+                                            >
+                                                X
+                                            </button>
+                                        </li>
+                                    );
+                                })}
+                            </ul>
+                        </div>
+
+                        <div className="form-group">
+                            <label>Motivo da Solicitação:</label>
+                            <textarea
+                                value={dados.motivo_solicitacao}
+                                onChange={(e) => setDados({...dados, motivo_solicitacao: e.target.value})}
+                                required
                             />
                         </div>
-                        <select
-                            multiple
-                            size="5"
-                            value={dados.disciplinas}
-                            onChange={handleDisciplinasChange}
-                            disabled={!alunoSelecionado || disciplinas.length === 0}
-                            required
+
+                        <button 
+                            type="submit" 
+                            className="submit-button" 
+                            disabled={!alunoSelecionado || dados.disciplinas.length === 0}
                         >
-                            {disciplinasFiltradas.map((disciplina) => (
-                                <option key={disciplina.codigo} value={disciplina.codigo}>
-                                    {disciplina.nome} ({disciplina.codigo})
-                                </option>
-                            ))}
-                        </select>
-                        {mensagemErro && <div className="erro">{mensagemErro}</div>}
-                        {disciplinas.length === 0 && alunoSelecionado && (
-                            <div className="aviso">Nenhuma disciplina disponível para trancamento.</div>
-                        )}
-                    </div>
+                            Enviar
+                        </button>
+                    </form>
 
-                    <div className="form-group">
-                        <label>Disciplinas Selecionadas:</label>
-                        <ul>
-                            {dados.disciplinas.map((codigo) => {
-                                const disciplina = disciplinas.find(d => d.codigo === codigo);
-                                return (
-                                    <li key={codigo}>
-                                        {disciplina ? `${disciplina.nome} (${codigo})` : codigo}
-                                        <button
-                                            type="button"
-                                            onClick={() => handleRemoveDisciplina(codigo)}
-                                            className="remove-btn"
-                                        >
-                                            X
-                                        </button>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                    </div>
-
-                    <div className="form-group">
-                        <label>Motivo da Solicitação:</label>
-                        <textarea
-                            value={dados.motivo_solicitacao}
-                            onChange={(e) => setDados({...dados, motivo_solicitacao: e.target.value})}
-                            required
-                        />
-                    </div>
-
-                    <button 
-                        type="submit" 
-                        className="submit-button" 
-                        disabled={!alunoSelecionado || dados.disciplinas.length === 0}
-                    >
-                        Enviar
-                    </button>
-                </form>
-
-                <PopupFeedback
-                    show={showFeedback}
-                    mensagem={mensagem}
-                    tipo={tipoMensagem}
-                    onClose={() => setShowFeedback(false)}
-                />
-            </main>
-            <Footer />
-        </div>
+                    <PopupFeedback
+                        show={showFeedback}
+                        mensagem={mensagem}
+                        tipo={tipoMensagem}
+                        onClose={() => setShowFeedback(false)}
+                    />
+                </main>
+                <Footer />
+            </div>
+        </VerificadorDisponibilidade>
     );
 }

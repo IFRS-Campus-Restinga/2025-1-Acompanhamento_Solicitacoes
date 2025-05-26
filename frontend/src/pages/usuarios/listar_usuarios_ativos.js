@@ -1,6 +1,6 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../../services/api";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 
@@ -18,7 +18,8 @@ import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 //BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
-export default function ListarUsuarios() {
+// Renomeie este componente para ListarUsuariosAtivos ou similar
+export default function ListarUsuariosAtivos() { 
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
@@ -27,30 +28,31 @@ export default function ListarUsuarios() {
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [exibirInativos, setExibirInativos] = useState(false);
   const navigate = useNavigate();
   const itensPorPagina = 10;
 
-  useEffect(() => {
-    const url = exibirInativos
-      ? "http://localhost:8000/solicitacoes/usuarios/inativos/"
-      : "http://localhost:8000/solicitacoes/usuarios/";
-
-    axios
-      .get(url)
+  // Função para buscar usuários ativos
+  const fetchUsuariosAtivos = () => {
+    api.get("/usuarios/") 
       .then((res) => {
         setUsuarios(res.data);
         setPaginaAtual(1);
       })
       .catch((err) => {
+        console.error("Erro ao carregar usuários ativos:", err);
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários."}`
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários ativos."}`
         );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
-  }, [exibirInativos]);
+  };
 
+  useEffect(() => {
+    fetchUsuariosAtivos();
+  }, []);
+
+  // Função para filtrar usuários
   const filtrarUsuarios = () => {
     const termo = filtro.toLowerCase();
     return usuarios.filter((usuario) =>
@@ -58,26 +60,31 @@ export default function ListarUsuarios() {
         (usuario.email || '').toLowerCase().includes(termo) ||
         (usuario.cpf || '').toLowerCase().includes(termo) ||
         (usuario.telefone || '').toLowerCase().includes(termo) ||
-        (usuario.data_nascimento || '').toLowerCase().includes(termo) ||
         (usuario.papel || '').toLowerCase().includes(termo) ||
         (usuario.status_usuario || '').toLowerCase().includes(termo)
     );
-};
+  };
   const usuariosFiltrados = filtrarUsuarios();
 
+  // Paginação
   const usuariosPaginados = usuariosFiltrados.slice(
     (paginaAtual - 1) * itensPorPagina,
     paginaAtual * itensPorPagina
   );
 
+  // Função para confirmar exclusão (lógica ou física, tratada no backend)
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/usuarios/${usuarioSelecionado}/`)
+    if (!usuarioSelecionado) return;
+
+    api.delete(`/usuarios/${usuarioSelecionado}/`)
       .then(() => {
-        setMensagemPopup("Usuário excluído com sucesso.");
+        setMensagemPopup("Ação de exclusão realizada com sucesso."); 
         setTipoMensagem("sucesso");
-        setUsuarios(usuarios.filter((u) => u.id !== usuarioSelecionado));
+        // Atualiza a lista removendo o usuário (seja exclusão física ou lógica)
+        setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioSelecionado));
       })
       .catch((err) => {
+        console.error("Erro ao excluir usuário:", err);
         setMensagemPopup(
           `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`
         );
@@ -94,17 +101,15 @@ export default function ListarUsuarios() {
     <div>
       <HeaderCRE />
       <main className="container">
-        <h2>Usuários</h2>
+        <h2>Usuários Ativos</h2>
 
         <div className="botoes-wrapper">
-
-        <BotaoCadastrar to="/usuarios/cadastro" title="Criar Novo Usuário" />
+          <BotaoCadastrar to="/usuarios/cadastro" title="Criar Novo Usuário" />
           <div className="botao-inativos-wrapper">
             <button
-              onClick={() => setExibirInativos(!exibirInativos)}
-              className="btn btn-secondary"
-            >
-              {exibirInativos ? "Mostrar Ativos" : "Mostrar Inativos"}
+              onClick={() => navigate("/usuarios/inativos")} // Navega para a nova rota
+              className="submit-button">
+              Mostrar Usuários Inativos
             </button>
           </div>
         </div>
@@ -112,13 +117,13 @@ export default function ListarUsuarios() {
         <BarraPesquisa
           value={filtro}
           onChange={(e) => {
-          setFiltro(e.target.value);
-          setPaginaAtual(1);
+            setFiltro(e.target.value);
+            setPaginaAtual(1);
           }}
         />
 
         {usuariosFiltrados.length === 0 ? (
-          <p><br />Nenhum usuário encontrado!</p>
+          <p><br />Nenhum usuário ativo encontrado!</p>
         ) : (
           <table className="tabela-cruds">
             <thead>
@@ -139,19 +144,15 @@ export default function ListarUsuarios() {
                   <td>{usuario.cpf}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.telefone}</td>
-                  <td>
-                    {usuario.papel === "Externo" && usuario.papel_detalhes?.aluno 
-                      ? "Responsável" 
-                      : usuario.papel}
-                  </td>
+                  <td>{usuario.papel}</td>
                   <td>{usuario.status_usuario}</td>
-
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/editar/${usuario.papel.toLowerCase()}/${usuario.papel_detalhes?.id}`} title="Editar">
+                      {/* Ajuste o link de edição se necessário, baseado na sua estrutura */}
+                      <Link to={`/usuarios/editar/${usuario.papel?.toLowerCase()}/${usuario.papel_detalhes?.id || usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button
@@ -182,6 +183,7 @@ export default function ListarUsuarios() {
 
         <PopupConfirmacao
           show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir este usuário? A ação pode ser irreversível dependendo do status."
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
         />
@@ -199,3 +201,4 @@ export default function ListarUsuarios() {
     </div>
   );
 }
+

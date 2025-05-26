@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer"; 
 import HeaderAluno from "../../../components/base/headers/header_aluno"; 
 import "../../../components/formulario.css";
+import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 
 export default function FormularioTrancamentoMatricula() {
   const [alunos, setAlunos] = useState([]);
@@ -148,113 +149,115 @@ export default function FormularioTrancamentoMatricula() {
   };
 
   return (
-    <div>
-      <HeaderAluno />
-      <main className="container">
-        <h2>Solicitação de Trancamento de Matrícula</h2>
-        <div className="descricao-formulario">
-          <p>
-            Este formulário destina-se à solicitação de trancamento total de
-            matrícula...
-          </p>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="formulario formulario-largo"
-          encType="multipart/form-data"
-        >
-          <div className="form-group">
-            <label htmlFor="alunoSelect">Selecione o Aluno:</label>
-            <select
-              id="alunoSelect"
-              value={alunoSelecionado ? alunoSelecionado.id : ""} 
-              onChange={handleAlunoChange}
-              required
-            >
-              <option value="">Selecione o aluno</option>
-              {Array.isArray(alunos) && alunos.map((aluno) => (
-                <option key={aluno.id} value={aluno.id}>
-                  {aluno.usuario ? aluno.usuario.nome : `Aluno ID ${aluno.id}`} ({aluno.matricula})
-                </option>
-              ))}
-            </select>
+    <VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
+      <div>
+        <HeaderAluno />
+        <main className="container">
+          <h2>Solicitação de Trancamento de Matrícula</h2>
+          <div className="descricao-formulario">
+            <p>
+              Este formulário destina-se à solicitação de trancamento total de
+              matrícula...
+            </p>
           </div>
 
-          {alunoSelecionado && alunoSelecionado.usuario && (
-            <div className="dados-aluno-container">
-              <h3>Dados do Aluno Selecionado</h3>
-              <div className="form-group">
-                <label>Nome:</label>
-                <input type="text" value={alunoSelecionado.usuario.nome || ""} readOnly />
-              </div>
-              <div className="form-group">
-                <label>E-mail:</label>
-                <input type="email" value={alunoSelecionado.usuario.email || ""} readOnly />
-              </div>
-              <div className="form-group">
-                <label>Matrícula:</label>
-                <input type="text" value={alunoSelecionado.matricula || ""} readOnly />
-              </div>
-              
-              {loadingPpc && <p>A carregar dados do curso/PPC...</p>}
-              
-              {ppcDetalhes && ppcDetalhes.curso_details ? ( 
-                <>
-                  <div className="form-group">
-                    <label>Curso:</label>
-                    <input type="text" value={ppcDetalhes.curso_details.nome || ""} readOnly /> 
-                  </div>
-                  <div className="form-group">
-                    <label>PPC (Nome/Código):</label>
-                    <input type="text" value={ppcDetalhes.nome || ppcDetalhes.codigo || "N/D"} readOnly />
-                  </div>
-                </>
-              ) : (
-                !loadingPpc && alunoSelecionado && typeof alunoSelecionado.ppc !== 'undefined' && alunoSelecionado.ppc && (
-                  <p className="text-red-500">Não foi possível carregar os detalhes do curso/PPC para o código '{alunoSelecionado.ppc}'.</p>
-                )
-              )}
-
-              <div className="form-group">
-                <label>Ano de Ingresso:</label>
-                <input type="text" value={alunoSelecionado.ano_ingresso || ""} readOnly />
-              </div>
+          <form
+            onSubmit={handleSubmit}
+            className="formulario formulario-largo"
+            encType="multipart/form-data"
+          >
+            <div className="form-group">
+              <label htmlFor="alunoSelect">Selecione o Aluno:</label>
+              <select
+                id="alunoSelect"
+                value={alunoSelecionado ? alunoSelecionado.id : ""} 
+                onChange={handleAlunoChange}
+                required
+              >
+                <option value="">Selecione o aluno</option>
+                {Array.isArray(alunos) && alunos.map((aluno) => (
+                  <option key={aluno.id} value={aluno.id}>
+                    {aluno.usuario ? aluno.usuario.nome : `Aluno ID ${aluno.id}`} ({aluno.matricula})
+                  </option>
+                ))}
+              </select>
             </div>
-          )}
 
-          <hr />
-          <h3>Detalhes do Trancamento</h3>
-          
-          <div className="form-group">
-            <label htmlFor="motivo_solicitacao">Justificativa do trancamento:</label>
-            <textarea
-              id="motivo_solicitacao"
-              name="motivo_solicitacao" 
-              value={formData.motivo_solicitacao}
-              onChange={handleChange}
-              rows="5"
-              required
-            />
-          </div>
+            {alunoSelecionado && alunoSelecionado.usuario && (
+              <div className="dados-aluno-container">
+                <h3>Dados do Aluno Selecionado</h3>
+                <div className="form-group">
+                  <label>Nome:</label>
+                  <input type="text" value={alunoSelecionado.usuario.nome || ""} readOnly />
+                </div>
+                <div className="form-group">
+                  <label>E-mail:</label>
+                  <input type="email" value={alunoSelecionado.usuario.email || ""} readOnly />
+                </div>
+                <div className="form-group">
+                  <label>Matrícula:</label>
+                  <input type="text" value={alunoSelecionado.matricula || ""} readOnly />
+                </div>
+                
+                {loadingPpc && <p>A carregar dados do curso/PPC...</p>}
+                
+                {ppcDetalhes && ppcDetalhes.curso_details ? ( 
+                  <>
+                    <div className="form-group">
+                      <label>Curso:</label>
+                      <input type="text" value={ppcDetalhes.curso_details.nome || ""} readOnly /> 
+                    </div>
+                    <div className="form-group">
+                      <label>PPC (Nome/Código):</label>
+                      <input type="text" value={ppcDetalhes.nome || ppcDetalhes.codigo || "N/D"} readOnly />
+                    </div>
+                  </>
+                ) : (
+                  !loadingPpc && alunoSelecionado && typeof alunoSelecionado.ppc !== 'undefined' && alunoSelecionado.ppc && (
+                    <p className="text-red-500">Não foi possível carregar os detalhes do curso/PPC para o código '{alunoSelecionado.ppc}'.</p>
+                  )
+                )}
 
-          <div className="form-group">
-            <label htmlFor="arquivos">Anexos (opcional):</label>
-            <input
-              type="file"
-              id="arquivos"
-              name="arquivos" 
-              multiple
-              onChange={handleChange}
-            />
-          </div>
+                <div className="form-group">
+                  <label>Ano de Ingresso:</label>
+                  <input type="text" value={alunoSelecionado.ano_ingresso || ""} readOnly />
+                </div>
+              </div>
+            )}
 
-          <button type="submit" className="submit-button" disabled={loadingPpc}>
-            {loadingPpc ? "A Carregar..." : "Enviar Solicitação"}
-          </button>
-        </form>
-      </main>
-      <Footer />
-    </div>
+            <hr />
+            <h3>Detalhes do Trancamento</h3>
+            
+            <div className="form-group">
+              <label htmlFor="motivo_solicitacao">Justificativa do trancamento:</label>
+              <textarea
+                id="motivo_solicitacao"
+                name="motivo_solicitacao" 
+                value={formData.motivo_solicitacao}
+                onChange={handleChange}
+                rows="5"
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="arquivos">Anexos (opcional):</label>
+              <input
+                type="file"
+                id="arquivos"
+                name="arquivos" 
+                multiple
+                onChange={handleChange}
+              />
+            </div>
+
+            <button type="submit" className="submit-button" disabled={loadingPpc}>
+              {loadingPpc ? "A Carregar..." : "Enviar Solicitação"}
+            </button>
+          </form>
+        </main>
+        <Footer />
+      </div>
+    </VerificadorDisponibilidade>
   );
 }

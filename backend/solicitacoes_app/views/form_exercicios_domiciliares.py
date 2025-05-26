@@ -2,6 +2,9 @@
 from rest_framework import viewsets, status, generics
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+
 from ..models import FormExercicioDomiciliar, Disciplina, Usuario,  PeriodoDisciplina, Curso, Ppc
 
 from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
@@ -53,28 +56,36 @@ class DisciplinasPorCursoView(generics.ListAPIView):
         return Response(serializer.data)
     
 
-class AlunoInfoPorEmailView(generics.ListAPIView):
-    def get(self, request):
-        email = request.query_params.get('email')
-        if not email:
-            return Response({"erro": "Email não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
+class AlunoInfoPorEmailView(generics.RetrieveAPIView):
+    """
+    Endpoint para buscar informações do aluno associado ao usuário logado
+    """
+permission_classes = [IsAuthenticated]
+serializer_class = AlunoInfoSerializer
 
-        try:
-            # Busca o usuário pelo email
-            usuario = Usuario.objects.get(email__iexact=email)
-            
-            # Verifica se o usuário tem um aluno associado
-            if hasattr(usuario, 'aluno'):
-                aluno = usuario.aluno
-                
-                # Serializa o aluno com informações completas
-                serializer = AlunoInfoSerializer(aluno)
-                return Response(serializer.data)
-            else:
-                return Response({"erro": "Usuário não é um aluno"}, status=status.HTTP_404_NOT_FOUND)
-                
-        except Usuario.DoesNotExist:
-            return Response({"erro": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+def get_object(self):
+    # Usuário logado
+    usuario_logado = self.request.user
+    
+    # Verifica se foi passado email por query param (para compatibilidade)
+    email_param = self.request.query_params.get('email')
+    
+    # Se foi passado email, verifica se corresponde ao usuário logado
+    if email_param and email_param.lower() != usuario_logado.email.lower():
+        raise PermissionDenied("Você não tem permissão para acessar dados de outro aluno")
+    
+    # Verifica se o usuário tem perfil de aluno
+    if not hasattr(usuario_logado, 'aluno'):
+        raise PermissionDenied("Usuário não possui perfil de aluno")
+        
+    return usuario_logado.aluno
+
+def get(self, request, *args, **kwargs):
+    try:
+        return super().get(request, *args, **kwargs)
+    except PermissionDenied as e:
+        return Response({"erro": str(e)}, status=status.HTTP_403_FORBIDDEN)
+        return Response({"erro": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
 @api_view(['GET'])
 def disciplinas_por_ppc(request):
