@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
@@ -45,18 +45,16 @@ from .views.disponibilidade_view import (
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
 
-from django.urls import path
-
 from rest_framework.routers import DefaultRouter
 
 from .views.permissoes_view import PermissaoListView
 
 app_name = 'solicitacoes_app'
-
        
 urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
+    path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
 
     #VIEWS DE FORM EXERCICIO DOM
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
