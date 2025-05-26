@@ -1,67 +1,215 @@
-.permissoes-section {
-  margin-top: 20px;
+/* Main Container Styles */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
 }
 
-.permissoes-filtro {
+/* Form Container */
+.form-container {
+  padding: 20px 0;
+}
+
+.form-box {
+  background: #fff;
+  padding: 25px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
   margin-bottom: 15px;
 }
 
-.categorias-tabs {
+.form-group.label-reduced {
+  max-width: 525px; 
+}
+
+.form-group.label-reduced .input-area {
+  padding: 8px 12px; 
+  font-size: 0.9em; 
+  height: 36px; 
+}
+
+
+.submit-button.reduced {
+  padding: 8px 15px; 
+  font-size: 0.96em; 
+  width: 300px;
+  height: 36px; 
+  margin-top: 10px;
+}
+
+/* Permissions Section */
+.permissoes-section {
+  margin-top: 25px;
+}
+
+.dual-list-container {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin: 10px 0;
+  gap: 40px;
+  margin-bottom: 25px;
 }
 
-.categoria-tab {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.categoria-tab.ativa {
-  background: var(--verde-oficial);
-  color: white;
-  border-color: var(--verde-oficial);
-}
-
-.permissoes-acoes {
+.dual-list-column {
+  flex: 1;
   display: flex;
-  gap: 10px;
-  margin: 10px 0;
+  flex-direction: column;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #f9f9f9;
+  min-width: 525px;
 }
 
-.btn-selecionar-todas,
-.btn-limpar-todas {
-  padding: 5px 10px;
-  border: 1px solid #ccc;
-  background: #f5f5f5;
-  border-radius: 4px;
-  cursor: pointer;
+.dual-list-column h3 {
+  margin-top: 0;
+  margin-bottom: 15px;
+  font-size: 1.1em;
+  color: #333;
+  text-align: center;
+  font-weight: bold;
 }
 
+/* Permission Lists */
 .permissoes-lista {
-  max-height: 300px;
+  min-height: 250px; 
+  height: 250px;
   overflow-y: auto;
   border: 1px solid #ccc;
-  border-radius: 4px;
+  border-radius: 6px;
   padding: 10px;
+  background-color: white;
+  font-size: 0.95em;
 }
 
 .permissao-item {
   display: flex;
   align-items: center;
-  padding: 5px 0;
+  padding: 6px 0;
+  margin-bottom: 6px;
+  border-bottom: 1px solid #f0f0f0;
 }
 
-.permissao-item input[type="checkbox"] {
-  margin-right: 10px;
+.permissao-texto {
+  flex: 1;
+  padding: 0 12px;
+  line-height: 1.4;
+}
+
+/* Filter Inputs */
+.permissoes-filtro {
+  margin-bottom: 15px;
+}
+
+.permissoes-filtro input {
+  width: 100%;
+  padding: 10px 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 0.95em;
+}
+
+/* Buttons */
+.btn-mover {
+  background-color: #148229;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+.btn-mover:hover {
+  background-color: #0e6c1f;
+}
+
+.permissoes-acoes {
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.btn-mover-todas {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s;
+}
+
+.btn-mover-todas:hover {
+  background: #e0e0e0;
+}
+
+.btn-mover-todas:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .permissoes-contador {
-  margin-top: 10px;
+  margin-top: 12px;
   font-size: 0.9em;
   color: #666;
+  text-align: center;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 992px) {
+  .dual-list-container {
+    gap: 30px;
+  }
+  
+  .dual-list-column {
+    min-width: 450px;
+    padding: 18px;
+  }
+}
+
+@media (max-width: 768px) {
+  .dual-list-container {
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .dual-list-column {
+    min-width: auto;
+    padding: 15px;
+  }
+  
+  .permissoes-lista {
+    min-height: 200px;
+    height: 200px;
+  }
+  
+  .form-group.label-reduced {
+    max-width: 180%;
+  }
+}
+
+@media (max-width: 576px) {
+  .dual-list-column {
+    padding: 12px;
+  }
+  
+  .permissoes-filtro input {
+    padding: 8px 12px;
+  }
+  
+  .btn-mover {
+    padding: 4px 8px;
+  }
+  
+  .btn-mover-todas {
+    padding: 5px 10px;
+  }
+  
+  .submit-button.reduced {
+    padding: 6px 15px;
+  }
 }

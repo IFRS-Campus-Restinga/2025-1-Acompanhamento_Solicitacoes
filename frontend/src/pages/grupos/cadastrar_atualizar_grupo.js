@@ -2,25 +2,27 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
+import Header from "../../components/base/headers/header_cre";
 import "./grupo.css";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 export default function CadastrarAtualizarGrupo() {
   const [nome, setNome] = useState("");
-  const [permissoes, setPermissoes] = useState([]);
   const [permissoesDisponiveis, setPermissoesDisponiveis] = useState([]);
-  const [permissoesFiltradas, setPermissoesFiltradas] = useState([]);
-  const [filtroPermissao, setFiltroPermissao] = useState("");
+  const [permissoesSelecionadas, setPermissoesSelecionadas] = useState([]);
+  const [filtroDisponiveis, setFiltroDisponiveis] = useState("");
+  const [filtroSelecionadas, setFiltroSelecionadas] = useState("");
+  const [permissoesDisponiveisFiltradas, setPermissoesDisponiveisFiltradas] = useState([]);
+  const [permissoesSelecionadasFiltradas, setPermissoesSelecionadasFiltradas] = useState([]);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [mensagem, setMensagemPopup] = useState("");
+  const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [carregando, setCarregando] = useState(true);
   
   const navigate = useNavigate();
   const { id } = useParams();
 
-  // Função para extrair permissões do texto fornecido com uma lógica completamente reescrita
+  // Função para extrair permissões do texto fornecido
   const extrairPermissoes = () => {
     // Lista de permissões pré-definidas no formato correto
     const permissoesPredefinidas = [
@@ -173,55 +175,107 @@ export default function CadastrarAtualizarGrupo() {
     
     // Gerar permissões disponíveis a partir do texto
     const todasPermissoes = extrairPermissoes();
-    setPermissoesDisponiveis(todasPermissoes);
-    setPermissoesFiltradas(todasPermissoes);
     
     // Se estiver editando um grupo existente, carregar seus dados
     if (id) {
       axios.get(`http://localhost:8000/solicitacoes/grupos/${id}/`)
         .then((res) => {
           setNome(res.data.name || "");
+          
           // Converter IDs de permissão para números, se necessário
           const permissionIds = res.data.permissions || [];
-          setPermissoes(permissionIds.map(id => typeof id === 'string' ? parseInt(id) : id));
+          const idsPermissoesSelecionadas = permissionIds.map(id => typeof id === 'string' ? parseInt(id) : id);
+          
+          // Separar permissões em disponíveis e selecionadas
+          const permissoesSelecionadas = todasPermissoes.filter(perm => idsPermissoesSelecionadas.includes(perm.id));
+          const permissoesDisponiveis = todasPermissoes.filter(perm => !idsPermissoesSelecionadas.includes(perm.id));
+          
+          setPermissoesSelecionadas(permissoesSelecionadas);
+          setPermissoesDisponiveis(permissoesDisponiveis);
+          setPermissoesDisponiveisFiltradas(permissoesDisponiveis);
+          setPermissoesSelecionadasFiltradas(permissoesSelecionadas);
+          
           setCarregando(false);
         })
         .catch((err) => {
           console.error("Erro ao carregar grupo:", err);
-          setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar grupo."}`);
+          setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar grupo."}`);
           setTipoMensagem("erro");
           setShowFeedback(true);
           setCarregando(false);
         });
     } else {
+      // Caso de criação de novo grupo
+      setPermissoesDisponiveis(todasPermissoes);
+      setPermissoesDisponiveisFiltradas(todasPermissoes);
+      setPermissoesSelecionadas([]);
+      setPermissoesSelecionadasFiltradas([]);
       setCarregando(false);
     }
   }, [id]);
 
-  // Filtrar permissões por texto
+  // Filtrar permissões disponíveis
   useEffect(() => {
-    let permissoesFiltradas = permissoesDisponiveis;
-    
-    // Filtrar por texto
-    if (filtroPermissao) {
-      const termoLowerCase = filtroPermissao.toLowerCase();
-      permissoesFiltradas = permissoesFiltradas.filter(
+    if (filtroDisponiveis) {
+      const termoLowerCase = filtroDisponiveis.toLowerCase();
+      const filtradas = permissoesDisponiveis.filter(
         perm => 
           perm.descricao.toLowerCase().includes(termoLowerCase) || 
           perm.content_type.model.toLowerCase().includes(termoLowerCase) ||
           perm.content_type.app_label.toLowerCase().includes(termoLowerCase)
       );
+      setPermissoesDisponiveisFiltradas(filtradas);
+    } else {
+      setPermissoesDisponiveisFiltradas(permissoesDisponiveis);
     }
-    
-    setPermissoesFiltradas(permissoesFiltradas);
-  }, [filtroPermissao, permissoesDisponiveis]);
+  }, [filtroDisponiveis, permissoesDisponiveis]);
+
+  // Filtrar permissões selecionadas
+  useEffect(() => {
+    if (filtroSelecionadas) {
+      const termoLowerCase = filtroSelecionadas.toLowerCase();
+      const filtradas = permissoesSelecionadas.filter(
+        perm => 
+          perm.descricao.toLowerCase().includes(termoLowerCase) || 
+          perm.content_type.model.toLowerCase().includes(termoLowerCase) ||
+          perm.content_type.app_label.toLowerCase().includes(termoLowerCase)
+      );
+      setPermissoesSelecionadasFiltradas(filtradas);
+    } else {
+      setPermissoesSelecionadasFiltradas(permissoesSelecionadas);
+    }
+  }, [filtroSelecionadas, permissoesSelecionadas]);
+
+  // Mover permissão de disponíveis para selecionadas
+  const moverParaSelecionadas = (permissao) => {
+    setPermissoesDisponiveis(prev => prev.filter(p => p.id !== permissao.id));
+    setPermissoesSelecionadas(prev => [...prev, permissao]);
+  };
+
+  // Mover permissão de selecionadas para disponíveis
+  const moverParaDisponiveis = (permissao) => {
+    setPermissoesSelecionadas(prev => prev.filter(p => p.id !== permissao.id));
+    setPermissoesDisponiveis(prev => [...prev, permissao]);
+  };
+
+  // Mover todas as permissões filtradas para selecionadas
+  const moverTodasParaSelecionadas = () => {
+    setPermissoesSelecionadas(prev => [...prev, ...permissoesDisponiveisFiltradas]);
+    setPermissoesDisponiveis(prev => prev.filter(p => !permissoesDisponiveisFiltradas.some(fp => fp.id === p.id)));
+  };
+
+  // Mover todas as permissões filtradas para disponíveis
+  const moverTodasParaDisponiveis = () => {
+    setPermissoesDisponiveis(prev => [...prev, ...permissoesSelecionadasFiltradas]);
+    setPermissoesSelecionadas(prev => prev.filter(p => !permissoesSelecionadasFiltradas.some(fp => fp.id === p.id)));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     
     const dados = { 
       name: nome,
-      permissions: permissoes 
+      permissions: permissoesSelecionadas.map(p => p.id)
     };
 
     const requisicao = id
@@ -230,40 +284,15 @@ export default function CadastrarAtualizarGrupo() {
 
     requisicao
       .then(() => {
-        setMensagemPopup(id ? "Grupo atualizado com sucesso!" : "Grupo cadastrado com sucesso!");
+        setMensagem(id ? "Grupo atualizado com sucesso!" : "Grupo cadastrado com sucesso!");
         setTipoMensagem("sucesso");
         setShowFeedback(true);
       })
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao salvar grupo."}`);
+        setMensagem(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao salvar grupo."}`);
         setTipoMensagem("erro");
         setShowFeedback(true);
       });
-  };
-
-  const handlePermissaoChange = (permissaoId) => {
-    setPermissoes(prevPermissoes => {
-      if (prevPermissoes.includes(permissaoId)) {
-        return prevPermissoes.filter(id => id !== permissaoId);
-      } else {
-        return [...prevPermissoes, permissaoId];
-      }
-    });
-  };
-
-  const selecionarTodasPermissoes = () => {
-    setPermissoes(permissoesFiltradas.map(perm => perm.id));
-  };
-
-  const limparTodasPermissoes = () => {
-    if (!filtroPermissao) {
-      setPermissoes([]);
-    } else {
-      const idsPermissoesFiltradas = permissoesFiltradas.map(perm => perm.id);
-      setPermissoes(prevPermissoes => 
-        prevPermissoes.filter(id => !idsPermissoesFiltradas.includes(id))
-      );
-    }
   };
 
   if (carregando) {
@@ -280,11 +309,11 @@ export default function CadastrarAtualizarGrupo() {
 
   return (
     <div>
-      <HeaderCRE />
+      <Header />
       <main className="container form-container">
         <h2>{id ? "Editar Grupo" : "Cadastrar Novo Grupo"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
-          <div className="form-group">
+          <div className="form-group label-reduced">
             <label>Nome:</label>
             <input
               type="text"
@@ -298,59 +327,106 @@ export default function CadastrarAtualizarGrupo() {
           <div className="form-group permissoes-section">
             <label>Permissões:</label>
             
-            <div className="permissoes-filtro">
-              <input
-                type="text"
-                className="input-area"
-                placeholder="Filtrar permissões..."
-                value={filtroPermissao}
-                onChange={(e) => setFiltroPermissao(e.target.value)}
-              />
+            <div className="dual-list-container">
+              {/* Coluna de permissões disponíveis */}
+              <div className="dual-list-column">
+                <h3>Permissões disponíveis</h3>
+                <div className="permissoes-filtro">
+                  <input
+                    type="text"
+                    className="input-area"
+                    placeholder="Filtrar permissões disponíveis..."
+                    value={filtroDisponiveis}
+                    onChange={(e) => setFiltroDisponiveis(e.target.value)}
+                  />
+                </div>
+                
+                <div className="permissoes-lista">
+                  {permissoesDisponiveisFiltradas.length === 0 ? (
+                    <p>Nenhuma permissão disponível com os filtros atuais.</p>
+                  ) : (
+                    permissoesDisponiveisFiltradas.map(permissao => (
+                      <div key={permissao.id} className="permissao-item">
+                        <span className="permissao-texto">{permissao.descricao}</span>
+                        <button 
+                          type="button" 
+                          className="btn-mover"
+                          onClick={() => moverParaSelecionadas(permissao)}
+                        >
+                          &gt;
+                        </button>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                <div className="permissoes-acoes">
+                  <button 
+                    type="button" 
+                    className="btn-mover-todas"
+                    onClick={moverTodasParaSelecionadas}
+                    disabled={permissoesDisponiveisFiltradas.length === 0}
+                  >
+                    Adicionar todas &gt;&gt;
+                  </button>
+                </div>
+                
+                <div className="permissoes-contador">
+                  {permissoesDisponiveis.length} permissões disponíveis
+                </div>
+              </div>
               
-              <div className="permissoes-acoes">
-                <button 
-                  type="button" 
-                  className="btn-selecionar-todas"
-                  onClick={selecionarTodasPermissoes}
-                >
-                  Selecionar Todas
-                </button>
-                <button 
-                  type="button" 
-                  className="btn-limpar-todas"
-                  onClick={limparTodasPermissoes}
-                >
-                  Limpar Seleção
-                </button>
+              {/* Coluna de permissões selecionadas */}
+              <div className="dual-list-column">
+                <h3>Permissões escolhidas</h3>
+                <div className="permissoes-filtro">
+                  <input
+                    type="text"
+                    className="input-area"
+                    placeholder="Filtrar permissões escolhidas..."
+                    value={filtroSelecionadas}
+                    onChange={(e) => setFiltroSelecionadas(e.target.value)}
+                  />
+                </div>
+                
+                <div className="permissoes-lista">
+                  {permissoesSelecionadasFiltradas.length === 0 ? (
+                    <p>Nenhuma permissão escolhida com os filtros atuais.</p>
+                  ) : (
+                    permissoesSelecionadasFiltradas.map(permissao => (
+                      <div key={permissao.id} className="permissao-item">
+                        <button 
+                          type="button" 
+                          className="btn-mover"
+                          onClick={() => moverParaDisponiveis(permissao)}
+                        >
+                          &lt;
+                        </button>
+                        <span className="permissao-texto">{permissao.descricao}</span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                <div className="permissoes-acoes">
+                  <button 
+                    type="button" 
+                    className="btn-mover-todas"
+                    onClick={moverTodasParaDisponiveis}
+                    disabled={permissoesSelecionadasFiltradas.length === 0}
+                  >
+                    &lt;&lt; Remover todas
+                  </button>
+                </div>
+                
+                <div className="permissoes-contador">
+                  {permissoesSelecionadas.length} permissões escolhidas
+                </div>
               </div>
             </div>
-            
-            <div className="permissoes-lista">
-              {permissoesFiltradas.length === 0 ? (
-                <p>Nenhuma permissão encontrada com os filtros atuais.</p>
-              ) : (
-                permissoesFiltradas.map(permissao => (
-                  <div key={permissao.id} className="permissao-item">
-                    <input
-                      type="checkbox"
-                      id={`perm-${permissao.id}`}
-                      checked={permissoes.includes(permissao.id)}
-                      onChange={() => handlePermissaoChange(permissao.id)}
-                    />
-                    <label htmlFor={`perm-${permissao.id}`}>
-                      {permissao.descricao}
-                    </label>
-                  </div>
-                ))
-              )}
-            </div>
-            
-            <div className="permissoes-contador">
-              {permissoes.length} permissões selecionadas de {permissoesDisponiveis.length} disponíveis
-            </div>
           </div>
-
-          <button type="submit" className="submit-button">
+          
+          <button type="submit" className="submit-button reduced">
             {id ? "Atualizar" : "Cadastrar"}
           </button>
         </form>
