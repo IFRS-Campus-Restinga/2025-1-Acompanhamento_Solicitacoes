@@ -4,6 +4,7 @@ import Footer from "../../../components/base/footer";
 import HeaderCRE from "../../../components/base/headers/header_cre";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import api from "../../../services/api";
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 const initialFormState = {
   coordenador: "",
@@ -115,7 +116,9 @@ export default function CadastrarAtualizarMandato() {
 
   const closeFeedback = () => {
     setShowFeedback(false);
-    navigate(-1);
+    if (feedbackType === "sucesso") {
+      navigate(-1);
+    }
   };
 
   return (
@@ -200,6 +203,7 @@ export default function CadastrarAtualizarMandato() {
           tipo={feedbackType}
           onClose={closeFeedback}
         />
+        <BotaoVoltar onClick={() => navigate(-1)} />
       </main>
       <Footer />
     </div>

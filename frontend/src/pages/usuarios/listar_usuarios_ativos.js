@@ -151,7 +151,6 @@ export default function ListarUsuariosAtivos() {
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      {/* Ajuste o link de edição se necessário, baseado na sua estrutura */}
                       <Link to={`/usuarios/editar/${usuario.papel?.toLowerCase()}/${usuario.papel_detalhes?.id || usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
@@ -183,7 +182,7 @@ export default function ListarUsuariosAtivos() {
 
         <PopupConfirmacao
           show={mostrarPopup}
-          mensagem="Tem certeza que deseja excluir este usuário? A ação pode ser irreversível dependendo do status."
+          mensagem="Tem certeza que deseja excluir este usuário?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
         />
