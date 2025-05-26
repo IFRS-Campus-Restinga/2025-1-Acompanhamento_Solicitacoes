@@ -7,6 +7,8 @@ from django.contrib.contenttypes.models import ContentType
 from .aluno import Aluno
 from django.core.exceptions import ValidationError
 from .posse_solicitacao import PosseSolicitacao
+from datetime import date
+from django.utils import timezone
 
 class Solicitacao(BaseModel):
     FORMULARIO_CHOICES = [
@@ -18,6 +20,7 @@ class Solicitacao(BaseModel):
         ('ABONOFALTAS', 'Abono de Faltas'),
         ('ENTREGACERTIFICADOS', 'Entrega de Certificados'),
     ]
+    
     aluno = models.ForeignKey(
         Aluno,
         related_name='aluno',
@@ -26,7 +29,7 @@ class Solicitacao(BaseModel):
     
     nome_formulario = models.CharField(
         max_length=60,
-        choices=FORMULARIO_CHOICES,  # Adicionado choices aqui
+        choices=FORMULARIO_CHOICES,
         null=True,
         validators=[MinLengthValidator(10)]
     )
@@ -37,6 +40,7 @@ class Solicitacao(BaseModel):
         default=PosseSolicitacao.COORDENACAO,
         verbose_name="Responsável Atual pela Solicitação"
     )
+    
     data_solicitacao = models.DateField(
         help_text="Escreva aqui a data da solicitação",
         verbose_name="Data da Solicitação:"
@@ -66,17 +70,16 @@ class Solicitacao(BaseModel):
                     raise ValidationError(
                         f"O campo '{campo}' não pode ser alterado após a criação."
                     )
+        
+        # Verifica disponibilidade antes de salvar nova solicitação
+        if not self.pk and not self.verificar_disponibilidade():
+            raise ValidationError("Este formulário não está disponível no momento.")
+            
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
-        nome_formulario = self.nome_formulario or "Sem Formulário"
-        return f"{nome_aluno} | {nome_formulario}"
-    
     def verificar_disponibilidade(self):
-        """Versão otimizada e segura"""
+        """Verifica se o formulário está disponível para submissão"""
         from .disponibilidade import Disponibilidade
-        from django.utils import timezone
         try:
             disp = Disponibilidade.objects.get(
                 formulario=self.nome_formulario,
@@ -88,3 +91,8 @@ class Solicitacao(BaseModel):
             return disp.data_inicio <= hoje <= disp.data_fim
         except Disponibilidade.DoesNotExist:
             return True
+
+    def __str__(self):
+        nome_aluno = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Sem Aluno"
+        nome_formulario = self.nome_formulario or "Sem Formulário"
+        return f"{nome_aluno} | {nome_formulario}"

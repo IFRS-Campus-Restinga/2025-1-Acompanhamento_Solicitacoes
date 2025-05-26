@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
@@ -6,14 +6,14 @@ from .views.ppc_view import *
 from .views.motivo_abono_view import *
 from .views.motivo_dispensa_view import *
 from .views.motivo_exercicios_view import *
-from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView,CadastroCoordenadorMandatoView
+from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView
 from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
 from .views.disciplina_view import *
 from .views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
-from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView
+from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView
 from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
@@ -24,8 +24,10 @@ from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, For
 
 from .views.form_exercicios_domiciliares import (
     UsuarioPorEmailView,
-    DisciplinasPorPPCView,
-    FormExercicioDomiciliarViewSet
+    DisciplinasPorCursoView,
+    FormExercicioDomiciliarViewSet,
+    AlunoInfoPorEmailView,
+    disciplinas_por_ppc
 )
 
 from .views.form_desistencia_vaga_view import *
@@ -36,28 +38,31 @@ from .views.solicitacao_view import *
 
 from .views.disponibilidade_view import (
     DisponibilidadeListCreateView,
-    DisponibilidadeRetrieveUpdateDestroyView
+    DisponibilidadeRetrieveUpdateDestroyView,
+    VerificarDisponibilidadeView
 )
 
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
-
-from django.urls import path
 
 from rest_framework.routers import DefaultRouter
 
 from .views.permissoes_view import PermissaoListView
 
 app_name = 'solicitacoes_app'
-
        
 urlpatterns = [
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
+    path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
 
     #VIEWS DE FORM EXERCICIO DOM
     path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
-    path('ppcs/<str:ppc_codigo>/disciplinas/', DisciplinasPorPPCView.as_view(), name='disciplinas-por-ppc'),  # Para buscar disciplinas por PPC
+    path('cursos/disciplinas-por-curso/<str:curso_codigo>/', DisciplinasPorCursoView.as_view(), name='disciplinas-por-curso'), 
+    path('alunos-info/', AlunoInfoPorEmailView.as_view(), name='aluno-info-por-email'),
+    path('disciplinas-por-ppc/', disciplinas_por_ppc, name='disciplinas-por-ppc'),
+
+
 
     path('form_exercicio_domiciliar/', FormExercicioDomiciliarViewSet.as_view({
         'get': 'list',
@@ -91,15 +96,14 @@ urlpatterns = [
     path('motivo_exercicios/<int:pk>/', MotivoExerciciosRetrieveUpdateDestroyView.as_view(), name="crud_motivo_exercicios"),
 
     path('coordenadores/', CoordenadorListCreateView.as_view(), name='coordenador-list'),
-    path('coordenadores/<int:pk>', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
-    path('coordenadores/cadastro-coordenador-mandato/', CadastroCoordenadorMandatoView.as_view(), name='cadastro-coordenador-mandato'),
+    path('coordenadores/<int:pk>/', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
 
     path('cres/', CREListCreateView.as_view(), name='cre-list'),
-    path('cres/<int:pk>', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
+    path('cres/<int:pk>/', CRERetrieveUpdateDestroyView.as_view(), name='cre-detail'),
 
     path('alunos/', AlunoListCreateView.as_view(), name='aluno-list'),
     path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
-    path('alunos/listar', AlunoListView.as_view(), name='aluno-list-antigo'),
+    path('alunos/listar/', AlunoListView.as_view(), name='aluno-list-antigo'),
     path('alunos/listar/<int:pk>/', AlunoRetrieveView.as_view(), name='aluno-detail-antigo'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
@@ -114,6 +118,8 @@ urlpatterns = [
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
+    path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
+    path('usuarios/emails-alunos/', AlunoEmailListView.as_view(), name='aluno-emails-list'),
 
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
@@ -136,7 +142,7 @@ urlpatterns = [
     path("mandatos/", MandatoListCreateView.as_view(), name='mandato-list'),
     path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
     path('mandatos/historico/', HistoricoMandatosPorCursoView.as_view(), name='historico_mandatos_por_curso'),
-    path('mandatos/historico/<str:codigo>', HistoricoMandatosPorCursoDetailView.as_view(), name='historico_mandatos_por_curso_detail'),
+    path('mandatos/historico/<str:codigo>/', HistoricoMandatosPorCursoDetailView.as_view(), name='historico_mandatos_por_curso_detail'),
     
     
     path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),
@@ -157,6 +163,7 @@ urlpatterns = [
 
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
+    path('disponibilidades/verificar/', VerificarDisponibilidadeView.as_view(), name='verificar-disponibilidade'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 

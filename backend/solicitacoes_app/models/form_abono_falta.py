@@ -4,31 +4,25 @@ from ..models import MotivoAbono, Curso, Aluno
 from django.core.exceptions import ValidationError
 from .solicitacao import Solicitacao
 from django.db.models import RESTRICT
-from django.core.validators import MinLengthValidator, EmailValidator
+from .ppc import Ppc 
 
 class FormAbonoFalta(Solicitacao):
-    nome_formulario = "Formulário de Justificativa/Abono de Falta"
-    
-    email = models.EmailField(
-        validators=[EmailValidator()]
-    )
-    
-    aluno_nome = models.CharField(
-        max_length=50, 
-        validators=[MinLengthValidator(2)],
-        verbose_name="Nome do Aluno",  
-        help_text="Nome do aluno",
-    )
-
-    matricula = models.CharField(
-        max_length=20, 
-        validators=[MinLengthValidator(1)]
-    )
 
     curso = models.ForeignKey(
-        Curso, 
-        on_delete=models.CASCADE, 
-        verbose_name="Curso"
+    Curso,
+    on_delete=models.CASCADE,
+    verbose_name="Curso"
+    )
+
+    ppc = models.ForeignKey(
+        Ppc,
+        on_delete=models.CASCADE,
+        null=True
+    )
+
+    disciplinas = models.ManyToManyField(
+        'Disciplina',
+        verbose_name="Disciplinas relacionadas"
     )
 
     motivo_solicitacao = models.ForeignKey(
@@ -61,8 +55,11 @@ class FormAbonoFalta(Solicitacao):
     class Meta:
         verbose_name = "Formulário de Abono de Faltas"
     
+    
     def __str__(self):
-        return f"{self.aluno_nome} - {self.motivo_solicitacao}"
+         # Acessa o nome do aluno através da relação com Solicitação
+        aluno_nome = self.solicitacao.aluno.usuario.nome if hasattr(self, 'solicitacao') and self.solicitacao.aluno else "Aluno não identificado"
+        return f"Abono de Falta - {aluno_nome} ({self.curso.nome})"
     
     def clean(self):
         if self.data_fim_afastamento < self.data_inicio_afastamento:

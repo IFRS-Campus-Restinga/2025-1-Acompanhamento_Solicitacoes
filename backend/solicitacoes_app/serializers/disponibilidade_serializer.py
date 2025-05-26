@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from ..models import Disponibilidade
+from datetime import date
 
 class DisponibilidadeSerializer(serializers.ModelSerializer):
     nome_formulario = serializers.CharField(
@@ -7,6 +8,7 @@ class DisponibilidadeSerializer(serializers.ModelSerializer):
         read_only=True
     )
     esta_ativo = serializers.BooleanField(read_only=True)
+    disponivel = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Disponibilidade
@@ -18,7 +20,8 @@ class DisponibilidadeSerializer(serializers.ModelSerializer):
             'data_inicio',
             'data_fim',
             'ativo',
-            'esta_ativo'
+            'esta_ativo',
+            'disponivel'
         ]
         extra_kwargs = {
             'formulario': {'required': True},
@@ -26,9 +29,10 @@ class DisponibilidadeSerializer(serializers.ModelSerializer):
             'data_fim': {'required': False}
         }
 
+    def get_disponivel(self, obj):
+        return obj.esta_ativo
+
     def validate(self, data):
-        """Validações customizadas"""
-        # Valida datas apenas se não for sempre disponível
         if not data.get('sempre_disponivel', True):
             if not data.get('data_inicio') or not data.get('data_fim'):
                 raise serializers.ValidationError(
@@ -43,7 +47,6 @@ class DisponibilidadeSerializer(serializers.ModelSerializer):
         return data
 
     def to_representation(self, instance):
-        """Formatação do JSON de saída"""
         representation = super().to_representation(instance)
         if instance.data_inicio:
             representation['data_inicio'] = instance.data_inicio.isoformat()

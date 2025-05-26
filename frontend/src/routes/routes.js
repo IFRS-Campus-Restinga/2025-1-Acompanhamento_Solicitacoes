@@ -46,7 +46,8 @@ import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
 import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
 import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
-import ListarUsuarios from "../pages/usuarios/lista_usuarios.js";
+import ListarUsuariosAtivos from "../pages/usuarios/listar_usuarios_ativos.js";
+import ListarUsuariosInativos from "../pages/usuarios/listar_usuarios_inativos.js";
 import SelecionarPapelUsuario from "../pages/usuarios/selecionar_papel.js";
 
 //Grupos
@@ -104,6 +105,9 @@ import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_so
 //Form Entrega de Atividades Complementares
 import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
 
+//Tela de gerenciamento de Exercícios Domiciliares
+import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
+
 const token = localStorage.getItem("token");
 
 const routes = [
@@ -158,7 +162,8 @@ const routes = [
   <Route path="/ppcs/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />,
 
   // Usuarios
-  <Route path="/usuarios" element={<ListarUsuarios />} key="listar-usuarios" />,
+  <Route path="/usuarios" element={<ListarUsuariosAtivos />} key="listar-usuarios-ativos" />,
+  <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
   <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
@@ -190,7 +195,7 @@ const routes = [
   <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
   <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
   <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
-  <Route path="formularios/indisponivel" element={<FormularioIndisponivel />} />,
+  <Route path="/indisponivel" element={<FormularioIndisponivel />} key="indisponivel" />,
   <Route 
     path="formularios/:tipoFormulario"
     element={
@@ -232,6 +237,8 @@ const routes = [
   <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
   
+  //Tela gerenciamento Exerciícios Domiciliares
+  <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
  ];
 
 export default routes;

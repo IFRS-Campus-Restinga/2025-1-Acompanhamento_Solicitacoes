@@ -38,8 +38,6 @@ class CREListCreateView(generics.ListCreateAPIView):
         try:
             # Extrair dados do usuário
             usuario_data = validated_data.pop('usuario')
-            print(">>> usuario_data")
-            print(usuario_data)
             
             # Criar o usuário
             usuario = Usuario.objects.create(**usuario_data)

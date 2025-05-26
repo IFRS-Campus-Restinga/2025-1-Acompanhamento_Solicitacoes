@@ -169,15 +169,15 @@ export default function Formulario() {
                     {/* Campos para exibir nome, email e matrícula do aluno */}
                     <div className="form-group">
                         <label htmlFor="nome_aluno">Nome do Aluno:</label>
-                        <input type="text" id="nome_aluno" value={nomeAluno} readOnly />
+                        <input type="text" id="nome_aluno" value={nomeAluno} disabled />
                     </div>
                     <div className="form-group">
                         <label htmlFor="email_aluno">Email do Aluno:</label>
-                        <input type="email" id="email_aluno" value={emailAluno} readOnly />
+                        <input type="email" id="email_aluno" value={emailAluno} disabled />
                     </div>
                     <div className="form-group">
                         <label htmlFor="matricula_aluno">Matrícula do Aluno:</label>
-                        <input type="text" id="matricula_aluno" value={matriculaAluno} readOnly />
+                        <input type="text" id="matricula_aluno" value={matriculaAluno} disabled />
                     </div>
                     <Options
                         url={urls}
@@ -185,7 +185,7 @@ export default function Formulario() {
                             aluno: {
                                 data: popularAlunos,
                                 labelKey: "id",
-                                valueKey: "id", // Especifica a chave do ID
+                                valueKey: "id",
                                 onChange: (event) => {
                                     const alunoId = event.target.value;
                                     handleFormChange({ ...dados, aluno: alunoId });

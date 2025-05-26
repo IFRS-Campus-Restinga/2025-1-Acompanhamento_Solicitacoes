@@ -1,8 +1,10 @@
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
+from rest_framework import generics, serializers 
 from ..serializers.usuario_serializer import UsuarioSerializerComPapeis, UsuarioSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
+from django.db.models import Q
 
 
 class UsuarioListCreateView(generics.ListCreateAPIView):
@@ -45,3 +47,42 @@ class UsuariosInativosView(generics.ListAPIView):
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComPapeis
     permission_classes = [AllowAny]
+    
+    
+class UsuarioReativarView(generics.GenericAPIView):
+    """
+    Endpoint para reativar um usuário inativo.
+    Aceita requisições PATCH para a URL /usuarios/inativos/{id}
+    """
+    queryset = Usuario.objects.inativos().filter(is_superuser=False)
+    serializer_class = UsuarioSerializerComPapeis
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
+
+    def patch(self, request, *args, **kwargs):
+        try:
+            usuario = self.get_object()
+        except Usuario.DoesNotExist:
+            return Response({"detail": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Reativa o usuário
+        usuario.is_active = True
+        usuario.status_usuario = StatusUsuario.ATIVO
+        usuario.save(update_fields=['is_active', 'status_usuario'])
+
+        serializer = UsuarioSerializerComPapeis(usuario)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
+
+
+class AlunoEmailListView(generics.ListAPIView):
+    """
+    Endpoint para listar apenas e-mails de alunos (para dropdown de responsáveis).
+    """
+    queryset = Usuario.objects.filter(Q(aluno__isnull=False)).only('email')
+    serializer_class = serializers.Serializer  # Serializer básico
+    permission_classes = [AllowAny]
+
+    def list(self, request):
+        emails = self.queryset.values_list('email', flat=True)
+        return Response(list(emails))

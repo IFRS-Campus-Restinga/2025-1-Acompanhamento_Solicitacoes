@@ -1,9 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
-
 from ..serializers.curso_serializer import CursoComHistoricoMandatosSerializer
-from ..serializers.coordenador_serializer import CoordenadorSerializer
-from ..serializers.usuario_serializer import UsuarioSerializer
 from ..serializers.mandato_serializer import MandatoSerializer
 from solicitacoes_app.models import Mandato, Curso
 from django.db.models import Prefetch

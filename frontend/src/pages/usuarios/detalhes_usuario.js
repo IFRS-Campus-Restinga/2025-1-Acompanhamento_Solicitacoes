@@ -35,15 +35,13 @@ export default function DetalhesUsuario() {
             <p><strong>CPF:</strong> {usuario.cpf}</p>
             <p><strong>Telefone:</strong> {usuario.telefone}</p>
             <p><strong>Data de Nascimento:</strong> {usuario.data_nascimento}</p>
-            <p><strong>Tipo de Usuário:</strong> {usuario.papel}</p>
+            <p><strong>Tipo de Usuário:</strong> {usuario.papel === "Responsavel" ? "Responsável" : usuario.papel}</p>
 
             {usuario.papel === "Coordenador" && (
               <>
                 <p><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</p>
-
                 {(() => {
                   const mandatos = usuario.papel_detalhes?.mandatos_coordenador || [];
-
                   if (mandatos.length === 0) {
                     return <p><em>Sem mandatos registrados.</em></p>;
                   }
@@ -71,8 +69,11 @@ export default function DetalhesUsuario() {
               </>
             )}
 
-            {usuario.papel === "Responsavel" && (
-              <p><strong>Responsável de:</strong> {usuario.papel_detalhes?.aluno}</p>
+            {usuario.papel === "Responsável" && (
+              <>
+                <p><strong>Responsável de:</strong> {usuario.papel_detalhes?.aluno || "Nenhum aluno"}</p>
+                <p><strong>E-mail do aluno:</strong> {usuario.papel_detalhes?.email_aluno || "Não cadastrado"}</p>
+              </>
             )}
 
             <div className="botao-voltar-wrapper">

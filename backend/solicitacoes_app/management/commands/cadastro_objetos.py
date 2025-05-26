@@ -7,29 +7,47 @@ from ...models.coordenador import Coordenador
 from ...models.mandato import Mandato
 from ...models.cre import CRE
 from django.contrib.auth.models import Group
+from ...models.periodo_disciplina import PeriodoDisciplina
 
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         curso1, _ = Curso.objects.get_or_create(
             codigo="ads",
+            tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
             defaults={"nome": "Análise e Desenvolvimento de Sistemas"}
         )
         curso2, _ = Curso.objects.get_or_create(
             codigo="gdl",
+            tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
             defaults={"nome": "Gestão Desportiva e Lazer"}
         )
         curso3, _ = Curso.objects.get_or_create(
             codigo="tur",
+            tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
             defaults={"nome": "Turismo"}
         )
         curso4, _ = Curso.objects.get_or_create(
             codigo="esw",
+            tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
             defaults={"nome": "Engenharia de Software"}
         )
         curso5, _ = Curso.objects.get_or_create(
             codigo="cc",
+            tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
             defaults={"nome": "Ciência da Computação"}
+        )
+        
+        curso6, _ = Curso.objects.get_or_create(
+            codigo="tecinfo",
+            tipo_periodo=Curso.TipoPeriodo.ANUAL,
+            defaults={"nome": "Técnico de Informática"}
+        )
+        
+        curso7, _ = Curso.objects.get_or_create(
+            codigo="art",
+            tipo_periodo=Curso.TipoPeriodo.ANUAL,
+            defaults={"nome": "Artesanato"}
         )
 
         ppc1, _ = Ppc.objects.get_or_create(
@@ -51,6 +69,14 @@ class Command(BaseCommand):
         Ppc.objects.get_or_create(
             codigo="cc/505.2019",
             defaults={"curso": curso5}
+        )
+        Ppc.objects.get_or_create(
+            codigo="tecinfo/606.2025",
+            defaults={"curso": curso6}
+        )
+        Ppc.objects.get_or_create(
+            codigo="art/707.2024",
+            defaults={"curso": curso7}
         )
 
         # Motivos de Abono
@@ -119,12 +145,69 @@ class Command(BaseCommand):
 
         # Disciplinas do PPC de ADS
         ads = Ppc.objects.get(codigo="ads/101.2018")
-        Disciplina.objects.get_or_create(nome="Desenvolvimento de Sistemas 2", codigo="DEVII", defaults={"ppc": ads, "periodo": "1º Ano"})
-        Disciplina.objects.get_or_create(nome="Banco de Dados 1", codigo="BD1", defaults={"ppc": ads, "periodo": "1º Ano"})
-        Disciplina.objects.get_or_create(nome="Engenharia de Software", codigo="ESW10", defaults={"ppc": ads, "periodo": "1º Ano"})
-        Disciplina.objects.get_or_create(nome="Gestão de Projetos", codigo="GDP20", defaults={"ppc": ads, "periodo": "1º Ano"})
-        Disciplina.objects.get_or_create(nome="Turismo Sustentável", codigo="TURS1", defaults={"ppc": ads, "periodo": "1º Ano"})
+        Disciplina.objects.get_or_create(
+            nome="Desenvolvimento de Sistemas 2", codigo="DEVII",
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Banco de Dados 1", codigo="BD1",
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Engenharia de Software", codigo="ESW10",
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Gestão de Projetos", codigo="GDP20",
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Turismo Sustentável", codigo="TURS1",
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        
+        # Disciplinas do PPC de Técnico de Informática
 
+        tecinfo_ppc = Ppc.objects.get(codigo="tecinfo/606.2025")
+        
+        Disciplina.objects.get_or_create(
+            nome="Redes de Computadores", codigo="REDES1",
+            defaults={"ppc": tecinfo_ppc, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Manutenção de Computadores", codigo="MANUT1",
+            defaults={"ppc": tecinfo_ppc, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Programação Básica", codigo="PROGBAS",
+            defaults={"ppc": tecinfo_ppc, "periodo": PeriodoDisciplina.SEGUNDO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Sistemas Operacionais", codigo="SOP1",
+            defaults={"ppc": tecinfo_ppc, "periodo": PeriodoDisciplina.SEGUNDO_ANO}
+        )
+
+        # Disciplinas do PPC de Artesanato
+        art_ppc = Ppc.objects.get(codigo="art/707.2024")
+        
+        Disciplina.objects.get_or_create(
+            nome="Técnicas Artesanais", codigo="TART01",
+            defaults={"ppc": art_ppc, "periodo": PeriodoDisciplina.TERCEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="História da Arte", codigo="HISTART",
+            defaults={"ppc": art_ppc, "periodo": PeriodoDisciplina.TERCEIRO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Gestão de Pequenos Negócios", codigo="GPN01",
+            defaults={"ppc": art_ppc, "periodo": PeriodoDisciplina.QUARTO_ANO}
+        )
+        Disciplina.objects.get_or_create(
+            nome="Empreendedorismo Criativo", codigo="EMPCRTV",
+            defaults={"ppc": art_ppc, "periodo": PeriodoDisciplina.QUARTO_ANO}
+        )
+        
+        
         # # Calendário
         # CalendarioAcademico.objects.get_or_create(
         #     codigo="2025-2",
@@ -169,42 +252,6 @@ class Command(BaseCommand):
             name="Aluno"
         )
         
-        #NÃO EXCLUA PLEASE - ADICIONAR DISCIPLINA EM TURMA p/ solic exercicios dom
-        # Associar disciplinas a uma turma: 
-        try:
-            turma_primeiro_ano = Turma.objects.get(nome="Primeiro ano")
-            disciplina_bd1 = Disciplina.objects.get(codigo="BD1")
-
-            # Adiciona as disciplinas à turma
-            turma_primeiro_ano.disciplinas.add(disciplina_bd1)
-            # Pode adicionar mais disciplinas conforme necessário
-
-            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_primeiro_ano.nome}'"))
-
-            turma_segundo_ano = Turma.objects.get(nome="Segundo ano")
-            disciplina_dev_sistemas = Disciplina.objects.get(codigo="DEVII")
-            turma_segundo_ano.disciplinas.add(disciplina_dev_sistemas )
-            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_segundo_ano.nome}'"))
-
-            turma_terceiro_ano = Turma.objects.get(nome="Terceiro ano")
-            disciplina_Esw = Disciplina.objects.get(codigo="ESW10")
-            turma_terceiro_ano.disciplinas.add(disciplina_Esw)
-            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_terceiro_ano.nome}'"))
-
-            turma_quarto_ano = Turma.objects.get(nome="Quarto ano")
-            disciplina_tur = Disciplina.objects.get(codigo="TURS1")
-            turma_quarto_ano.disciplinas.add(disciplina_tur)
-            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_quarto_ano.nome}'"))
-
-            turma_quinto_ano = Turma.objects.get(nome="Quinto ano")
-            disciplina_gestao = Disciplina.objects.get(codigo="GDP20")
-            turma_quinto_ano.disciplinas.add(disciplina_gestao)
-            self.stdout.write(self.style.SUCCESS(f"Disciplinas associadas à turma '{turma_quinto_ano.nome}'"))
-
-        except Turma.DoesNotExist:
-            self.stdout.write(self.style.ERROR("Uma ou mais turmas não encontradas para associar disciplinas."))
-        except Disciplina.DoesNotExist:
-            self.stdout.write(self.style.ERROR("Uma ou mais disciplinas não encontradas para associar às turmas."))
 
         # Nomes
         for nome in ["Fernando", "Carol", "Clarke", "Pedro", "Nicolas"]:

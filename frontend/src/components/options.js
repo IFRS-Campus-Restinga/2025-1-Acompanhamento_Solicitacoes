@@ -10,9 +10,11 @@ export default function Options({
   const [fieldsOrdered, setFieldsOrdered] = useState([]);
   const [dados, setDados] = useState({});
   const [loading, setLoading] = useState(true); // <- estado de carregamento
+  const [filtroDisciplina, setFiltroDisciplina] = useState("");
+
 
   const handleChange = (e) => {
-    const { name, type, checked, value, files, options } = e.target;
+    const { name, type, checked, value, files } = e.target;
 
     let newValue;
     if (type === "checkbox") {
@@ -21,10 +23,6 @@ export default function Options({
       newValue = files.length > 1 ? Array.from(files) : files[0];
     } else if (type === "number") {
       newValue = value === "" ? null : parseInt(value);
-    } else if (e.target.multiple && type === "select-multiple") {
-      newValue = Array.from(options)
-        .filter(option => option.selected)
-        .map(option => option.value);
     }
     else {
       newValue = value === "" ? null : value;
@@ -37,6 +35,21 @@ export default function Options({
 
     setDados(novosDados);
     onChange?.(novosDados);
+  };
+
+  const handleDisciplinasChange = (e) => {
+    const selectedOptions = Array.from(e.target.selectedOptions, (option) => option.value);
+
+    const novasDisciplinas = [...new Set([...dados.disciplinas, ...selectedOptions])];
+
+    setDados({ ...dados, disciplinas: novasDisciplinas });
+  };
+
+  const handleRemoveDisciplina = (codigo) => {
+    setDados({
+      ...dados,
+      disciplinas: dados.disciplinas.filter(d => d !== codigo)
+    });
   };
 
   useEffect(() => {
@@ -67,6 +80,8 @@ export default function Options({
               novosDadosIniciais[key] = false;
             } else if (value.type === "integer") {
               novosDadosIniciais[key] = null;
+            } else if (key === "disciplinas") {
+              novosDadosIniciais[key] = [];
             } else {
               novosDadosIniciais[key] = "";
             }
@@ -193,26 +208,61 @@ export default function Options({
           if (key === "disciplinas") {
             return (
               <div key={key} className="form-group">
-                <label htmlFor={key}>{value.label}:</label>
+                <label>Disciplinas Disponíveis:</label>
+                <div className="barra-pesquisa">
+                  <i className="bi bi-search icone-pesquisa"></i>
+                  <input
+                    type="text"
+                    placeholder="Buscar disciplinas..."
+                    value={filtroDisciplina}
+                    onChange={(e) => setFiltroDisciplina(e.target.value)}
+                    className="input-pesquisa"
+                    style={{ paddingLeft: '30px', height: '38px' }}
+                  />
+                </div>
+
                 <select
-                  id={key}
-                  name={key}
-                  required={value.required}
-                  onChange={handleChange}
-                  value={dados[key] ?? ""}
-                  className="form-select"
                   multiple
+                  value={dados[key] ?? []}
+                  onChange={handleDisciplinasChange}
+                  required
+                  className="form-select"
+                  size={5} // para exibir mais opções visíveis
                 >
-                  <option value="">Selecione</option>
-                  {lista?.map((campo) => (
-                    <option key={campo.codigo} value={campo.codigo}>
-                      {campo.nome}
-                    </option>
-                  ))}
+                  {lista
+                    ?.filter((campo) =>
+                      campo.nome.toLowerCase().includes(filtroDisciplina.toLowerCase())
+                    )
+                    .map((campo) => (
+                      <option key={campo.codigo} value={campo.codigo}>
+                        {campo.nome}
+                      </option>
+                    ))}
                 </select>
-                <br />
+
+                <div style={{ marginTop: "1rem" }}>
+                  <label>Disciplinas Selecionadas:</label>
+                  <ul>
+                    {(dados["disciplinas"] ?? []).map((codigo) => {
+                      const disciplina = lista.find((d) => d.codigo === codigo);
+                      return (
+                        <li key={codigo}>
+                          {disciplina ? `${disciplina.nome} (${codigo})` : codigo}
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveDisciplina(codigo)}
+                            className="remove-btn"
+                            style={{ marginLeft: '10px' }}
+                          >
+                            X
+                          </button>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
               </div>
-            )
+            );
           } else if (key === "curso") {
             return (
               <div key={key} className="form-group">

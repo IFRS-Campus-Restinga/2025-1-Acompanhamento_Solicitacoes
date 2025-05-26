@@ -1,3 +1,10 @@
+from datetime import date
+import mimetypes
+import os
+
+from django.conf import settings
+
+from ..utils.google_drive import upload_to_drive
 from ..models.motivo_dispensa import MotivoDispensa
 from .solicitacao import Solicitacao
 from .curso import Curso
@@ -32,6 +39,24 @@ class FormDispensaEdFisica(Solicitacao):
     )
 
     anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos")
+
+    def save(self, *args, **kwargs):
+        self.nome_formulario = "Dispensa de Educação Física"
+        if not self.data_solicitacao:  # 👈 Se não tiver data, define como agora
+            self.data_solicitacao = date.isoformat()
+        
+        """Método para salvar anexos no Google Drive"""
+        for path in self.anexos:
+            local_path = os.path.join(settings.MEDIA_ROOT, path)
+            if os.path.exists(local_path):
+                with open(local_path, 'rb') as f:
+                    print(local_path)
+                    mime_type = mimetypes.guess_type(local_path)[0] or 'application/octet-stream'
+                    upload_to_drive(f, os.path.basename(local_path), mime_type)
+            else:
+                raise FileNotFoundError
+    
+        super().save(*args, **kwargs)
 
     
     class Meta:

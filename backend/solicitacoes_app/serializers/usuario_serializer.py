@@ -78,7 +78,7 @@ class UsuarioSerializerComPapeis(serializers.ModelSerializer):
         if hasattr(obj, 'cre'):
             return "CRE"
         if hasattr(obj, 'responsavel'):
-            return "Responsavel"
+            return "Responsável"
         return "Externo"
     
     def get_papel_detalhes(self, obj):
@@ -113,10 +113,11 @@ class UsuarioSerializerComPapeis(serializers.ModelSerializer):
                 "siape": cre.siape
             }
         if hasattr(obj, 'responsavel'):
-            responsavel = obj.responsavel
+            aluno = obj.responsavel.aluno  # Acessa o aluno vinculado
             return {
-                "id": responsavel.id,
-                "aluno": responsavel.aluno.usuario.nome if responsavel.aluno and responsavel.aluno.usuario else None
+                "id": obj.responsavel.id,
+                "aluno": aluno.usuario.nome if aluno else None,
+                "email_aluno": aluno.usuario.email if aluno else None  # Campo novo
             }
         return None
     
