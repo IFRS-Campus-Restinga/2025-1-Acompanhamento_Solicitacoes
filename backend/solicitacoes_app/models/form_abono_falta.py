@@ -1,6 +1,6 @@
 from datetime import date
 from django.db import models
-from ..models import MotivoAbono, Curso, Aluno
+from ..models import MotivoAbono, Curso, Disciplina
 from django.core.exceptions import ValidationError
 from .solicitacao import Solicitacao
 from django.db.models import RESTRICT
@@ -21,8 +21,9 @@ class FormAbonoFalta(Solicitacao):
     )
 
     disciplinas = models.ManyToManyField(
-        'Disciplina',
-        verbose_name="Disciplinas relacionadas"
+        Disciplina,
+        verbose_name="Disciplinas relacionadas",
+        help_text="Selecione as disciplinas"
     )
 
     motivo_solicitacao = models.ForeignKey(

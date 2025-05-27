@@ -250,33 +250,6 @@ export default function FormularioAbonoFaltas() {
 };
 
 
-
-
-  /*const carregarDisciplinasDoCurso = async (cursoCodigo) => {
-    if (!cursoCodigo) {
-      setDisciplinas([]); 
-      setErroBuscaDisciplinas("Código do curso não fornecido.");
-      return;
-    }
-    setIsLoadingDisciplinas(true);
-    setErroBuscaDisciplinas("");
-    setDisciplinas([]); 
-    try {
-      const response = await axios.get(`http://localhost:8000/solicitacoes/disciplinas-por-curso/?curso_codigo=${encodeURIComponent(cursoCodigo)}`);
-      if (response.data && response.data.length > 0) {
-        setDisciplinas(response.data);
-      } else {
-        setErroBuscaDisciplinas("Nenhuma disciplina encontrada para este curso.");
-      }
-    } catch (error) {
-      console.error(`Erro ao buscar disciplinas para o curso ${cursoCodigo}:`, error);
-      setErroBuscaDisciplinas("Erro ao carregar disciplinas. Tente novamente.");
-    } finally {
-      setIsLoadingDisciplinas(false);
-    }
-  };*/
-
-
   useEffect(() => {
     axios.get("http://localhost:8000/solicitacoes/cursos/")
       .then(res => {
@@ -378,25 +351,22 @@ export default function FormularioAbonoFaltas() {
     setIsSubmitting(true);
     setErrors({});
 
-    const dataToSend = new FormData();
+    const dataToSubmit = new FormData();
 
     // Adiciona campos do estado formData que o backend espera
-    dataToSend.append("matricula", formData.matricula);
-    dataToSend.append("curso", formData.curso); 
-    dataToSend.append("motivo_solicitacao_id", formData.motivo_solicitacao_id);
-    dataToSend.append("data_inicio_afastamento", formData.data_inicio_afastamento);
-    dataToSend.append("data_fim_afastamento", formData.data_fim_afastamento);
-    dataToSend.append("acesso_moodle", formData.acesso_moodle);
-    dataToSend.append("perdeu_atividades", formData.perdeu_atividades);
+    dataToSubmit.append("matricula", formData.matricula);
+    dataToSubmit.append("curso", formData.curso); 
+    dataToSubmit.append("motivo_solicitacao_id", formData.motivo_solicitacao_id);
+    dataToSubmit.append("data_inicio_afastamento", formData.data_inicio_afastamento);
+    dataToSubmit.append("data_fim_afastamento", formData.data_fim_afastamento);
+    dataToSubmit.append("acesso_moodle", formData.acesso_moodle);
+    dataToSubmit.append("perdeu_atividades", formData.perdeu_atividades);
     
     // *** CAMPOS OBRIGATÓRIOS PARA O MODELO SOLICITACAO ***
-    dataToSend.append("aluno", alunoInfo.id); // Envia o ID do aluno
-    dataToSend.append("data_solicitacao", new Date().toISOString().split('T')[0]); // Data atual
-    dataToSend.append("nome_formulario", "ABONOFALTAS"); // Chave do formulário
-    // Adicione status e posse se o backend não definir padrão
-    // dataToSend.append("status", "Em Análise"); 
-    // dataToSend.append("posse_solicitacao", "Aluno");
-
+    dataToSubmit.append("aluno", alunoInfo.id); // Envia o ID do aluno
+    dataToSubmit.append("data_solicitacao", new Date().toISOString().split('T')[0]); // Data atual
+    dataToSubmit.append("nome_formulario", "ABONOFALTAS"); // Chave do formulário
+   
     
     if (formData.disciplinas_selecionadas && formData.disciplinas_selecionadas.length > 0) {
       
@@ -404,7 +374,7 @@ export default function FormularioAbonoFaltas() {
           // Verifica se o valor é um ID numérico ou string que pode ser convertida
           const id = parseInt(disciplinaId, 10);
           if (!isNaN(id)) {
-             dataToSend.append("disciplinas_selecionadas", id);
+             dataToSubmit.append("disciplinas_selecionadas", id);
           } else {
              console.warn("Valor inválido encontrado em disciplinas_selecionadas:", disciplinaId);
              // Se o backend espera nomes, use: dataToSend.append("disciplinas_selecionadas", disciplinaId);
@@ -415,7 +385,7 @@ export default function FormularioAbonoFaltas() {
     // Adiciona os arquivos anexados
     if (formData.anexos) {
       for (let i = 0; i < formData.anexos.length; i++) {
-        dataToSend.append("anexos", formData.anexos[i]);
+        dataToSubmit.append("anexos", formData.anexos[i]);
       }
     }
 
@@ -425,7 +395,7 @@ export default function FormularioAbonoFaltas() {
 
     try {
       // *** ENDPOINT CORRETO ***
-      const response = await axios.post("http://localhost:8000/solicitacoes/todas-solicitacoes/", dataToSend, {
+      const response = await axios.post("http://localhost:8000/solicitacoes/todas-solicitacoes/", dataToSubmit, {
         headers: {
           "Content-Type": "multipart/form-data",
           // Adicionar autenticação se necessário

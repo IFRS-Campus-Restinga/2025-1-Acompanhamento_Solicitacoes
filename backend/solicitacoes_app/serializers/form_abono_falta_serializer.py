@@ -38,7 +38,6 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
     aluno_nome = serializers.CharField(read_only=True)
     email = serializers.CharField(read_only=True)
     matricula = serializers.CharField(read_only=True)
-    periodo_afastamento = serializers.SerializerMethodField()
     ppc_codigo = serializers.CharField(source='ppc.codigo', read_only=True)
     disciplinas_info = serializers.SerializerMethodField(read_only=True)
 
@@ -79,8 +78,6 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
             return obj.solicitacao.aluno.matricula
         return None
 
-    def get_periodo_afastamento(self, obj):
-        return obj.periodo_afastamento
         
     def get_disciplinas_info(self, obj):
         return [

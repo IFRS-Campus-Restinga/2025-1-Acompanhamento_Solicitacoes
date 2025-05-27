@@ -1,16 +1,20 @@
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import HeaderCRE from "../../../components/base/headers/header_cre";
 import "../../../components/formulario.css";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
+import Paginacao from "../../../components/UI/paginacao";
 
 const HomeCRE = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [paginaAtual, setPaginaAtual] = useState(1);
+    const [solicitacoesPaginadas, setSolicitacoesPaginadas] = useState([]);
+    const [filtro, setFiltro] = useState("");
 
     useEffect(() => {
         const fetchSolicitacoes = async () => {
@@ -19,7 +23,11 @@ const HomeCRE = () => {
             try {
                 const response = await axios.get("http://localhost:8000/solicitacoes/todas-solicitacoes/");
                 console.log("Dados recebidos:", response.data);
-                setSolicitacoes(response.data || []);
+                // Filtra para NÃO mostrar as finalizadas na tela principal
+                const ativas = (response.data || []).filter(
+                    solicitacao => solicitacao.status !== "Registrado" && solicitacao.status !== "Cancelado"
+                );
+                setSolicitacoes(ativas);
             } catch (error) {
                 console.error("Erro ao buscar solicitações", error);
                 setError("Erro ao carregar solicitações. Tente novamente mais tarde.");
@@ -31,36 +39,60 @@ const HomeCRE = () => {
         fetchSolicitacoes();
     }, []);
 
+
+    const solicitacoesFiltradas = useMemo(
+        () =>
+          solicitacoes.filter(
+            (s) =>
+              s.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
+              s.status?.toLowerCase().includes(filtro.toLowerCase())
+          ),
+        [solicitacoes, filtro]
+      );
+    
+
+    const formatarData = (dataString) => {
+        if (!dataString) return '--/--/----';
+        const data = new Date(dataString);
+        return data.toLocaleDateString('pt-BR');
+    };
+
     return (
         <div>
             <HeaderCRE />
             <main className="container">
-                <h2>Painel do CRE</h2>
+                <h2>Solicitações</h2>
+
+                <div style={{ marginBottom: "20px", textAlign: "right" }}>
+                    <Link to="/solicitacoes-finalizadas" className="btn btn-info">
+                        Ver Solicitações Finalizadas
+                    </Link>
+                </div>
 
                 {loading ? (
                     <p>Carregando solicitações...</p>
                 ) : error ? (
                     <p style={{ color: "red" }}>{error}</p>
                 ) : solicitacoes.length > 0 ? (
-                    <table className="tabela-cruds">
+                    <table className="tabela-cruds tabela-solicitacoes">
                         <thead>
                             <tr>
-                                <th>Tipo de Formulário</th>
+                                <th>Tipo</th>
                                 <th>Aluno</th>
-                                <th>Data de Criação</th>
+                                <th>Data</th>
                                 <th>Status</th>
-                                <th>Responsável</th>
+                                <th>Posse</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {solicitacoes.map((solicitacao, index) => (
+                            {solicitacoesPaginadas.map((solicitacao, index) => (
                                 <tr key={solicitacao.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                                    <td>{solicitacao.tipo}</td>
-                                    <td>{solicitacao.nome_aluno}</td>
-                                    <td>{solicitacao.data_solicitacao}</td>
-                                    <td>{solicitacao.status}</td>
-                                    <td>{solicitacao.posse_solicitacao}</td>
+                                    <td>{solicitacao.tipo || "N/A"}</td>
+                                    <td>{solicitacao.nome_aluno || "N/A"}</td>
+                                    <td classname="coluna-data">{formatarData(solicitacao.data_solicitacao)}</td>
+                                    <td className="status-badge">{solicitacao.status || "N/A"}</td>
+                                    <td>{solicitacao.posse_solicitacao || "N/A"}</td>
                                     <td>
                                         <div className="botao-olho">
                                             <Link to={`/detalhe-solicitacao/${solicitacao.id}`} title="Ver detalhes">
@@ -73,8 +105,16 @@ const HomeCRE = () => {
                         </tbody>
                     </table>
                 ) : (
-                    <p>Nenhuma solicitação encontrada.</p>
+                    <p>Nenhuma solicitação ativa encontrada.</p> /* Mensagem ajustada */
                 )}
+
+                <Paginacao
+                    dados={solicitacoesFiltradas}
+                    paginaAtual={paginaAtual}
+                    setPaginaAtual={setPaginaAtual}
+                    itensPorPagina={5}
+                    onDadosPaginados={setSolicitacoesPaginadas}
+                />
             </main>
             <Footer />
         </div>
@@ -82,3 +122,4 @@ const HomeCRE = () => {
 };
 
 export default HomeCRE;
+

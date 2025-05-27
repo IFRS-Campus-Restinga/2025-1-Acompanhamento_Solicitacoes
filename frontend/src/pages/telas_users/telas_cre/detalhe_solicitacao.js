@@ -15,7 +15,7 @@ export default function DetalheSolicitacao() {
     const camposOcultar = ["id", "descricao"]; // Oculta esses campos
 
     useEffect(() => {
-        axios.get(`http://localhost:8000/solicitacoes/detalhes-formulario/${id}/`)
+        axios.get(`http://localhost:8000/solicitacoes/detalhe-formularios/${id}/`)
             .then(response => {
                 setFormulario(response.data);
                 setLoading(false);
@@ -39,7 +39,7 @@ export default function DetalheSolicitacao() {
             setSolicitacao((prev) => ({ ...prev, status: novoStatus }));
 
             setTimeout(() => {
-                navigate("/cre_home");
+                navigate("/cre/home");
             }, 500);
         } catch (err) {
             console.error("Erro ao atualizar status:", err);
