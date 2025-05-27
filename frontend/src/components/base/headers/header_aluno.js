@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./../headers/header_nav.css";
 
-const HeaderAluno = () => {
+const HeaderAluno = ({onLogout}) => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate(); 
 
@@ -47,6 +47,7 @@ const HeaderAluno = () => {
     // TODO: Adicionar lógica para invalidar o token no backend, se aplicável
     navigate("/"); // Redireciona para a página de login
     // window.location.reload(); // Força um reload para limpar qualquer estado restante, se necessário
+    onLogout?.();
   };
 
   return (
