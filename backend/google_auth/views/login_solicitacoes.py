@@ -65,7 +65,7 @@ def google_callback(request):
             id_token_jwt_google, 
             google_requests.Request(), 
             settings.GOOGLE_OAUTH2_CLIENT_ID,
-            clock_skew_in_seconds=60
+            # clock_skew_in_seconds=60
         )
         
         if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
