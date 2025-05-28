@@ -11,13 +11,13 @@ export default function FormularioDesistenciaVaga() {
     const [formData, setFormData] = useState({
         aluno_nome: "",
         email: "",
-        matricula: "",
         motivo_solicitacao: "",
+        motivo_desistencia: "",
+        menor_idade: null,
+        recebe_auxilio_estudantil: null,
         tipo_curso: "",
         curso: curso_codigo || "",
-        atestado_vaga_nova_escola: null,
-        doc_identificacao_responsavel: null,
-        declaracao_biblioteca: null,
+        ano_semestre_ingresso: "",
         atestado_vaga_nova_escola: null,  // Novo campo para o arquivo de atestado
         doc_identificacao_responsavel: null,  // Novo campo para o arquivo de documento do responsável
         declaracao_biblioteca: null,  // Novo campo para a declaração de biblioteca
@@ -69,8 +69,23 @@ export default function FormularioDesistenciaVaga() {
     e.preventDefault();
 
     // Verificação de campos obrigatórios
-    if (!formData.aluno_nome || !formData.email || !formData.matricula || !formData.tipo_curso || !formData.declaracao_biblioteca) {
+    if (!formData.aluno_nome || !formData.email || !formData.ano_semestre_ingresso || !formData.tipo_curso || !formData.declaracao_biblioteca  || !formData.motivo_solicitacao  || !formData.motivo_desistencia) {
       alert("Todos os campos obrigatórios devem ser preenchidos!");
+      return;
+    }
+
+    if (!["transferencia", "desistencia"].includes(formData.motivo_desistencia)) {
+      alert("Por favor, selecione o motivo da desistência.");
+      return;
+    }
+
+    if (formData.menor_idade === null) {
+      alert("Por favor, informe se é menor de idade.");
+      return;
+    }
+
+    if (formData.recebe_auxilio_estudantil === null) {
+      alert("Por favor, informe se recebe auxílio estudantil.");
       return;
     }
 
@@ -110,8 +125,11 @@ export default function FormularioDesistenciaVaga() {
 
     data.append("aluno_nome", formData.aluno_nome);
     data.append("email", formData.email);
-    data.append("matricula", formData.matricula);
+    data.append("motivo_desistencia", formData.motivo_desistencia);    
     data.append("motivo_solicitacao", formData.motivo_solicitacao);
+    data.append("ano_semestre_ingresso", formData.ano_semestre_ingresso);
+    data.append("menor_idade", formData.menor_idade);
+    data.append("recebe_auxilio_estudantil", formData.recebe_auxilio_estudantil);
     data.append("tipo_curso", formData.tipo_curso);
     if (formData.curso) {
         data.append("curso", formData.curso);
@@ -137,6 +155,7 @@ export default function FormularioDesistenciaVaga() {
     })
     .then((response) => {
       alert("Formulário enviado com sucesso!");
+      navigate("/solicitacoes");
     })
     .catch((error) => {
       if (error.response) {
@@ -182,15 +201,34 @@ export default function FormularioDesistenciaVaga() {
         </div>
 
         <div className="form-group">
-          <label>Matrícula:</label>
-          <input
-            type="text"
-            name="matricula"
-            value={formData.matricula}
-            onChange={handleChange}
-            required
-          />
-        </div>
+          <label>Motivo da Desistência:</label>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name="motivo_desistencia"
+                  value="transferencia"
+                  checked={formData.motivo_desistencia === "transferencia"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, motivo_desistencia: e.target.value })
+                  }
+                />
+                Transferência para outra escola
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="motivo_desistencia"
+                  value="desistencia"
+                  checked={formData.motivo_desistencia === "desistencia"}
+                  onChange={(e) =>
+                    setFormData({ ...formData, motivo_desistencia: e.target.value })
+                  }
+                />
+                Desistência da vaga
+              </label>
+            </div>
+          </div>
 
         <div className="form-group">
             <label>Motivo da Solicitação:</label>
@@ -201,6 +239,47 @@ export default function FormularioDesistenciaVaga() {
                 required
             />
         </div>
+
+        <div className="form-group">
+            <label>Ano/Semestre de Ingresso:</label>
+            <input
+              type="text"
+              name="ano_semestre_ingresso"
+              value={formData.ano_semestre_ingresso}
+              onChange={handleChange}
+              required
+            />
+        </div>
+
+        <div className="form-group">
+          <label>Recebe Auxílio Estudantil?</label>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name="recebe_auxilio_estudantil"
+                  value="true"
+                  checked={formData.recebe_auxilio_estudantil === true}
+                  onChange={() =>
+                    setFormData({ ...formData, recebe_auxilio_estudantil: true })
+                  }
+                />
+                Sim
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="recebe_auxilio_estudantil"
+                  value="false"
+                  checked={formData.recebe_auxilio_estudantil === false}
+                  onChange={() =>
+                    setFormData({ ...formData, recebe_auxilio_estudantil: false })
+                  }
+                />
+                Não
+              </label>
+            </div>
+          </div>
 
         <div className="form-group">
           <label>Tipo de Curso:</label>
@@ -275,6 +354,36 @@ export default function FormularioDesistenciaVaga() {
             required
             />
         </div>
+
+        <div className="form-group">
+          <label>É menor de idade?</label>
+            <div>
+              <label>
+                <input
+                  type="radio"
+                  name="menor_idade"
+                  value="true"
+                  checked={formData.menor_idade === true}
+                  onChange={() =>
+                    setFormData({ ...formData, menor_idade: true })
+                  }
+                />
+                Sim
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="menor_idade"
+                  value="false"
+                  checked={formData.menor_idade === false}
+                  onChange={() =>
+                    setFormData({ ...formData, menor_idade: false })
+                  }
+                />
+                Não
+              </label>
+            </div>
+          </div>
 
           <button type="submit" className="submit-button">Enviar</button>
       </form>
