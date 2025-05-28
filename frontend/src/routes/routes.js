@@ -93,6 +93,7 @@ import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 //Tela CRE
 import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
 import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
+import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes_finalizadas.js";
 
 //Tela Coordenador
 import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
@@ -223,6 +224,7 @@ const routes = [
   //Tela CRE
   <Route path="/cre/home" element={<HomeCRE />} key="home_cre" />,
   <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
+  <Route path="/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="solicitacoes_finalizadas" />,
 
   //Tela Coordenador
   <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,

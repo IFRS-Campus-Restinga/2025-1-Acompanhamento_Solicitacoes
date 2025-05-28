@@ -11,8 +11,9 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
         write_only=True
     )
 
-    disciplinas = serializers.PrimaryKeyRelatedField(
+    disciplinas = serializers.SlugRelatedField(
         queryset=Disciplina.objects.all(),
+        slug_field="codigo",
         many=True,
         write_only=True,
         required=False
@@ -38,7 +39,6 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
     aluno_nome = serializers.CharField(read_only=True)
     email = serializers.CharField(read_only=True)
     matricula = serializers.CharField(read_only=True)
-    periodo_afastamento = serializers.SerializerMethodField()
     ppc_codigo = serializers.CharField(source='ppc.codigo', read_only=True)
     disciplinas_info = serializers.SerializerMethodField(read_only=True)
 
@@ -79,8 +79,6 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
             return obj.solicitacao.aluno.matricula
         return None
 
-    def get_periodo_afastamento(self, obj):
-        return obj.periodo_afastamento
         
     def get_disciplinas_info(self, obj):
         return [
@@ -89,45 +87,68 @@ class FormAbonoFaltaSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
-        # Extrai os dados específicos
-        disciplinas_data = validated_data.pop('disciplinas', [])
+        # 🔎 Extração dos dados enviados
         email = validated_data.pop('aluno_email', None)
-        validated_data['data_solicitacao'] = date.today()
+        curso_codigo = validated_data.pop('curso_codigo', None)
+        disciplinas_codigos = validated_data.pop('disciplinas', [])
+
+        # ✅ Validação de campos obrigatórios
+        if not email:
+            raise serializers.ValidationError({"aluno_email": "O email do aluno é obrigatório."})
         
-        # Busca o aluno pelo email para criar a relação
-        if email:
-            try:
-                user = User.objects.get(email=email)
-                aluno = Aluno.objects.get(usuario=user)
-            except User.DoesNotExist:
-                raise serializers.ValidationError({
-                    "aluno_email": "Usuário não encontrado com este email."
-                })
-            except Aluno.DoesNotExist:
-                raise serializers.ValidationError({
-                    "aluno_email": "Aluno não encontrado para este usuário."
-                })
-        
-        # Cria o formulário
+        if not curso_codigo:
+            raise serializers.ValidationError({"curso_codigo": "O código do curso é obrigatório."})
+
+        # 🔎 Busca o aluno pelo email
+        try:
+            user = Usuario.objects.get(email=email)
+            aluno = user.aluno
+        except Usuario.DoesNotExist:
+            raise serializers.ValidationError({"aluno_email": "Usuário não encontrado com este email."})
+        except Aluno.DoesNotExist:
+            raise serializers.ValidationError({"aluno_email": "Aluno não encontrado para este usuário."})
+
+        # 🔎 Busca o curso pelo código
+        try:
+            curso = Curso.objects.get(codigo=curso_codigo)
+        except Curso.DoesNotExist:
+            raise serializers.ValidationError({"curso_codigo": "Curso não encontrado com este código."})
+
+        # 🔎 Busca as disciplinas pelos códigos diretamente
+        disciplinas_objetos = Disciplina.objects.filter(codigo__in=disciplinas_codigos)
+        if len(disciplinas_objetos) != len(disciplinas_codigos):
+            raise serializers.ValidationError({"disciplinas": "Algumas disciplinas não foram encontradas."})
+
+        # Adiciona o curso e a data de solicitação
+        validated_data["curso"] = curso
+        validated_data["data_solicitacao"] = date.today()
+
+        # 🔥 Cria a solicitação de abono
         instance = super().create(validated_data)
-        
-        # Associa as disciplinas
-        if disciplinas_data:
-            instance.disciplinas.set(disciplinas_data)
+
+        # 🏷️ Associa as disciplinas corretamente
+        instance.disciplinas.set(disciplinas_objetos)
         
         return instance
 
+
+
+
     def update(self, instance, validated_data):
-        disciplinas_data = validated_data.pop('disciplinas', None)
-        
+        disciplinas_codigos = validated_data.pop('disciplinas', None)
+
         # Atualiza os campos normais
         instance = super().update(instance, validated_data)
-        
-        # Atualiza as disciplinas se fornecidas
-        if disciplinas_data is not None:
-            instance.disciplinas.set(disciplinas_data)
+
+        # Se houver disciplinas na requisição, converte os códigos para IDs
+        if disciplinas_codigos:
+            disciplinas_objetos = Disciplina.objects.filter(codigo__in=disciplinas_codigos)
+            if not disciplinas_objetos.exists():
+                raise serializers.ValidationError({"disciplinas": "Nenhuma disciplina encontrada com os códigos fornecidos."})
+            instance.disciplinas.set(disciplinas_objetos)
         
         return instance
+
 
     def validate_anexos(self, value):
         """

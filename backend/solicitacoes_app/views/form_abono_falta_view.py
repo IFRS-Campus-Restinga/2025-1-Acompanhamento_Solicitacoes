@@ -1,8 +1,10 @@
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny
+
 from ..models.form_abono_falta import FormAbonoFalta
 from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
 from rest_framework.decorators import api_view
+import json
 
 from rest_framework.response import Response
 from ..models import Disciplina, Usuario,  PeriodoDisciplina, Curso, Ppc
@@ -15,15 +17,27 @@ class FormAbonoFaltaViewListCreate(generics.ListCreateAPIView):
     serializer_class = FormAbonoFaltaSerializer
     permission_classes = [AllowAny]
 
-    def perform_create(self, serializer):
-        # Verificar se o serializer é válido
-        if not serializer.is_valid():
-            print("Erros de validação no serializer:", serializer.errors)
-            raise ValueError(serializer.errors)
 
-        # Salvar os dados se forem válidos
-        serializer.save()
+    def perform_create(self, serializer): 
+        print("✅ Serializer recebido:", serializer)
+        disciplinas_codigos = json.loads(self.request.data.get("disciplinas_selecionadas", "[]"))
+
+        # Buscar os objetos Disciplina pelos códigos
+        disciplinas_objetos = Disciplina.objects.filter(codigo__in=disciplinas_codigos)
+
+        if not disciplinas_objetos.exists():
+            raise serializer.ValidationError({"disciplinas": "Nenhuma disciplina encontrada com os códigos fornecidos."})
+
+        print("🚀 Dados recebidos na view:", self.request.data)
+
+        # Criar a instância do formulário de abono corretamente
+        abono_falta = serializer.save()  # ✅ Aqui está o erro original (corrigido)
+
+        # Associa as disciplinas corretamente
+        abono_falta.disciplinas.set(disciplinas_objetos)  
+
         print("Dados salvos com sucesso:", serializer.data)
+
 
 
 class FormAbonoFaltaViewUpdateDelete(generics.RetrieveUpdateDestroyAPIView):

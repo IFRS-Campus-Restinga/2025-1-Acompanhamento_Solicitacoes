@@ -12,13 +12,13 @@ from solicitacoes_app.serializers.form_tranc_matricula_serializer import Formula
 from solicitacoes_app.serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
 
 SERIALIZER_MAP = {
-    'TRANCAMENTODISCIPLINA': FormTrancDisciplinaSerializer,
-    'TRANCAMENTOMATRICULA': FormularioTrancamentoMatriculaSerializer,
-    'DISPENSAEDFISICA': FormDispEdFisicaSerializer,
-    'DESISTENCIAVAGA': FormDesistenciaVagaSerializer,
-    'EXERCICIOSDOMICILIARES': FormExercicioDomiciliarSerializer,
-    'ABONOFALTAS': FormAbonoFaltaSerializer,
-    'ENTREGACERTIFICADOS': FormEntregaAtivComplSerializer, 
+    'Trancamento de Disciplina': FormTrancDisciplinaSerializer,
+    'Trancamento de Matrícula': FormularioTrancamentoMatriculaSerializer,
+    'Dispensa de Educação Física': FormDispEdFisicaSerializer,
+    'Desistência de Vaga': FormDesistenciaVagaSerializer,
+    'Exercícios Domiciliares': FormExercicioDomiciliarSerializer,
+    'Abono de Faltas': FormAbonoFaltaSerializer,
+    'Entrega de Certificados': FormEntregaAtivComplSerializer, 
 }
 
 class DetalhesFormularioView(RetrieveAPIView):
