@@ -40,17 +40,14 @@ const SolicitacoesFinalizadas = () => {
         fetchSolicitacoes();
     }, []);
 
-    // Função para formatar a data (opcional, pode ajustar conforme necessário)
+    // Função para formatar a data
     const formatarData = (dataString) => {
-        if (!dataString) return "N/A";
+        if (!dataString) return '--/--/----';
         const data = new Date(dataString);
-        // Adiciona verificação se a data é válida
         if (isNaN(data.getTime())) {
-            return dataString; // Retorna a string original se não for data válida
+            return dataString;
         }
-        // Ajusta para o fuso horário local se necessário, ou mantém UTC
-        // Exemplo: return data.toLocaleDateString("pt-BR"); 
-        return data.toISOString().split("T")[0]; // Formato YYYY-MM-DD
+        return data.toLocaleDateString('pt-BR');
     };
 
     return (
@@ -70,15 +67,14 @@ const SolicitacoesFinalizadas = () => {
                 ) : error ? (
                     <p style={{ color: "red" }}>{error}</p>
                 ) : solicitacoesFinalizadas.length > 0 ? (
-                    <table className="tabela-cruds"> {/* Usa a mesma classe CSS */}
+                    <table className="tabela-cruds tabela-solicitacoes">
                         <thead>
                             <tr>
                                 <th>Tipo de Formulário</th>
                                 <th>Aluno</th>
-                                {/* Cabeçalho da coluna alterado */}
                                 <th>Última Alteração</th> 
                                 <th>Status</th>
-                                <th>Responsável Final</th> {/* Ajuste semântico opcional */}
+                                <th>Responsável Final</th>
                                 <th>Ações</th>
                             </tr>
                         </thead>
@@ -87,11 +83,8 @@ const SolicitacoesFinalizadas = () => {
                                 <tr key={solicitacao.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                                     <td>{solicitacao.tipo || "N/A"}</td>
                                     <td>{solicitacao.nome_aluno || "N/A"}</td>
-                                    {/* Exibe a data formatada. 
-                                        Verifique se 'data_solicitacao' é a data correta para "Última Alteração". 
-                                        Se houver outro campo como 'data_atualizacao', use-o aqui. */}
-                                    <td>{formatarData(solicitacao.data_solicitacao)}</td> 
-                                    <td>{solicitacao.status || "N/A"}</td>
+                                    <td classname="coluna-data">{formatarData(solicitacao.data_solicitacao)}</td> 
+                                    <td className="status-badge">{solicitacao.status || "N/A"}</td>
                                     <td>{solicitacao.posse_solicitacao || "N/A"}</td>
                                     <td>
                                         <div className="botao-olho"> {/* Mantém o mesmo estilo */}

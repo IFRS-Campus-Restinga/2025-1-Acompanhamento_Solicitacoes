@@ -221,8 +221,8 @@ export default function FormularioAbonoFaltas() {
     }
   };
 
-  console.log("Aluno recebido:", alunoInfo);
-  console.log("Código do PPC:", alunoInfo?.ppc?.codigo);
+  //console.log("Aluno recebido:", alunoInfo);
+  //console.log("Código do PPC:", alunoInfo?.ppc?.codigo);
 
 
   const buscarDisciplinas = async (ppcCodigo) => {
@@ -234,9 +234,9 @@ export default function FormularioAbonoFaltas() {
 
     try {
         const url = `http://localhost:8000/solicitacoes/disciplinas/?ppc_id=${encodeURIComponent(ppcCodigo)}`;
-        console.log("URL da requisição:", url); // Depuração
+        //console.log("URL da requisição:", url); // Depuração
         const response = await axios.get(url);
-        console.log("Resposta da API:", response.data);
+        //console.log("Resposta da API:", response.data);
 
         if (response.data && response.data.length > 0) {
             setDisciplinas(response.data);
@@ -333,19 +333,25 @@ export default function FormularioAbonoFaltas() {
     
     const validationErrors = validateForm(formData);
     if (Object.keys(validationErrors).length > 0) {
-      setErrors(validationErrors);
-      setTipoPopup("error");
-      setMensagemPopup("Por favor, corrija os erros indicados no formulário.");
-      setPopupIsOpen(true);
-      return;
+        setErrors(validationErrors);
+        setTipoPopup("error");
+        setMensagemPopup("Por favor, corrija os erros indicados no formulário.");
+        setPopupIsOpen(true);
+        return;
     }
 
-    // Verifica se temos o ID do aluno (essencial para o backend)
-    if (!alunoInfo || !alunoInfo.id) {
+    if (!alunoInfo || !alunoInfo.usuario?.email) {
         setTipoPopup("error");
-        setMensagemPopup("Informações do aluno não carregadas. Não é possível enviar a solicitação.");
+        setMensagemPopup("Informações do aluno não carregadas corretamente.");
         setPopupIsOpen(true);
-        return; 
+        return;
+    }
+
+    if (!formData.curso) {
+        setTipoPopup("error");
+        setMensagemPopup("Código do curso não carregado. Verifique as informações.");
+        setPopupIsOpen(true);
+        return;
     }
 
     setIsSubmitting(true);
@@ -353,86 +359,80 @@ export default function FormularioAbonoFaltas() {
 
     const dataToSubmit = new FormData();
 
-    // Adiciona campos do estado formData que o backend espera
+    // 📌 Correção para os campos obrigatórios
+    dataToSubmit.append("aluno_email", alunoInfo.usuario.email);
+    dataToSubmit.append("aluno_nome", alunoInfo.usuario.nome);
+    dataToSubmit.append("curso_codigo", formData.curso);
+
+    // Adiciona outros campos do formulário
     dataToSubmit.append("matricula", formData.matricula);
-    dataToSubmit.append("curso", formData.curso); 
     dataToSubmit.append("motivo_solicitacao_id", formData.motivo_solicitacao_id);
     dataToSubmit.append("data_inicio_afastamento", formData.data_inicio_afastamento);
     dataToSubmit.append("data_fim_afastamento", formData.data_fim_afastamento);
     dataToSubmit.append("acesso_moodle", formData.acesso_moodle);
     dataToSubmit.append("perdeu_atividades", formData.perdeu_atividades);
-    
-    // *** CAMPOS OBRIGATÓRIOS PARA O MODELO SOLICITACAO ***
-    dataToSubmit.append("aluno", alunoInfo.id); // Envia o ID do aluno
-    dataToSubmit.append("data_solicitacao", new Date().toISOString().split('T')[0]); // Data atual
-    dataToSubmit.append("nome_formulario", "ABONOFALTAS"); // Chave do formulário
-   
-    
+    dataToSubmit.append("data_solicitacao", new Date().toISOString().split('T')[0]);
+    dataToSubmit.append("nome_formulario", "ABONOFALTAS");
+
+    // Ajuste para disciplinas
     if (formData.disciplinas_selecionadas && formData.disciplinas_selecionadas.length > 0) {
-      
-      formData.disciplinas_selecionadas.forEach(disciplinaId => {
-          // Verifica se o valor é um ID numérico ou string que pode ser convertida
-          const id = parseInt(disciplinaId, 10);
-          if (!isNaN(id)) {
-             dataToSubmit.append("disciplinas_selecionadas", id);
-          } else {
-             console.warn("Valor inválido encontrado em disciplinas_selecionadas:", disciplinaId);
-             // Se o backend espera nomes, use: dataToSend.append("disciplinas_selecionadas", disciplinaId);
-          }
-      });
+        dataToSubmit.append("disciplinas_selecionadas", JSON.stringify(formData.disciplinas_selecionadas));
     }
 
-    // Adiciona os arquivos anexados
+    // Adiciona anexos se existirem
     if (formData.anexos) {
-      for (let i = 0; i < formData.anexos.length; i++) {
-        dataToSubmit.append("anexos", formData.anexos[i]);
-      }
+        for (let i = 0; i < formData.anexos.length; i++) {
+            dataToSubmit.append("anexos", formData.anexos[i]);
+        }
     }
 
-    console.log("Enviando dados para /solicitacoes/todas-solicitacoes/ ...");
-    // Log para depuração (opcional)
-    // for (let pair of dataToSend.entries()) { console.log(pair[0]+ ": " + pair[1]); }
+    console.log("Dados que serão enviados:", Object.fromEntries(dataToSubmit.entries()));
 
     try {
-      // *** ENDPOINT CORRETO ***
-      const response = await axios.post("http://localhost:8000/solicitacoes/todas-solicitacoes/", dataToSubmit, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          // Adicionar autenticação se necessário
-        },
-      });
+        const response = await axios.post("http://localhost:8000/solicitacoes/formulario_abono_falta/", dataToSubmit, {
+            headers: {
+                "Content-Type": "multipart/form-data",
+            },
+        });
 
-      console.log("Resposta da API:", response.data);
-      setTipoPopup("success");
-      setMensagemPopup("Solicitação de Abono de Faltas enviada com sucesso!");
-      setPopupIsOpen(true);
-      setTimeout(() => navigate("/aluno/minhas-solicitacoes"), 2000); 
+        console.log("Resposta da API:", response.data);
+        setTipoPopup("success");
+        setMensagemPopup("Solicitação de Abono de Faltas enviada com sucesso!");
+        setPopupIsOpen(true);
+        setTimeout(() => navigate("/aluno/minhas-solicitacoes"), 2000);
 
     } catch (error) {
-      console.error("Erro ao enviar solicitação:", error);
-      setTipoPopup("error");
-      let errorMsg = "Erro ao enviar solicitação. Tente novamente.";
-      if (error.response && error.response.data) {
-        console.error("Detalhes do erro do backend:", error.response.data);
-        const backendErrors = error.response.data;
-        const formattedErrors = Object.entries(backendErrors)
-          .map(([field, messages]) => {
-             const msgText = Array.isArray(messages) ? messages.join(", ") : messages;
-             const fieldName = field === 'non_field_errors' ? 'Erro geral' : field;
-             return `${fieldName}: ${msgText}`;
-           })
-          .join("; ");
-        if (formattedErrors) {
-          errorMsg = `Erro no envio: ${formattedErrors}`;
+        console.error("Erro ao enviar solicitação:", error);
+
+        console.log("Status do erro:", error.response?.status);
+        console.log("Cabeçalhos da resposta:", error.response?.headers);
+        console.log("Corpo da resposta:", error.response?.data);
+
+        setTipoPopup("error");
+        let errorMsg = "Erro ao enviar solicitação. Tente novamente.";
+
+        if (error.response && error.response.data) {
+            console.error("Detalhes do erro do backend:", error.response.data);
+            const backendErrors = error.response.data;
+            const formattedErrors = Object.entries(backendErrors)
+                .map(([field, messages]) => {
+                    const msgText = Array.isArray(messages) ? messages.join(", ") : messages;
+                    const fieldName = field === 'non_field_errors' ? 'Erro geral' : field;
+                    return `${fieldName}: ${msgText}`;
+                })
+                .join("; ");
+            if (formattedErrors) {
+                errorMsg = `Erro no envio: ${formattedErrors}`;
+            }
+            setErrors(typeof backendErrors === 'object' ? backendErrors : {});
         }
-        setErrors(typeof backendErrors === 'object' ? backendErrors : {});
-      }
-      setMensagemPopup(errorMsg);
-      setPopupIsOpen(true);
+        setMensagemPopup(errorMsg);
+        setPopupIsOpen(true);
     } finally {
-      setIsSubmitting(false);
+        setIsSubmitting(false);
     }
   };
+
 
   const handleSelectClick = (event) => {
     const codigo = event.target.value;
