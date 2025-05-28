@@ -4,6 +4,7 @@ import Footer from "../../../components/base/footer";
 import HeaderCoordenador from "../../../components/base/headers/header_coordenador";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
+import { Link } from "react-router-dom";
 
 const HomeCoordenador = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
@@ -34,6 +35,27 @@ const HomeCoordenador = () => {
     fetchSolicitacoes();
   }, []);
 
+  const alterarStatus = async (id, novoStatus) => {
+    const confirmacao = window.confirm(`Tem certeza que deseja ${novoStatus.toLowerCase()} esta solicitação?`);
+    if (!confirmacao) return;
+
+    try {
+      const response = await axios.patch(`http://localhost:8000/solicitacoes/atualizar-status/${id}/`, {
+        status: novoStatus
+      });
+      console.log("PATCH response:", response.data);
+      setSolicitacoes((prev) =>
+        prev.map((s) =>
+          s.id === id ? { ...s, status: novoStatus } : s
+        )
+      );
+      alert(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
+    } catch (error) {
+      console.error("Erro ao alterar status:", error.response || error);
+      alert("Erro ao alterar status. Verifique o console.");
+    }
+  };
+
   return (
     <div>
       <HeaderCoordenador />
@@ -53,6 +75,7 @@ const HomeCoordenador = () => {
                 <th>Data</th>
                 <th>Status</th>
                 <th>Responsável</th>
+                <th>Ações</th>
               </tr>
             </thead>
             <tbody>
@@ -63,6 +86,25 @@ const HomeCoordenador = () => {
                   <td>{s.data_solicitacao}</td>
                   <td>{s.status}</td>
                   <td>{s.posse_solicitacao}</td>
+                  <td>
+                    <div className="botao-olho">
+                      <Link to={`/detalhe-solicitacao/${s.id}`} title="Ver detalhes">
+                        <i className="bi bi-eye-fill icone-olho"></i>
+                      </Link>
+                    </div>
+                    <button
+                      style={{ backgroundColor: "green", color: "white", marginRight: "5px", padding: "5px", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                      onClick={() => alterarStatus(s.id, "Aprovado")} 
+                    >
+                      Aprovar
+                    </button>
+                    <button
+                      style={{ backgroundColor: "red", color: "white", padding: "5px", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                      onClick={() => alterarStatus(s.id, "Reprovado")}
+                    >
+                      Reprovar
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
