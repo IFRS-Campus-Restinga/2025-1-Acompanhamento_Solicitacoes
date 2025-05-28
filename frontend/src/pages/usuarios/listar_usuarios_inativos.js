@@ -96,16 +96,7 @@ export default function ListarUsuariosInativos() {
       <HeaderCRE />
       <main className="container">
         <h2>Usuários Inativos</h2>
-         <div className="botoes-wrapper">
-        <div className="botao-inativos-wrapper">
-            <button
-              onClick={() => navigate("/usuarios")}
-              className="submit-button">
-              Mostrar Usuários Ativos
-            </button>
-          </div>
-        </div>
-
+         
         <BarraPesquisa
           value={filtro}
           onChange={(e) => {

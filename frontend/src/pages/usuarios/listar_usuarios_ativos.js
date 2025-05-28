@@ -105,13 +105,6 @@ export default function ListarUsuariosAtivos() {
 
         <div className="botoes-wrapper">
           <BotaoCadastrar to="/usuarios/cadastro" title="Criar Novo Usuário" />
-          <div className="botao-inativos-wrapper">
-            <button
-              onClick={() => navigate("/usuarios/inativos")} // Navega para a nova rota
-              className="submit-button">
-              Mostrar Usuários Inativos
-            </button>
-          </div>
         </div>
 
         <BarraPesquisa
