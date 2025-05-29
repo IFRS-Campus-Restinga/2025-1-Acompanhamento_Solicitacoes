@@ -378,7 +378,7 @@ export default function CadastrarAtualizarGrupo() {
               
               {/* Coluna de permissões selecionadas */}
               <div className="dual-list-column">
-                <h3>Permissões escolhidas</h3>
+                <h3>Permissões concedidas</h3>
                 <div className="permissoes-filtro">
                   <input
                     type="text"

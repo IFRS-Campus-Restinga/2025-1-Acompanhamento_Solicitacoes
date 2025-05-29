@@ -240,7 +240,7 @@ class Command(BaseCommand):
         )
         
         Group.objects.get_or_create(
-            name="Usuários"
+            name="Externo"
         )
         Group.objects.get_or_create(
             name="CRE"
@@ -250,6 +250,9 @@ class Command(BaseCommand):
         )
         Group.objects.get_or_create(
             name="Aluno"
+        )
+        Group.objects.get_or_create(
+            name="Responsável"
         )
         
 
