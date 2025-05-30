@@ -192,3 +192,4 @@ backend/backend/local_settings.py
 backend/uploads/
 backend/solicitacoes_app/utils/credentials.json
 backend/solicitacoes_app/migrations/0001_initial.py
+backend/solicitacoes_app/migrations/0001_initial.py
