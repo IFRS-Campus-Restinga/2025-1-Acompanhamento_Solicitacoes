@@ -44,11 +44,11 @@ import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
 
 // Usuarios
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
-import CadastrarAtualizarUsuarioPapel from "../pages/usuarios/cadastrar_atualizar_usuarios_papeis.js";
+import CadastrarAtualizarUsuarioGrupo from "../pages/usuarios/cadastrar_atualizar_usuarios_grupos.js";
 import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 import ListarUsuariosAtivos from "../pages/usuarios/listar_usuarios_ativos.js";
 import ListarUsuariosInativos from "../pages/usuarios/listar_usuarios_inativos.js";
-import SelecionarPapelUsuario from "../pages/usuarios/selecionar_papel.js";
+import SelecionarGrupoUsuario from "../pages/usuarios/selecionar_grupo.js";
 
 //Grupos
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
@@ -166,11 +166,11 @@ const routes = [
   <Route path="/usuarios" element={<ListarUsuariosAtivos />} key="listar-usuarios-ativos" />,
   <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
-  <Route path="/usuarios/selecionarpapel" element={<SelecionarPapelUsuario />} key="selecionar-papel-usuarios" />,
+  <Route path="/usuarios/selecionargrupo" element={<SelecionarGrupoUsuario />} key="selecionar-grupo-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
-  <Route path="/usuarios/cadastro/:papel" element={<CadastrarAtualizarUsuarioPapel />} key="cadastrar-usuarios-papel" />,
-  <Route path="/usuarios/editar/:papel/:id" element={<CadastrarAtualizarUsuarioPapel />} key="atualizar-usuarios-papel" />,
+  <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} key="cadastrar-usuarios-grupo" />,
+  <Route path="/usuarios/editar/:grupo/:id" element={<CadastrarAtualizarUsuarioGrupo />} key="atualizar-usuarios-grupo" />,
 
   
   //Mandatos

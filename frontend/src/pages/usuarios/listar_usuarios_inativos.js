@@ -55,7 +55,7 @@ export default function ListarUsuariosInativos() {
         (usuario.email || '').toLowerCase().includes(termo) ||
         (usuario.cpf || '').toLowerCase().includes(termo) ||
         (usuario.telefone || '').toLowerCase().includes(termo) ||
-        (usuario.papel || '').toLowerCase().includes(termo) ||
+        (usuario.grupo || '').toLowerCase().includes(termo) ||
         (usuario.status_usuario || '').toLowerCase().includes(termo)
     );
   };
@@ -115,7 +115,7 @@ export default function ListarUsuariosInativos() {
                 <th>CPF</th>
                 <th>Email</th>
                 <th>Telefone</th>
-                <th>Papel</th>
+                <th>Grupo</th>
                 <th>Status</th>
                 <th>Ações</th>
               </tr>
@@ -127,7 +127,7 @@ export default function ListarUsuariosInativos() {
                   <td>{usuario.cpf}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.telefone}</td>
-                  <td>{usuario.papel}</td>
+                  <td>{usuario.grupo}</td>
                   <td>{usuario.status_usuario}</td>
                   <td>
                     <div className="botoes-acoes">

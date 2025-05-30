@@ -61,7 +61,7 @@ export default function ListarUsuariosAtivos() {
         (usuario.email || '').toLowerCase().includes(termo) ||
         (usuario.cpf || '').toLowerCase().includes(termo) ||
         (usuario.telefone || '').toLowerCase().includes(termo) ||
-        (usuario.papel || '').toLowerCase().includes(termo) ||
+        (usuario.grupo || '').toLowerCase().includes(termo) ||
         (usuario.status_usuario || '').toLowerCase().includes(termo)
     );
   };
@@ -164,7 +164,7 @@ export default function ListarUsuariosAtivos() {
                 <th>CPF</th>
                 <th>Email</th>
                 <th>Telefone</th>
-                <th>Papel</th>
+                <th>Grupo</th>
                 <th>Status</th>
                 <th>Ações</th>
               </tr>
@@ -176,14 +176,14 @@ export default function ListarUsuariosAtivos() {
                   <td>{usuario.cpf}</td>
                   <td>{usuario.email}</td>
                   <td>{usuario.telefone}</td>
-                  <td>{usuario.papel}</td>
+                  <td>{usuario.grupo}</td>
                   <td>{usuario.status_usuario}</td>
                   <td>
                     <div className="botoes-acoes">
                       <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
                         <i className="bi bi-eye-fill icone-olho"></i>
                       </Link>
-                      <Link to={`/usuarios/editar/${usuario.papel?.toLowerCase()}/${usuario.papel_detalhes?.id || usuario.id}`} title="Editar">
+                      <Link to={`/usuarios/editar/${usuario.grupo?.toLowerCase()}/${usuario.grupo_detalhes?.id || usuario.id}`} title="Editar">
                         <i className="bi bi-pencil-square icone-editar"></i>
                       </Link>
                       <button

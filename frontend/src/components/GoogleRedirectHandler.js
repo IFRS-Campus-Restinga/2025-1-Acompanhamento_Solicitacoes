@@ -30,7 +30,7 @@ const GoogleRedirectHandler = () => {
           console.log("GoogleRedirectHandler: Testando regex para email:", email); 
           if (ifrsEmailRegex.test(email)) {
             console.log("GoogleRedirectHandler: E-mail IFRS detectado. Redirecionando para /grupos..."); 
-            navigate('/usuarios/selecionarpapel');
+            navigate('/usuarios/selecionargrupo');
           } else {
             console.log("GoogleRedirectHandler: E-mail não IFRS. Redirecionando para /usuarios..."); 
             navigate('/usuarios/cadastro');

@@ -13,19 +13,19 @@ const initialFormState = {
 };
 
 // Mapeamento de papéis para endpoints atômicos
-const PAPEL_ENDPOINTS = {
+const GRUPO_ENDPOINTS = {
   aluno: "alunos/",
   coordenador: "coordenadores/",
   cre: "cres/"
 };
 
 // Mapeamento de campos para validação
-const getValidationUrl = (fieldName, papel) => {
+const getValidationUrl = (fieldName, grupo) => {
   switch (fieldName) {
     case "matricula": case "ppc": case "ano_ingresso": 
       return "alunos/";
     case "siape":
-      return papel === "cre" ? "cres/" : "coordenadores/";
+      return grupo === "cre" ? "cres/" : "coordenadores/";
     case "inicio_mandato": case "fim_mandato":
       return "mandatos/";
     default: 
@@ -33,7 +33,7 @@ const getValidationUrl = (fieldName, papel) => {
   }
 };
 
-export default function CadastrarAtualizarUsuarioPapel() {
+export default function CadastrarAtualizarUsuarioGrupo() {
   const [formData, setFormData] = useState(initialFormState);
   const [cursosComPpcs, setCursosComPpcs] = useState([]);
   const [ppcsDoCurso, setPpcsDoCurso] = useState([]);
@@ -43,13 +43,13 @@ export default function CadastrarAtualizarUsuarioPapel() {
   const [feedbackType, setFeedbackType] = useState("sucesso");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { pathname } = useLocation();
-  const { id, papel } = useParams();
+  const { id, grupo } = useParams();
   const navigate = useNavigate();
   const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
 
   const isEditing = !!id;
-  const title = isEditing ? `Editar ${papel.charAt(0).toUpperCase() + papel.slice(1)}` : `Cadastrar Novo ${papel.charAt(0).toUpperCase() + papel.slice(1)}`;
+  const title = isEditing ? `Editar ${grupo.charAt(0).toUpperCase() + grupo.slice(1)}` : `Cadastrar Novo ${grupo.charAt(0).toUpperCase() + grupo.slice(1)}`;
   const submitButtonText = isEditing ? "Atualizar" : "Cadastrar";
 
   useEffect(() => {
@@ -66,28 +66,28 @@ export default function CadastrarAtualizarUsuarioPapel() {
       }
     }
 
-    if (papel === "aluno" || papel === "coordenador") {
+    if (grupo === "aluno" || grupo === "coordenador") {
       loadCursosComPpcs();
     }
     
     // Carregar dados de edição para CRE imediatamente, pois não depende de cursos
-    if (id && papel === "cre") {
+    if (id && grupo === "cre") {
       loadEntityDataForEdit(id);
     }
-  }, [papel, id]);
+  }, [grupo, id]);
 
   // Efeito separado para carregar dados de edição após cursosComPpcs estar disponível
   useEffect(() => {
-    if (id && (papel === "aluno" || papel === "coordenador") && cursosComPpcs.length > 0 && !dataLoaded) {
+    if (id && (grupo === "aluno" || grupo === "coordenador") && cursosComPpcs.length > 0 && !dataLoaded) {
       loadEntityDataForEdit(id);
       setDataLoaded(true);
     }
-  }, [id, papel, cursosComPpcs, dataLoaded]);
+  }, [id, grupo, cursosComPpcs, dataLoaded]);
 
   async function loadEntityDataForEdit(entityId) {
     if (!entityId) return;
     try {
-      const entityEndpoint = PAPEL_ENDPOINTS[papel];
+      const entityEndpoint = GRUPO_ENDPOINTS[grupo];
       const entityResponse = await api.get(`${entityEndpoint}${entityId}`);
       
       console.log("Resposta da API para edição:", entityResponse.data);
@@ -95,10 +95,10 @@ export default function CadastrarAtualizarUsuarioPapel() {
       // Extrair dados do usuário
       const userData = entityResponse.data.usuario || {};
       
-      // Extrair dados específicos do papel
+      // Extrair dados específicos do grupo
       let entityData = {};
       
-      if (papel === "aluno") {
+      if (grupo === "aluno") {
         entityData = {
           matricula: entityResponse.data.matricula,
           ppc: entityResponse.data.ppc,
@@ -116,7 +116,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
             setPpcsDoCurso(cursoDoAluno.ppcs || []);
           }
         }
-      } else if (papel === "coordenador") {
+      } else if (grupo === "coordenador") {
         entityData = {
           siape: entityResponse.data.siape
         };
@@ -145,7 +145,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
             entityData.fim_mandato = `${ano}-${mes}-${dia}`;
           }
         }
-      } else if (papel === "cre") {
+      } else if (grupo === "cre") {
         entityData = {
           siape: entityResponse.data.siape
         };
@@ -155,9 +155,9 @@ export default function CadastrarAtualizarUsuarioPapel() {
       setFormData({ ...userData, ...entityData });
       
     } catch (error) {
-      console.error(`Erro ao carregar dados para edição de ${papel}:`, error);
+      console.error(`Erro ao carregar dados para edição de ${grupo}:`, error);
       setFeedbackType("erro");
-      setFeedbackMessage(`Erro ao carregar dados para edição de ${papel}.`);
+      setFeedbackMessage(`Erro ao carregar dados para edição de ${grupo}.`);
       setShowFeedback(true);
     }
   }
@@ -178,7 +178,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
   // Valida campo a campo no backend e é chamando no handleBlur
   async function validateField(fieldName, value) {
     setErrors(prev => ({ ...prev, [fieldName]: null }));
-    const url = getValidationUrl(fieldName, papel);
+    const url = getValidationUrl(fieldName, grupo);
     if (!url) return;
     try {
       await api[isEditing ? "patch" : "post"](url, { [fieldName]: value });
@@ -208,7 +208,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
     setIsSubmitting(true);
     setSubmissionSuccessful(false);
     
-    const papelTexto = papel.charAt(0).toUpperCase() + papel.slice(1);
+    const grupoTexto = grupo.charAt(0).toUpperCase() + grupo.slice(1);
     const operacaoTexto = isEditing ? "atualizado" : "criado";
 
     const usuario = {
@@ -226,13 +226,13 @@ export default function CadastrarAtualizarUsuarioPapel() {
 
       if (isEditing) {
         // Lógica para edição
-        const entityEndpoint = PAPEL_ENDPOINTS[papel];
+        const entityEndpoint = GRUPO_ENDPOINTS[grupo];
         
-        // Preparar payload baseado no papel
+        // Preparar payload baseado no grupo
         let payload = {};
 
         
-        if (papel === "aluno") {
+        if (grupo === "aluno") {
           payload = {
             usuario,
             matricula: formData.matricula,
@@ -243,7 +243,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
          
           console.log("Payload formatado para edição de aluno:", payload);
 
-        } else if (papel === "coordenador") {
+        } else if (grupo === "coordenador") {
           // Converter datas de volta para o formato esperado pelo backend (DD-MM-YYYY)
           let inicio_mandato = formData.inicio_mandato;
           let fim_mandato = formData.fim_mandato;
@@ -265,31 +265,31 @@ export default function CadastrarAtualizarUsuarioPapel() {
             inicio_mandato,
             fim_mandato
           };
-        } else if (papel === "cre") {
+        } else if (grupo === "cre") {
           payload = {
             usuario,
             siape: formData.siape
           };
         }
         
-        console.log(`Enviando payload para edição de ${papel}:`, payload);
+        console.log(`Enviando payload para edição de ${grupo}:`, payload);
         response = await api.patch(`${entityEndpoint}${id}/`, payload);
       } 
       else {
         // Lógica para criação usando endpoints atômicos
-        const entityEndpoint = PAPEL_ENDPOINTS[papel];
+        const entityEndpoint = GRUPO_ENDPOINTS[grupo];
         
-        // Preparar payload baseado no papel
+        // Preparar payload baseado no grupo
         let payload = {};
         
-        if (papel === "aluno") {
+        if (grupo === "aluno") {
           payload = {
             usuario,
             matricula: formData.matricula,
             ppc: formData.ppc,
             ano_ingresso: formData.ano_ingresso
           };
-        } else if (papel === "coordenador") {
+        } else if (grupo === "coordenador") {
           // Converter datas para o formato esperado pelo backend (DD-MM-YYYY)
           let inicio_mandato = formData.inicio_mandato;
           let fim_mandato = formData.fim_mandato;
@@ -311,28 +311,28 @@ export default function CadastrarAtualizarUsuarioPapel() {
             inicio_mandato,
             fim_mandato
           };
-        } else if (papel === "cre") {
+        } else if (grupo === "cre") {
           payload = {
             usuario,
             siape: formData.siape
           };
         }
         
-        console.log(`Enviando payload para criação atômica de ${papel}:`, payload);
+        console.log(`Enviando payload para criação atômica de ${grupo}:`, payload);
         response = await api.post(entityEndpoint, payload);
       }
       
       setFeedbackType("sucesso");
-      setFeedbackMessage(`${papelTexto} ${operacaoTexto} com sucesso!`);
+      setFeedbackMessage(`${grupoTexto} ${operacaoTexto} com sucesso!`);
       setShowFeedback(true);
       setFormData(initialFormState);
       setErrors({});
       setSubmissionSuccessful(true);
     } catch (error) {
-      console.error(`Erro ao ${operacaoTexto.toLowerCase()} ${papel}:`, error);
+      console.error(`Erro ao ${operacaoTexto.toLowerCase()} ${grupo}:`, error);
       const errorData = error.response?.data;
       setFeedbackType("erro");
-      setFeedbackMessage(`Erro ao ${operacaoTexto.toLowerCase()} ${papelTexto.toLowerCase()}. ${errorData ? JSON.stringify(errorData) : ""}`);
+      setFeedbackMessage(`Erro ao ${operacaoTexto.toLowerCase()} ${grupoTexto.toLowerCase()}. ${errorData ? JSON.stringify(errorData) : ""}`);
       setShowFeedback(true);
       if (errorData) setErrors(errorData);
       setSubmissionSuccessful(false);
@@ -402,7 +402,7 @@ export default function CadastrarAtualizarUsuarioPapel() {
           {renderField("telefone", "Telefone")}
           {renderField("data_nascimento", "Data de Nascimento", "date")}
 
-          {papel === "aluno" && (
+          {grupo === "aluno" && (
             <>
               {renderField("curso", "Curso", "select", cursosComPpcs)}
               {renderField("ppc", "PPC", "select", ppcsDoCurso)}
@@ -411,11 +411,11 @@ export default function CadastrarAtualizarUsuarioPapel() {
             </>
           )}
 
-          {(papel === "coordenador" || papel === "cre") && (
+          {(grupo === "coordenador" || grupo === "cre") && (
             renderField("siape", "SIAPE", "number")
           )}
 
-          {papel === "coordenador" && (
+          {grupo === "coordenador" && (
             <>
               {renderField("curso", "Curso", "select", cursosComPpcs)}
               {renderField("inicio_mandato", "Início do Mandato", "date")}

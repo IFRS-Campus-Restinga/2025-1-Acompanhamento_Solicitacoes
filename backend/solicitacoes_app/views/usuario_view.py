@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import generics, serializers 
-from ..serializers.usuario_serializer import UsuarioSerializerComPapeis, UsuarioSerializer
+from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
 from django.db.models import Q
 
@@ -14,7 +14,7 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     """
 
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
-    serializer_class = UsuarioSerializerComPapeis
+    serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
 
 class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -24,7 +24,7 @@ class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
 
     queryset = Usuario.objects.filter(is_superuser=False)
-    serializer_class = UsuarioSerializerComPapeis
+    serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
 
     def update(self, request, *args, **kwargs): #para update de usuarios inativos e reativação
@@ -45,7 +45,7 @@ class UsuariosInativosView(generics.ListAPIView):
     Endpoint para listar usuários inativos.
     """
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
-    serializer_class = UsuarioSerializerComPapeis
+    serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
     
     
@@ -55,7 +55,7 @@ class UsuarioReativarView(generics.GenericAPIView):
     Aceita requisições PATCH para a URL /usuarios/inativos/{id}
     """
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
-    serializer_class = UsuarioSerializerComPapeis
+    serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
     lookup_field = 'pk'
 
@@ -70,7 +70,7 @@ class UsuarioReativarView(generics.GenericAPIView):
         usuario.status_usuario = StatusUsuario.ATIVO
         usuario.save(update_fields=['is_active', 'status_usuario'])
 
-        serializer = UsuarioSerializerComPapeis(usuario)
+        serializer = UsuarioSerializerComGrupos(usuario)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 

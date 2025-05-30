@@ -8,7 +8,7 @@ import datetime
 class AlunoSerializerAntigo(serializers.ModelSerializer):
     ppc = PpcSerializer(read_only=True)
     depth=1
-    usuario = UsuarioSerializerComPapeis(read_only=True)
+    usuario = UsuarioSerializerComGrupos(read_only=True)
     usuario_id = serializers.PrimaryKeyRelatedField(
        source='usuario', queryset=Usuario.objects.all(), write_only=True
     )

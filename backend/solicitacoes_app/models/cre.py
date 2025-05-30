@@ -31,7 +31,7 @@ class CRE(BaseModel):
              # essa checagem pode ser diferente. A lógica em Usuario.delete() prevalecerá.
             raise ValidationError("Não é possível excluir o último CRE ativo do sistema.")
         
-        # Deleção do papel CRE. A lógica de deleção do Usuario está em Usuario.delete().
+        # Deleção do grupo CRE. A lógica de deleção do Usuario está em Usuario.delete().
         super().delete(using=using, keep_parents=keep_parents)
 
     def clean(self):

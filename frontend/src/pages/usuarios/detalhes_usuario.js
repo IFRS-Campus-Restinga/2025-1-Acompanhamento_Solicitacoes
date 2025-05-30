@@ -35,13 +35,13 @@ export default function DetalhesUsuario() {
             <p><strong>CPF:</strong> {usuario.cpf}</p>
             <p><strong>Telefone:</strong> {usuario.telefone}</p>
             <p><strong>Data de Nascimento:</strong> {usuario.data_nascimento}</p>
-            <p><strong>Tipo de Usuário:</strong> {usuario.papel === "Responsavel" ? "Responsável" : usuario.papel}</p>
+            <p><strong>Tipo de Usuário:</strong> {usuario.grupo === "Responsavel" ? "Responsável" : usuario.grupo}</p>
 
-            {usuario.papel === "Coordenador" && (
+            {usuario.grupo === "Coordenador" && (
               <>
-                <p><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</p>
+                <p><strong>SIAPE:</strong> {usuario.grupo_detalhes?.siape}</p>
                 {(() => {
-                  const mandatos = usuario.papel_detalhes?.mandatos_coordenador || [];
+                  const mandatos = usuario.grupo_detalhes?.mandatos_coordenador || [];
                   if (mandatos.length === 0) {
                     return <p><em>Sem mandatos registrados.</em></p>;
                   }
@@ -57,22 +57,22 @@ export default function DetalhesUsuario() {
               </>
             )}
 
-            {usuario.papel === "CRE" && (
-              <p><strong>SIAPE:</strong> {usuario.papel_detalhes?.siape}</p>
+            {usuario.grupo === "CRE" && (
+              <p><strong>SIAPE:</strong> {usuario.grupo_detalhes?.siape}</p>
             )}
 
-            {usuario.papel === "Aluno" && (
+            {usuario.grupo === "Aluno" && (
               <>
-                <p><strong>Matrícula:</strong> {usuario.papel_detalhes?.matricula}</p>
-                <p><strong>Curso:</strong> {usuario.papel_detalhes?.curso}</p>
-                <p><strong>Ano de Ingresso:</strong> {usuario.papel_detalhes?.ano_ingresso}</p>
+                <p><strong>Matrícula:</strong> {usuario.grupo_detalhes?.matricula}</p>
+                <p><strong>Curso:</strong> {usuario.grupo_detalhes?.curso}</p>
+                <p><strong>Ano de Ingresso:</strong> {usuario.grupo_detalhes?.ano_ingresso}</p>
               </>
             )}
 
-            {usuario.papel === "Responsável" && (
+            {usuario.grupo === "Responsável" && (
               <>
-                <p><strong>Responsável de:</strong> {usuario.papel_detalhes?.aluno || "Nenhum aluno"}</p>
-                <p><strong>E-mail do aluno:</strong> {usuario.papel_detalhes?.email_aluno || "Não cadastrado"}</p>
+                <p><strong>Responsável de:</strong> {usuario.grupo_detalhes?.aluno || "Nenhum aluno"}</p>
+                <p><strong>E-mail do aluno:</strong> {usuario.grupo_detalhes?.email_aluno || "Não cadastrado"}</p>
               </>
             )}
 

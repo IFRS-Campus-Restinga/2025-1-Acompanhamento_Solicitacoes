@@ -108,9 +108,9 @@ export default function FormularioAbonoFaltas() {
       const response = await axios.get(`http://localhost:8000/solicitacoes/usuarios-email/?email=${email}`);
       if (response.data?.length > 0) {
         const usuario = response.data[0];
-        if (usuario.papel === "Aluno" && usuario.papel_detalhes?.matricula) {
-          setFormData(prev => ({ ...prev, matricula: usuario.papel_detalhes.matricula }));
-          buscarInfoAluno(email, usuario.papel_detalhes.matricula);
+        if (usuario.grupo === "Aluno" && usuario.grupo_detalhes?.matricula) {
+          setFormData(prev => ({ ...prev, matricula: usuario.grupo_detalhes.matricula }));
+          buscarInfoAluno(email, usuario.grupo_detalhes.matricula);
           setIsLoadingUsuario(false);
           return;
         }

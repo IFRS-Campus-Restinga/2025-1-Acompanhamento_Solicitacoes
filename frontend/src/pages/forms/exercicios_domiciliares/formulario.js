@@ -107,13 +107,13 @@ const FormularioExercicioDomiciliar = () => {
       if (response.data?.length > 0) {
         const usuario = response.data[0];
         
-        // Se o usuário tem matrícula nos papel_detalhes, usa essa matrícula
-        if (usuario.papel === "Aluno" && usuario.papel_detalhes?.matricula) {
-          setValue("matricula", usuario.papel_detalhes.matricula);
+        // Se o usuário tem matrícula nos grupo_detalhes, usa essa matrícula
+        if (usuario.grupo === "Aluno" && usuario.grupo_detalhes?.matricula) {
+          setValue("matricula", usuario.grupo_detalhes.matricula);
           clearErrors("matricula");
           
           // Busca informações adicionais do aluno
-          buscarInfoAluno(email, usuario.papel_detalhes.matricula);
+          buscarInfoAluno(email, usuario.grupo_detalhes.matricula);
           return;
         }
       }

@@ -25,7 +25,7 @@ class Coordenador(BaseModel):
                 self.usuario.save()
 
     def delete(self, using=None, keep_parents=False):
-        # Deleção do papel Coordenador. A lógica de deleção do Usuario está em Usuario.delete().
+        # Deleção do grupo Coordenador. A lógica de deleção do Usuario está em Usuario.delete().
         super().delete(using=using, keep_parents=keep_parents)
     
     class Meta:

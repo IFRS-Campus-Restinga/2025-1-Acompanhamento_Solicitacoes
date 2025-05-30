@@ -59,18 +59,18 @@ class UsuarioSerializer(serializers.ModelSerializer):
     
 
 
-class UsuarioSerializerComPapeis(serializers.ModelSerializer):
-    papel = serializers.SerializerMethodField()
-    papel_detalhes = serializers.SerializerMethodField()
+class UsuarioSerializerComGrupos(serializers.ModelSerializer):
+    grupo = serializers.SerializerMethodField()
+    grupo_detalhes = serializers.SerializerMethodField()
 
     class Meta:
         model = Usuario
         fields = [
             'id', 'nome', 'email', 'cpf', 'telefone', 'data_nascimento',
-            'is_active', 'status_usuario', 'papel', 'papel_detalhes'
+            'is_active', 'status_usuario', 'grupo', 'grupo_detalhes'
         ]
     
-    def get_papel(self, obj):
+    def get_grupo(self, obj):
         if hasattr(obj, 'coordenador'):
             return "Coordenador"
         if hasattr(obj, 'aluno'):
@@ -81,7 +81,7 @@ class UsuarioSerializerComPapeis(serializers.ModelSerializer):
             return "Responsável"
         return "Externo"
     
-    def get_papel_detalhes(self, obj):
+    def get_grupo_detalhes(self, obj):
         if hasattr(obj, 'coordenador'):
             coordenador = obj.coordenador
             return {

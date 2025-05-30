@@ -72,8 +72,8 @@ const USER_DETAIL_ENDPOINT = '/solicitacoes/usuarios/'; // Endpoint confirmado p
         (user.first_name && user.first_name.toLowerCase().includes(termoLowerCase)) ||
         (user.last_name && user.last_name.toLowerCase().includes(termoLowerCase)) ||
         (user.email && user.email.toLowerCase().includes(termoLowerCase))
-        // Adicione a busca pelo 'papel' se o serializer o retornar diretamente
-        // (user.papel && user.papel.toLowerCase().includes(termoLowerCase))
+        // Adicione a busca pelo 'grupo' se o serializer o retornar diretamente
+        // (user.grupo && user.grupo.toLowerCase().includes(termoLowerCase))
       );
       setUsuariosFiltrados(filtrados);
     } else {
@@ -81,9 +81,9 @@ const USER_DETAIL_ENDPOINT = '/solicitacoes/usuarios/'; // Endpoint confirmado p
     }
   }, [filtro, usuarios]);
 
-  // Função para obter o papel do usuário (ajuste conforme a estrutura do seu UserSerializer)
-  const getPapelUsuario = (user) => {
-    // Exemplo: Adapte esta lógica baseada em como o 'papel' é representado no seu UserSerializer
+  // Função para obter o grupo do usuário (ajuste conforme a estrutura do seu UserSerializer)
+  const getGrupoUsuario = (user) => {
+    // Exemplo: Adapte esta lógica baseada em como o 'grupo' é representado no seu UserSerializer
     if (user.is_superuser) return 'Admin';
     if (user.groups && user.groups.includes('CRE')) return 'CRE'; // Supondo que 'groups' seja uma lista de nomes
     if (user.groups && user.groups.includes('Coordenador')) return 'Coordenador';
@@ -122,7 +122,7 @@ const USER_DETAIL_ENDPOINT = '/solicitacoes/usuarios/'; // Endpoint confirmado p
                   <li key={user.id} className="user-list-item">
                     <span className="user-name">{user.first_name || ''} {user.last_name || ''}</span>
                     <span className="user-email">{user.email}</span>
-                    <span className="user-role">{getPapelUsuario(user)}</span> 
+                    <span className="user-role">{getGrupoUsuario(user)}</span> 
                   </li>
                 ))}
               </ul>

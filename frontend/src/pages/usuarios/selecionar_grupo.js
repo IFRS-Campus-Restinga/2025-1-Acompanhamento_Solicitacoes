@@ -4,19 +4,19 @@ import Header from "../../components/base/headers/header";
 
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
-export default function SelecionarPapelUsuario() {
+export default function SelecionarGrupoUsuario() {
     const navigate = useNavigate();
 
-    const handleSelect = (papel) => {
-        navigate(`/usuarios/cadastro/${papel}`);
+    const handleSelect = (grupo) => {
+        navigate(`/usuarios/cadastro/${grupo}`);
     };
 
     return (
         <div>
         <Header />
-        <main className="container escolha-papel">
+        <main className="container escolha-grupo">
             <h2>Selecione o tipo de usuário para realizar cadastro:</h2>
-            <div className="botoes-papeis">
+            <div className="botoes-grupos">
                     <button onClick={() => handleSelect("aluno")} className="btn-discreto">
                         Aluno
                     </button>
