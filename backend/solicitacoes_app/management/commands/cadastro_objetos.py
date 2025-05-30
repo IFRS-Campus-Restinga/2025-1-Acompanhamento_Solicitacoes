@@ -261,7 +261,7 @@ class Command(BaseCommand):
             Nome.objects.get_or_create(nome=nome)
 
         # Grupos
-        for nome in ["Usuários", "CRE", "Coordenador", "Aluno"]:
+        for nome in ["Externo", "CRE", "Coordenador", "Aluno", "Responsável"]:
             Group.objects.get_or_create(name=nome)
 
         # Usuário Coordenador
