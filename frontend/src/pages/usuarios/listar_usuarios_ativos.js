@@ -5,7 +5,7 @@ import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 
 // POPUPS
-import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao"; 
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 // PAGINAÇÃO
@@ -18,20 +18,21 @@ import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 //BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
-// Renomeie este componente para ListarUsuariosAtivos ou similar
 export default function ListarUsuariosAtivos() { 
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null);
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null); 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
+  const [tipoAcao, setTipoAcao] = useState(""); // Para diferenciar entre exclusão e aprovação
   const navigate = useNavigate();
   const itensPorPagina = 10;
 
   // Função para buscar usuários ativos
+  // Função para buscar usuários
   const fetchUsuariosAtivos = () => {
     api.get("/usuarios/") 
       .then((res) => {
@@ -39,9 +40,9 @@ export default function ListarUsuariosAtivos() {
         setPaginaAtual(1);
       })
       .catch((err) => {
-        console.error("Erro ao carregar usuários ativos:", err);
+        console.error("Erro ao carregar usuários:", err);
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários ativos."}`
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários."}`
         );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
@@ -72,15 +73,14 @@ export default function ListarUsuariosAtivos() {
     paginaAtual * itensPorPagina
   );
 
-  // Função para confirmar exclusão (lógica ou física, tratada no backend)
+  // Função para confirmar exclusão
   const confirmarExclusao = () => {
     if (!usuarioSelecionado) return;
 
     api.delete(`/usuarios/${usuarioSelecionado}/`)
       .then(() => {
-        setMensagemPopup("Ação de exclusão realizada com sucesso."); 
+        setMensagemPopup("Usuário excluído com sucesso."); 
         setTipoMensagem("sucesso");
-        // Atualiza a lista removendo o usuário (seja exclusão física ou lógica)
         setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioSelecionado));
       })
       .catch((err) => {
@@ -94,24 +94,56 @@ export default function ListarUsuariosAtivos() {
         setMostrarPopup(false);
         setMostrarFeedback(true);
         setUsuarioSelecionado(null);
+        setTipoAcao("");
       });
+  };
+
+  // Função para aprovar cadastro de usuário
+  const confirmarAprovacao = () => {
+    if (!usuarioSelecionado) return;
+    api.patch(`/usuarios/${usuarioSelecionado}/`) 
+      .then(() => {
+        setMensagemPopup("Cadastro aprovado com sucesso!"); 
+        setTipoMensagem("sucesso");
+        setUsuarios(prevUsuarios => prevUsuarios.map((u) => {
+          if (u.id === usuarioSelecionado) {
+            return { ...u, status_usuario: "Ativo" }; // Atualiza para 'Ativo'
+          }
+          return u;
+        }));
+      })
+      .catch((err) => {
+        console.error("Erro ao aprovar cadastro:", err);
+        setMensagemPopup(
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao aprovar cadastro."}`
+        );
+        setTipoMensagem("erro");
+      })
+      .finally(() => {
+        setMostrarPopup(false);
+        setMostrarFeedback(true);
+        setUsuarioSelecionado(null);
+        setTipoAcao("");
+      });
+  };
+
+  // Função para lidar com a confirmação baseada no tipo de ação
+  const handleConfirmacao = () => {
+    if (tipoAcao === "excluir") {
+      confirmarExclusao();
+    } else if (tipoAcao === "aprovar") {
+      confirmarAprovacao();
+    }
   };
 
   return (
     <div>
       <HeaderCRE />
       <main className="container">
-        <h2>Usuários Ativos</h2>
+        <h2>Usuários</h2>
 
         <div className="botoes-wrapper">
           <BotaoCadastrar to="/usuarios/cadastro" title="Criar Novo Usuário" />
-          <div className="botao-inativos-wrapper">
-            <button
-              onClick={() => navigate("/usuarios/inativos")} // Navega para a nova rota
-              className="submit-button">
-              Mostrar Usuários Inativos
-            </button>
-          </div>
         </div>
 
         <BarraPesquisa
@@ -123,7 +155,7 @@ export default function ListarUsuariosAtivos() {
         />
 
         {usuariosFiltrados.length === 0 ? (
-          <p><br />Nenhum usuário ativo encontrado!</p>
+          <p><br />Nenhum usuário encontrado!</p>
         ) : (
           <table className="tabela-cruds">
             <thead>
@@ -157,6 +189,7 @@ export default function ListarUsuariosAtivos() {
                       <button
                         onClick={() => {
                           setUsuarioSelecionado(usuario.id);
+                          setTipoAcao("excluir");
                           setMostrarPopup(true);
                         }}
                         title="Excluir"
@@ -164,6 +197,19 @@ export default function ListarUsuariosAtivos() {
                       >
                         <i className="bi bi-trash3-fill icone-excluir"></i>
                       </button>
+                      {usuario.status_usuario === "Em Analise" && (
+                        <button
+                          onClick={() => {
+                            setUsuarioSelecionado(usuario.id);
+                            setTipoAcao("aprovar");
+                            setMostrarPopup(true); 
+                          }}
+                          title="Aprovar Cadastro"
+                          className="icone-botao"
+                        >
+                          <i className="bi bi-check-circle-fill icone-aprovar"></i>
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -182,9 +228,16 @@ export default function ListarUsuariosAtivos() {
 
         <PopupConfirmacao
           show={mostrarPopup}
-          mensagem="Tem certeza que deseja excluir este usuário?"
-          onConfirm={confirmarExclusao}
-          onCancel={() => setMostrarPopup(false)}
+          // Define a mensagem com base no tipo de ação
+          mensagem={tipoAcao === "excluir" 
+            ? "Tem certeza que deseja excluir este usuário?" 
+            : "Tem certeza que deseja aprovar este cadastro?"}
+          onConfirm={handleConfirmacao} // Chama a função que decide qual ação executar
+          onCancel={() => {
+            setMostrarPopup(false);
+            setUsuarioSelecionado(null);
+            setTipoAcao("");
+          }}
         />
 
         <PopupFeedback

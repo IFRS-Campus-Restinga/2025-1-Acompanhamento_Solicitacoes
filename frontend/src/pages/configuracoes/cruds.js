@@ -22,7 +22,10 @@ const Cruds = () => {
         <h2>CRUDs Disponíveis</h2>
         <div className="grid-cruds">
           <Link className="crud-link" to="/usuarios">
-            <i className="bi bi-person-circle"></i> Usuários
+            <i className="bi bi-person-circle"></i> Usuários Ativos
+          </Link>
+          <Link className="crud-link" to="/usuarios/inativos">
+            <i className="bi bi-person-circle"></i> Usuários Inativos
           </Link>
           <Link className="crud-link" to="/usuarios/selecionarpapel">
             <i className="bi bi-person-circle"></i> Cadastro Aluno/CRE/Coordenador
