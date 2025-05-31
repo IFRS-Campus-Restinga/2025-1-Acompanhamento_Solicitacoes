@@ -240,19 +240,19 @@ class Command(BaseCommand):
         )
         
         Group.objects.get_or_create(
-            name="Externo"
+            name="externo"
         )
         Group.objects.get_or_create(
-            name="CRE"
+            name="cre"
         )
         Group.objects.get_or_create(
-            name="Coordenador"
+            name="coordenador"
         )
         Group.objects.get_or_create(
-            name="Aluno"
+            name="aluno"
         )
         Group.objects.get_or_create(
-            name="Responsável"
+            name="responsavel"
         )
         
 
@@ -261,7 +261,7 @@ class Command(BaseCommand):
             Nome.objects.get_or_create(nome=nome)
 
         # Grupos
-        for nome in ["Externo", "CRE", "Coordenador", "Aluno", "Responsável"]:
+        for nome in ["externo", "cre", "coordenador", "aluno", "responsavel"]:
             Group.objects.get_or_create(name=nome)
 
         # Usuário Coordenador
