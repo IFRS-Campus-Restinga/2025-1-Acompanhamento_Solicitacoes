@@ -21,7 +21,7 @@ import BarraPesquisa from "../../components/UI/barra_pesquisa";
 export default function ListarUsuariosAtivos() { 
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null); 
+  const [usuarioId, setUsuarioId] = useState(null); 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
@@ -31,7 +31,7 @@ export default function ListarUsuariosAtivos() {
   const navigate = useNavigate();
   const itensPorPagina = 10;
 
-  // Função para buscar usuários ativos
+
   // Função para buscar usuários
   const fetchUsuariosAtivos = () => {
     api.get("/usuarios/") 
@@ -75,13 +75,13 @@ export default function ListarUsuariosAtivos() {
 
   // Função para confirmar exclusão
   const confirmarExclusao = () => {
-    if (!usuarioSelecionado) return;
+    if (!usuarioId) return;
 
-    api.delete(`/usuarios/${usuarioSelecionado}/`)
+    api.delete(`/usuarios/${usuarioId}/`)
       .then(() => {
         setMensagemPopup("Usuário excluído com sucesso."); 
         setTipoMensagem("sucesso");
-        setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioSelecionado));
+        setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioId));
       })
       .catch((err) => {
         console.error("Erro ao excluir usuário:", err);
@@ -93,24 +93,19 @@ export default function ListarUsuariosAtivos() {
       .finally(() => {
         setMostrarPopup(false);
         setMostrarFeedback(true);
-        setUsuarioSelecionado(null);
+        setUsuarioId(null);
         setTipoAcao("");
       });
   };
 
   // Função para aprovar cadastro de usuário
   const confirmarAprovacao = () => {
-    if (!usuarioSelecionado) return;
-    api.patch(`/usuarios/${usuarioSelecionado}/`) 
+    if (!usuarioId) return;
+    api.patch(`/usuarios/aprovar/${usuarioId}/`) 
       .then(() => {
         setMensagemPopup("Cadastro aprovado com sucesso!"); 
         setTipoMensagem("sucesso");
-        setUsuarios(prevUsuarios => prevUsuarios.map((u) => {
-          if (u.id === usuarioSelecionado) {
-            return { ...u, status_usuario: "Ativo" }; // Atualiza para 'Ativo'
-          }
-          return u;
-        }));
+        fetchUsuariosAtivos(); 
       })
       .catch((err) => {
         console.error("Erro ao aprovar cadastro:", err);
@@ -122,7 +117,7 @@ export default function ListarUsuariosAtivos() {
       .finally(() => {
         setMostrarPopup(false);
         setMostrarFeedback(true);
-        setUsuarioSelecionado(null);
+        setUsuarioId(null);
         setTipoAcao("");
       });
   };
@@ -188,7 +183,7 @@ export default function ListarUsuariosAtivos() {
                       </Link>
                       <button
                         onClick={() => {
-                          setUsuarioSelecionado(usuario.id);
+                          setUsuarioId(usuario.id);
                           setTipoAcao("excluir");
                           setMostrarPopup(true);
                         }}
@@ -197,10 +192,12 @@ export default function ListarUsuariosAtivos() {
                       >
                         <i className="bi bi-trash3-fill icone-excluir"></i>
                       </button>
+                
                       {usuario.status_usuario === "Em Analise" && (
+                        //botao aprovar cadastro
                         <button
                           onClick={() => {
-                            setUsuarioSelecionado(usuario.id);
+                            setUsuarioId(usuario.id)
                             setTipoAcao("aprovar");
                             setMostrarPopup(true); 
                           }}
@@ -235,7 +232,7 @@ export default function ListarUsuariosAtivos() {
           onConfirm={handleConfirmacao} // Chama a função que decide qual ação executar
           onCancel={() => {
             setMostrarPopup(false);
-            setUsuarioSelecionado(null);
+            setUsuarioId(null);
             setTipoAcao("");
           }}
         />

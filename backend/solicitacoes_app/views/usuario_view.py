@@ -73,6 +73,31 @@ class UsuarioReativarView(generics.GenericAPIView):
         serializer = UsuarioSerializerComGrupos(usuario)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+    
+class UsuarioAprovarCadastroView(generics.GenericAPIView):
+    """
+    Endpoint para aprovar o cadastro de Usuários com status_usuario em aprovação
+    Aceita requisições PATCH para a URL /usuarios/{id}
+    """
+    queryset = Usuario.objects.ativos().filter(is_superuser=False)
+    serializer_class = UsuarioSerializerComGrupos
+    permission_classes = [AllowAny]
+    lookup_field = 'pk'
+
+    def patch(self, request, *args, **kwargs):
+        try:
+            usuario = self.get_object()
+        except Usuario.DoesNotExist:
+            return Response({"detail": "Usuário não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Aprova o cadastro do usuario
+        usuario.is_active = True
+        usuario.status_usuario = StatusUsuario.NOVO
+        usuario.save(update_fields=['is_active', 'status_usuario'])
+
+        serializer = UsuarioSerializerComGrupos(usuario)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 
 
 class AlunoEmailListView(generics.ListAPIView):

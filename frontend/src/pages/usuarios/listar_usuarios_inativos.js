@@ -77,7 +77,6 @@ export default function ListarUsuariosInativos() {
         setTipoMensagem("sucesso");
         // Remove o usuário da lista de inativos no frontend
         setUsuarios(prevUsuarios => prevUsuarios.filter(u => u.id !== usuarioId));
-        // Opcional: Atualizar a contagem total ou forçar recarregamento se necessário
       })
       .catch((err) => {
         console.error("Erro ao reativar usuário:", err);
