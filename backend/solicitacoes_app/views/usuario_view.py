@@ -5,7 +5,7 @@ from rest_framework import generics, serializers
 from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
 from django.db.models import Q
-
+from django.contrib.auth.models import Group
 
 class UsuarioListCreateView(generics.ListCreateAPIView):
 
@@ -95,9 +95,37 @@ class UsuarioAprovarCadastroView(generics.GenericAPIView):
         usuario.status_usuario = StatusUsuario.NOVO
         usuario.save(update_fields=['is_active', 'status_usuario'])
 
+        
+        #Identifica o grupo e adiciona o usuário a ele
+        nome_grupo = None
+        if hasattr(usuario, "coordenador"):
+            nome_grupo = "coordenador"
+        elif hasattr(usuario, "cre"):
+            nome_grupo = "cre"
+        elif hasattr(usuario, "responsavel"):
+            nome_grupo = "responsavel"
+
+        if nome_grupo:
+            try:
+                grupo = Group.objects.get(name=nome_grupo)
+                usuario.groups.add(grupo)
+                print(f"Usuário {usuario.email} adicionado ao grupo '{nome_grupo}'.")
+            except Group.DoesNotExist:
+                print(f"ERRO: Grupo '{nome_grupo}' não encontrado.")
+            except Exception as e:
+                print(f"Erro ao adicionar usuário {usuario.email} ao grupo '{nome_grupo}': {e}")
+        else:
+             print(f"AVISO: Usuário {usuario.email} aprovado (status NOVO), mas nenhum grupo encontrado para associação.")
+
+        # Logar a aprovação
+        # LogEntry.log_action(request.user, usuario, "APPROVE", f"Cadastro de {nome_grupo or 'usuário'} aprovado (status NOVO).")
+ 
         serializer = UsuarioSerializerComGrupos(usuario)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    
+        response_data = {
+            "detail": "Cadastro aprovado com sucesso. Usuário agora tem status NOVO e foi adicionado ao grupo correspondente.",
+            "usuario": serializer.data
+        }
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 class AlunoEmailListView(generics.ListAPIView):

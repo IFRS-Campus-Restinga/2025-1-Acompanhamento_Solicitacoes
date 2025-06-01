@@ -4,6 +4,7 @@ from .usuario import Usuario
 import datetime
 from django.core.validators import MinValueValidator, MaxValueValidator
 from .ppc import *
+from django.contrib.auth.models import Group
 
 class Aluno(BaseModel):
     usuario = models.OneToOneField(
@@ -29,7 +30,19 @@ class Aluno(BaseModel):
         super().delete(using=using, keep_parents=keep_parents)
     
     def save(self, *args, **kwargs):
+        is_new = self._state.adding
         super().save(*args, **kwargs)
+
+        if is_new:
+            try:
+                # Adiciona ao grupo 'aluno' na criação
+                grupo = Group.objects.get(name="aluno")
+                self.usuario.groups.add(grupo)
+                print(f"Usuário {self.usuario.email} adicionado ao grupo 'aluno'.")
+            except Group.DoesNotExist:
+                print("ERRO: Grupo 'aluno' não encontrado.")
+            except Exception as e:
+                print(f"Erro ao adicionar usuário {self.usuario.email} ao grupo 'aluno': {e}")
 
     
     
