@@ -16,6 +16,44 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
+    
+    
+    def perform_create(self, serializer):
+        
+        """
+        Sobrescreve perform_create para adicionar o usuario ao grupo externo pós-criação
+        """
+     
+        # serializer.save() chama o Usuario.save() e salva instância do usuário
+        usuario_instance = serializer.save()
+
+        # verifica se algum papel específico foi associado
+        usuario_instance.refresh_from_db()
+        has_group = False
+
+        if hasattr(usuario_instance, 'aluno') and usuario_instance.aluno is not None:
+            has_group = True
+        elif hasattr(usuario_instance, 'coordenador') and usuario_instance.coordenador is not None:
+            has_group = True
+        elif hasattr(usuario_instance, 'cre') and usuario_instance.cre is not None:
+            has_group = True
+        elif hasattr(usuario_instance, 'responsavel') and usuario_instance.responsavel is not None:
+            has_group = True
+       
+        if not has_group:
+            try:
+                grupo_externo = Group.objects.get(name='externo')
+                usuario_instance.groups.add(grupo_externo)
+                print(f"Usuário {usuario_instance.email} adicionado ao grupo 'externo'.")
+            except Group.DoesNotExist:
+                print("ERRO CRÍTICO: Grupo 'externo' não encontrado no banco de dados. Não foi possível associar o usuário.")
+            except Exception as e:
+                print(f"Erro inesperado ao adicionar usuário {usuario_instance.email} ao grupo 'externo': {e}")
+        
+    
+    
+    
+    
 
 class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
