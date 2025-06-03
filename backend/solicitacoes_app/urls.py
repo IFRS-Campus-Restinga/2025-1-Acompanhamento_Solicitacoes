@@ -76,7 +76,9 @@ urlpatterns = [
         'delete': 'destroy'
     }), name='exercicios-domiciliares-detail'),
 #
-
+    path('form_exercicio_domiciliar/aluno/<int:id>/', FormExercicioDomiciliarViewSet.as_view({
+        'get': 'list'
+    }), name='exercicio_domiciliar_aluno'),
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
 
@@ -117,6 +119,7 @@ urlpatterns = [
     
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
+    path('usuarios/<str:email>/', UsuarioListCreateView.as_view(), name='usuario-email'),
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
     path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
     path('usuarios/aprovar/<int:pk>/', UsuarioAprovarCadastroView.as_view(), name='usuario-aprovar'),

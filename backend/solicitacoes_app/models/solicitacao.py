@@ -43,7 +43,8 @@ class Solicitacao(BaseModel):
     
     data_solicitacao = models.DateField(
         help_text="Escreva aqui a data da solicitação",
-        verbose_name="Data da Solicitação:"
+        verbose_name="Data da Solicitação:",
+        default=date.today()
     )
 
     data_emissao = models.DateField(

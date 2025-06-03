@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -16,6 +17,15 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
+
+    def get_queryset(self):
+        """
+        Endpoint para listar usuários com email fornecido
+        """
+        try:
+            return Usuario.objects.ativos().filter(email__exact=self.kwargs["email"])
+        except KeyError:
+            return Usuario.objects.ativos().filter(is_superuser=False)
 
 class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 

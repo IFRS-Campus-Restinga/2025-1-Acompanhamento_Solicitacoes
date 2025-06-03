@@ -11,24 +11,6 @@ class FormDispEdFisicaViewListCreate(ListCreateAPIView):
     serializer_class = FormDispEdFisicaSerializer
     permissions_classes = [AllowAny]
 
-    def perform_create(self, serializer):
-        print("🔥 request.data no backend:", self.request.data)
-        aluno_id = self.request.data.get("aluno")
-
-        if not aluno_id:
-            raise ValueError(
-                "Campo 'aluno_id' é obrigatório para criar a solicitação.")
-
-        form = serializer.save()
-
-        Solicitacao.objects.create(
-            aluno_id=aluno_id,
-            content_type=ContentType.objects.get_for_model(
-                FormDispensaEdFisica),
-            object_id=form.id,
-            data_solicitacao=datetime.now()
-        )
-
 
 class FormDispEdFisicaViewUpdateDelete(RetrieveDestroyAPIView):
     queryset = FormDispensaEdFisica.objects.all()

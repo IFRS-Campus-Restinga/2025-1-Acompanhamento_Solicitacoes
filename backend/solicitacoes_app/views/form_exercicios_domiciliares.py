@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.exceptions import status
 
 from ..models import FormExercicioDomiciliar, Disciplina, Usuario,  PeriodoDisciplina, Curso, Ppc
 
@@ -110,3 +111,11 @@ class FormExercicioDomiciliarViewSet(viewsets.ModelViewSet):
     def create(self, request, *args, **kwargs):
         # Sua implementação personalizada de create aqui
         pass
+
+    def get_queryset(self):
+        try:
+            return FormExercicioDomiciliar.objects.get(aluno=self.kwargs['id'])
+        except KeyError:
+            return FormExercicioDomiciliar.objects.all()
+        except FormExercicioDomiciliar.DoesNotExist:
+            return ({"message":"Não existe formulário vinculado ao aluno"})

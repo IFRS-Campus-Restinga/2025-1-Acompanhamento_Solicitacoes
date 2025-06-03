@@ -34,28 +34,18 @@ export default function GerenciarExercDomicilares() {
     // Busca aluno apenas quando userData.email estiver definido
     useEffect(() => {
         const buscarAluno = async () => {
-            let id = 1;
-            while (true) {
                 try {
-                    const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${id}/`);
-                    if (res.data.email === userData.email) {
-                        setAluno(res.data);
-                        break;
-                    }
+                    const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
+                        setAluno(res.data[0]);
+                        console.log("Dados obtidos: ", res.data);
                 } catch (err) {
-                    if (err.response?.data?.detail === "No Usuario matches the given query.") {
+                    
                         setAlunoNaoEncontrado(true);
-                        break;
-                    } else {
                         setMsgErro(err.message || "Erro desconhecido");
                         setTipoErro("erro");
                         setFeedbackIsOpen(true);
-                        break;
                     }
-                }
-                id += 1;
-            }
-        };
+                };
 
         if (userData?.email && !buscouAlunoRef.current) {
             buscouAlunoRef.current = true;
@@ -75,15 +65,38 @@ export default function GerenciarExercDomicilares() {
 
     // Exibe dados do aluno
     if (userData && aluno) {
+
         return (
             <div className="page-container">
                 <HeaderAluno onLogout={() => setUserData(null)} />
-                <h2>Dados da solicitação</h2>
-                <main className="container">
-                    <label>Nome do aluno: {userData.name}</label>
-                    <label>Email: {userData.email}</label>
-                    <label>CPF: {aluno.cpf}</label>
-                    <label>Telefone: {aluno.telefone}</label>
+                <main className="container detalhes-container">
+                    <div className="detalhes-header">
+                        <h2>Detalhes da Solicitação</h2>
+                    </div>
+                    <div className="info-grid">
+                        <div className="info-item">
+                            <label>Nome do aluno:</label>
+                            <p>{userData.name}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Email:</label>
+                            <p>{userData.email}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>CPF:</label>
+                            <p>{aluno.cpf}</p>
+                            {console.log(aluno.nome)}
+                        </div>
+                        <div className="info-item">
+                            <label>Telefone:</label>
+                            <p>{aluno.telefone}</p>
+                        </div>
+                        <div className="info-item">
+                            <label></label>
+                            <p></p>
+                        </div>
+                    </div>
+
                     {feedbackIsOpen && (
                         <PopupFeedback
                             mensagem={msgErro}
