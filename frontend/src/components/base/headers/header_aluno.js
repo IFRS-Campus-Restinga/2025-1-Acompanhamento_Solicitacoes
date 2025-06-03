@@ -55,13 +55,11 @@ const HeaderAluno = (//{onLogout}
     <header className="header">
       <div className="header-container">
         <div className="left">
-          <Link to="/aluno/minhas-solicitacoes">
-            <img
-              src="/img/logo-ifrs-branco.png"
-              alt="logotipo do ifrs campus restinga"
-              className="logo"
-            />
-          </Link>
+          {/*<Link to="/aluno/nova-solicitacao">*/}
+
+            <img src="/img/logo-ifrs-branco.png"alt="logotipo do ifrs campus restinga"className="logo"/>
+
+          {/*</Link>*/}
         </div>
 
         <nav className="center">
