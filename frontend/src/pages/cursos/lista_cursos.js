@@ -88,6 +88,7 @@ export default function ListarCursos() {
           <thead>
             <tr>
               <th>Nome</th>
+              <th>Tipo de Período</th>
               <th>PPCs</th>
               <th>Ações</th>
             </tr>
@@ -96,6 +97,7 @@ export default function ListarCursos() {
             {cursosPaginados.map((curso, index) => (
               <tr key={curso.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
                 <td>{curso.nome}</td>
+                <td>{curso.tipo_periodo || 'Semestral'}</td> 
                 <td>{curso.ppcs ? curso.ppcs.join(", ") : ""}</td>
                 <td>
                   <div className="botoes-acoes">

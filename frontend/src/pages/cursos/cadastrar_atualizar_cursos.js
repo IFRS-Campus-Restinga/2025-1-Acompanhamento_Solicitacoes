@@ -14,6 +14,7 @@ export default function CadastrarAtualizarCursos() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+  const [tipoPeriodo, setTipoPeriodo] = useState("Semestral"); 
 
   const navigate = useNavigate();
   const { codigo } = useParams();
@@ -34,6 +35,7 @@ export default function CadastrarAtualizarCursos() {
           setCodigoInput(res.data.codigo);
           setNome(res.data.nome);
           setSelectedPpcs(res.data.ppcs || []);
+          setTipoPeriodo(res.data.tipo_periodo || "Semestral");
         })
         .catch((err) => {
           setMensagem(
@@ -53,6 +55,7 @@ export default function CadastrarAtualizarCursos() {
       codigo: codigoInput,
       nome,
       ppcs: selectedPpcs,
+      tipo_periodo: tipoPeriodo,
     };
 
     const requisicao = codigo
@@ -123,6 +126,19 @@ export default function CadastrarAtualizarCursos() {
               required
             />
           </div>
+
+          <div className="form-group">
+            <label>Tipo de Período:</label>
+            <select
+              className="input-text"
+              value={tipoPeriodo}
+              onChange={(e) => setTipoPeriodo(e.target.value)}
+              required>
+              <option value="Semestral">Semestral</option>
+              <option value="Anual">Anual</option>
+            </select>
+          </div>
+
           <button type="submit" className="submit-button">
             {codigo ? "Atualizar" : "Cadastrar"}
           </button>
