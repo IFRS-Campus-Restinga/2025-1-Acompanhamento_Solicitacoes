@@ -20,16 +20,20 @@ export default function ListarCursos() {
 
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [cursosPaginados, setCursosPaginados] = useState([]);
-
   const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
     axios
       .get("http://localhost:8000/solicitacoes/cursos/")
-      .then((res) => setCursos(res.data))
+      .then((res) => {
+        const cursosOrdenados = res.data.sort((a, b) => a.codigo.localeCompare(b.codigo));
+        setCursos(cursosOrdenados);
+      })
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar cursos."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao carregar cursos."
+          }`
         );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
@@ -46,7 +50,9 @@ export default function ListarCursos() {
       })
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir curso."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao excluir curso."
+          }`
         );
         setTipoMensagem("erro");
       })
@@ -57,11 +63,14 @@ export default function ListarCursos() {
       });
   };
 
-  const cursosFiltrados = useMemo(() => 
-    cursos.filter(curso =>
-      curso.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-      curso.codigo.toLowerCase().includes(filtro.toLowerCase())
-    ),
+  const cursosFiltrados = useMemo(
+    () =>
+      cursos.filter(
+        (curso) =>
+          curso.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+          curso.codigo.toLowerCase().includes(filtro.toLowerCase()) ||
+          (curso.tipo_periodo && curso.tipo_periodo.toLowerCase().includes(filtro.toLowerCase()))
+      ),
     [cursos, filtro]
   );
 
@@ -77,7 +86,7 @@ export default function ListarCursos() {
           <i className="bi bi-search icone-pesquisa"></i>
           <input
             type="text"
-            placeholder="Buscar por nome ou código..."
+            placeholder="Buscar por nome, código ou tipo de período..."
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
             className="input-pesquisa"
@@ -87,6 +96,7 @@ export default function ListarCursos() {
         <table className="tabela-cruds">
           <thead>
             <tr>
+              <th>Código</th>
               <th>Nome</th>
               <th>Tipo de Período</th>
               <th>PPCs</th>
@@ -96,8 +106,9 @@ export default function ListarCursos() {
           <tbody>
             {cursosPaginados.map((curso, index) => (
               <tr key={curso.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                <td>{curso.codigo}</td>
                 <td>{curso.nome}</td>
-                <td>{curso.tipo_periodo || 'Semestral'}</td> 
+                <td>{curso.tipo_periodo || 'Semestral'}</td>
                 <td>{curso.ppcs ? curso.ppcs.join(", ") : ""}</td>
                 <td>
                   <div className="botoes-acoes">
