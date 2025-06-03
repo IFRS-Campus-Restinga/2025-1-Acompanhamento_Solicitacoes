@@ -12,7 +12,6 @@ import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
-import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
 import Paginacao from "../../../components/UI/paginacao";
 
 
@@ -97,12 +96,6 @@ const MinhasSolicitacoesAluno = () => {
             <HeaderAluno />
              <main className="container">
                 <h2>Solicitações</h2>
-
-                <BotaoCadastrar
-                to="/aluno/nova-solicitacao"
-                title="Nova Solicitação"
-                onClick={() => sessionStorage.setItem("voltarDoCadastro", "1")}
-                />
 
                 <div className="barra-pesquisa">
                 <i className="bi bi-search icone-pesquisa"></i>
