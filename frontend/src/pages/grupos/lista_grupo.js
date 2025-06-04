@@ -1,12 +1,12 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 // COMPONENTES BASE
 import Footer from "../../components/base/footer";
 // Ajuste na importação do Header conforme o último arquivo do usuário
-import HeaderCRE from "../../components/base/headers/header_cre"; 
-import "./grupo.css"; 
+import HeaderCRE from "../../components/base/headers/header_cre";
+import "./grupo.css";
 
 // POPUPS
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -17,13 +17,15 @@ import Paginacao from "../../components/UI/paginacao";
 
 // BOTÕES
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoEditar from "../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 // BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
-import VisualizarUsuariosGrupoModal from "./vizualizar_grupos_usuarios.js"; 
 import './lista_grupos_usuarios.css';
+import VisualizarUsuariosGrupoModal from "./vizualizar_grupos_usuarios.js";
 
 export default function ListarGrupos() {
   const navigate = useNavigate();
@@ -152,27 +154,22 @@ export default function ListarGrupos() {
                   <td>
                     <div className="botoes-acoes">
                       {/* *** ALTERADO: Botão de olho agora abre o modal *** */}
-                      <button 
-                        onClick={() => handleAbrirModalUsuarios(grupo)} 
-                        title="Ver usuários do grupo" 
-                        className="icone-botao"
-                      >
-                        <i className="bi bi-eye-fill icone-olho"></i>
-                      </button>
-                      {/* Link de Edição continua apontando para /grupos/:id */}
-                      <Link to={`/grupos/${grupo.id}`} title="Editar" className="icone-botao">
-                        <i className="bi bi-pencil-square icone-editar"></i>
-                      </Link>
-                      <button
-                        onClick={() => {
+
+                        <button 
+                          onClick={() => handleAbrirModalUsuarios(grupo)} 
+                          title="Ver usuários do grupo" 
+                          className="icone-botao">
+                          <i className="bi bi-eye-fill icone-olho"></i>
+                        </button>
+
+                        {/* Link de Edição continua apontando para /grupos/:id */}
+                        <BotaoEditar to={`/grupos/${grupo.id}`} />
+                        
+                        <BotaoExcluir onClick={() => {
                           setGrupoParaExcluir(grupo.id);
                           setMostrarPopupConfirmacao(true);
-                        }}
-                        title="Excluir"
-                        className="icone-botao"
-                      >
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                      </button>
+                        }} />
+
                     </div>
                   </td>
                 </tr>

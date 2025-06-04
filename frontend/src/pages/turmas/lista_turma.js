@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 
@@ -13,6 +13,8 @@ import Paginacao from "../../components/UI/paginacao";
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 //BOTÕES
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoEditar from "../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 export default function ListarTurmas() {
@@ -106,19 +108,14 @@ export default function ListarTurmas() {
                   </td>
                   <td>
                     <div className="botoes-acoes">
-                      <Link to={`/turmas/${turma.id}`} title="Editar">
-                        <i className="bi bi-pencil-square icone-editar"></i>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setTurmaSelecionada(turma.id);
-                          setMostrarPopup(true);
-                        }}
-                        title="Excluir"
-                        className="icone-botao"
-                      >
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                      </button>
+                      
+                      <BotaoEditar to={`/turmas/${turma.id}`} />
+
+                      <BotaoExcluir onClick={() => {
+                        setTurmaSelecionada(turma.id);
+                        setMostrarPopup(true);
+                      }} />
+
                     </div>
                   </td>
                 </tr>
