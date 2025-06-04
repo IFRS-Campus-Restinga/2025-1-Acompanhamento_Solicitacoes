@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 
 //CSS
@@ -12,6 +12,8 @@ import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
+import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import Paginacao from "../../../components/UI/paginacao";
 
 
@@ -85,11 +87,20 @@ const MinhasSolicitacoesAluno = () => {
     [solicitacoes, filtro]
   );
 
-     const formatarData = (dataString) => {
+      const formatarData = (dataString) => {
         if (!dataString) return '--/--/----';
-        const data = new Date(dataString);
-        return data.toLocaleDateString('pt-BR');
-    };
+        
+        try {
+          // Extrai apenas a parte da data (ignora o fuso horário)
+          const [dataPart] = dataString.split('T');
+          const [ano, mes, dia] = dataPart.split('-');
+          
+          return `${dia}/${mes}/${ano}`;
+        } catch (error) {
+          console.error('Erro ao formatar data:', error);
+          return '--/--/----';
+        }
+      };
 
     return (
         <div>
@@ -107,6 +118,14 @@ const MinhasSolicitacoesAluno = () => {
                     className="input-pesquisa"
                 />
                 </div>
+
+                {solicitacoesFiltradas.length === 0 ? (
+                <div className="nenhuma-solicitacao">
+                  <p>Nenhuma solicitação realizada.</p>
+                
+                </div>
+              ) : (
+                <>
 
                 <table className="tabela-cruds tabela-solicitacoes">
                 <thead>
@@ -129,33 +148,32 @@ const MinhasSolicitacoesAluno = () => {
                                 {solicitacao.status}
                             </span>
                         </td>
-                        <td className="coluna-data">{formatarData(solicitacao.data_solicitacao)}</td>
+                        <td className="coluna-data">
+                          {formatarData(solicitacao.data_solicitacao)}
+                        </td>
                         <td>{solicitacao.posse_solicitacao}</td>
                         
                         {/*   to={`/solicitacoes/${solicitacao.id}`}  */}
                         <td>
                             <div className="botoes-acoes">
-                               <Link 
-                                    to={`/aluno/detalhes-solicitacao/${solicitacao.id}`} 
-                                    className="btn-detalhes"
-                                    title="Ver detalhes">
-                                    <i className="bi bi-eye-fill"></i>
-                                </Link>
-                                <button
-                                    onClick={() => {
-                                        setIdSelecionado(solicitacao.id);
-                                        setMostrarPopup(true);
-                                    }}
-                                    title="Excluir"
-                                    className="icone-botao">
-                                    <i className="bi bi-trash3-fill icone-excluir"></i>
-                                </button>
+
+                                <BotaoDetalhar to={`/aluno/detalhes-solicitacao/${solicitacao.id}`} />
+          
+                                <BotaoExcluir onClick={() => {
+                                  setIdSelecionado(solicitacao.id);
+                                  setMostrarPopup(true);
+                                }} />
+                                
                             </div>
                         </td>
                     </tr>
                     ))}
                 </tbody>
                 </table>
+
+                
+              </>
+            )}
 
                 <Paginacao
                 dados={solicitacoesFiltradas}
@@ -164,6 +182,7 @@ const MinhasSolicitacoesAluno = () => {
                 itensPorPagina={5}
                 onDadosPaginados={setSolicitacoesPaginadas}
                 />
+
 
                 <PopupConfirmacao
                 show={mostrarPopup}
