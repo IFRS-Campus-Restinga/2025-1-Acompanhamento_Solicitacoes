@@ -9,6 +9,7 @@ import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 //CSS
 import "../../../components/detalhes_solicitacao.css";
+import "../telas_aluno/stepper.css"
 
 export default function DetalhesSolicitacao() {
     const { id } = useParams();
@@ -17,34 +18,76 @@ export default function DetalhesSolicitacao() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() => {
-    const fetchSolicitacao = async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`);
-            
-            if (!response.data) {
-                throw new Error("Dados da solicitação não encontrados");
-            }
-            
-            setSolicitacao(response.data);
-        } catch (error) {
-            console.error("Erro ao buscar detalhes:", error);
-            setError(error.message || "Não foi possível carregar os detalhes da solicitação.");
-        } finally {
-            setLoading(false);
-        }
-    };
+    function Stepper() {
+        if (solicitacao.status === "Em Análise") {
+            return (
+                <div className="body-stepper">
+                    <ol className="stepper">
+                        <li className="active">
+                            <i className="bi bi-clock"></i>
+                            <span>Em Análise</span>
+                        </li>
+                        <li>
+                            <i className="bi bi-check-circle"></i>
+                            <span>Aprovado</span>
+                        </li>
+                        <li>
+                            <i className="bi bi-flag"></i>
+                            <span>Concluído</span>
+                        </li>
+                    </ol>
+                </div>
 
-    fetchSolicitacao();
+            )
+        } else if (solicitacao.status === "Aprovado") {
+            <div className="body-stepper">
+                    <ol className="stepper">
+                        <li>
+                            <i className="bi bi-clock"></i>
+                            <span>Em Análise</span>
+                        </li>
+                        <li className="active">
+                            <i className="bi bi-check-circle"></i>
+                            <span>Aprovado</span>
+                        </li>
+                        <li>
+                            <i className="bi bi-flag"></i>
+                            <span>Concluído</span>
+                        </li>
+                    </ol>
+                </div>
+        }
+    }
+
+    useEffect(() => {
+        const fetchSolicitacao = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`);
+
+                if (!response.data) {
+                    throw new Error("Dados da solicitação não encontrados");
+                }
+
+                setSolicitacao(response.data);
+                console.log(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar detalhes:", error);
+                setError(error.message || "Não foi possível carregar os detalhes da solicitação.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchSolicitacao();
     }, [id]);
 
     const formatarData = (dataString) => {
         if (!dataString) return '--/--/---- --:--';
-        const options = { 
-            day: '2-digit', 
-            month: '2-digit', 
+        const options = {
+            day: '2-digit',
+            month: '2-digit',
             year: 'numeric',
             hour: '2-digit',
             minute: '2-digit'
@@ -71,6 +114,7 @@ export default function DetalhesSolicitacao() {
     }
 
     if (error) {
+
         return (
             <div className="page-container">
                 <HeaderAluno />
@@ -93,14 +137,14 @@ export default function DetalhesSolicitacao() {
             <main className="container detalhes-container">
                 <div className="detalhes-header">
                     <h2>Detalhes da Solicitação #{solicitacao.id}</h2>
-                    <span className={`status-badge ${solicitacao.status.toLowerCase().replace(' ', '-')}`}>
-                        {solicitacao.status}
-                    </span>
                 </div>
 
                 <div className="detalhes-content">
+                    <div>
+                        <Stepper />
+                    </div>
+
                     <div className="detalhes-section">
-                        <h3>Informações Básicas</h3>
                         <div className="info-grid">
                             <div className="info-item">
                                 <label>Documento Solicitado:</label>

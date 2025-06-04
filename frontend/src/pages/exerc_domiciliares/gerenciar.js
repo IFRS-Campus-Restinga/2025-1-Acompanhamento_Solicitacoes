@@ -16,6 +16,8 @@ export default function GerenciarExercDomicilares() {
     const [userData, setUserData] = useState(null);
     const [carregando, setCarregando] = useState(true);
 
+    const [formulario, setFormulario] = useState(null);
+
     const buscouAlunoRef = useRef(false);
     const navigate = useNavigate();
 
@@ -65,6 +67,16 @@ export default function GerenciarExercDomicilares() {
 
     // Exibe dados do aluno
     if (userData && aluno) {
+        /*useEffect(() => {
+            try {
+                const res = axios.get(`http://localhost:8000/solicitacoes/form_exercicio_domiciliar/aluno/${aluno.id}`)
+                setFormulario(res.data);
+            } catch (err) {
+                setMsgErro(err);
+                setTipoErro("erro");
+                setFeedbackIsOpen(true);
+            }
+        })*/
 
         return (
             <div className="page-container">
@@ -92,7 +104,7 @@ export default function GerenciarExercDomicilares() {
                             <p>{aluno.telefone}</p>
                         </div>
                         <div className="info-item">
-                            <label></label>
+                            <label>Data da solicitação: </label>
                             <p></p>
                         </div>
                     </div>

@@ -113,6 +113,9 @@ class FormExercicioDomiciliarViewSet(viewsets.ModelViewSet):
         pass
 
     def get_queryset(self):
+        """
+        Sobescreve get_queryset para buscar formulário vinculado ao aluno
+        """
         try:
             return FormExercicioDomiciliar.objects.get(aluno=self.kwargs['id'])
         except KeyError:

@@ -52,13 +52,9 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
                 print(f"Erro inesperado ao adicionar usuário {usuario_instance.email} ao grupo 'externo': {e}")
         
     
-    
-    
-    
-
     def get_queryset(self):
         """
-        Endpoint para listar usuários com email fornecido
+        Sobescreve get_queryset para buscar usuário com email caso o mesmo seja fornecido
         """
         try:
             return Usuario.objects.ativos().filter(email__exact=self.kwargs["email"])
