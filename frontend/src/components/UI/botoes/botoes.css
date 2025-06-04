@@ -1,0 +1,100 @@
+/*GERAL */
+  .botoes-acoes {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+  }
+
+  .icone-botao {
+  background: none;
+  border: none;
+  outline: none;
+}
+
+/*BOTÃO CADASTRAR (+) */
+
+.botao-cadastrar{
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+    background-color: var(--verde-oficial);
+    border-radius: 50px;
+    width: 50px;
+    height: 50px;
+    color: var(--cor-branca);
+    border: none;
+    outline: none;
+  }
+  
+  .botao-cadastrar:hover {
+    background-color: var(--verde-escuro);
+    transform: scale(1.05);
+  }
+
+  .botao-cadastrar-wrapper {
+    margin-bottom: 1.5rem;
+    text-align: right;
+  }
+
+  /*BOTÃO VOLTAR (<--) */
+
+  .botao-voltar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+    background-color: var(--verde-oficial);
+    color: var(--cor-branca);
+    padding: 0.5rem 1rem;
+    border: 2px solid var(--verde-oficial);
+    border-radius: 20px;
+    gap: 0.5rem;
+  }
+
+  .botao-voltar:hover {
+    background-color: var(--verde-escuro);
+    color: white;
+  }
+
+  .botao-voltar-wrapper {
+    margin-top: 2rem;
+    text-align: left;
+  }
+
+  /*BOTÃO EXCLUIR (LIXEIRA) */
+
+  .icone-excluir:hover {
+    color: var(--botao-deletar);
+  }
+
+  .icone-excluir {
+    cursor: pointer;
+    color: darkred;
+  }
+
+  /*BOTÃO EDITAR (LÁPIS) */
+
+  .icone-editar {
+    cursor: pointer;
+  }
+
+ .icone-editar:hover {
+    color: var(--botao-editar);
+    }
+
+/*BOTÃO DETALHAR (OLHO) */
+
+.icone-detalhar {
+  color: #2f2f30; 
+  font-size: 1.2rem;
+  transition: color 0.2s;
+}
+
+.icone-detalhar:hover {
+  color: #000000; /* Cinza mais escuro no hover */
+}
