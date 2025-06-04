@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Footer from '../../../components/base/footer';
 import HeaderCRE from "../../../components/base/headers/header_cre";
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
 import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
+import BotaoEditar from "../../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+
 import api from '../../../services/api';
 
 // BARRA PESQUISA
 import BarraPesquisa from "../../../components/UI/barra_pesquisa";
 
 // PAGINAÇÃO
-import Paginacao from "../../../components/UI/paginacao"; 
+import Paginacao from "../../../components/UI/paginacao";
 
 // Função auxiliar para formatar a data corretamente para exibição (DD/MM/YYYY)
 const formatarDataParaExibicaoLocal = (dataString) => {
@@ -175,19 +178,14 @@ export default function HistoricoMandatos() {
                                             <td>{mandato.fim_mandato ? formatarDataParaExibicaoLocal(mandato.fim_mandato) : 'Atual'}</td>
                                             <td>
                                                 <div className="botoes-acoes">
-                                                    <Link to={`/mandatos/editar/${mandato.id}`} title="Editar Mandato">
-                                                        <i className="bi bi-pencil-square icone-editar"></i>
-                                                    </Link>
-                                                    <button
-                                                        onClick={() => {
-                                                            setMandatoSelecionadoParaExcluir(mandato.id);
-                                                            setMostrarPopupExcluir(true);
-                                                        }}
-                                                        title="Excluir Mandato"
-                                                        className="icone-botao"
-                                                    >
-                                                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                                                    </button>
+                                                    
+                                                    <BotaoEditar to={`/mandatos/editar/${mandato.id}`} />
+                            
+                                                    <BotaoExcluir onClick={() => {
+                                                    setMandatoSelecionadoParaExcluir(mandato.id);
+                                                    setMostrarPopupExcluir(true);
+                                                    }} />
+                                                    
                                                 </div>
                                             </td>
                                         </tr>

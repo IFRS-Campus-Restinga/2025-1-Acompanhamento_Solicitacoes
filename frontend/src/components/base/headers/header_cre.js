@@ -53,13 +53,13 @@ const HeaderCRE = () => {
     <header className="header">
       <div className="header-container">
         <div className="left">
-          <Link to="/cre/home">
-            <img
-              src="/img/logo-ifrs-branco.png" 
-              alt="logotipo do ifrs campus restinga"
-              className="logo"
-            />
-          </Link>
+
+          {/*<Link to="/cre/home">*/}
+
+            <img src="/img/logo-ifrs-branco.png" alt="logotipo do ifrs campus restinga"className="logo"/>
+
+          {/*</Link>*/}
+
         </div>
 
         <nav className="center">

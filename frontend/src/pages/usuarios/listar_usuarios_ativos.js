@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
+import api from "../../services/api";
 
 // POPUPS
-import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao"; 
+import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
 // PAGINAÇÃO
@@ -13,6 +13,9 @@ import Paginacao from "../../components/UI/paginacao";
 
 // BOTÕES
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoDetalhar from "../../components/UI/botoes/botao_detalhar";
+import BotaoEditar from "../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //BARRA PESQUISA
@@ -175,23 +178,15 @@ export default function ListarUsuariosAtivos() {
                   <td>{usuario.status_usuario}</td>
                   <td>
                     <div className="botoes-acoes">
-                      <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
-                        <i className="bi bi-eye-fill icone-olho"></i>
-                      </Link>
-                      <Link to={`/usuarios/editar/${usuario.grupo?.toLowerCase()}/${usuario.grupo_detalhes?.id || usuario.id}`} title="Editar">
-                        <i className="bi bi-pencil-square icone-editar"></i>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setUsuarioId(usuario.id);
-                          setTipoAcao("excluir");
-                          setMostrarPopup(true);
-                        }}
-                        title="Excluir"
-                        className="icone-botao"
-                      >
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                      </button>
+                      <BotaoDetalhar to={`/usuarios/${usuario.id}`} />
+
+                      <BotaoEditar to={`/usuarios/editar/${usuario.grupo?.toLowerCase()}/${usuario.grupo_detalhes?.id || usuario.id}`} />
+                      
+                      <BotaoExcluir onClick={() => {
+                        setUsuarioId(usuario.id);
+                        setTipoAcao("excluir");
+                        setMostrarPopup(true);
+                      }} />
                 
                       {usuario.status_usuario === "Em Analise" && (
                         //botao aprovar cadastro

@@ -1,5 +1,4 @@
-import React from "react";
-import "./botao_voltar.css";
+import "./botoes.css";
 
 export default function BotaoVoltar({ onClick }) {
   return (

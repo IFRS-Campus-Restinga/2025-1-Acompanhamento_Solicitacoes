@@ -1,11 +1,12 @@
 import axios from "axios";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import HeaderCRE from "../../../components/base/headers/header_cre";
 import "../../../components/formulario.css";
 import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
+import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
 import Paginacao from "../../../components/UI/paginacao";
 
 const HomeCRE = () => {
@@ -95,9 +96,9 @@ const HomeCRE = () => {
                                     <td>{solicitacao.posse_solicitacao || "N/A"}</td>
                                     <td>
                                         <div className="botao-olho">
-                                            <Link to={`/detalhe-solicitacao/${solicitacao.id}`} title="Ver detalhes">
-                                                <i className="bi bi-eye-fill icone-olho"></i>
-                                            </Link>
+
+                                            <BotaoDetalhar to={`/detalhe-solicitacao/${solicitacao.id}`} />
+                                            
                                         </div>
                                     </td>
                                 </tr>

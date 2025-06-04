@@ -1,4 +1,4 @@
-# google_auth/views/login_solicitacoes.py (Arquivo Refatorado)
+# google_auth/views/login_solicitacoes.py (Arquivo Modificado v2)
 
 import requests
 from django.shortcuts import redirect
@@ -65,7 +65,7 @@ def google_callback(request):
             id_token_jwt_google, 
             google_requests.Request(), 
             settings.GOOGLE_OAUTH2_CLIENT_ID,
-            clock_skew_in_seconds=60
+            # clock_skew_in_seconds=60 # Descomente se necessário ajustar a tolerância do relógio
         )
         
         if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
@@ -83,41 +83,61 @@ def google_callback(request):
         return JsonResponse({"error": "Invalid Google ID token.", "details": str(e)}, status=400)
 
     try:
+        user = User.objects.filter(email=user_email_from_google).first()
 
-        user, created = User.objects.get_or_create(
-            email=user_email_from_google,
-            defaults={
-                "nome": user_name_from_google if user_name_from_google else "",
-
-            }
-        )
-        
-        if not created:
+        if user:
+            # Usuário EXISTE: Fazer login e redirecionar DIRETAMENTE para Minhas Solicitações com token
+            print(f"Usuário encontrado: {user_email_from_google}. Redirecionando para Minhas Solicitações.")
+            
+            # Opcional: Atualizar o nome se ele mudou no Google
             if user.nome != user_name_from_google and user_name_from_google:
                 user.nome = user_name_from_google
                 user.save(update_fields=["nome"])
 
+            login(request, user)
+
+            try:
+                app_tokens = get_tokens_for_user(user, 
+                                                 user_picture_url=user_picture_from_google, 
+                                                 user_full_name=user.nome)
+            except Exception as e:
+                print(f"Error generating app tokens: {e}")
+                return JsonResponse({"error": "Failed to generate application tokens.", "details": str(e)}, status=500)
+                
+            access_token_app = app_tokens.get("access")
+
+            if not access_token_app:
+                return JsonResponse({"error": "Failed to generate application access token."}, status=500)
+
+            # --- ALTERAÇÃO: Redireciona diretamente para Minhas Solicitações --- 
+            frontend_redirect_url = f"http://localhost:3000/aluno/minhas-solicitacoes?access_token={access_token_app}"
+            print(f"Redirecionando usuário existente para: {frontend_redirect_url}") # Log para clareza
+            return HttpResponseRedirect(frontend_redirect_url)
+            # --- FIM DA ALTERAÇÃO --- 
+
+        else:
+            # Usuário NÃO EXISTE: Redirecionar para a página de cadastro/seleção no frontend
+            print(f"Usuário NÃO encontrado: {user_email_from_google}. Redirecionando para cadastro/seleção.")
+            
+            google_data = {
+                "google_email": user_email_from_google,
+                "google_name": user_name_from_google or "", # Garante que não seja None
+                "google_picture": user_picture_from_google or "" # Garante que não seja None
+            }
+            query_params = urlencode(google_data)
+
+            # Verifica o domínio do email para decidir a URL de redirecionamento
+            if "@ifrs" in user_email_from_google.lower():
+                # Email institucional: vai para seleção de grupo
+                frontend_redirect_url = f"http://localhost:3000/usuarios/selecionargrupo?{query_params}"
+            else:
+                # Email não institucional: vai para cadastro geral
+                frontend_redirect_url = f"http://localhost:3000/usuarios/cadastro?{query_params}"
+            
+            return HttpResponseRedirect(frontend_redirect_url)
+
     except Exception as e:
-        print(f"Error creating/updating user: {e}")
-        return JsonResponse({"error": "Failed to create or update user in local database.", "details": str(e)}, status=500)
-
-    login(request, user)
-
-    try:
-        app_tokens = get_tokens_for_user(user, 
-                                         user_picture_url=user_picture_from_google, 
-                                         user_full_name=user.nome)
-    except Exception as e:
-        print(f"Error generating app tokens: {e}")
-        return JsonResponse({"error": "Failed to generate application tokens.", "details": str(e)}, status=500)
-        
-    access_token_app = app_tokens.get("access")
-
-    if not access_token_app:
-        return JsonResponse({"error": "Failed to generate application access token."}, status=500)
-
-    frontend_redirect_url = f"http://localhost:3000/auth/google/redirect-handler?access_token={access_token_app}"
-    
-    return HttpResponseRedirect(frontend_redirect_url)
-
+        # Captura qualquer outra exceção durante a busca ou lógica de redirecionamento
+        print(f"Error during user check/redirect logic: {e}")
+        return JsonResponse({"error": "An unexpected error occurred during the login process.", "details": str(e)}, status=500)
 

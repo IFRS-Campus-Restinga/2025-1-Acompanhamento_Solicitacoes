@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import api from "../../services/api";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
+import api from "../../services/api";
 
 // POPUPS
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
@@ -11,6 +11,7 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import Paginacao from "../../components/UI/paginacao";
 
 // BOTÕES
+import BotaoDetalhar from "../../components/UI/botoes/botao_detalhar";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //BARRA PESQUISA
@@ -131,9 +132,9 @@ export default function ListarUsuariosInativos() {
                   <td>
                     <div className="botoes-acoes">
                       {/* Botão Visualizar Detalhes */}
-                      <Link to={`/usuarios/${usuario.id}`} title="Ver detalhes">
-                        <i className="bi bi-eye-fill icone-olho"></i>
-                      </Link>
+
+                      <BotaoDetalhar to={`/usuarios/${usuario.id}`} />
+
                       {/* Botão Reativar Usuário */}
                       <button
                         onClick={() => handleReativarUsuario(usuario.id)}

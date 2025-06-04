@@ -85,15 +85,28 @@ export default function DetalhesSolicitacao() {
 
     const formatarData = (dataString) => {
         if (!dataString) return '--/--/---- --:--';
-        const options = {
-            day: '2-digit',
-            month: '2-digit',
-            year: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
+        
+        try {
+            // Extrai a parte da data e hora separadamente
+            const [dataPart, horaPart] = dataString.split('T');
+            
+            // Para datas sem hora (apenas data)
+            if (!horaPart) {
+            const [ano, mes, dia] = dataPart.split('-');
+            return `${dia}/${mes}/${ano}`;
+            }
+            
+            // Para datas com hora
+            const [ano, mes, dia] = dataPart.split('-');
+            const [horaCompleta] = horaPart.split('.'); // Remove milissegundos se existirem
+            const [horas, minutos] = horaCompleta.split(':');
+            
+            return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
+        } catch (error) {
+            console.error('Erro ao formatar data:', error);
+            return '--/--/---- --:--';
+        }
         };
-        return new Date(dataString).toLocaleDateString('pt-BR', options);
-    };
 
     const handleVoltar = () => {
         navigate('/aluno/minhas-solicitacoes');

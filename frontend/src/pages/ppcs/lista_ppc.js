@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoEditar from "../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
 
@@ -104,19 +106,14 @@ export default function ListarPpc() {
                 <td>{ppc.curso_details.nome}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/ppcs/${encodeURIComponent(ppc.codigo)}`} title="Editar">
-                      <i className="bi bi-pencil-square icone-editar"></i>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setPpcSelecionado(ppc.codigo);
-                        setMostrarPopup(true);
-                      }}
-                      title="Excluir"
-                      className="icone-botao"
-                    >
-                      <i className="bi bi-trash3-fill icone-excluir"></i>
-                    </button>
+
+                    <BotaoEditar to={`/ppcs/${encodeURIComponent(ppc.codigo)}`} />
+                    
+                    <BotaoExcluir onClick={() => {
+                      setPpcSelecionado(ppc.codigo);
+                      setMostrarPopup(true);
+                    }} />
+
                   </div>
                 </td>
               </tr>

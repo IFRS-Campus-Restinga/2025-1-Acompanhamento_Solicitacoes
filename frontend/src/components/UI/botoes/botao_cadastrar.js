@@ -1,6 +1,5 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import "./botao_cadastrar.css";
+import "./botoes.css";
 
 export default function BotaoCadastrar({ to, title = "Criar Novo", state = null }) {
   return (

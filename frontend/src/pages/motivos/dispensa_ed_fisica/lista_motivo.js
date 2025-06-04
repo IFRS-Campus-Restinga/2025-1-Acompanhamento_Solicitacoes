@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Footer from "../../../components/base/footer";
 import HeaderCRE from "../../../components/base/headers/header_cre";
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
@@ -12,6 +12,8 @@ import Paginacao from "../../../components/UI/paginacao";
 
 //BOTÕES
 import BotaoCadastrar from "../../../components/UI/botoes/botao_cadastrar";
+import BotaoEditar from "../../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 export default function ListarMotivoDispensa() {
@@ -107,14 +109,14 @@ export default function ListarMotivoDispensa() {
                                     <td>{motivo.descricao}</td>
                                     <td>
                                         <div className="botoes-acoes">
-                                            <Link to={`/motivo_dispensa/${motivo.id}`}>
-                                                <i className="bi bi-pencil-square icone-editar" title='Editar'></i>
-                                            </Link>
-                                            <button className='icone-botao' title='Excluir' onClick={() => {
-                                                setMotivoSelecionado(motivo.id);
-                                                setPopupIsOpen(true);
-                                            }}>
-                                                <i className="bi bi-trash3-fill icone-excluir"></i></button>
+
+                                            <BotaoEditar to={`/motivo_dispensa/${motivo.id}`} />
+                                            
+                                            <BotaoExcluir onClick={() => {
+                                            setMotivoSelecionado(motivo.id);
+                                            setPopupIsOpen(true);
+                                            }} />
+
                                         </div>
                                     </td>
                                 </tr>

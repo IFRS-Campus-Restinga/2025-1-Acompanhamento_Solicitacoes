@@ -1,11 +1,13 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoEditar from "../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
 
@@ -20,16 +22,20 @@ export default function ListarCursos() {
 
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [cursosPaginados, setCursosPaginados] = useState([]);
-
   const [filtro, setFiltro] = useState("");
 
   useEffect(() => {
     axios
       .get("http://localhost:8000/solicitacoes/cursos/")
-      .then((res) => setCursos(res.data))
+      .then((res) => {
+        const cursosOrdenados = res.data.sort((a, b) => a.codigo.localeCompare(b.codigo));
+        setCursos(cursosOrdenados);
+      })
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar cursos."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao carregar cursos."
+          }`
         );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
@@ -46,7 +52,9 @@ export default function ListarCursos() {
       })
       .catch((err) => {
         setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir curso."}`
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao excluir curso."
+          }`
         );
         setTipoMensagem("erro");
       })
@@ -57,11 +65,14 @@ export default function ListarCursos() {
       });
   };
 
-  const cursosFiltrados = useMemo(() => 
-    cursos.filter(curso =>
-      curso.nome.toLowerCase().includes(filtro.toLowerCase()) ||
-      curso.codigo.toLowerCase().includes(filtro.toLowerCase())
-    ),
+  const cursosFiltrados = useMemo(
+    () =>
+      cursos.filter(
+        (curso) =>
+          curso.nome.toLowerCase().includes(filtro.toLowerCase()) ||
+          curso.codigo.toLowerCase().includes(filtro.toLowerCase()) ||
+          (curso.tipo_periodo && curso.tipo_periodo.toLowerCase().includes(filtro.toLowerCase()))
+      ),
     [cursos, filtro]
   );
 
@@ -77,7 +88,7 @@ export default function ListarCursos() {
           <i className="bi bi-search icone-pesquisa"></i>
           <input
             type="text"
-            placeholder="Buscar por nome ou código..."
+            placeholder="Buscar por nome, código ou tipo de período..."
             value={filtro}
             onChange={(e) => setFiltro(e.target.value)}
             className="input-pesquisa"
@@ -87,7 +98,9 @@ export default function ListarCursos() {
         <table className="tabela-cruds">
           <thead>
             <tr>
+              <th>Código</th>
               <th>Nome</th>
+              <th>Tipo de Período</th>
               <th>PPCs</th>
               <th>Ações</th>
             </tr>
@@ -95,23 +108,20 @@ export default function ListarCursos() {
           <tbody>
             {cursosPaginados.map((curso, index) => (
               <tr key={curso.codigo} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
+                <td>{curso.codigo}</td>
                 <td>{curso.nome}</td>
+                <td>{curso.tipo_periodo || 'Semestral'}</td>
                 <td>{curso.ppcs ? curso.ppcs.join(", ") : ""}</td>
                 <td>
                   <div className="botoes-acoes">
-                    <Link to={`/cursos/${curso.codigo}`} title="Editar">
-                      <i className="bi bi-pencil-square icone-editar"></i>
-                    </Link>
-                    <button
-                      onClick={() => {
-                        setCursoSelecionado(curso.codigo);
-                        setMostrarPopup(true);
-                      }}
-                      title="Excluir"
-                      className="icone-botao"
-                    >
-                      <i className="bi bi-trash3-fill icone-excluir"></i>
-                    </button>
+
+                    <BotaoEditar to={`/cursos/${curso.codigo}`} />
+
+                    <BotaoExcluir onClick={() => {
+                      setCursoSelecionado(curso.codigo);
+                      setMostrarPopup(true);
+                    }} />
+
                   </div>
                 </td>
               </tr>

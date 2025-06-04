@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
 
@@ -9,6 +9,8 @@ import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
+import BotaoEditar from "../../components/UI/botoes/botao_editar";
+import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
 
@@ -120,18 +122,14 @@ export default function ListarDisponibilidades() {
                   </td>
                   <td>
                     <div className="botoes-acoes">
-                      <Link to={`/disponibilidades/${disponibilidade.id}`} title="Editar">
-                        <i className="bi bi-pencil-square icone-editar"></i>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setIdSelecionado(disponibilidade.id);
-                          setMostrarPopup(true);
-                        }}
-                        title="Excluir"
-                        className="icone-botao">
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                      </button>
+
+                      <BotaoEditar to={`/disponibilidades/${disponibilidade.id}`} />
+
+                      <BotaoExcluir onClick={() => {
+                        setIdSelecionado(disponibilidade.id);
+                        setMostrarPopup(true);
+                      }} />
+
                     </div>
                   </td>
                 </tr>

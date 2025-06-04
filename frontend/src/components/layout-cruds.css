@@ -57,12 +57,6 @@
     margin-bottom: 20px;
   }
   
-  .botoes-acoes {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-  }
-  
   .acoes-icones {
     display: flex;
     gap: 10px;
@@ -78,17 +72,6 @@
     transform: scale(1.1);
   }
   
-  .icone-editar:hover {
-    color: var(--botao-editar);
-  }
-  
-  .icone-excluir:hover {
-    color: var(--botao-deletar);
-  }
-
-  .icone-excluir {
-    color: darkred;
-  }
   
   .tabela-cruds td.descricao {
     max-width: 300px;
@@ -181,10 +164,6 @@
     pointer-events: none;
     color: #777;
     font-style: italic;
-  }
-  
-  .icone-olho {
-    color: black;
   }
 
   .icone-aprovar {
