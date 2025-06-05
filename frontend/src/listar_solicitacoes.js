@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Footer from "./components/base/footer";
 import HeaderCRE from "./components/base/headers/header_cre";
 import PopupConfirmacao from "./components/pop_ups/popup_confirmacao";
 import PopupFeedback from "./components/pop_ups/popup_feedback";
-import BotaoCadastrar from "./components/UI/botoes/botao_cadastrar";
-import BotaoVoltar from "./components/UI/botoes/botao_voltar";
+import BotaoDetalhar from "./components/UI/botoes/botao_detalhar";
+import BotaoEditar from "./components/UI/botoes/botao_editar";
+import BotaoExcluir from "./components/UI/botoes/botao_excluir";
 import Paginacao from "./components/UI/paginacao";
+
 import api from "./services/api"; // Seu arquivo de configuração da API
 
 export default function ListarSolicitacoes() {
@@ -120,12 +122,6 @@ export default function ListarSolicitacoes() {
       <main className="container">
         <h2>Solicitações</h2>
 
-        <BotaoCadastrar
-          to="/aluno/nova-solicitacao" // Verifique se esta rota está correta para o perfil CRE
-          title="Nova Solicitação"
-          onClick={() => sessionStorage.setItem("voltarDoCadastro", "1")}
-        />
-
         <div className="barra-pesquisa">
           <i className="bi bi-search icone-pesquisa"></i>
           <input
@@ -174,22 +170,17 @@ export default function ListarSolicitacoes() {
                   <td>{solicitacao.posse_solicitacao || "N/D"}</td>
                   <td>
                     <div className="botoes-acoes">
-                      <Link
-                        to={`/solicitacoes/${solicitacao.id}`} // Ajuste se a rota de detalhe/edição for diferente
-                        title="Detalhar/Editar"
-                      >
-                        <i className="bi bi-pencil-square icone-editar"></i>
-                      </Link>
-                      <button
-                        onClick={() => {
-                          setIdSelecionado(solicitacao.id);
-                          setMostrarPopup(true);
-                        }}
-                        title="Excluir"
-                        className="icone-botao"
-                      >
-                        <i className="bi bi-trash3-fill icone-excluir"></i>
-                      </button>
+
+                      <BotaoDetalhar to={`/detalhe-solicitacao/${solicitacao.id}`} />
+                      <BotaoDetalhar to={`/aluno/detalhes-solicitacao/${solicitacao.id}`} />
+
+                      <BotaoEditar to={`/solicitacoes/${solicitacao.id}`} /> {/*Ajuste se a rota de detalhe/edição for diferente*/} 
+
+                      <BotaoExcluir onClick={() => {
+                        setIdSelecionado(solicitacao.id);
+                        setMostrarPopup(true);
+                      }} />
+
                     </div>
                   </td>
                 </tr>
@@ -220,7 +211,6 @@ export default function ListarSolicitacoes() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/")} />
       </main>
       <Footer />
     </div>
