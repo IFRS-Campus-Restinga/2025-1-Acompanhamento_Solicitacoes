@@ -2,14 +2,15 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-//Components
+// Components
 import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+import Stepper from "../../../components/UI/stepper";
 
-//CSS
-import "../../../components/detalhes_solicitacao.css";
-import "../telas_aluno/stepper.css"
+// Bootstrap Icons CSS (caso ainda não esteja incluso globalmente)
+import "bootstrap-icons/font/bootstrap-icons.css";
+import "bootstrap/dist/css/bootstrap.min.css";
 
 export default function DetalhesSolicitacao() {
     const { id } = useParams();
@@ -18,108 +19,41 @@ export default function DetalhesSolicitacao() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    function Stepper() {
-        if (solicitacao.status === "Em Análise") {
-            return (
-                <div className="body-stepper">
-                    <ol className="stepper">
-                        <li className="active">
-                            <i className="bi bi-clock"></i>
-                            <span>Em Análise</span>
-                        </li>
-                        <li>
-                            <i className="bi bi-check-circle"></i>
-                            <span>Aprovado</span>
-                        </li>
-                        <li>
-                            <i className="bi bi-flag"></i>
-                            <span>Concluído</span>
-                        </li>
-                    </ol>
-                </div>
-
-            )
-        } else if (solicitacao.status === "Aprovado") {
-            <div className="body-stepper">
-                    <ol className="stepper">
-                        <li>
-                            <i className="bi bi-clock"></i>
-                            <span>Em Análise</span>
-                        </li>
-                        <li className="active">
-                            <i className="bi bi-check-circle"></i>
-                            <span>Aprovado</span>
-                        </li>
-                        <li>
-                            <i className="bi bi-flag"></i>
-                            <span>Concluído</span>
-                        </li>
-                    </ol>
-                </div>
+    const fetchSolicitacao = async () => {
+        try {
+            const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`);
+            if (!response.data) throw new Error("Dados da solicitação não encontrados.");
+            setSolicitacao(response.data);
+        } catch (err) {
+            setError(err.message || "Erro ao carregar dados.");
+        } finally {
+            setLoading(false);
         }
-    }
+    };
 
     useEffect(() => {
-        const fetchSolicitacao = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`);
-
-                if (!response.data) {
-                    throw new Error("Dados da solicitação não encontrados");
-                }
-
-                setSolicitacao(response.data);
-                console.log(response.data);
-            } catch (error) {
-                console.error("Erro ao buscar detalhes:", error);
-                setError(error.message || "Não foi possível carregar os detalhes da solicitação.");
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchSolicitacao();
     }, [id]);
 
     const formatarData = (dataString) => {
         if (!dataString) return '--/--/---- --:--';
-        
         try {
-            // Extrai a parte da data e hora separadamente
-            const [dataPart, horaPart] = dataString.split('T');
-            
-            // Para datas sem hora (apenas data)
-            if (!horaPart) {
-            const [ano, mes, dia] = dataPart.split('-');
-            return `${dia}/${mes}/${ano}`;
-            }
-            
-            // Para datas com hora
-            const [ano, mes, dia] = dataPart.split('-');
-            const [horaCompleta] = horaPart.split('.'); // Remove milissegundos se existirem
-            const [horas, minutos] = horaCompleta.split(':');
-            
-            return `${dia}/${mes}/${ano} ${horas}:${minutos}`;
-        } catch (error) {
-            console.error('Erro ao formatar data:', error);
+            const [data, hora] = dataString.split('T');
+            const [ano, mes, dia] = data.split('-');
+            const [horas, minutos] = hora?.split('.')[0]?.split(':') || [];
+            return `${dia}/${mes}/${ano} ${horas || '--'}:${minutos || '--'}`;
+        } catch {
             return '--/--/---- --:--';
         }
-        };
-
-    const handleVoltar = () => {
-        navigate('/aluno/minhas-solicitacoes');
     };
 
     if (loading) {
         return (
             <div className="page-container">
                 <HeaderAluno />
-                <main className="container">
-                    <div className="loading-spinner">
-                        <p>Carregando detalhes da solicitação...</p>
-                    </div>
+                <main className="container text-center my-5">
+                    <div className="spinner-border text-primary" role="status" />
+                    <p className="mt-3">Carregando detalhes da solicitação...</p>
                 </main>
                 <Footer />
             </div>
@@ -127,17 +61,14 @@ export default function DetalhesSolicitacao() {
     }
 
     if (error) {
-
         return (
             <div className="page-container">
                 <HeaderAluno />
-                <main className="container">
-                    <div className="error-message">
-                        <p>{error}</p>
-                        <button onClick={handleVoltar} className="btn-voltar">
-                            Voltar
-                        </button>
-                    </div>
+                <main className="container text-center my-5">
+                    <div className="alert alert-danger">{error}</div>
+                    <button onClick={() => navigate('/aluno/minhas-solicitacoes')} className="btn btn-secondary mt-3">
+                        Voltar
+                    </button>
                 </main>
                 <Footer />
             </div>
@@ -147,55 +78,59 @@ export default function DetalhesSolicitacao() {
     return (
         <div className="page-container">
             <HeaderAluno />
-            <main className="container detalhes-container">
-                <div className="detalhes-header">
-                    <h2>Detalhes da Solicitação #{solicitacao.id}</h2>
+            <main className="container my-4">
+                <div className="mb-4">
+                    <h2 className="text-center">Detalhes da Solicitação #{solicitacao.id}</h2>
                 </div>
 
-                <div className="detalhes-content">
-                    <div>
-                        <Stepper />
-                    </div>
+                <div className="container">
+                    <Stepper statusAtual={solicitacao.status} />
+                </div>
+                    
 
-                    <div className="detalhes-section">
-                        <div className="info-grid">
-                            <div className="info-item">
-                                <label>Documento Solicitado:</label>
-                                <p>{solicitacao.tipo || 'Não informado'}</p>
-                            </div>
-                            <div className="info-item">
-                                <label>Responsável:</label>
-                                <p>{solicitacao.posse_solicitacao || 'Não atribuído'}</p>
-                            </div>
-                            <div className="info-item">
-                                <label>Data da Solicitação:</label>
-                                <p>{formatarData(solicitacao.data_solicitacao)}</p>
-                            </div>
-                            <div className="info-item">
-                                <label>Última Atualização:</label>
-                                <p>{formatarData(solicitacao.data_atualizacao)}</p>
-                            </div>
+
+                <div className="card mb-4">
+                    <div className="card-body row">
+                        <div className="col-md-6 mb-3">
+                            <h6><i className="bi bi-file-earmark-text me-2"></i>Documento Solicitado:</h6>
+                            <p>{solicitacao.tipo || 'Não informado'}</p>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <h6><i className="bi bi-person me-2"></i>Responsável:</h6>
+                            <p>{solicitacao.posse_solicitacao || 'Não atribuído'}</p>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <h6><i className="bi bi-calendar-check me-2"></i>Data da Solicitação:</h6>
+                            <p>{formatarData(solicitacao.data_solicitacao)}</p>
+                        </div>
+                        <div className="col-md-6 mb-3">
+                            <h6><i className="bi bi-clock-history me-2"></i>Última Atualização:</h6>
+                            <p>{formatarData(solicitacao.data_atualizacao)}</p>
                         </div>
                     </div>
-
-                    <div className="detalhes-section">
-                        <h3>Justificativa</h3>
-                        <div className="justificativa-box">
-                            <p>{solicitacao.justificativa || 'Nenhuma justificativa fornecida.'}</p>
-                        </div>
-                    </div>
-
-                    {solicitacao.observacoes && (
-                        <div className="detalhes-section">
-                            <h3>Observações</h3>
-                            <div className="observacoes-box">
-                                <p>{solicitacao.observacoes}</p>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
-                <BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />
+
+                <div className="card mb-4">
+                    <div className="card-body">
+                        <h5><i className="bi bi-chat-left-text me-2"></i>Justificativa</h5>
+                        <p>{solicitacao.justificativa || 'Nenhuma justificativa fornecida.'}</p>
+                    </div>
+                </div>
+
+                {solicitacao.observacoes && (
+                    <div className="card mb-4">
+                        <div className="card-body">
+                            <h5><i className="bi bi-info-circle me-2"></i>Observações</h5>
+                            <p>{solicitacao.observacoes}</p>
+                        </div>
+                    </div>
+                )}
+
+
+                <div className="text-center">
+                    <BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />
+                </div>
             </main>
             <Footer />
         </div>

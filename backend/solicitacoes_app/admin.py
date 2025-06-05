@@ -3,6 +3,7 @@ from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import *
 from .models.forms.form_desistencia_vaga import FormDesistenciaVaga
 from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
+from .models.form_entrega_ativ_compl import FormEntregaAtivCompl
 
 # Registro padrão dos outros modelos
 admin.site.register(Curso)
@@ -23,6 +24,7 @@ admin.site.register(FormExercicioDomiciliar)
 admin.site.register(Nome)
 admin.site.register(Solicitacao)
 admin.site.register(Disponibilidade)
+admin.site.register(FormEntregaAtivCompl)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)
