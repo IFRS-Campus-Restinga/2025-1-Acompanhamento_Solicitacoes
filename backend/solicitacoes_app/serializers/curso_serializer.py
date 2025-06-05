@@ -19,13 +19,12 @@ class CursoSerializer(serializers.ModelSerializer):
     
 
 
-class CursoComHistoricoMandatosSerializer(serializers.Serializer):
-    nome = serializers.CharField()
-    codigo = serializers.CharField()
-    historico_mandatos = serializers.SerializerMethodField()
-
-    def get_historico_mandatos(self, curso):
-        from ..serializers.mandato_serializer import MandatoHistoricoSerializer
-        mandatos = Mandato.objects.filter(curso=curso).order_by('-inicio_mandato').select_related('coordenador__usuario')
-        serializer = MandatoHistoricoSerializer(mandatos, many=True, read_only=True)
-        return serializer.data
+class CursoSimplesSerializer(serializers.ModelSerializer):
+    
+    """ 
+    Serializer simples para incluir informações do Curso no Mandato. 
+    """
+    
+    class Meta:
+        model = Curso
+        fields = ['nome', 'codigo'] 
