@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Footer from '../../../components/base/footer';
 import HeaderCRE from "../../../components/base/headers/header_cre";
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
@@ -8,7 +8,6 @@ import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
 import BotaoEditar from "../../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
-
 import api from '../../../services/api';
 
 // BARRA PESQUISA
@@ -17,11 +16,20 @@ import BarraPesquisa from "../../../components/UI/barra_pesquisa";
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";
 
-// Função auxiliar para formatar a data corretamente para exibição (DD/MM/YYYY)
-const formatarDataParaExibicaoLocal = (dataString) => {
+// Função auxiliar para formatar a data (YYYY-MM-DD para DD/MM/YYYY)
+const formatarDataParaExibicao = (dataString) => {
     if (!dataString) return '';
-    const dataFormatada = dataString.replace(/-/g, '/');
-    return new Date(dataFormatada).toLocaleDateString();
+    // Verifica se a string já está no formato DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4}$/.test(dataString)) {
+        return dataString;
+    }
+    // Assume formato YYYY-MM-DD
+    const partes = dataString.split('-');
+    if (partes.length === 3) {
+        return `${partes[2]}/${partes[1]}/${partes[0]}`;
+    }
+    // Retorna a string original se não conseguir formatar
+    return dataString;
 };
 
 export default function HistoricoMandatos() {
@@ -36,37 +44,28 @@ export default function HistoricoMandatos() {
     const [tipoFeedback, setTipoFeedback] = useState('sucesso');
     const navigate = useNavigate();
 
-
     const [paginaAtual, setPaginaAtual] = useState(1);
-    const itensPorPagina = 10; 
+    const itensPorPagina = 10;
 
-    // Carrega os dados iniciais do histórico
+    // Carrega os dados iniciais da API de mandatos
     useEffect(() => {
-        async function carregarHistoricoMandatos() {
+        async function carregarMandatosOrdenados() {
             try {
-                const response = await api.get('/mandatos/historico/');
-                const historicoAgrupado = response.data;
-
-                const mandatosFlat = historicoAgrupado.reduce((acc, curso) => {
-                    const mandatosDoCurso = curso.historico_mandatos.map(mandato => ({
-                        ...mandato,
-                        nome_curso: curso.nome,
-                        codigo_curso: curso.codigo
-                    }));
-                    return acc.concat(mandatosDoCurso);
-                }, []);
-
-                setTodosMandatos(mandatosFlat);
+                const response = await api.get('/mandatos/historico/'); 
+                
+                
+                setTodosMandatos(response.data || []);
 
             } catch (error) {
-                console.error('Erro ao carregar histórico de mandatos:', error);
-                setMensagemFeedback(`Erro ao carregar histórico de mandatos: ${error.message}`);
+                console.error('Erro ao carregar mandatos ordenados:', error);
+                const errorMsg = error.response?.data?.detail || error.message;
+                setMensagemFeedback(`Erro ao carregar mandatos: ${errorMsg}`);
                 setTipoFeedback('erro');
                 setMostrarFeedback(true);
             }
         }
 
-        carregarHistoricoMandatos();
+        carregarMandatosOrdenados();
     }, []);
 
     // Filtra os mandatos sempre que o termo de busca ou a lista completa mudar
@@ -78,13 +77,12 @@ export default function HistoricoMandatos() {
             filtrados = todosMandatos;
         } else {
             filtrados = todosMandatos.filter(mandato => {
-                // Garante que todos os campos sejam strings antes de toLowerCase
-                const nomeCurso = String(mandato.nome_curso || '').toLowerCase();
-                const codigoCurso = String(mandato.codigo_curso || '').toLowerCase();
-                const nomeCoordenador = String(mandato.coordenador?.usuario?.nome || '').toLowerCase();
-                const siapeCoordenador = String(mandato.coordenador?.siape || '').toLowerCase(); 
-                const inicioMandatoFormatado = String(formatarDataParaExibicaoLocal(mandato.inicio_mandato) || '').toLowerCase();
-                const fimMandatoFormatado = String(mandato.fim_mandato ? formatarDataParaExibicaoLocal(mandato.fim_mandato) : 'atual').toLowerCase();
+                const nomeCurso = String(mandato.curso?.nome || '').toLowerCase();
+                const codigoCurso = String(mandato.curso?.codigo || '').toLowerCase();
+                const nomeCoordenador = String(mandato.coordenador?.nome || '').toLowerCase(); 
+                const siapeCoordenador = String(mandato.coordenador?.siape || '').toLowerCase();
+                const inicioMandatoFormatado = String(formatarDataParaExibicao(mandato.inicio_mandato) || '').toLowerCase();
+                const fimMandatoFormatado = String(mandato.fim_mandato ? formatarDataParaExibicao(mandato.fim_mandato) : 'atual').toLowerCase();
 
                 return (
                     nomeCurso.includes(termoLower) ||
@@ -98,7 +96,7 @@ export default function HistoricoMandatos() {
         }
         setMandatosFiltrados(filtrados);
         // Resetar para a primeira página sempre que o filtro mudar
-        if (paginaAtual !== 1) {
+        if (paginaAtual !== 1 && filtrados.length > 0) { 
              setPaginaAtual(1);
         }
 
@@ -109,9 +107,7 @@ export default function HistoricoMandatos() {
         if (!mandatoSelecionadoParaExcluir) return;
         try {
             await api.delete(`/mandatos/${mandatoSelecionadoParaExcluir}/`);
-            // Remove o mandato da lista completa (o useEffect acima cuidará de atualizar a filtrada)
             setTodosMandatos(prev => prev.filter(m => m.id !== mandatoSelecionadoParaExcluir));
-
             setMensagemFeedback('Mandato excluído com sucesso.');
             setTipoFeedback('sucesso');
         } catch (error) {
@@ -126,10 +122,8 @@ export default function HistoricoMandatos() {
         }
     }
 
-    // Atualizar o estado do termo de busca conforme o usuário digita
     const handleBuscaChange = (event) => {
         setTermoBusca(event.target.value);
-        // UseEffect reseta a página
     };
 
     // Calcula os mandatos para a página atual
@@ -158,44 +152,40 @@ export default function HistoricoMandatos() {
                     </p>
                 ) : (
                     <>
-                            <table className="tabela-cruds">
-                                <thead>
-                                    <tr>
-                                        <th>Curso</th>
-                                        <th>Coordenador (SIAPE)</th>
-                                        <th>Início Mandato</th>
-                                        <th>Fim Mandato</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    
-                                    {mandatosPaginados.map((mandato) => (
-                                        <tr key={mandato.id}>
-                                            <td>{mandato.nome_curso} ({mandato.codigo_curso})</td>
-                                            <td>{mandato.coordenador?.usuario?.nome} ({mandato.coordenador?.siape})</td>
-                                            <td>{formatarDataParaExibicaoLocal(mandato.inicio_mandato)}</td>
-                                            <td>{mandato.fim_mandato ? formatarDataParaExibicaoLocal(mandato.fim_mandato) : 'Atual'}</td>
-                                            <td>
-                                                <div className="botoes-acoes">
-                                                    
-                                                    <BotaoEditar to={`/mandatos/editar/${mandato.id}`} />
-                            
-                                                    <BotaoExcluir onClick={() => {
+                        <table className="tabela-cruds">
+                            <thead>
+                                <tr>
+                                    <th>Curso</th>
+                                    <th>Coordenador (SIAPE)</th>
+                                    <th>Início Mandato</th>
+                                    <th>Fim Mandato</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {mandatosPaginados.map((mandato) => (
+                                    <tr key={mandato.id}>
+                                        <td>{mandato.curso?.nome} ({mandato.curso?.codigo})</td>
+                                        <td>{mandato.coordenador?.nome} ({mandato.coordenador?.siape})</td>
+                                        <td>{formatarDataParaExibicao(mandato.inicio_mandato)}</td>
+                                        <td>{mandato.fim_mandato ? formatarDataParaExibicao(mandato.fim_mandato) : 'Atual'}</td>
+                                        <td>
+                                            <div className="botoes-acoes">
+                                                <BotaoEditar to={`/mandatos/editar/${mandato.id}`} />
+                                                <BotaoExcluir onClick={() => {
                                                     setMandatoSelecionadoParaExcluir(mandato.id);
                                                     setMostrarPopupExcluir(true);
                                                     }} />
-                                                    
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
                         
 
                         <Paginacao
-                            dados={mandatosFiltrados}
+                            dados={mandatosFiltrados} 
                             paginaAtual={paginaAtual}
                             setPaginaAtual={setPaginaAtual}
                             itensPorPagina={itensPorPagina}
@@ -217,8 +207,8 @@ export default function HistoricoMandatos() {
                     onClose={() => setMostrarFeedback(false)}
                 />
 
-                
-                    <BotaoVoltar onClick={() => navigate("/configuracoes")} />
+
+                <BotaoVoltar onClick={() => navigate("/configuracoes")} />
             </main>
             <Footer />
         </div>

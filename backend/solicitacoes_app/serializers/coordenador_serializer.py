@@ -1,15 +1,26 @@
 from rest_framework import serializers
 from ..models import Coordenador, Usuario, Mandato, Curso
 from ..serializers.usuario_serializer import UsuarioSerializer, UsuarioMinimoSerializer, UsuarioWriteSerializer
-from ..serializers.mandato_serializer import MandatoSerializer
 from django.core.exceptions import ValidationError
 
-class CoordenadorMinimoSerializer(serializers.ModelSerializer):
-    usuario = UsuarioMinimoSerializer(read_only=True)
+
+class CoordenadorSimplesSerializer(serializers.ModelSerializer):
+    
+    """ 
+    Serializer simples para incluir informações do Coordenador no Mandato. 
+    """
+    
+    nome = serializers.SerializerMethodField()
 
     class Meta:
         model = Coordenador
-        fields = ('id', 'siape', 'usuario')
+        fields = ('nome', 'siape')
+
+    def get_nome (self, coordenador):
+        if hasattr(coordenador, 'usuario') and coordenador.usuario:
+            return coordenador.usuario.nome
+        return "Nome não disponível"
+
 
 
 class CoordenadorSerializer(serializers.ModelSerializer):
@@ -81,6 +92,9 @@ class CadastroCoordenadorMandatoSerializer(serializers.Serializer):
         return data
 
     def create(self, validated_data):
+        
+        from ..serializers.mandato_serializer import MandatoSerializer
+        
         usuario_data = validated_data.pop('usuario')
         usuario = Usuario.objects.create(**usuario_data)
 
@@ -101,8 +115,6 @@ class CadastroCoordenadorMandatoSerializer(serializers.Serializer):
         }
         
         
-        
-#########################################################
 
 class CoordenadorReadSerializer(serializers.ModelSerializer):
     """
