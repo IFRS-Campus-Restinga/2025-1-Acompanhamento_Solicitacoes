@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from ..models import Usuario
+from ..models import Usuario, Aluno, Responsavel # Seus modelos já devem estar aqui
+from django.contrib.auth.models import Group
+from django.db import transaction
 
 
 class UsuarioMinimoSerializer(serializers.ModelSerializer):
@@ -130,15 +132,13 @@ class UsuarioSerializerComGrupos(serializers.ModelSerializer):
 
 
 class UsuarioWriteSerializer(serializers.ModelSerializer):
-    # Campos que virão do frontend para a lógica de Responsável
     is_responsavel = serializers.BooleanField(write_only=True, required=False, default=False)
     aluno_cpf = serializers.CharField(write_only=True, required=False, max_length=11, allow_blank=True, allow_null=True)
-    password = serializers.CharField(write_only=True, required=False) # Adicionado para garantir que a senha possa ser passada
+    password = serializers.CharField(write_only=True, required=False)
 
     class Meta:
         model = Usuario
         fields = ['nome', 'email', 'cpf', 'telefone', 'data_nascimento', 'password', 'is_responsavel', 'aluno_cpf']
-        # Definir 'password' como 'required=False' se você tem uma senha padrão no model.save()
         extra_kwargs = {
             'password': {'write_only': True, 'required': False} 
         }
@@ -151,29 +151,49 @@ class UsuarioWriteSerializer(serializers.ModelSerializer):
         # self.fields['cpf'].validators = []
 
     def validate(self, data):
+        # --- AQUI ESTÁ A MUDANÇA MÍNIMA E ESSENCIAL ---
+        # Remova temporariamente 'is_responsavel' e 'aluno_cpf' para a validação do modelo Usuario
+        is_responsavel = data.pop('is_responsavel', False)
+        aluno_cpf = data.pop('aluno_cpf', None)
+        # -----------------------------------------------
+
         # Validações de unicidade de email e CPF (copiadas do UsuarioSerializer, se este for o único de escrita)
-        # Email
         email = data.get('email')
         if email and Usuario.objects.filter(email=email).exists():
+            # --- Adicionado: Coloque os campos de volta se a validação falhar antes de re-lançar ---
+            data['is_responsavel'] = is_responsavel
+            data['aluno_cpf'] = aluno_cpf
             raise serializers.ValidationError({"email": "Este email já está em uso."})
         
-        # CPF (se fornecido e não em branco)
         cpf = data.get('cpf')
         if cpf and Usuario.objects.filter(cpf=cpf).exists():
+            # --- Adicionado: Coloque os campos de volta se a validação falhar antes de re-lançar ---
+            data['is_responsavel'] = is_responsavel
+            data['aluno_cpf'] = aluno_cpf
             raise serializers.ValidationError({"cpf": "Este CPF já está em uso."})
 
-        # Validação para garantir que aluno_cpf é fornecido se is_responsavel for True
-        if data.get('is_responsavel') and not data.get('aluno_cpf'):
+        if is_responsavel and not aluno_cpf:
+            # --- Adicionado: Coloque os campos de volta se a validação falhar antes de re-lançar ---
+            data['is_responsavel'] = is_responsavel # Já é True, mas para manter a consistência
+            data['aluno_cpf'] = aluno_cpf # Já é None, mas para manter a consistência
             raise serializers.ValidationError({"aluno_cpf": "O CPF do aluno é obrigatório para um Responsável."})
         
         # Executa as validações do model (incluindo validar_cpf, validar_idade)
-        temp_instance = Usuario(**data)
+        temp_instance = Usuario(**data) # Agora 'data' não conterá 'is_responsavel' nem 'aluno_cpf'
         if not data.get('password'): 
             temp_instance.password = "dummy" 
         try:
             temp_instance.full_clean(exclude=['password']) 
         except Exception as e:
+            # --- Adicionado: Coloque os campos de volta antes de re-lançar a exceção ---
+            data['is_responsavel'] = is_responsavel
+            data['aluno_cpf'] = aluno_cpf
             raise serializers.ValidationError(e.message_dict)
+
+        # --- RE-ADICIONE os campos de volta ao 'data' para que eles estejam presentes para o método create() ---
+        data['is_responsavel'] = is_responsavel
+        data['aluno_cpf'] = aluno_cpf
+        # ------------------------------------------------------------------------------------------
 
         return data
 
@@ -184,7 +204,6 @@ class UsuarioWriteSerializer(serializers.ModelSerializer):
 
         with transaction.atomic():
             # Cria o Usuario
-            # Se UsuarioManager.create_user() é usado:
             if password:
                 user = Usuario.objects.create_user(**validated_data, password=password)
             else:
@@ -194,10 +213,8 @@ class UsuarioWriteSerializer(serializers.ModelSerializer):
 
             # Lógica para Responsável
             if is_responsavel:
-                # Importa o ResponsavelSerializer aqui para evitar import circular no topo
-                # e para garantir que ele seja usado apenas quando necessário.
-                from .responsavel_serializer import ResponsavelCreateUpdateSerializer 
-
+                # Não é necessário importar ResponsavelCreateUpdateSerializer aqui.
+                # Criamos o Responsavel diretamente.
                 try:
                     # Busca o Aluno pelo CPF do usuário associado
                     aluno = Aluno.objects.get(usuario__cpf=aluno_cpf)
@@ -206,20 +223,30 @@ class UsuarioWriteSerializer(serializers.ModelSerializer):
                 except Exception as e:
                     raise serializers.ValidationError(f"Erro ao buscar aluno: {e}")
 
-                # Prepara os dados para o ResponsavelSerializer
-                responsavel_data = {
-                    'usuario': user.id, # Passa o ID do usuário recém-criado
-                    'aluno': aluno.id   # Passa o ID do aluno encontrado
-                }
+                # --- NOVO CÓDIGO PARA CRIAR/ACESSAR O RESPONSÁVEL ---
+                # A OneToOneField com primary_key=True significa que o ID do Responsavel
+                # será o mesmo do Usuario. Usamos get_or_create para garantir unicidade.
+                responsavel, created = Responsavel.objects.get_or_create(usuario=user, defaults={'aluno': aluno})
                 
-                # Instancia e valida o ResponsavelSerializer
-                responsavel_serializer = ResponsavelCreateUpdateSerializer(data=responsavel_data)
-                responsavel_serializer.is_valid(raise_exception=True)
-                responsavel_serializer.save() # Cria o objeto Responsavel
+                if not created:
+                    # Se o responsável já existia (o que não deveria para um usuário recém-criado),
+                    # verifica e atualiza o aluno se for diferente.
+                    if responsavel.aluno != aluno:
+                        responsavel.aluno = aluno
+                        responsavel.save(update_fields=['aluno'])
+                    print(f"Responsável para {user.email} já existia e foi atualizado (se necessário).")
+                else:
+                    print(f"Responsável para {user.email} criado com sucesso.")
 
-                # O model Responsavel.save() agora se encarregará de atualizar user.tipo_usuario
-                # para 'RESPONSAVEL' e user.status_usuario para 'EM_ANALISE'.
-                
+                # Adiciona o usuário ao grupo 'responsavel'
+                try:
+                    responsavel_group = Group.objects.get(name='responsavel')
+                    user.groups.add(responsavel_group)
+                    print(f"Usuário {user.email} adicionado ao grupo 'responsavel'.")
+                except Group.DoesNotExist:
+                    print("AVISO: Grupo 'responsavel' não encontrado. Usuário não adicionado ao grupo.")
+                # --- FIM DO NOVO CÓDIGO ---
+
             else:
                 # Se não é responsável, defina o tipo_usuario como 'EXTERNO' explicitamente.
                 if user.tipo_usuario != 'EXTERNO':
