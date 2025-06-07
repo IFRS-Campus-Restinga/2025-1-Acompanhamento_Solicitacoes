@@ -3,13 +3,15 @@ import HeaderAluno from "../../components/base/headers/header_aluno";
 import Footer from "../../components/base/footer";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import './FormularioIndisponivel.css';
+// Remova as importações de date-fns, elas não serão mais necessárias
+// import { format, parseISO, isValid } from 'date-fns'; 
 
 export default function FormularioIndisponivel() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { tipoFormulario, periodo, error } = location.state || {};
+  // Não precisamos mais de 'periodo' ou 'periodos' se não vamos exibi-los
+  const { tipoFormulario, error } = location.state || {}; 
 
-  // Corrigido o nome da variável (de mensagens para nomesFormularios)
   const nomesFormularios = {
     'TRANCAMENTODISCIPLINA': 'Trancamento de Disciplina',
     'TRANCAMENTOMATRICULA': 'Trancamento de Matrícula',
@@ -19,6 +21,8 @@ export default function FormularioIndisponivel() {
     'ABONOFALTAS': 'Abono de Faltas',
     'ENTREGACERTIFICADOS': 'Entrega de Certificados'
   };
+
+  // Remova a função formatPeriod inteira
 
   return (
     <div className="page-container">
@@ -38,11 +42,30 @@ export default function FormularioIndisponivel() {
             ) : (
               <>
                 <p>O formulário de <strong>{nomesFormularios[tipoFormulario] || 'solicitação'}</strong> não está disponível no momento.</p>
-                {periodo && (
+                {/* Remova TODA esta seção que exibia o período, seja único ou múltiplos */}
+                {/*
+                {periodo && !periodos && ( 
                   <p className="periodo-info">
-                    <i className="fas fa-info-circle"></i> Período válido: {periodo}
+                    <i className="fas fa-info-circle"></i> Período válido: <strong>{formatPeriod(periodo)}</strong>
                   </p>
                 )}
+                {periodos && periodos.length > 0 && (
+                  <div className="periodos-detalhes">
+                    <p className="periodo-info"><i className="fas fa-info-circle"></i> Os períodos válidos para este formulário são:</p>
+                    <ul>
+                      {periodos.map((p, index) => (
+                        <li key={index}>{formatPeriod(p)}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                {!periodo && (!periodos || periodos.length === 0) && (
+                  <p className="periodo-info">
+                    <i className="fas fa-info-circle"></i> Não há período válido especificado para este formulário no momento.
+                  </p>
+                )}
+                */}
+                {/* Opcional: Se quiser uma mensagem genérica caso não haja período específico */}
               </>
             )}
           </div>

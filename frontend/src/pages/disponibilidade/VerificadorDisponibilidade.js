@@ -17,22 +17,25 @@ export default function VerificadorDisponibilidade({ children, tipoFormulario })
           navigate('/indisponivel', {
             state: {
               tipoFormulario,
-              periodo: res.data.periodo,
+              // *** CORREÇÃO AQUI: mude 'periodo' para 'periodos' ***
+              periodos: res.data.periodos || [], // Garanta que 'periodos' do backend seja um array
               from: location.pathname
             },
             replace: true
           });
         }
       } catch (error) {
+        // Você pode querer passar mais detalhes do erro se o backend fornecer
+        // Ex: error.response?.data?.detail
         navigate('/indisponivel', {
-          state: { error: true },
+          state: { error: true, tipoFormulario: tipoFormulario }, // Adicione tipoFormulario para melhor mensagem de erro
           replace: true
         });
       }
     };
 
     verificarDisponibilidade();
-  }, [tipoFormulario, navigate, location]);
+  }, [tipoFormulario, navigate, location]); // Adicione 'location' ao array de dependências para o useEffect
 
   return children;
 }

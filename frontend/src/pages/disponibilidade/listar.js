@@ -1,8 +1,9 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react"; // Adicionado useMemo aqui
 import { useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import HeaderCRE from "../../components/base/headers/header_cre";
+import { format, parseISO } from 'date-fns'; // Importado para formatação de datas
 
 // Componentes UI
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -25,7 +26,8 @@ export default function ListarDisponibilidades() {
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
 
-  useEffect(() => {
+  // Função para carregar as disponibilidades
+  const carregarDisponibilidades = () => {
     axios.get("http://localhost:8000/solicitacoes/disponibilidades/")
       .then((res) => setDisponibilidades(res.data))
       .catch((err) => {
@@ -33,14 +35,18 @@ export default function ListarDisponibilidades() {
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
-  }, []);
+  };
+
+  useEffect(() => {
+    carregarDisponibilidades();
+  }, []); // Carrega ao montar o componente
 
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/disponibilidades/${idSelecionado}/`)
+    axios.delete(`http://localhost:8000/solicitacoes/disponibilidades/${idSelecionado}/`) // Garante a barra final
       .then(() => {
         setMensagemPopup("Disponibilidade excluída com sucesso.");
         setTipoMensagem("sucesso");
-        setDisponibilidades(disponibilidades.filter((d) => d.id !== idSelecionado));
+        carregarDisponibilidades(); // Recarrega a lista após exclusão
       })
       .catch((err) => {
         setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir disponibilidade."}`);
@@ -53,15 +59,16 @@ export default function ListarDisponibilidades() {
       });
   };
 
-  const disponibilidadesFiltradas = React.useMemo(() => {
+  const disponibilidadesFiltradas = useMemo(() => {
     if (!filtro) return disponibilidades;
     
     const termo = filtro.toLowerCase();
     return disponibilidades.filter((disponibilidade) => {
-      return (
-        (disponibilidade.nome_formulario?.toLowerCase() || "").includes(termo) ||
-        (disponibilidade.formulario?.toLowerCase() || "").includes(termo)
-      );
+      // Ajustado para usar nome_formulario ou o próprio formulario
+      const nomeFormulario = disponibilidade.nome_formulario?.toLowerCase() || "";
+      const formularioValue = disponibilidade.formulario?.toLowerCase() || "";
+
+      return nomeFormulario.includes(termo) || formularioValue.includes(termo);
     });
   }, [disponibilidades, filtro]);
 
@@ -83,7 +90,7 @@ export default function ListarDisponibilidades() {
           value={filtro}
           onChange={(e) => {
             setFiltro(e.target.value);
-            setPaginaAtual(1);
+            setPaginaAtual(1); // Volta para a primeira página ao pesquisar
           }}
           placeholder="Pesquisar por formulário"
         />
@@ -95,8 +102,8 @@ export default function ListarDisponibilidades() {
             <thead>
               <tr>
                 <th>Formulário</th>
-                <th>Disponibilidade</th>
-                <th>Período</th>
+                <th>Tipo de Disponibilidade</th> {/* Coluna renomeada para clareza */}
+                <th>Períodos Cadastrados</th> {/* Coluna renomeada para clareza */}
                 <th>Status</th>
                 <th>Ações</th>
               </tr>
@@ -108,12 +115,21 @@ export default function ListarDisponibilidades() {
                   <td>
                     {disponibilidade.sempre_disponivel ? 
                       "Sempre disponível" : 
-                      "Por período"}
+                      "Por período(s)"} {/* Exibe "Por período(s)" para múltiplos */}
                   </td>
                   <td>
-                    {disponibilidade.sempre_disponivel ? 
-                      "-" : 
-                      `${new Date(disponibilidade.data_inicio).toLocaleDateString()} a ${new Date(disponibilidade.data_fim).toLocaleDateString()}`}
+                    {disponibilidade.sempre_disponivel
+                      ? (disponibilidade.periodos?.[0]?.data_inicio
+                          ? `A partir de ${format(parseISO(disponibilidade.periodos[0].data_inicio), 'dd/MM/yyyy')}`
+                          : 'Data inicial não definida' // Caso muito raro se sempre_disponivel for true
+                        )
+                      : (disponibilidade.periodos?.length > 0
+                          ? disponibilidade.periodos.map(p =>
+                              `${format(parseISO(p.data_inicio), 'dd/MM/yyyy')} a ${p.data_fim ? format(parseISO(p.data_fim), 'dd/MM/yyyy') : 'Indefinido'}`
+                            ).join(' | ')
+                          : "Nenhum período cadastrado" // Caso onde não é sempre_disponivel e não há períodos
+                        )
+                    }
                   </td>
                   <td>
                     <span className={`status ${disponibilidade.esta_ativo ? 'ativo' : 'inativo'}`}>
@@ -122,14 +138,11 @@ export default function ListarDisponibilidades() {
                   </td>
                   <td>
                     <div className="botoes-acoes">
-
                       <BotaoEditar to={`/disponibilidades/${disponibilidade.id}`} />
-
                       <BotaoExcluir onClick={() => {
                         setIdSelecionado(disponibilidade.id);
                         setMostrarPopup(true);
                       }} />
-
                     </div>
                   </td>
                 </tr>
@@ -159,7 +172,7 @@ export default function ListarDisponibilidades() {
             paginaAtual={paginaAtual}
             setPaginaAtual={setPaginaAtual}
             itensPorPagina={itensPorPagina}
-            onDadosPaginados={() => {}}
+            onDadosPaginados={() => {}} // Função vazia, pois os dados são paginados via slice
           />
         )}
       </main>
