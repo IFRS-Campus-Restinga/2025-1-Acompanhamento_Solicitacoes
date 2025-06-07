@@ -26,3 +26,4 @@ from .nome import *
 from .posse_solicitacao import *
 from .disponibilidade import *
 from .periodo_disciplina import *
+from .periodo_disponibilidade import *
