@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import generics, serializers 
-from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer
+from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer, UsuarioWriteSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
 from django.db.models import Q
 from django.contrib.auth.models import Group
@@ -18,6 +18,13 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
     
+    def get_serializer_class(self):
+        """
+        Sobrescreve para usar UsuarioWriteSerializer no POST e UsuarioSerializerComGrupos no GET.
+        """
+        if self.request.method == 'POST':
+            return UsuarioWriteSerializer
+        return UsuarioSerializerComGrupos
     
     def perform_create(self, serializer):
         
