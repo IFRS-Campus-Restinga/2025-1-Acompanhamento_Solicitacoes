@@ -1,7 +1,9 @@
-from rest_framework import generics
+from rest_framework import generics, status
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from django.utils import timezone
+from django.db import models
+
 from ..serializers.disponibilidade_serializer import DisponibilidadeSerializer
 from ..models import Disponibilidade
 
@@ -24,10 +26,28 @@ class VerificarDisponibilidadeView(APIView):
             )
         
         try:
-            disp = Disponibilidade.objects.get(formulario=formulario)
+            disponibilidade = Disponibilidade.objects.get(formulario=formulario)
+            periodos_ativos = disponibilidade.periodos.filter(
+                data_inicio__lte=timezone.now().date(),
+                data_fim__gte=timezone.now().date()
+            ) | disponibilidade.periodos.filter(
+                data_inicio__lte=timezone.now().date(),
+                data_fim__isnull=True
+            )
+
+            disponivel = periodos_ativos.exists()
+            periodos_formatados = [
+                f"{p.data_inicio} a {p.data_fim}" if p.data_fim 
+                else f"A partir de {p.data_inicio}"
+                for p in periodos_ativos
+            ]
+
             return Response({
-                "disponivel": disp.esta_ativo,
-                "periodo": f"{disp.data_inicio} a {disp.data_fim}" if not disp.sempre_disponivel else "Sempre disponível"
+                "disponivel": disponivel,
+                "periodos": periodos_formatados if disponivel else ["Formulário indisponível"]
             })
         except Disponibilidade.DoesNotExist:
-            return Response({"disponivel": True, "periodo": "Sempre disponível"})
+            return Response({
+                "disponivel": True,
+                "periodos": ["Sempre disponível (não registrado)"]
+            })

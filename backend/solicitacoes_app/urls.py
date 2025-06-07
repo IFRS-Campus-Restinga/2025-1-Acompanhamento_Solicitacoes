@@ -42,6 +42,11 @@ from .views.disponibilidade_view import (
     VerificarDisponibilidadeView
 )
 
+from .views.periodo_disponibilidade_view import (
+    PeriodoDisponibilidadeListCreateView,
+    PeriodoDisponibilidadeDetailView
+)
+
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
 
@@ -167,6 +172,9 @@ urlpatterns = [
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
     path('disponibilidades/verificar/', VerificarDisponibilidadeView.as_view(), name='verificar-disponibilidade'),
+
+    path('periodos-disponibilidade/', PeriodoDisponibilidadeListCreateView.as_view(), name='periodo-list-create'),
+    path('periodos-disponibilidade/<int:id>/', PeriodoDisponibilidadeDetailView.as_view(), name='periodo-detail'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 
