@@ -246,12 +246,6 @@ class UsuarioWriteSerializer(serializers.ModelSerializer):
                 except Group.DoesNotExist:
                     print("AVISO: Grupo 'responsavel' não encontrado. Usuário não adicionado ao grupo.")
                 # --- FIM DO NOVO CÓDIGO ---
-
-            else:
-                # Se não é responsável, defina o tipo_usuario como 'EXTERNO' explicitamente.
-                if user.tipo_usuario != 'EXTERNO':
-                    user.tipo_usuario = 'EXTERNO'
-                    user.save(update_fields=['tipo_usuario'])
                     
         return user
 

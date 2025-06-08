@@ -2,6 +2,7 @@ from rest_framework import generics
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 from django.db import transaction
 from ..models import Aluno, Usuario
 from ..serializers.aluno_serializer import AlunoSerializer, AlunoWriteSerializer, AlunoSerializerAntigo, AlunoReadSerializer
@@ -104,3 +105,30 @@ class AlunoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         # Usa o serializer de leitura para responder
         read_serializer = AlunoReadSerializer(instance)
         return Response(read_serializer.data, status=status.HTTP_200_OK)
+
+class AlunoBuscarPorCpfView(APIView):
+    """
+    Endpoint para buscar um aluno pelo CPF do usuário associado.
+    Retorna o nome do aluno se encontrado.
+    """
+    permission_classes = [AllowAny] # Defina suas permissões aqui, se necessário
+
+    def get(self, request, *args, **kwargs):
+        cpf = request.query_params.get('cpf', None) # Pega o CPF dos parâmetros da URL (ex: ?cpf=12345678900)
+
+        if not cpf:
+            return Response({"detail": "CPF é obrigatório."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Busca o Aluno cujo usuário associado tem o CPF fornecido
+            # Assumimos que o Aluno tem uma OneToOneField ou ForeignKey para Usuario
+            # e que o campo 'cpf' está no modelo Usuario.
+            aluno = Aluno.objects.get(usuario__cpf=cpf)
+            # Retorna o nome do usuário associado ao aluno
+            return Response({"nome_aluno": aluno.usuario.nome}, status=status.HTTP_200_OK)
+        except Aluno.DoesNotExist:
+            # Se nenhum aluno com esse CPF for encontrado
+            return Response({"detail": "Aluno com o CPF fornecido não encontrado."}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            # Para capturar outros erros inesperados (ex: problema de banco de dados)
+            return Response({"detail": f"Erro interno do servidor: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -112,6 +112,7 @@ urlpatterns = [
     path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
     path('alunos/listar/', AlunoListView.as_view(), name='aluno-list-antigo'),
     path('alunos/listar/<int:pk>/', AlunoRetrieveView.as_view(), name='aluno-detail-antigo'),
+    path('alunos/buscar_por_cpf/', AlunoBuscarPorCpfView.as_view(), name='aluno-buscar-cpf'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
     path('disciplinas/<str:codigo>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
