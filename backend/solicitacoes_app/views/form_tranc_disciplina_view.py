@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from django.utils import timezone
 from ..models import FormTrancDisciplina, Disciplina
 from ..serializers.form_tranc_disciplina_serializer import FormTrancDisciplinaSerializer
+from ..permissoes import CanSubmitTrancDisciplina, CanViewSolicitacaoDetail
+
 
 class FormTrancDisciplinaListCreate(generics.ListCreateAPIView):
     """
@@ -13,7 +15,9 @@ class FormTrancDisciplinaListCreate(generics.ListCreateAPIView):
     """
     queryset = FormTrancDisciplina.objects.all()
     serializer_class = FormTrancDisciplinaSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanSubmitTrancDisciplina] 
+
 
     def perform_create(self, serializer):
         # Log dos dados recebidos (para debug)
@@ -28,7 +32,8 @@ class FormTrancDisciplinaDetail(generics.RetrieveAPIView):
     """
     queryset = FormTrancDisciplina.objects.all()
     serializer_class = FormTrancDisciplinaSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanViewSolicitacaoDetail] 
     lookup_field = "id"
 
 @api_view(['GET'])

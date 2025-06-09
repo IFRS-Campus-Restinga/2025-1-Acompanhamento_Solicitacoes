@@ -1,8 +1,13 @@
+from datetime import timezone
 from rest_framework import generics
 from ..models import Solicitacao
 from ..serializers.solicitacao_serializer import SolicitacaoSerializer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.exceptions import PermissionDenied
+from ..permissoes import IsCRE
+from ..permissoes import CanViewSolicitacaoDetail
+
+
 
 class SolicitacaoListCreate(generics.ListCreateAPIView):
     queryset = Solicitacao.objects.all()
@@ -29,3 +34,6 @@ class SolicitacaoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     queryset = Solicitacao.objects.all()
     serializer_class = SolicitacaoSerializer
     lookup_field = 'id'
+    #permission_classes = [IsCRE]
+    permission_classes = [CanViewSolicitacaoDetail] 
+

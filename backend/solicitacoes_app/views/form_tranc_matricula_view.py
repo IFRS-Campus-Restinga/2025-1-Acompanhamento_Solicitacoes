@@ -4,11 +4,15 @@ from ..models import FormularioTrancamentoMatricula
 from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
 from datetime import datetime
 from rest_framework.response import Response
+from ..permissoes import CanSubmitTrancMatricula, CanViewSolicitacaoDetail
+
 
 class FormTrancamentoCreateWithSolicitacaoView(generics.ListCreateAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()
     serializer_class = FormularioTrancamentoMatriculaSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanSubmitTrancMatricula] 
+
 
     def create(self, request, *args, **kwargs):
         print("🔥 [Django] Dados recebidos no POST:")
@@ -33,5 +37,6 @@ class FormTrancamentoCreateWithSolicitacaoView(generics.ListCreateAPIView):
 class FormTrancamentoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()
     serializer_class = FormularioTrancamentoMatriculaSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanViewSolicitacaoDetail] 
     lookup_field = "id"

@@ -12,10 +12,14 @@ from ..serializers.disciplina_serializer import DisciplinaSerializer
 from ..serializers.usuario_serializer import UsuarioSerializer
 from ..serializers.form_buscar_info_serializer import AlunoInfoSerializer
 
+from ..permissoes import IsAluno, IsResponsavel
+from rest_framework.permissions import IsAuthenticated
+
 class FormAbonoFaltaViewListCreate(generics.ListCreateAPIView):
     queryset = FormAbonoFalta.objects.all()
     serializer_class = FormAbonoFaltaSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, (IsAluno | IsResponsavel)] 
 
 
     def perform_create(self, serializer): 
@@ -125,3 +129,8 @@ def disciplinas_por_ppc(request):
         return Response(serializer.data)
     except Ppc.DoesNotExist:
         return Response({"erro": "PPC não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+    
+#class AbonoFaltaCreateView(generics.CreateAPIView):
+    #queryset = FormAbonoFalta.objects.all() # Use seu modelo correto
+    #serializer_class = FormAbonoFaltaSerializer # Use seu serializer correto
+    # Permite se for Autenticado E (Aluno OU Responsável)

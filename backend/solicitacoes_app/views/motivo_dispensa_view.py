@@ -2,6 +2,8 @@ from rest_framework import generics
 from ..models.motivo_dispensa import MotivoDispensa
 from ..serializers.motivo_dispensa_serializer import MotivoDispensaSerializer
 from rest_framework.permissions import AllowAny
+from ..permissoes import CanManageMotivos, IsCRE
+
 
 class MotivoDispensaListService(generics.ListCreateAPIView): 
     """
@@ -9,7 +11,9 @@ class MotivoDispensaListService(generics.ListCreateAPIView):
     """
     serializer_class = MotivoDispensaSerializer
     queryset = MotivoDispensa.objects.all()
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanManageMotivos]
+
 
 
 class MotivoDispensaService(generics.RetrieveUpdateDestroyAPIView):  
@@ -18,6 +22,8 @@ class MotivoDispensaService(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = MotivoDispensaSerializer
     queryset = MotivoDispensa.objects.all()
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanManageMotivos]
+
 
         

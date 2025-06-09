@@ -5,12 +5,15 @@ from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_4
 
 from ..models.motivo_exercicios import MotivoExercicios
 from ..serializers.motivo_exercicios_serializer import MotivoExerciciosSerializer
+from ..permissoes import CanManageMotivos, IsCRE
 
 
 class MotivoExerciciosListCreateView(generics.ListCreateAPIView):
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanManageMotivos]
+
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -23,7 +26,8 @@ class MotivoExerciciosListCreateView(generics.ListCreateAPIView):
 class MotivoExerciciosRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanManageMotivos]
     lookup_field = 'pk'
 
     def update(self, request, *args, **kwargs):
