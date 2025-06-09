@@ -198,12 +198,20 @@ export default function CadastrarAtualizarUsuario() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setErrors({}); // Limpa erros anteriores
     let currentErrors = {};
 
+    // Validação de frontend: Se for responsável, o aluno deve ter sido buscado e validado
     if (formData.is_responsavel && !isAlunoBuscadoEValido) {
-      currentErrors = { ...currentErrors, aluno_cpf: "Busque e valide o aluno responsável." };
+        currentErrors = { ...currentErrors, aluno_cpf: "Busque e valide o aluno responsável." };
     }
 
+    // Validação de frontend: Formato básico de e-mail
+    if (!formData.email.includes('@')) { 
+        currentErrors = { ...currentErrors, email: "Email inválido." };
+    }
+
+    // Se houver erros de validação no frontend, exibe e interrompe o envio
     if (Object.keys(currentErrors).length > 0) {
         setErrors(currentErrors);
         setMensagem("Preencha todos os campos obrigatórios e valide o aluno.");
@@ -212,45 +220,98 @@ export default function CadastrarAtualizarUsuario() {
         return;
     }
 
-    const dataToSend = { ...formData };
-    
-    // --- Lógica para o tipo_usuario ---
-    if (dataToSend.is_responsavel && dataToSend.aluno_cpf) {
-        dataToSend.tipo_usuario = 'RESPONSAVEL';
-    } else {
-        dataToSend.tipo_usuario = 'EXTERNO';
-        delete dataToSend.aluno_cpf; // Garante que aluno_cpf não seja enviado para externos
-    }
-    // ---------------------------------
-
-    const url = id ? `usuarios/${id}/` : "usuarios/";
-    const request = id ? api.put(url, dataToSend) : api.post(url, dataToSend);
+    let createdUser = null; // Variável para armazenar o usuário criado no primeiro passo
 
     try {
-      await request;
-      setMensagem(id ? "Usuário atualizado com sucesso!" : "Usuário cadastrado com sucesso!");
-      setTipoMensagem("sucesso");
-      setShowFeedback(true);
+        if (id) {
+            // Cenário de EDIÇÃO DE USUÁRIO EXISTENTE
+            // O endpoint base já cuida do '/solicitacoes/', então usamos apenas 'usuarios/{id}/'
+            const updateUserData = {
+                nome: formData.nome,
+                email: formData.email,
+                cpf: formData.cpf.replace(/\D/g, ''),
+                telefone: formData.telefone.replace(/\D/g, ''),
+                data_nascimento: formData.data_nascimento,
+                is_active: formData.is_active,
+            };
+            await api.put(`usuarios/${id}/`, updateUserData); // CORRIGIDO: Removido 'solicitacoes/'
+            setMensagem("Usuário atualizado com sucesso!");
+
+        } else {
+            // Cenário de CRIAÇÃO DE NOVO USUÁRIO (seja Externo ou Responsável)
+
+            // PASSO 1: Criar o Usuário Base através do endpoint /usuarios/
+            const newUserBaseData = {
+                nome: formData.nome,
+                email: formData.email,
+                cpf: formData.cpf.replace(/\D/g, ''), 
+                telefone: formData.telefone.replace(/\D/g, ''),
+                data_nascimento: formData.data_nascimento,
+            };
+
+            // A chamada para 'usuarios/' já é relativa à base '/solicitacoes/'
+            const userCreationResponse = await api.post("usuarios/", newUserBaseData); // CORRIGIDO: Removido 'solicitacoes/'
+            createdUser = userCreationResponse.data; 
+            console.log("Usuário base criado com sucesso:", createdUser);
+
+            // PASSO 2 (CONDICIONAL): Se for para ser um Responsável, cria o registro de Responsável
+            if (formData.is_responsavel && createdUser && createdUser.id) {
+                const responsibleCreationData = {
+                    usuario_id: createdUser.id, 
+                    aluno_cpf: formData.aluno_cpf.replace(/\D/g, ''), 
+                };
+                // A chamada para 'responsaveis/' já é relativa à base '/solicitacoes/'
+                await api.post("responsaveis/", responsibleCreationData); // CORRIGIDO: Removido 'solicitacoes/'
+                setMensagem("Responsável cadastrado com sucesso!");
+                console.log("Registro de Responsável criado e vinculado ao usuário.");
+            } else {
+                setMensagem("Usuário externo cadastrado com sucesso!");
+            }
+        }
+        setTipoMensagem("sucesso");
+        setShowFeedback(true);
+
     } catch (error) {
-      console.error("Erro ao salvar usuário:", error.response);
-      if (error.response?.status === 400 && error.response.data) {
-        setErrors(error.response.data);
-        const errorDetail = error.response.data.detail || JSON.stringify(error.response.data);
-        setMensagem(`Erro de validação: ${errorDetail}`);
-        setTipoMensagem("erro");
-        setShowFeedback(true);
-      } else {
-        setMensagem(`Erro ${error.response?.status || ""}: ${error.response?.data?.detail || "Erro ao salvar usuário."}`);
-        setTipoMensagem("erro");
-        setShowFeedback(true);
-      }
+        console.error("Erro ao salvar usuário/responsável:", error.response);
+        let errorMessages = [];
+
+        if (error.response?.status === 400 && error.response.data) {
+            if (error.response.data.usuario) { 
+                for (const key in error.response.data.usuario) {
+                    errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data.usuario[key].join(', ')}`);
+                }
+            } else if (error.response.data.aluno_cpf) {
+                 errorMessages.push(`CPF do Aluno: ${error.response.data.aluno_cpf.join(', ')}`);
+            } else if (error.response.data.detail) {
+                errorMessages.push(error.response.data.detail);
+            } else if (Object.keys(error.response.data).length > 0) {
+                for (const key in error.response.data) {
+                    if (key !== 'aluno_cpf') { 
+                       errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data[key].join(', ')}`);
+                    }
+                }
+            }
+            
+            setMensagem(`Erro de validação: ${errorMessages.join('\n') || "Verifique os campos."}`);
+            setTipoMensagem("erro");
+            setShowFeedback(true);
+        } else {
+            setMensagem(`Erro ${error.response?.status || ""}: ${error.response?.data?.detail || "Erro ao salvar usuário/responsável."}`);
+            setTipoMensagem("erro");
+            setShowFeedback(true);
+        }
     }
-  };
+};
 
   const fecharFeedback = useCallback(() => {
-    setShowFeedback(false);
-    navigate("/usuarios");
-  }, [navigate]);
+      setShowFeedback(false);
+      // --- INÍCIO DA ALTERAÇÃO AQUI ---
+      // Redireciona para /usuarios apenas se for um novo cadastro e sucesso
+      if (tipoMensagem === "sucesso" && !id) { 
+          navigate("/usuarios");
+      }
+      // --- FIM DA ALTERAÇÃO AQUI ---
+  }, [navigate, id, tipoMensagem]);
 
   return (
     <div>

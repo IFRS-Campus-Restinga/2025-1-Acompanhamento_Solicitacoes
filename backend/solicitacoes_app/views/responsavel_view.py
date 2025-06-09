@@ -6,29 +6,34 @@ from rest_framework.status import (
 )
 
 from ..models import Responsavel
-# >>> AQUI ESTÁ A MUDANÇA ESSENCIAL NO IMPORT <<<
-# Precisamos importar os novos nomes dos serializers que criamos
+# Importar os serializers ajustados
 from ..serializers.responsavel_serializer import ResponsavelListSerializer, ResponsavelCreateUpdateSerializer
 
 
 class ResponsavelListCreateView(generics.ListCreateAPIView):
     queryset = Responsavel.objects.all()
-    # Para as requisições GET (listagem de responsáveis), usamos o ResponsavelListSerializer
-    serializer_class = ResponsavelListSerializer
     permission_classes = [AllowAny]
 
-    def create(self, request, *args, **kwargs):
-        # Para as requisições POST (criação de responsável), usamos o ResponsavelCreateUpdateSerializer
-        serializer = ResponsavelCreateUpdateSerializer(data=request.data)
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            return Response({'message': 'Responsável cadastrado com sucesso!'}, status=HTTP_201_CREATED)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    def get_serializer_class(self):
+        """
+        Usa ResponsavelCreateUpdateSerializer para POST (criação)
+        e ResponsavelListSerializer para GET (listagem).
+        """
+        if self.request.method == 'POST':
+            return ResponsavelCreateUpdateSerializer
+        return ResponsavelListSerializer
+    
+    def perform_create(self, serializer):
+        """
+        Chama o método create do serializer para criar o Responsavel
+        e o Usuario/vincular, e adicionar ao grupo.
+        """
+        serializer.save() # O serializer.create() já faz tudo o que precisamos
 
 
 class ResponsavelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Responsavel.objects.all()
-    # Definimos o serializer padrão para a view. 
+    # Definimos o serializer padrão para a view de update/destroy.
     # ResponsavelCreateUpdateSerializer é bom para operações de update.
     serializer_class = ResponsavelCreateUpdateSerializer 
     permission_classes = [AllowAny]
