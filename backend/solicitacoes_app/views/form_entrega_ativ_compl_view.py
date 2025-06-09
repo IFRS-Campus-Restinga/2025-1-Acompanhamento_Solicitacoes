@@ -5,15 +5,19 @@ from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComp
 from ..models.solicitacao import Solicitacao
 from django.contrib.contenttypes.models import ContentType
 from datetime import datetime
+from ..permissoes import CanSubmitEntregaAtivCompl, CanViewSolicitacaoDetail
+
 
 class FormEntregaAtivComplListCreate(ListCreateAPIView):
     queryset = FormEntregaAtivCompl.objects.all()
     serializer_class = FormEntregaAtivComplSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanSubmitEntregaAtivCompl]
 
 
 class FormEntregaAtivComplUpdate(RetrieveUpdateAPIView):
     queryset = FormEntregaAtivCompl.objects.all()
     serializer_class = FormEntregaAtivComplSerializer
-    permission_classes = [AllowAny]
+    #permission_classes = [AllowAny]
+    permission_classes = [CanViewSolicitacaoDetail]
     lookup_field = "id"

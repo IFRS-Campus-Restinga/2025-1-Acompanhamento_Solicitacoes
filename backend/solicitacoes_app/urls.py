@@ -49,6 +49,9 @@ from rest_framework.routers import DefaultRouter
 
 from .views.permissoes_view import PermissaoListView
 
+from .views.listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView 
+
+
 app_name = 'solicitacoes_app'
        
 urlpatterns = [
@@ -173,5 +176,7 @@ urlpatterns = [
     path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
     
     path('solicitacoes/permissoes/', PermissaoListView.as_view()),
+
+    path('minhas-solicitacoes/', ListarMinhasSolicitacoesView.as_view(), name='listar_minhas_solicitacoes'),
 
     ]

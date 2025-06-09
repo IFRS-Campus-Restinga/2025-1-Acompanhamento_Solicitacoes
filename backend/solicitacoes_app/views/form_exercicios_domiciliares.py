@@ -13,6 +13,9 @@ from ..serializers.disciplina_serializer import DisciplinaSerializer
 from ..serializers.usuario_serializer import UsuarioSerializer
 from ..serializers.form_buscar_info_serializer import AlunoInfoSerializer
 
+from ..permissoes import CanSubmitExercicioDomiciliar, CanViewSolicitacaoDetail
+
+
 class UsuarioPorEmailView(generics.ListAPIView):
     """Endpoint para buscar usuário por email"""
     serializer_class = UsuarioSerializer
@@ -122,3 +125,15 @@ class FormExercicioDomiciliarViewSet(viewsets.ModelViewSet):
             return FormExercicioDomiciliar.objects.all()
         except FormExercicioDomiciliar.DoesNotExist:
             return ({"message":"Não existe formulário vinculado ao aluno"})
+    #editei aqui
+    def get_permissions(self):
+        """
+        Define permissões diferentes para diferentes ações:
+        - Para criar: CanSubmitExercicioDomiciliar
+        - Para visualizar/editar/excluir: CanViewSolicitacaoDetail
+        """
+        if self.action == 'create':
+            permission_classes = [CanSubmitExercicioDomiciliar]
+        else:
+            permission_classes = [CanViewSolicitacaoDetail]
+        return [permission() for permission in permission_classes]
