@@ -3,7 +3,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import generics, serializers 
-from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer
+from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer, UsuarioWriteSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
 from django.db.models import Q
 from django.contrib.auth.models import Group
@@ -18,6 +18,13 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
     
+    def get_serializer_class(self):
+        """
+        Sobrescreve para usar UsuarioWriteSerializer no POST e UsuarioSerializerComGrupos no GET.
+        """
+        if self.request.method == 'POST':
+            return UsuarioWriteSerializer
+        return UsuarioSerializerComGrupos
     
     def perform_create(self, serializer):
         
@@ -173,13 +180,30 @@ class UsuarioAprovarCadastroView(generics.GenericAPIView):
 
 
 class AlunoEmailListView(generics.ListAPIView):
-    """
-    Endpoint para listar apenas e-mails de alunos (para dropdown de responsáveis).
-    """
-    queryset = Usuario.objects.filter(Q(aluno__isnull=False)).only('email')
-    serializer_class = serializers.Serializer  # Serializer básico
-    permission_classes = [AllowAny]
+    def get_queryset(self):
+        try:
+            # --- MUDANÇA AQUI: Altere 'Aluno' para 'aluno' (minúsculo) ---
+            alunos_group = Group.objects.get(name='aluno') 
+            print(f"DEBUG: Grupo 'aluno' encontrado: {alunos_group.name}")
+            queryset = Usuario.objects.filter(groups=alunos_group, is_active=True)
+            print(f"DEBUG: Queryset de alunos ativos: {queryset.count()} alunos encontrados.")
+            for u in queryset:
+                print(f"DEBUG: Usuário no queryset: ID={u.id}, Email={u.email}, CPF={u.cpf if hasattr(u, 'cpf') else 'N/A'}")
+            return queryset
+        except Group.DoesNotExist:
+            print("DEBUG: Erro: Grupo 'aluno' não existe no banco de dados!")
+            return Usuario.objects.none()
 
-    def list(self, request):
-        emails = self.queryset.values_list('email', flat=True)
-        return Response(list(emails))
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+
+        data = []
+        for user in queryset:
+            print(f"DEBUG: Processando usuário para retorno: Email={user.email}, CPF={user.cpf if hasattr(user, 'cpf') else 'N/A'}") # Debug 4
+            if hasattr(user, 'cpf') and user.cpf: # Garante que o CPF exista e não seja vazio/None
+                data.append({"email": user.email, "cpf": user.cpf})
+            else:
+                print(f"DEBUG: Usuário {user.email} não tem CPF válido, pulando.") # Debug 5
+
+        print(f"DEBUG: Dados finais a serem retornados: {data}") # Debug 6
+        return Response(data)

@@ -6,16 +6,20 @@ from rest_framework.status import (
 )
 
 from ..models import Responsavel
-from ..serializers.responsavel_serializer import ResponsavelSerializer
+# >>> AQUI ESTÁ A MUDANÇA ESSENCIAL NO IMPORT <<<
+# Precisamos importar os novos nomes dos serializers que criamos
+from ..serializers.responsavel_serializer import ResponsavelListSerializer, ResponsavelCreateUpdateSerializer
 
 
 class ResponsavelListCreateView(generics.ListCreateAPIView):
     queryset = Responsavel.objects.all()
-    serializer_class = ResponsavelSerializer
+    # Para as requisições GET (listagem de responsáveis), usamos o ResponsavelListSerializer
+    serializer_class = ResponsavelListSerializer
     permission_classes = [AllowAny]
 
     def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        # Para as requisições POST (criação de responsável), usamos o ResponsavelCreateUpdateSerializer
+        serializer = ResponsavelCreateUpdateSerializer(data=request.data)
         if serializer.is_valid():
             self.perform_create(serializer)
             return Response({'message': 'Responsável cadastrado com sucesso!'}, status=HTTP_201_CREATED)
@@ -24,17 +28,22 @@ class ResponsavelListCreateView(generics.ListCreateAPIView):
 
 class ResponsavelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Responsavel.objects.all()
-    serializer_class = ResponsavelSerializer
+    # Definimos o serializer padrão para a view. 
+    # ResponsavelCreateUpdateSerializer é bom para operações de update.
+    serializer_class = ResponsavelCreateUpdateSerializer 
     permission_classes = [AllowAny]
     lookup_field = 'pk'
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance)
+        # Ao recuperar um único responsável (GET de um ID específico), 
+        # é melhor usar o ResponsavelListSerializer para ter os detalhes aninhados (depth=1)
+        serializer = ResponsavelListSerializer(instance) 
         return Response(serializer.data, status=HTTP_200_OK)
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
+        # O serializer para o update será o definido em serializer_class (ResponsavelCreateUpdateSerializer)
         serializer = self.get_serializer(instance, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()

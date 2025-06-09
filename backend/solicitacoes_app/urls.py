@@ -42,6 +42,11 @@ from .views.disponibilidade_view import (
     VerificarDisponibilidadeView
 )
 
+from .views.periodo_disponibilidade_view import (
+    PeriodoDisponibilidadeListCreateView,
+    PeriodoDisponibilidadeDetailView
+)
+
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
 
@@ -110,6 +115,7 @@ urlpatterns = [
     path('alunos/<int:pk>/', AlunoRetrieveUpdateDestroyView.as_view(), name='aluno-detail'),
     path('alunos/listar/', AlunoListView.as_view(), name='aluno-list-antigo'),
     path('alunos/listar/<int:pk>/', AlunoRetrieveView.as_view(), name='aluno-detail-antigo'),
+    path('alunos/buscar_por_cpf/', AlunoBuscarPorCpfView.as_view(), name='aluno-buscar-cpf'),
 
     path('disciplinas/', DisciplinaListCreateView.as_view(), name='disciplina-list'),
     path('disciplinas/<str:codigo>/', DisciplinaRetrieveUpdateDestroyView.as_view(), name='disciplina-detail'),
@@ -122,11 +128,11 @@ urlpatterns = [
     
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
+    path('usuarios/emails-alunos/', AlunoEmailListView.as_view(), name='aluno-emails-list'),
     path('usuarios/<str:email>/', UsuarioListCreateView.as_view(), name='usuario-email'),
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
     path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
     path('usuarios/aprovar/<int:pk>/', UsuarioAprovarCadastroView.as_view(), name='usuario-aprovar'),
-    path('usuarios/emails-alunos/', AlunoEmailListView.as_view(), name='aluno-emails-list'),
 
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
@@ -170,6 +176,9 @@ urlpatterns = [
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
     path('disponibilidades/verificar/', VerificarDisponibilidadeView.as_view(), name='verificar-disponibilidade'),
+
+    path('periodos-disponibilidade/', PeriodoDisponibilidadeListCreateView.as_view(), name='periodo-list-create'),
+    path('periodos-disponibilidade/<int:id>/', PeriodoDisponibilidadeDetailView.as_view(), name='periodo-detail'),
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 

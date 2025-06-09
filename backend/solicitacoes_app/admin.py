@@ -24,6 +24,7 @@ admin.site.register(FormExercicioDomiciliar)
 admin.site.register(Nome)
 admin.site.register(Solicitacao)
 admin.site.register(Disponibilidade)
+admin.site.register(PeriodoDisponibilidade)
 admin.site.register(FormEntregaAtivCompl)
 
 # Customização do admin para o modelo Usuario

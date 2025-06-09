@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from ..models import Disponibilidade
-from datetime import date
+from ..models import Disponibilidade, PeriodoDisponibilidade
+from .periodo_disponibilidade_serializer import PeriodoDisponibilidadeSerializer
 
 class DisponibilidadeSerializer(serializers.ModelSerializer):
     nome_formulario = serializers.CharField(
@@ -8,7 +8,8 @@ class DisponibilidadeSerializer(serializers.ModelSerializer):
         read_only=True
     )
     esta_ativo = serializers.BooleanField(read_only=True)
-    disponivel = serializers.SerializerMethodField(read_only=True)
+    periodos = serializers.SerializerMethodField(read_only=True)
+    sempre_disponivel = serializers.SerializerMethodField()  # Adiciona o campo sempre_disponivel
 
     class Meta:
         model = Disponibilidade
@@ -16,40 +17,22 @@ class DisponibilidadeSerializer(serializers.ModelSerializer):
             'id',
             'formulario',
             'nome_formulario',
-            'sempre_disponivel',
-            'data_inicio',
-            'data_fim',
             'ativo',
             'esta_ativo',
-            'disponivel'
+            'periodos',
+            'sempre_disponivel'  # Inclui o campo nos fields
         ]
         extra_kwargs = {
             'formulario': {'required': True},
-            'data_inicio': {'required': False},
-            'data_fim': {'required': False}
         }
 
-    def get_disponivel(self, obj):
+    def get_periodos(self, obj):
+        periodos = obj.periodos.all().order_by('data_inicio')
+        return PeriodoDisponibilidadeSerializer(periodos, many=True).data
+
+    def get_esta_ativo(self, obj):
         return obj.esta_ativo
 
-    def validate(self, data):
-        if not data.get('sempre_disponivel', True):
-            if not data.get('data_inicio') or not data.get('data_fim'):
-                raise serializers.ValidationError(
-                    {'datas': 'Defina as datas quando "sempre_disponivel" for False.'}
-                )
-            
-            if data['data_fim'] < data['data_inicio']:
-                raise serializers.ValidationError(
-                    {'data_fim': 'A data final não pode ser anterior à inicial.'}
-                )
-
-        return data
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        if instance.data_inicio:
-            representation['data_inicio'] = instance.data_inicio.isoformat()
-        if instance.data_fim:
-            representation['data_fim'] = instance.data_fim.isoformat()
-        return representation
+    def get_sempre_disponivel(self, obj):
+        # Verifica se existe exatamente um período e se a data_fim desse período é nula.
+        return obj.periodos.count() == 1 and obj.periodos.filter(data_fim__isnull=True).exists()
