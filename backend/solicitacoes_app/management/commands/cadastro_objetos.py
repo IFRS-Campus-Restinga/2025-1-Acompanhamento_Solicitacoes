@@ -1,17 +1,37 @@
 from django.core.management.base import BaseCommand
-
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
 from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma, Nome
 from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
 from ...models.mandato import Mandato
 from ...models.cre import CRE
-from django.contrib.auth.models import Group
+from ...models.forms.form_desistencia_vaga import FormDesistenciaVaga
+from ...models.form_abono_falta import FormAbonoFalta
+from ...models.form_dispensa_ed_fisica import FormDispensaEdFisica
+from ...models.form_entrega_ativ_compl import FormEntregaAtivCompl
+from ...models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
+from ...models.form_tranc_disciplina import FormTrancDisciplina
+from ...models.form_tranc_matricula import FormularioTrancamentoMatricula
+from ...models.solicitacao import Solicitacao
+from ...models.responsavel import Responsavel
 from ...models.periodo_disciplina import PeriodoDisciplina
 
 class Command(BaseCommand):
+    help = 'Popula o banco de dados com dados iniciais e configura permissões para os grupos'
 
     def handle(self, *args, **kwargs):
+        # Criação de cursos, PPCs, motivos, disciplinas, etc.
+        self._criar_dados_iniciais()
+        
+        # Criação e configuração de permissões para os grupos
+        self._configurar_permissoes()
+        
+        self.stdout.write(self.style.SUCCESS("Dados cadastrados e permissões configuradas com sucesso!"))
+    
+    def _criar_dados_iniciais(self):
+        # Cursos
         curso1, _ = Curso.objects.get_or_create(
             codigo="ads",
             tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
@@ -50,6 +70,7 @@ class Command(BaseCommand):
             defaults={"nome": "Artesanato"}
         )
 
+        # PPCs
         ppc1, _ = Ppc.objects.get_or_create(
             codigo="ads/101.2018",
             defaults={"curso": curso1}
@@ -167,7 +188,6 @@ class Command(BaseCommand):
         )
         
         # Disciplinas do PPC de Técnico de Informática
-
         tecinfo_ppc = Ppc.objects.get(codigo="tecinfo/606.2025")
         
         Disciplina.objects.get_or_create(
@@ -207,54 +227,9 @@ class Command(BaseCommand):
             defaults={"ppc": art_ppc, "periodo": PeriodoDisciplina.QUARTO_ANO}
         )
         
-        
-        # # Calendário
-        # CalendarioAcademico.objects.get_or_create(
-        #     codigo="2025-2",
-        #     formulario="TRANCAMENTODISCIPLINA",
-        #     tipo_curso="GRADUACAO",
-        #     data_inicio="2025-03-01",
-        #     data_fim="2025-08-30",
-        #     ativo=True
-        # )
-
         # Turmas
         for nome_turma in ["Primeiro ano", "Segundo ano", "Terceiro ano", "Quarto ano", "Quinto ano"]:
             Turma.objects.get_or_create(nome=nome_turma)
-
-
-        Nome.objects.get_or_create(
-            nome="Fernando"
-        )
-        Nome.objects.get_or_create(
-            nome="Carol"
-        )
-        Nome.objects.get_or_create(
-            nome="Clarke"
-        )
-        Nome.objects.get_or_create(
-            nome="Pedro"
-        )
-        Nome.objects.get_or_create(
-            nome="Nicolas"
-        )
-        
-        Group.objects.get_or_create(
-            name="externo"
-        )
-        Group.objects.get_or_create(
-            name="cre"
-        )
-        Group.objects.get_or_create(
-            name="coordenador"
-        )
-        Group.objects.get_or_create(
-            name="aluno"
-        )
-        Group.objects.get_or_create(
-            name="responsavel"
-        )
-        
 
         # Nomes
         for nome in ["Fernando", "Carol", "Clarke", "Pedro", "Nicolas"]:
@@ -375,4 +350,134 @@ class Command(BaseCommand):
                     }
                 )
 
-        self.stdout.write(self.style.SUCCESS("Dados cadastrados com sucesso!"))
+    def _configurar_permissoes(self):
+        self.stdout.write("Configurando permissões para os grupos...")
+        
+        # Obter os grupos
+        grupo_cre, _ = Group.objects.get_or_create(name='cre')
+        grupo_coordenador, _ = Group.objects.get_or_create(name='coordenador')
+        grupo_aluno, _ = Group.objects.get_or_create(name='aluno')
+        grupo_responsavel, _ = Group.objects.get_or_create(name='responsavel')
+        grupo_externo, _ = Group.objects.get_or_create(name='externo')
+        
+        # Limpar permissões existentes
+        grupo_cre.permissions.clear()
+        grupo_coordenador.permissions.clear()
+        grupo_aluno.permissions.clear()
+        grupo_responsavel.permissions.clear()
+        grupo_externo.permissions.clear()
+        
+        # Definir modelos e permissões para cada grupo
+        
+        # 1. Grupo CRE - Acesso total a todos os modelos
+        modelos_cre = [
+            Aluno, Coordenador, CRE, Curso, Disciplina, FormAbonoFalta, FormDesistenciaVaga,
+            FormDispensaEdFisica, FormEntregaAtivCompl, FormExercicioDomiciliar, FormTrancDisciplina,
+            FormularioTrancamentoMatricula, Mandato, MotivoAbono, MotivoDispensa, MotivoExercicios,
+            Nome, Ppc, Responsavel, Solicitacao, Turma, Usuario
+        ]
+        
+        for modelo in modelos_cre:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes = Permission.objects.filter(content_type=content_type)
+            for permissao in permissoes:
+                grupo_cre.permissions.add(permissao)
+        
+        # 2. Grupo Coordenador
+        # Visualização de todos os modelos
+        modelos_coordenador_view = [
+            Aluno, Coordenador, CRE, Curso, Disciplina, FormAbonoFalta, FormDesistenciaVaga,
+            FormDispensaEdFisica, FormEntregaAtivCompl, FormExercicioDomiciliar, FormTrancDisciplina,
+            FormularioTrancamentoMatricula, Mandato, MotivoAbono, MotivoDispensa, MotivoExercicios,
+            Nome, Ppc, Responsavel, Solicitacao, Turma, Usuario
+        ]
+        
+        for modelo in modelos_coordenador_view:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_view = Permission.objects.filter(content_type=content_type, codename__startswith='view_')
+            for permissao in permissoes_view:
+                grupo_coordenador.permissions.add(permissao)
+        
+        # Edição de motivos e solicitações
+        modelos_coordenador_edit = [
+            MotivoAbono, MotivoDispensa, MotivoExercicios, Solicitacao
+        ]
+        
+        for modelo in modelos_coordenador_edit:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_edit = Permission.objects.filter(content_type=content_type, codename__startswith='change_')
+            for permissao in permissoes_edit:
+                grupo_coordenador.permissions.add(permissao)
+        
+        # 3. Grupo Aluno
+        # Visualização de modelos específicos
+        modelos_aluno_view = [
+            Curso, Disciplina, MotivoAbono, MotivoDispensa, MotivoExercicios, Ppc, Solicitacao, Turma
+        ]
+        
+        for modelo in modelos_aluno_view:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_view = Permission.objects.filter(content_type=content_type, codename__startswith='view_')
+            for permissao in permissoes_view:
+                grupo_aluno.permissions.add(permissao)
+        
+        # Criação de solicitações
+        modelos_aluno_add = [
+            FormAbonoFalta, FormDesistenciaVaga, FormDispensaEdFisica, FormEntregaAtivCompl,
+            FormExercicioDomiciliar, FormTrancDisciplina, FormularioTrancamentoMatricula, Solicitacao
+        ]
+        
+        for modelo in modelos_aluno_add:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_add = Permission.objects.filter(content_type=content_type, codename__startswith='add_')
+            for permissao in permissoes_add:
+                grupo_aluno.permissions.add(permissao)
+        
+        # 4. Grupo Responsável
+        # Visualização de modelos específicos
+        modelos_responsavel_view = [
+            Curso, Disciplina, MotivoAbono, MotivoDispensa, MotivoExercicios, Ppc, Solicitacao, Turma
+        ]
+        
+        for modelo in modelos_responsavel_view:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_view = Permission.objects.filter(content_type=content_type, codename__startswith='view_')
+            for permissao in permissoes_view:
+                grupo_responsavel.permissions.add(permissao)
+        
+        # Criação de solicitações
+        modelos_responsavel_add = [
+            FormAbonoFalta, FormDesistenciaVaga, FormDispensaEdFisica, FormEntregaAtivCompl,
+            FormExercicioDomiciliar, FormTrancDisciplina, FormularioTrancamentoMatricula, Solicitacao
+        ]
+        
+        for modelo in modelos_responsavel_add:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_add = Permission.objects.filter(content_type=content_type, codename__startswith='add_')
+            for permissao in permissoes_add:
+                grupo_responsavel.permissions.add(permissao)
+        
+        # 5. Grupo Externo
+        # Visualização de modelos específicos
+        modelos_externo_view = [
+            Curso, Solicitacao
+        ]
+        
+        for modelo in modelos_externo_view:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_view = Permission.objects.filter(content_type=content_type, codename__startswith='view_')
+            for permissao in permissoes_view:
+                grupo_externo.permissions.add(permissao)
+        
+        # Criação de solicitação de desistência de vaga
+        modelos_externo_add = [
+            FormDesistenciaVaga, Solicitacao
+        ]
+        
+        for modelo in modelos_externo_add:
+            content_type = ContentType.objects.get_for_model(modelo)
+            permissoes_add = Permission.objects.filter(content_type=content_type, codename__startswith='add_')
+            for permissao in permissoes_add:
+                grupo_externo.permissions.add(permissao)
+        
+        self.stdout.write(self.style.SUCCESS("Permissões configuradas com sucesso!"))
