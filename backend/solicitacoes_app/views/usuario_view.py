@@ -3,17 +3,15 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import generics, serializers 
-from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer, UsuarioWriteSerializer
+from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer, UsuarioWriteSerializer # Mantenha UsuarioWriteSerializer aqui
 from solicitacoes_app.models import Usuario, StatusUsuario
 from django.db.models import Q
 from django.contrib.auth.models import Group
 
 class UsuarioListCreateView(generics.ListCreateAPIView):
-
     """
     Endpoint para listar e criar usuarios.
     """
-
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
@@ -23,19 +21,18 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
         Sobrescreve para usar UsuarioWriteSerializer no POST e UsuarioSerializerComGrupos no GET.
         """
         if self.request.method == 'POST':
-            return UsuarioWriteSerializer
+            # Usa o UsuarioWriteSerializer, que agora terá a lógica combinada
+            return UsuarioWriteSerializer 
         return UsuarioSerializerComGrupos
     
     def perform_create(self, serializer):
-        
         """
-        Sobrescreve perform_create para adicionar o usuario ao grupo externo pós-criação
+        Sobrescreve perform_create para adicionar o usuario ao grupo externo pós-criação.
+        Esta lógica atua como um fallback, adicionando ao 'externo' se o serializer 
+        (como UsuarioWriteSerializer) não tiver associado um grupo específico.
         """
-     
-        # serializer.save() chama o Usuario.save() e salva instância do usuário
         usuario_instance = serializer.save()
 
-        # verifica se algum papel específico foi associado
         usuario_instance.refresh_from_db()
         has_group = False
 
@@ -46,8 +43,9 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
         elif hasattr(usuario_instance, 'cre') and usuario_instance.cre is not None:
             has_group = True
         elif hasattr(usuario_instance, 'responsavel') and usuario_instance.responsavel is not None:
-            has_group = True
-       
+            # Se o UsuarioWriteSerializer criou um Responsavel, has_group será True aqui.
+            has_group = True 
+        
         if not has_group:
             try:
                 grupo_externo = Group.objects.get(name='externo')
@@ -58,10 +56,9 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
             except Exception as e:
                 print(f"Erro inesperado ao adicionar usuário {usuario_instance.email} ao grupo 'externo': {e}")
         
-    
     def get_queryset(self):
         """
-        Sobescreve get_queryset para buscar usuário com email caso o mesmo seja fornecido
+        Sobrescreve get_queryset para buscar usuário com email caso o mesmo seja fornecido.
         """
         try:
             return Usuario.objects.ativos().filter(email__exact=self.kwargs["email"])
@@ -69,11 +66,9 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
             return Usuario.objects.ativos().filter(is_superuser=False)
 
 class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-
     """
     Endpoint para recuperar, atualizar e deletar um usuario específico.
     """
-
     queryset = Usuario.objects.filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
@@ -99,7 +94,6 @@ class UsuariosInativosView(generics.ListAPIView):
     serializer_class = UsuarioSerializerComGrupos
     permission_classes = [AllowAny]
     
-    
 class UsuarioReativarView(generics.GenericAPIView):
     """
     Endpoint para reativar um usuário inativo.
@@ -124,7 +118,6 @@ class UsuarioReativarView(generics.GenericAPIView):
         serializer = UsuarioSerializerComGrupos(usuario)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    
 class UsuarioAprovarCadastroView(generics.GenericAPIView):
     """
     Endpoint para aprovar o cadastro de Usuários com status_usuario em aprovação
@@ -146,7 +139,6 @@ class UsuarioAprovarCadastroView(generics.GenericAPIView):
         usuario.status_usuario = StatusUsuario.NOVO
         usuario.save(update_fields=['is_active', 'status_usuario'])
 
-        
         #Identifica o grupo e adiciona o usuário a ele
         nome_grupo = None
         if hasattr(usuario, "coordenador"):
@@ -166,11 +158,8 @@ class UsuarioAprovarCadastroView(generics.GenericAPIView):
             except Exception as e:
                 print(f"Erro ao adicionar usuário {usuario.email} ao grupo '{nome_grupo}': {e}")
         else:
-             print(f"AVISO: Usuário {usuario.email} aprovado (status NOVO), mas nenhum grupo encontrado para associação.")
+            print(f"AVISO: Usuário {usuario.email} aprovado (status NOVO), mas nenhum grupo encontrado para associação.")
 
-        # Logar a aprovação
-        # LogEntry.log_action(request.user, usuario, "APPROVE", f"Cadastro de {nome_grupo or 'usuário'} aprovado (status NOVO).")
- 
         serializer = UsuarioSerializerComGrupos(usuario)
         response_data = {
             "detail": "Cadastro aprovado com sucesso. Usuário agora tem status NOVO e foi adicionado ao grupo correspondente.",
@@ -178,32 +167,33 @@ class UsuarioAprovarCadastroView(generics.GenericAPIView):
         }
         return Response(response_data, status=status.HTTP_200_OK)
 
-
 class AlunoEmailListView(generics.ListAPIView):
+    """
+    Endpoint para listar e-mails e CPFs de alunos.
+    Combinando a versão mais recente que busca o CPF.
+    """
     def get_queryset(self):
         try:
-            # --- MUDANÇA AQUI: Altere 'Aluno' para 'aluno' (minúsculo) ---
-            alunos_group = Group.objects.get(name='aluno') 
-            print(f"DEBUG: Grupo 'aluno' encontrado: {alunos_group.name}")
-            queryset = Usuario.objects.filter(groups=alunos_group, is_active=True)
-            print(f"DEBUG: Queryset de alunos ativos: {queryset.count()} alunos encontrados.")
+            # Garante que estamos pegando apenas usuários que são alunos (aluno__isnull=False)
+            # e que estão ativos.
+            queryset = Usuario.objects.filter(aluno__isnull=False, is_active=True)
+            print(f"DEBUG: Queryset de alunos ativos para email/cpf: {queryset.count()} alunos encontrados.")
             for u in queryset:
                 print(f"DEBUG: Usuário no queryset: ID={u.id}, Email={u.email}, CPF={u.cpf if hasattr(u, 'cpf') else 'N/A'}")
             return queryset
-        except Group.DoesNotExist:
-            print("DEBUG: Erro: Grupo 'aluno' não existe no banco de dados!")
-            return Usuario.objects.none()
+        except Exception as e:
+            print(f"DEBUG: Erro ao buscar alunos para AlunoEmailListView: {e}")
+            return Usuario.objects.none() # Retorna queryset vazio em caso de erro
 
     def list(self, request, *args, **kwargs):
         queryset = self.get_queryset()
-
         data = []
         for user in queryset:
-            print(f"DEBUG: Processando usuário para retorno: Email={user.email}, CPF={user.cpf if hasattr(user, 'cpf') else 'N/A'}") # Debug 4
-            if hasattr(user, 'cpf') and user.cpf: # Garante que o CPF exista e não seja vazio/None
+            # Certifica-se de que o usuário tem um CPF para incluir na lista
+            if hasattr(user, 'cpf') and user.cpf: 
                 data.append({"email": user.email, "cpf": user.cpf})
             else:
-                print(f"DEBUG: Usuário {user.email} não tem CPF válido, pulando.") # Debug 5
+                print(f"DEBUG: Usuário {user.email} não tem CPF válido ou não é um aluno, pulando.")
 
-        print(f"DEBUG: Dados finais a serem retornados: {data}") # Debug 6
+        print(f"DEBUG: Dados finais a serem retornados pela AlunoEmailListView: {data}")
         return Response(data)
