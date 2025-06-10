@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
-import BuscaUsuario from "../../../components/busca_usuario";
+import BuscaUsuario from "../../../components/busca_usuario"; // Mantido para a busca inicial do usuário
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
@@ -67,7 +67,7 @@ export default function FormularioExercicioDomiciliar() {
     const buscarAluno = async () => {
       try {
         console.log("Buscando aluno pelo e-mail:", userData.email);
-        const res = await axios.get(`http://localhost:8000/solicitacoes/alunos/${userData.email}/`);
+        const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
         
         if (res.data && Array.isArray(res.data) && res.data.length > 0) {
           const alunoEncontrado = res.data[0];
@@ -335,7 +335,7 @@ export default function FormularioExercicioDomiciliar() {
   if (userData && aluno) {
     return (
       <div className="page-container">
-        <BuscaUsuario dadosUsuario={handleUsuario} />
+        {/* A busca de usuário é feita apenas uma vez no carregamento inicial */}
         <HeaderAluno onLogout={() => setUserData(null)} />
         <main className="container">
           <h2>Solicitação de Exercícios Domiciliares</h2>
@@ -354,10 +354,53 @@ export default function FormularioExercicioDomiciliar() {
           </h6>
 
           <div className="info-aluno">
-            <p><strong>Nome:</strong> {aluno?.nome || userData?.name || 'Carregando...'}</p>
-            <p><strong>Email:</strong> {userData?.email || 'Carregando...'}</p>
-            <p><strong>Matrícula:</strong> {aluno?.matricula || 'Carregando...'}</p>
-            <p><strong>Curso:</strong> {curso?.nome || 'Carregando...'}</p>
+            {/* EMAIL (Read Only) */}
+            <div className="form-group">
+              <label htmlFor="email">E-mail:</label>
+              <input
+                type="text"
+                id="email"
+                defaultValue={userData?.email || ''}
+                readOnly
+                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
+              />
+            </div>
+
+            {/* NOME (Read Only) */}
+            <div className="form-group">
+              <label htmlFor="nome_completo">Nome:</label>
+              <input
+                type="text"
+                id="nome_completo"
+                defaultValue={aluno?.nome || userData?.name || ''}
+                readOnly
+                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
+              />
+            </div>
+
+            {/* MATRÍCULA (Read Only) */}
+            <div className="form-group">
+              <label htmlFor="matricula">Matrícula:</label>
+              <input
+                type="text"
+                id="matricula"
+                defaultValue={aluno?.matricula || ''}
+                readOnly
+                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
+              />
+            </div>
+
+            {/* CURSO (Read Only) */}
+            <div className="form-group">
+              <label htmlFor="curso">Curso:</label>
+              <input
+                type="text"
+                id="curso"
+                defaultValue={curso?.nome || ''}
+                readOnly
+                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
+              />
+            </div>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)}>
