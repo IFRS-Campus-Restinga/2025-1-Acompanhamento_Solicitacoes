@@ -2,10 +2,13 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework import generics, serializers 
-from ..serializers.usuario_serializer import UsuarioSerializerComGrupos, UsuarioSerializer
+from ..serializers.usuario_serializer import UsuarioSerializer
 from solicitacoes_app.models import Usuario, StatusUsuario
 from django.db.models import Q
 from django.contrib.auth.models import Group
+
+from ..serializers.usuario_serializer import UsuarioSerializerComGrupos #para view nova de solicitacoes
+from django.http import Http404
 
 class UsuarioListCreateView(generics.ListCreateAPIView):
 
@@ -177,3 +180,42 @@ class AlunoEmailListView(generics.ListAPIView):
     def list(self, request):
         emails = self.queryset.values_list('email', flat=True)
         return Response(list(emails))
+    
+ #Adicionado por Clarke ❤ para puxar e-mail e assim dar certo as informações de usuario
+class UsuarioDetailByEmail(generics.RetrieveAPIView):
+    """
+    Endpoint para recuperar detalhes de um Usuario pelo email.
+    Se o Usuario for um Aluno, incluirá os detalhes do Aluno.
+    """
+    queryset = Usuario.objects.all()
+    serializer_class = UsuarioSerializerComGrupos # Este é o serializer que contém a lógica de grupo_detalhes
+    permission_classes = [AllowAny]
+    lookup_field = 'email' # ESSENCIAL: define que a busca será pelo campo 'email'
+
+    def get_object(self):
+        # self.kwargs contém os argumentos da URL, incluindo 'email'
+        email_buscado = self.kwargs.get('email')
+        print(f"DEBUG: UsuarioDetailByEmail - Recebida requisição para o e-mail: {email_buscado}")
+
+        if not email_buscado:
+            print("DEBUG: E-mail não fornecido na URL.")
+            raise Http404("E-mail não fornecido.") # Importar Http404 de django.http
+
+        try:
+            # Esta linha usa o lookup_field para buscar o objeto
+            obj = super().get_object() 
+            print(f"DEBUG: UsuarioDetailByEmail - Usuário ENCONTRADO no banco de dados: ID={obj.id}, Nome='{obj.nome}', Email='{obj.email}'")
+
+            # Verifique se o objeto encontrado é um aluno (o serializer fará isso, mas podemos pré-verificar)
+            if hasattr(obj, 'aluno') and obj.aluno is not None:
+                print(f"DEBUG: UsuarioDetailByEmail - O usuário {obj.email} TEM um objeto Aluno associado.")
+            else:
+                print(f"DEBUG: UsuarioDetailByEmail - O usuário {obj.email} NÃO tem um objeto Aluno associado (ou 'aluno' é None).")
+            
+            return obj
+        except Usuario.DoesNotExist:
+            print(f"DEBUG: UsuarioDetailByEmail - Usuário com o e-mail '{email_buscado}' NÃO encontrado no banco de dados.")
+            raise # Re-levanta a exceção 404 para o DRF
+        except Exception as e:
+            print(f"DEBUG: UsuarioDetailByEmail - Erro inesperado ao buscar usuário: {e}")
+            raise # Re-levanta outras exceções
