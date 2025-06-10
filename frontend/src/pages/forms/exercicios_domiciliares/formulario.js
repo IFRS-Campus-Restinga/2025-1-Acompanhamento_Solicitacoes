@@ -69,9 +69,10 @@ export default function FormularioExercicioDomiciliar() {
         console.log("Buscando aluno pelo e-mail:", userData.email);
         const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
         
-        if (res.data && Array.isArray(res.data) && res.data.length > 0) {
-          const alunoEncontrado = res.data[0];
+        if (res.data) {
+          const alunoEncontrado = res.data;
           console.log("Aluno encontrado:", alunoEncontrado);
+         
           setAluno(alunoEncontrado);
           setAlunoNaoEncontrado(false);
           
@@ -353,7 +354,13 @@ export default function FormularioExercicioDomiciliar() {
             atividades letivas.
           </h6>
 
-          <div className="info-aluno">
+          <form onSubmit={handleSubmit(onSubmit)} className="formulario"> 
+            {/* Campos ocultos para IDs */}
+            <input type="hidden" {...register("aluno_id")} value={aluno?.id || ''} />
+            <input type="hidden" {...register("curso_codigo")} value={aluno?.curso_codigo || ''} />
+            <input type="hidden" {...register("ppc_codigo")} value={aluno?.ppc_codigo || ''} />
+
+
             {/* EMAIL (Read Only) */}
             <div className="form-group">
               <label htmlFor="email">E-mail:</label>
@@ -362,19 +369,17 @@ export default function FormularioExercicioDomiciliar() {
                 id="email"
                 defaultValue={userData?.email || ''}
                 readOnly
-                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
               />
             </div>
 
             {/* NOME (Read Only) */}
             <div className="form-group">
-              <label htmlFor="nome_completo">Nome:</label>
+              <label htmlFor="nome_completo">Nome Completo:</label>
               <input
                 type="text"
                 id="nome_completo"
-                defaultValue={aluno?.nome || userData?.name || ''}
+                defaultValue={  aluno?.nome ||userData?.name|| ''} /* Mude a ordem se necessário */
                 readOnly
-                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
               />
             </div>
 
@@ -384,9 +389,8 @@ export default function FormularioExercicioDomiciliar() {
               <input
                 type="text"
                 id="matricula"
-                defaultValue={aluno?.matricula || ''}
+                defaultValue={aluno?.grupo_detalhes?.matricula || userData?.matricula || ''}
                 readOnly
-                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
               />
             </div>
 
@@ -396,19 +400,12 @@ export default function FormularioExercicioDomiciliar() {
               <input
                 type="text"
                 id="curso"
-                defaultValue={curso?.nome || ''}
+                defaultValue={aluno?.grupo_detalhes?.curso_nome || ''}
                 readOnly
-                style={{ backgroundColor: "#e9ecef", cursor: "not-allowed" }}
               />
             </div>
-          </div>
 
-          <form onSubmit={handleSubmit(onSubmit)}>
-            {/* Campos ocultos para IDs */}
-            <input type="hidden" {...register("aluno_id")} value={aluno?.id || ''} />
-            <input type="hidden" {...register("curso_codigo")} value={aluno?.curso_codigo || ''} />
-            <input type="hidden" {...register("ppc_codigo")} value={aluno?.ppc_codigo || ''} />
-
+        
             {/* Período */}
             <div className="form-group">
               <label htmlFor="periodo">Período:</label>
