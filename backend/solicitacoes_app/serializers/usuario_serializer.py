@@ -71,38 +71,48 @@ class UsuarioSerializerComGrupos(serializers.ModelSerializer):
         ]
     
     def get_grupo(self, obj):
-        if hasattr(obj, 'coordenador'):
+        print(f"DEBUG_SERIALIZER: get_grupo chamado para o usuário: {obj.email}")
+        if hasattr(obj, 'coordenador') and obj.coordenador is not None:
+            print(f"DEBUG_SERIALIZER: {obj.email} é Coordenador.")
             return "Coordenador"
-        if hasattr(obj, 'aluno'):
+        if hasattr(obj, 'aluno') and obj.aluno is not None:
+            print(f"DEBUG_SERIALIZER: {obj.email} é Aluno.")
             return "Aluno"
-        if hasattr(obj, 'cre'):
+        if hasattr(obj, 'cre') and obj.cre is not None:
+            print(f"DEBUG_SERIALIZER: {obj.email} é CRE.")
             return "CRE"
-        if hasattr(obj, 'responsavel'):
+        if hasattr(obj, 'responsavel') and obj.responsavel is not None:
+            print(f"DEBUG_SERIALIZER: {obj.email} é Responsável.")
             return "Responsável"
+        print(f"DEBUG_SERIALIZER: {obj.email} é Externo (nenhum papel específico encontrado).")
         return "Externo"
     
     def get_grupo_detalhes(self, obj):
-        if hasattr(obj, 'coordenador'):
-            coordenador = obj.coordenador
+        print(f"DEBUG_SERIALIZER: get_grupo_detalhes chamado para o usuário: {obj.email}")
+        if hasattr(obj, 'coordenador') and obj.coordenador is not None:
+            # ... (código existente para coordenador)
             return {
-                "id": coordenador.id,
-                "siape": coordenador.siape,
+                "id": obj.coordenador.id,
+                "siape": obj.coordenador.siape,
                 "mandatos_coordenador": [
                     {
                         "curso": mandato.curso.codigo,
                         "inicio_mandato": mandato.inicio_mandato.strftime("%d-%m-%Y") if mandato.inicio_mandato else None,
                         "fim_mandato": mandato.fim_mandato.strftime("%d-%m-%Y") if mandato.fim_mandato else None,
                     }
-                    for mandato in coordenador.mandatos_coordenador.all()
+                    for mandato in obj.coordenador.mandatos_coordenador.all()
                 ]
             }
         
-        if hasattr(obj, 'aluno'):
+        if hasattr(obj, 'aluno') and obj.aluno is not None:
             aluno = obj.aluno
+            print(f"DEBUG_SERIALIZER: Gerando detalhes para Aluno: {aluno.usuario.email}")
             return {
                 "id": aluno.id,
                 "matricula": aluno.matricula,
-                "curso": aluno.ppc.curso.nome,
+                "curso_codigo": aluno.ppc.curso.codigo if aluno.ppc and aluno.ppc.curso else None,
+                "curso_nome": aluno.ppc.curso.nome if aluno.ppc and aluno.ppc.curso else None,
+                "ppc_codigo": aluno.ppc.codigo if aluno.ppc else None,
                 "ano_ingresso": aluno.ano_ingresso
             }
         
