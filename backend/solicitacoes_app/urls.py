@@ -13,7 +13,7 @@ from .views.disciplina_view import *
 from .views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
-from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView, UsuarioAprovarCadastroView
+from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView, UsuarioAprovarCadastroView,  UsuarioDetailByEmail
 from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
@@ -103,7 +103,8 @@ urlpatterns = [
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
     path('usuarios/emails-alunos/', AlunoEmailListView.as_view(), name='aluno-emails-list'),
-    path('usuarios/<str:email>/', UsuarioListCreateView.as_view(), name='usuario-email'),
+    #path('usuarios/<str:email>/', UsuarioListCreateView.as_view(), name='usuario-email'),
+    path('usuarios/<str:email>/', UsuarioDetailByEmail.as_view(), name='usuario-detail-by-email'), # Nova URL para busca por email
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
     path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
     path('usuarios/aprovar/<int:pk>/', UsuarioAprovarCadastroView.as_view(), name='usuario-aprovar'),
