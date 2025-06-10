@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'google_auth',
     'rest_framework_simplejwt',
+    'polymorphic',
 ]
 
 MIDDLEWARE = [

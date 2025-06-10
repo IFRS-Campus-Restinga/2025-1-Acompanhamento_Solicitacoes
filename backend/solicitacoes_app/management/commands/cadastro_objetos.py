@@ -1,6 +1,9 @@
+from datetime import date
 from django.core.management.base import BaseCommand
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
+
 from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma, Nome
 from ...models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
@@ -22,14 +25,17 @@ class Command(BaseCommand):
     help = 'Popula o banco de dados com dados iniciais e configura permissões para os grupos'
 
     def handle(self, *args, **kwargs):
-        # Criação de cursos, PPCs, motivos, disciplinas, etc.
+        self.stdout.write(self.style.SUCCESS("🚀 Iniciando a configuração completa do ambiente..."))
+        
+        self._criar_superuser()
+        
         self._criar_dados_iniciais()
         
-        # Criação e configuração de permissões para os grupos
         self._configurar_permissoes()
         
-        self.stdout.write(self.style.SUCCESS("Dados cadastrados e permissões configuradas com sucesso!"))
-    
+        self.stdout.write(self.style.SUCCESS("\n🎉 Processo finalizado! O ambiente está pronto."))
+
+
     def _criar_dados_iniciais(self):
         # Cursos
         curso1, _ = Curso.objects.get_or_create(
@@ -481,3 +487,27 @@ class Command(BaseCommand):
                 grupo_externo.permissions.add(permissao)
         
         self.stdout.write(self.style.SUCCESS("Permissões configuradas com sucesso!"))
+        
+    def _criar_superuser(self):
+        """
+        Cria um superusuário com dados fixos no código.
+        """
+        User = get_user_model()
+        
+        ADMIN_EMAIL = "admin@email.com"
+        ADMIN_PASSWORD = "admin"
+        ADMIN_CPF = "12345678901"  
+        
+        if not User.objects.filter(email=ADMIN_EMAIL).exists() and not User.objects.filter(cpf=ADMIN_CPF).exists():
+            self.stdout.write(self.style.SUCCESS(f"Criando superusuário '{ADMIN_EMAIL}'..."))
+            User.objects.create_superuser(
+                email=ADMIN_EMAIL,
+                password=ADMIN_PASSWORD,
+                nome="Admin",
+                cpf=ADMIN_CPF,
+                telefone="11999999999",
+                data_nascimento=date(1970, 1, 1)
+            )
+            self.stdout.write(self.style.SUCCESS("Superusuário criado com sucesso! ✅"))
+        else:
+            self.stdout.write(self.style.WARNING(f"Superusuário com email '{ADMIN_EMAIL}' ou CPF '{ADMIN_CPF}' já existe. Ignorando a criação. ⚠️"))

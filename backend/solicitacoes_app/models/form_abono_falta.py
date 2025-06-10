@@ -7,47 +7,42 @@ from django.db.models import RESTRICT
 from .ppc import Ppc 
 
 class FormAbonoFalta(Solicitacao):
+    # NOVO: Identificador para a lógica de disponibilidade no modelo pai.
+    NOME_FORMULARIO_IDENTIFICADOR = 'ABONOFALTAS'
 
     curso = models.ForeignKey(
-    Curso,
-    on_delete=models.CASCADE,
-    verbose_name="Curso"
+        Curso,
+        on_delete=models.CASCADE,
+        verbose_name="Curso"
     )
-
     ppc = models.ForeignKey(
         Ppc,
         on_delete=models.CASCADE,
         null=True
     )
-
     disciplinas = models.ManyToManyField(
         Disciplina,
         verbose_name="Disciplinas relacionadas",
         help_text="Selecione as disciplinas"
     )
-
     motivo_solicitacao = models.ForeignKey(
         MotivoAbono, 
         on_delete=RESTRICT, 
         help_text="Escolha seu motivo da solicitação", 
         verbose_name="Motivo da Solicitação"
     )
-    
     data_inicio_afastamento = models.DateField(
         default=date.today,
         verbose_name="Data de início do afastamento"
     )
-    
     data_fim_afastamento = models.DateField(
         default=date.today,
         verbose_name="Data de fim do afastamento"
     )
-
     acesso_moodle = models.BooleanField(
         default=False,
         blank=True
     )
-
     perdeu_atividades = models.BooleanField(
         default=False,
         blank=True
@@ -56,10 +51,9 @@ class FormAbonoFalta(Solicitacao):
     class Meta:
         verbose_name = "Formulário de Abono de Faltas"
     
-    
     def __str__(self):
-         # Acessa o nome do aluno através da relação com Solicitação
-        aluno_nome = self.solicitacao.aluno.usuario.nome if hasattr(self, 'solicitacao') and self.solicitacao.aluno else "Aluno não identificado"
+        # ALTERADO: Acessa o aluno diretamente, pois a classe HERDA de Solicitação.
+        aluno_nome = self.aluno.usuario.nome if self.aluno else "Aluno não identificado"
         return f"Abono de Falta - {aluno_nome} ({self.curso.nome})"
     
     def clean(self):
