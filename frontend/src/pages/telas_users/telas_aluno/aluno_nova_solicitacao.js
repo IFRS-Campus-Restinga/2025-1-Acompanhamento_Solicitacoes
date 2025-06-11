@@ -34,7 +34,7 @@ const AlunoNovaSolicitacao = () => {
             <i className="bi bi-door-open-fill"></i> Termo de Desistência de Vaga
           </Link>
           <Link className="crud-link" to="/dispensa_ed_fisica">
-          <i class="bi bi-person-arms-up"></i> Solicitação de Dispensa de Educação Física
+          <i className="bi bi-person-arms-up"></i> Solicitação de Dispensa de Educação Física
           </Link>
           <Link className="crud-link" to="/abono_falta">
             <i className="bi bi-calendar-x-fill"></i> Solicitação de Justificativa / Abono de
@@ -46,7 +46,7 @@ const AlunoNovaSolicitacao = () => {
             Domiciliares
           </Link>
           <Link className="crud-link" to="/form_ativ_compl">
-            <i class="bi bi-card-list"></i> Entrega de Atividades Complementares
+            <i className="bi bi-card-list"></i> Entrega de Atividades Complementares
           </Link>
         </div>
       </main>
