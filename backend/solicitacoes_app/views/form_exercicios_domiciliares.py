@@ -1,6 +1,7 @@
 from rest_framework import viewsets, permissions
 from ..models import FormExercicioDomiciliar
 from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
+from ..permissoes import CanSubmitExercicioDomiciliar, CanViewSolicitacaoDetail
 
 class FormExercicioDomiciliarViewSet(viewsets.ModelViewSet):
     serializer_class = FormExercicioDomiciliarSerializer
