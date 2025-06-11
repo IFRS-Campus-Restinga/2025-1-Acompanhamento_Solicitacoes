@@ -21,6 +21,14 @@ Com esse sistema vamos permitir que os <strong>Alunos</strong>, <strong>CREs</st
 - [ ] Emitir notificações ao Aluno
 
 <h4>Tutorial de Primeiros Passos:</h4>
+
+Comece instalando o pip e após isso o django, assim futuramente os outros comando já irão funcionar:
+```
+python -m ensurepip --user
+```
+```
+python -m pip install --user Django
+```
 Para instalar todos as dependências requeridas do BackEnd, digite no cmd:
 
 ```
