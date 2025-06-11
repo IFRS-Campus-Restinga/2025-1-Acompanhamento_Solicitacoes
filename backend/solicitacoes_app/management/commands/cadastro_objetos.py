@@ -174,23 +174,23 @@ class Command(BaseCommand):
         ads = Ppc.objects.get(codigo="ads/101.2018")
         Disciplina.objects.get_or_create(
             nome="Desenvolvimento de Sistemas 2", codigo="DEVII",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.QUINTO_SEMESTRE}
         )
         Disciplina.objects.get_or_create(
             nome="Banco de Dados 1", codigo="BD1",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_SEMESTRE}
         )
         Disciplina.objects.get_or_create(
             nome="Engenharia de Software", codigo="ESW10",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.SEXTO_SEMESTRE}
         )
         Disciplina.objects.get_or_create(
             nome="Gestão de Projetos", codigo="GDP20",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_SEMESTRE}
         )
         Disciplina.objects.get_or_create(
             nome="Turismo Sustentável", codigo="TURS1",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_ANO}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.QUARTO_SEMESTRE}
         )
         
         # Disciplinas do PPC de Técnico de Informática
@@ -269,6 +269,7 @@ class Command(BaseCommand):
                 "data_nascimento": "1995-05-20",
             }
         )
+        
         if created:
             usuario_cre.set_password("senha456")
             usuario_cre.save()
@@ -306,6 +307,7 @@ class Command(BaseCommand):
                 "data_nascimento": "2000-01-01",
             }
         )
+        
         if created:
             usuario_aluno.set_password("alunosenha")
             usuario_aluno.save()
@@ -318,6 +320,31 @@ class Command(BaseCommand):
                 "ano_ingresso": 2023,
             }
         )
+        
+         #Usuario Aluno
+        usuario_aluno_90s , created = Usuario.objects.get_or_create(
+            cpf="85988022049",
+            defaults={
+                "email":"aluno.teste.1992@gmail.com",
+                "nome":"Aluno 90s",
+                "telefone":"5194562399",
+                "data_nascimento":"1996-06-08",
+            }
+        )
+        
+        if created:
+            usuario_aluno_90s.set_password("alunosenha90s")
+            usuario_aluno_90s.save()
+
+        Aluno.objects.get_or_create(
+            usuario=usuario_aluno_90s,
+            defaults={
+                "matricula": "2023999999",
+                "ppc": ppc1,  # Ou outro PPC válido
+                "ano_ingresso": 2023,
+            }
+        )
+                
 
         # Criação de 2 alunos por curso
         cursos = [curso1, curso2, curso3, curso4, curso5]

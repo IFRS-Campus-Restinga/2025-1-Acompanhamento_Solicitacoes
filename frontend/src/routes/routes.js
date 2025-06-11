@@ -6,8 +6,8 @@ import Perfil from "../pages/perfil/perfil.js";
 //import PosLogin from "../pages/pos_login";
 
 //import Cruds from "../pages/configuracoes/cruds.js";
-import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import ListarSolicitacoes from "../listar_solicitacoes.js";
+import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
 import Home from "./../pages/home";
 
 
@@ -124,7 +124,7 @@ const routes = [
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
 
-  <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} />,
+  <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} key="perfil" />,
   //<Route path="/pos-login" element={<PosLogin />} />,
 
   // Motivo Abono
@@ -165,7 +165,7 @@ const routes = [
   // Usuarios
   <Route path="/usuarios" element={<ListarUsuariosAtivos />} key="listar-usuarios-ativos" />,
   <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
-  <Route path="/usuarios/:id" element={<DetalhesUsuario />} />,
+  <Route path="/usuarios/:id" element={<DetalhesUsuario />} key="detalhes-usuario" />,
   <Route path="/usuarios/selecionargrupo" element={<SelecionarGrupoUsuario />} key="selecionar-grupo-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
@@ -183,7 +183,7 @@ const routes = [
 
 
   // Grupos
-  <Route path="/grupos" element={<ListarGrupos />} />,
+  <Route path="/grupos" element={<ListarGrupos />} key="listar-grupos" />,
   <Route path="/grupos/cadastrar" element={<CadastrarAtualizarGrupo />} key="cadastrar-grupos" />,
   <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
 
@@ -191,7 +191,7 @@ const routes = [
   <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> ,
  
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
-  <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />} />,
+  <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />}  key="formulario-disciplina-curso"/>,
 
   <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
   <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
@@ -204,6 +204,7 @@ const routes = [
         <FormularioTrancamentoMatricula />
       </VerificadorDisponibilidade>
     }
+    key="verificador-formulario"
   />,
 
   <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
@@ -236,8 +237,6 @@ const routes = [
 
   //Form de entrega de atividades complementares
   <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
-  <Route path="/cre_home" element={<HomeCRE />} key="home_cre" />,
-  <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
   
   //Tela gerenciamento Exerciícios Domiciliares
   <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,

@@ -7,6 +7,7 @@ import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
+import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function Formulario() {
     const [popularCursos, setPopularCursos] = useState([]);
@@ -16,6 +17,7 @@ export default function Formulario() {
     const [popupIsOpen, setPopupIsOpen] = useState(false);
     const [msgErro, setMsgErro] = useState([]);
     const [popupType, setPopupType] = useState([]);
+    const [userData, setUserData] = useState(null);
 
     // Novos estados para os campos do aluno
     const [nomeAluno, setNomeAluno] = useState("");

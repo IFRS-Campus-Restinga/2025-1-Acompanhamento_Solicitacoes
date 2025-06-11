@@ -65,7 +65,7 @@ def google_callback(request):
             id_token_jwt_google, 
             google_requests.Request(), 
             settings.GOOGLE_OAUTH2_CLIENT_ID,
-            # clock_skew_in_seconds=60 # Descomente se necessário ajustar a tolerância do relógio
+            clock_skew_in_seconds=60 # Descomente se necessário ajustar a tolerância do relógio
         )
         
         if id_info["iss"] not in ["accounts.google.com", "https://accounts.google.com"]:
@@ -84,6 +84,7 @@ def google_callback(request):
 
     try:
         user = User.objects.filter(email=user_email_from_google).first()
+    
 
         if user:
             # Usuário EXISTE: Fazer login e redirecionar DIRETAMENTE para Minhas Solicitações com token
@@ -109,11 +110,21 @@ def google_callback(request):
             if not access_token_app:
                 return JsonResponse({"error": "Failed to generate application access token."}, status=500)
 
+    ##CODIGO PEDRO ANTIGO
+        
             # --- ALTERAÇÃO: Redireciona diretamente para Minhas Solicitações --- 
-            frontend_redirect_url = f"http://localhost:3000/aluno/minhas-solicitacoes?access_token={access_token_app}"
-            print(f"Redirecionando usuário existente para: {frontend_redirect_url}") # Log para clareza
-            return HttpResponseRedirect(frontend_redirect_url)
+            #frontend_redirect_url = f"http://localhost:3000/aluno/minhas-solicitacoes?access_token={access_token_app}"
+            #print(f"Redirecionando usuário existente para: {frontend_redirect_url}") # Log para clareza
+            #return HttpResponseRedirect(frontend_redirect_url)
             # --- FIM DA ALTERAÇÃO --- 
+
+    ##FINAL DO CODIGO PEDRO
+
+            # --- ALTERAÇÃO AQUI: Aponte para a rota do GoogleRedirectHandler no frontend --- 
+            frontend_redirect_url = f"http://localhost:3000/auth/google/redirect-handler?access_token={access_token_app}"
+            print(f"Redirecionando usuário existente para: {frontend_redirect_url}") 
+            return HttpResponseRedirect(frontend_redirect_url)
+            # --- FIM DA ALTERAÇÃO NOVA--- 
 
         else:
             # Usuário NÃO EXISTE: Redirecionar para a página de cadastro/seleção no frontend

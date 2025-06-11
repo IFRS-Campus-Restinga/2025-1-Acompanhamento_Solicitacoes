@@ -1,16 +1,17 @@
 import axios from "axios";
-import api from "./services/api";
+//import api from "./services/api";
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { BrowserRouter as Router, Routes } from "react-router-dom";
+import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
 import './index.css';
 import routes from "./routes/routes";
 import "./var.css";
-import GoogleRedirectHandler from './components/GoogleRedirectHandler';
+//import GoogleRedirectHandler from './components/GoogleRedirectHandler';
 
 
 class App extends React.Component {

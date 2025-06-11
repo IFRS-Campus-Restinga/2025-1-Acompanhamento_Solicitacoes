@@ -13,22 +13,14 @@ from .views.disciplina_view import *
 from .views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
-from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView, UsuarioAprovarCadastroView
+from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView, UsuarioAprovarCadastroView,  UsuarioDetailByEmail
 from .views.responsavel_view import *
 from .views.form_tranc_matricula_view import *
 from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
 from .views.form_abono_falta_view import *
 from .views.mandato_view import MandatoOrdenadoListView, MandatoListCreateView, MandatoRetrieveUpdateDestroyView
-from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, FormTrancDisciplinaDetail, disciplinas_por_curso
-
-from .views.form_exercicios_domiciliares import (
-    UsuarioPorEmailView,
-    DisciplinasPorCursoView,
-    FormExercicioDomiciliarViewSet,
-    AlunoInfoPorEmailView,
-    disciplinas_por_ppc
-)
+from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, FormTrancDisciplinaDetail, disciplinas_por_curso, disciplinas_por_ppc_e_periodo
 
 from .views.form_desistencia_vaga_view import *
 from .views.nome_view import *
@@ -46,13 +38,16 @@ from .views.periodo_disponibilidade_view import (
     PeriodoDisponibilidadeListCreateView,
     PeriodoDisponibilidadeDetailView
 )
+from .views.permissoes_view import PermissaoListView
 
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
 
-from rest_framework.routers import DefaultRouter
+from .views.form_exercicios_domiciliares import FormExercicioDomiciliarViewSet
 
-from .views.permissoes_view import PermissaoListView
+from rest_framework.routers import DefaultRouter
+router = DefaultRouter()
+router.register(r'formulario_exerc_dom', FormExercicioDomiciliarViewSet, basename='form_exerc')
 
 from .views.listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView 
 
@@ -60,39 +55,18 @@ from .views.listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView
 app_name = 'solicitacoes_app'
        
 urlpatterns = [
+
+    path('', include(router.urls)),
+    
     path('', api_root, name="api-root"),
     path('saudacao/', saudacao, name="saudacao"),
     #path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
 
-    #VIEWS DE FORM EXERCICIO DOM
-    path('usuarios-email/', UsuarioPorEmailView.as_view(), name='usuario-por-email'),
-    path('cursos/disciplinas-por-curso/<str:curso_codigo>/', DisciplinasPorCursoView.as_view(), name='disciplinas-por-curso'), 
-    path('alunos-info/', AlunoInfoPorEmailView.as_view(), name='aluno-info-por-email'),
-    path('disciplinas-por-ppc/', disciplinas_por_ppc, name='disciplinas-por-ppc'),
-
-
-
-    path('form_exercicio_domiciliar/', FormExercicioDomiciliarViewSet.as_view({
-        'get': 'list',
-        'post': 'create'
-    }), name='exercicios-domiciliares-list-create'),
-    
-    path('form_exercicio_domiciliar/<int:pk>/', FormExercicioDomiciliarViewSet.as_view({
-        'get': 'retrieve',
-        'put': 'update',
-        'patch': 'partial_update',
-        'delete': 'destroy'
-    }), name='exercicios-domiciliares-detail'),
-#
-    path('form_exercicio_domiciliar/aluno/<int:id>/', FormExercicioDomiciliarViewSet.as_view({
-        'get': 'list'
-    }), name='exercicio_domiciliar_aluno'),
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
 
     path('ppcs/', PpcListCreateView.as_view(), name='listar_cadastrar_ppcs'),
     path('ppcs/<path:codigo>/', PpcRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_ppc'),
-
 
 
     path('motivo_abono/', MotivoAbonoListCreateView.as_view(), name='motivo_abono_list'),
@@ -129,7 +103,8 @@ urlpatterns = [
     path('usuarios/', UsuarioListCreateView.as_view(), name='usuario-list'),
     path('usuarios/<int:pk>/', UsuarioRetrieveUpdateDestroyView.as_view(), name='usuario-detail'),
     path('usuarios/emails-alunos/', AlunoEmailListView.as_view(), name='aluno-emails-list'),
-    path('usuarios/<str:email>/', UsuarioListCreateView.as_view(), name='usuario-email'),
+    #path('usuarios/<str:email>/', UsuarioListCreateView.as_view(), name='usuario-email'),
+    path('usuarios/<str:email>/', UsuarioDetailByEmail.as_view(), name='usuario-detail-by-email'), # Nova URL para busca por email
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
     path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
     path('usuarios/aprovar/<int:pk>/', UsuarioAprovarCadastroView.as_view(), name='usuario-aprovar'),
@@ -155,12 +130,15 @@ urlpatterns = [
     path("mandatos/", MandatoListCreateView.as_view(), name='mandato-list'),
     path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
     path('mandatos/historico/', MandatoOrdenadoListView.as_view(), name='historico_mandatos_por_curso'),
-        
+    
     
     path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),
     path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
+     # URL antiga de disciplinas por curso (para ser removida ou renomeada se usada em outros lugares)
     path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
-
+    # NOVA URL para buscar disciplinas por PPC e período (a ser usada no seu formulário de exercícios)
+    path("disciplinas_por_ppc_e_periodo/", disciplinas_por_ppc_e_periodo, name="disciplinas_por_ppc_e_periodo"),
+    
     path('form_desistencia_vaga/', FormDesistenciaVagaListCreate.as_view(), name='form_desistencia_vaga_create'),
     path('form_desistencia_vaga/<int:id>/', FormDesistenciaVagaDetail.as_view(), name='form_desistencia_vaga_detail'),
 

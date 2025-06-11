@@ -155,3 +155,121 @@ main.container h2 {
     margin-bottom: 1rem;
   }
 }
+
+/* Adicione estas regras ao seu formulario.css */
+
+/* Estilos para campos readOnly */
+.form-group input[readOnly],
+.form-group select[readOnly],
+.form-group textarea[readOnly] {
+    background-color: #e9ecef; /* Um cinza claro para indicar inatividade */
+    cursor: not-allowed; /* Altera o cursor para indicar que não é editável */
+    /* Garante que a borda e o padding sejam consistentes com outros inputs */
+    border: 1px solid #ccc; /* Mantém a borda padrão do form-group */
+    padding: 0.75rem; /* Mantém o padding padrão do form-group */
+    border-radius: 8px; /* Mantém o border-radius padrão */
+    font-size: 1rem; /* Mantém o font-size padrão */
+    color: #495057; /* Cor de texto padrão, pode ser um pouco mais escura para contraste */
+}
+
+/* Remover foco para campos readOnly (opcional, mas boa prática para UX) */
+.form-group input[readOnly]:focus,
+.form-group select[readOnly]:focus,
+.form-group textarea[readOnly]:focus {
+    border-color: #ccc; /* Remove a borda azul de foco */
+    outline: none;
+    box-shadow: none; /* Garante que não haja sombra de foco */
+}
+
+/* Estilos para o container de disciplinas (checkboxes) */
+.disciplinas-container {
+    display: grid; /* Usa grid para organizar em colunas */
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Colunas responsivas */
+    gap: 15px; /* Espaçamento entre os itens */
+    padding: 10px 0; /* Padding vertical */
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fff;
+    max-height: 250px; /* Altura máxima para ativar scroll */
+    overflow-y: auto; /* Adiciona scroll vertical se exceder a altura */
+    margin-top: 5px;
+}
+
+.disciplina-checkbox {
+    display: flex; /* Para alinhar o checkbox e o label */
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.disciplina-checkbox:hover {
+    background-color: #f0f0f0;
+}
+
+.disciplina-checkbox input[type="checkbox"] {
+    margin-right: 10px;
+    /* Estilos básicos para o checkbox, pode ser personalizado */
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.disciplina-checkbox label {
+    font-weight: normal; /* Labels de checkbox geralmente não são negrito */
+    margin-bottom: 0; /* Remove margin-bottom padrão do label */
+    cursor: pointer;
+    flex-grow: 1; /* Permite que o label ocupe o espaço restante */
+}
+
+/* Estilos para o checkbox customizado (opcional, para browsers que suportam) */
+.disciplina-checkbox input[type="checkbox"]:checked + label {
+    color: #007bff; /* Cor para o texto da disciplina selecionada */
+    font-weight: 500;
+}
+
+/* Estilos para o grupo de checkbox (consegue_realizar_atividades_remotas) */
+.checkbox-group {
+    flex-direction: row; /* Alinha o checkbox e o label na mesma linha */
+    align-items: center; /* Centraliza verticalmente */
+    margin-bottom: 1.5rem; /* Margem inferior consistente */
+    gap: 10px; /* Espaçamento entre o checkbox e o label */
+}
+
+.checkbox-group label {
+    margin-bottom: 0; /* Remove a margem inferior padrão do label */
+    font-weight: normal; /* Não precisa ser negrito */
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 0; /* Remove margem extra se houver */
+}
+
+/* Ajustes para o fieldset de datas */
+.periodo-afastamento legend {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #333;
+    padding: 0 10px;
+    background-color: #f9f9f9; /* Mesma cor do fieldset para simular um corte */
+    border-radius: 5px;
+    position: relative; /* Para positioning */
+    top: -10px; /* Para mover a legenda para cima da borda */
+    left: 10px;
+    width: auto; /* Ajusta largura ao conteúdo */
+}
+
+.periodo-afastamento .datas-container {
+    display: flex;
+    flex-wrap: wrap; /* Permite quebrar linha em telas menores */
+    gap: 20px; /* Espaçamento entre os campos de data */
+    justify-content: space-between; /* Distribui os itens */
+}
+
+@media (max-width: 768px) {
+    .periodo-afastamento .datas-container {
+        flex-direction: column; /* Coloca as datas em coluna em telas menores */
+    }
+}
