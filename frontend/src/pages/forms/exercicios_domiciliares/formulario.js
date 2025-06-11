@@ -68,7 +68,7 @@ export default function FormularioExercicioDomiciliar() {
     // --- FUNÇÕES DE BUSCA E LÓGICA DO FORMULÁRIO ---
 
     // Função para calcular o período atual do aluno (com base no ano de ingresso e tipo de período)
-    // Movida para cá para que as outras funções a vejam.
+
     const calcularPeriodoAtualAluno = useCallback((anoIngresso, tipoPeriodo) => {
         if (!anoIngresso || !tipoPeriodo) return '';
 
@@ -90,10 +90,9 @@ export default function FormularioExercicioDomiciliar() {
             return `${periodoNumerico}º Ano`;
         }
         return '';
-    }, []); // Não há dependências externas que mudem a lógica desta função
+    }, []); 
 
 
-    // **Primeira alteração aqui: Envolver buscarDadosCurso em useCallback**
     const buscarDadosCurso = useCallback(async (codigoCurso) => {
         if (!codigoCurso) return;
         try {
@@ -127,7 +126,6 @@ export default function FormularioExercicioDomiciliar() {
     }, [setValue]); // setValue é uma dependência do useCallback, mas é estável pelo React Hook Form
 
 
-    // **Segunda alteração aqui: Envolver buscarDadosPpc em useCallback**
     const buscarDadosPpc = useCallback(async (codigoPpc) => {
         if (!codigoPpc) return;
         try {
@@ -141,14 +139,6 @@ export default function FormularioExercicioDomiciliar() {
             console.log("Dados do PPC:", res.data);
             setPpc(res.data);
 
-            // Tentar pré-selecionar o período atual do aluno se houver dados
-            // Agora, o tipo_periodo para calcular o periodo atual virá do curso.
-            // AQUI ESTÁ UM PONTO DE DECISÃO IMPORTANTE:
-            // Se o tipo_periodo para calcular o "periodoSelecionado" vem do `curso` (como pareceu inicialmente),
-            // então `aluno` e `curso` precisam ser dependências corretas aqui.
-            // Se o tipo_periodo vem do PPC, a lógica de `setPeriodosDisponiveis` e o cálculo do período
-            // do aluno devem ser feitos nesta função.
-            // Mantive a lógica que você já tinha, que acessa `aluno` e `curso` no contexto deste useCallback.
             if (aluno?.grupo_detalhes?.ano_ingresso && curso?.tipo_periodo) {
                 const periodoCalculadoInicial = calcularPeriodoAtualAluno(
                     aluno.grupo_detalhes.ano_ingresso,
@@ -169,8 +159,47 @@ export default function FormularioExercicioDomiciliar() {
             setPpc(null);
             // setPeriodosDisponiveis([]); // Se o PPC falhar, os períodos podem ter sido definidos pelo curso
         }
-    }, [aluno, curso, setValue, calcularPeriodoAtualAluno, periodosDisponiveis]); // Adicionado `aluno`, `curso`, `calcularPeriodoAtualAluno`, `periodosDisponiveis` como dependências
+    }, [aluno, curso, setValue, calcularPeriodoAtualAluno, periodosDisponiveis]);
 
+    /* Novo useEffect para pré-selecionar o período
+    useEffect(() => {
+        // Garante que todos os dados necessários estão carregados
+        if (aluno && curso && periodosDisponiveis.length > 0 && calcularPeriodoAtualAluno) {
+            let periodoParaSetar = '';
+
+            if (aluno.grupo_detalhes?.ano_ingresso && curso.tipo_periodo) {
+                const periodoCalculado = calcularPeriodoAtualAluno(
+                    aluno.grupo_detalhes.ano_ingresso,
+                    curso.tipo_periodo
+                );
+                // Verifica se o período calculado é uma das opções válidas
+                const isPeriodoCalculadoValido = periodosDisponiveis.some(p => p.value === periodoCalculado);
+                if (isPeriodoCalculadoValido) {
+                    periodoParaSetar = periodoCalculado;
+                }
+            }
+
+            // Se nenhum período foi calculado ou o calculado não é válido, tenta o primeiro disponível
+            if (!periodoParaSetar && periodosDisponiveis.length > 0) {
+                periodoParaSetar = periodosDisponiveis[0].value;
+            }
+
+            // Atualiza o estado e o valor do formulário APENAS se houver um período para setar
+            // e se ele for diferente do que já está selecionado para evitar loops desnecessários
+            if (periodoParaSetar && periodoParaSetar !== periodoSelecionado) {
+                setPeriodoSelecionado(periodoParaSetar);
+                setValue("periodo", periodoParaSetar);
+            }
+        } else if (periodosDisponiveis.length > 0 && !periodoSelecionado) {
+            // Caso especial: se não há aluno/curso mas periodosDisponiveis está populado,
+            // e nenhum período está selecionado, seleciona o primeiro.
+            setPeriodoSelecionado(periodosDisponiveis[0].value);
+            setValue("periodo", periodosDisponiveis[0].value);
+        }
+
+    }, [aluno, curso, periodosDisponiveis, calcularPeriodoAtualAluno, setPeriodoSelecionado, setValue, periodoSelecionado]);
+  */
+ 
     // Função para receber dados do usuário de BuscaUsuario (mantido)
     const handleUsuario = useCallback((data) => {
         console.log("BuscaUsuario retornou:", data);
@@ -185,8 +214,6 @@ export default function FormularioExercicioDomiciliar() {
         }
     }, [carregandoUsuario, userData, navigate]);
 
-    // **Terceira alteração: Array de dependências do useEffect que busca o aluno**
-    // Agora `buscarDadosCurso` e `buscarDadosPpc` são funções memoizadas, então podem ser incluídas aqui.
     useEffect(() => {
         const buscarAluno = async () => {
             if (!userData?.email) {
@@ -247,7 +274,7 @@ export default function FormularioExercicioDomiciliar() {
             buscouAlunoRef.current = true;
             buscarAluno();
         }
-    }, [userData, setValue, buscarDadosCurso, buscarDadosPpc]); // **Aqui é a alteração importante!**
+    }, [userData, setValue, buscarDadosCurso, buscarDadosPpc]); // 
 
 
     // Carregar motivos de exercício domiciliar (mantido)
@@ -337,10 +364,10 @@ export default function FormularioExercicioDomiciliar() {
     // useEffect para carregar disciplinas automaticamente quando o período ou PPC do aluno mudam
     useEffect(() => {
         // Só busca disciplinas se já tiver o ppc_codigo do aluno E um período válido selecionado
-        if (aluno?.grupo_detalhes?.ppc_codigo && periodoSelecionado && !isLoadingDisciplinas) {
+        if (aluno?.grupo_detalhes?.ppc_codigo && periodoSelecionado) {
             buscarDisciplinas(aluno.grupo_detalhes.ppc_codigo, periodoSelecionado);
         }
-    }, [aluno, periodoSelecionado, isLoadingDisciplinas, buscarDisciplinas]); // Dependências: aluno, periodoSelecionado, isLoadingDisciplinas, buscarDisciplinas
+    }, [aluno, periodoSelecionado, buscarDisciplinas]); // Dependências: aluno, periodoSelecionado, isLoadingDisciplinas, buscarDisciplinas
 
     // Manipular seleção do dropdown de período
     const handlePeriodoChange = (e) => {
@@ -380,17 +407,18 @@ export default function FormularioExercicioDomiciliar() {
         try {
             const payload = {
                 aluno: aluno.id,
-                motivo: data.motivo_solicitacao,
-                data_inicio: data.data_inicio_afastamento,
-                data_fim: data.data_fim_afastamento,
+                motivo_solicitacao: data.motivo_solicitacao,
+                data_inicio_afastamento: data.data_inicio_afastamento,
+                data_fim_afastamento: data.data_fim_afastamento,
                 documento_apresentado: data.documento_apresentado,
                 periodo: periodoSelecionado,
-
+                curso: data.curso,
                 outro_motivo: data.motivo_solicitacao === "outro" ? data.outro_motivo : undefined,
                 outro_documento: data.documento_apresentado === "outro" ? data.outro_documento : undefined,
-                consegue_realizar_atividades_remotas: data.consegue_realizar_atividades_remotas,
+                consegue_realizar_atividades: data.consegue_realizar_atividades,
                 disciplinas: disciplinasSelecionadasArray,
             };
+            console.log("Payload enviado:", payload); // DEBUG: Veja o que está sendo enviado!
 
             const token = localStorage.getItem("appToken");
 
