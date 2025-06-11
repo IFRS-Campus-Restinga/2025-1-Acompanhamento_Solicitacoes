@@ -1,4 +1,6 @@
 from rest_framework import viewsets, permissions
+
+from ..permissoes import CanSubmitExercicioDomiciliar, CanViewSolicitacaoDetail
 from ..models import FormExercicioDomiciliar
 from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
 

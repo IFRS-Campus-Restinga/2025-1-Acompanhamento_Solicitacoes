@@ -5,10 +5,12 @@ export default function BuscaUsuario({ dadosUsuario }) {
 
     // Busca inicial e escuta mudanças no localStorage
     useEffect(() => {
-        const storedUser = localStorage.getItem("googleUser");
+        const storedUser = localStorage.getItem('googleUser');
+        console.log(storedUser)
         if (storedUser) {
             try {
                 setUserData(JSON.parse(storedUser));
+                console.log(userData);
             } catch (error) {
                 console.error("Erro ao parsear googleUser:", error);
                 localStorage.removeItem("googleUser");
@@ -43,6 +45,7 @@ export default function BuscaUsuario({ dadosUsuario }) {
     // Notifica o componente pai após a leitura
     useEffect(() => {
         if (userData !== undefined) {
+            console.log(userData);
             dadosUsuario(userData);
         }
     }, [userData, dadosUsuario]);

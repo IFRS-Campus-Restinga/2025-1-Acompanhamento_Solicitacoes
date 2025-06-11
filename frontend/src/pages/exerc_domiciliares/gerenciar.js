@@ -23,6 +23,7 @@ export default function GerenciarExercDomicilares() {
 
     const handleUsuario = (data) => {
         setUserData(data);
+        console.log(data);
         setCarregando(false);
     };
 
@@ -36,24 +37,41 @@ export default function GerenciarExercDomicilares() {
     // Busca aluno apenas quando userData.email estiver definido
     useEffect(() => {
         const buscarAluno = async () => {
-                try {
-                    const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
-                        setAluno(res.data[0]);
-                        console.log("Dados obtidos: ", res.data);
-                } catch (err) {
-                    
-                        setAlunoNaoEncontrado(true);
-                        setMsgErro(err.message || "Erro desconhecido");
-                        setTipoErro("erro");
-                        setFeedbackIsOpen(true);
-                    }
-                };
+            try {
+                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
+                setAluno(res.data[0]);
+                console.log("Dados obtidos: ", res.data);
+            } catch (err) {
+
+                setAlunoNaoEncontrado(true);
+                setMsgErro(err.message || "Erro desconhecido");
+                setTipoErro("erro");
+                setFeedbackIsOpen(true);
+            }
+        };
 
         if (userData?.email && !buscouAlunoRef.current) {
             buscouAlunoRef.current = true;
             buscarAluno();
         }
     }, [userData]);
+
+    useEffect(() => {
+        const buscarFormulario = async () => {
+            try {
+                const res = await axios.get(`http://localhost:8000/solicitacoes/formulario_exerc_dom/${aluno.id}`)
+                setFormulario(res.data);
+                console.log("Formulário:", res.data);
+            } catch (err) {
+                setMsgErro(err);
+                setTipoErro("erro");
+                setFeedbackIsOpen(true);
+            }
+        };
+        if (aluno) {
+            buscarFormulario();
+        }
+    }, [aluno]);
 
     // Carregando usuário
     if (carregando) {
@@ -65,19 +83,10 @@ export default function GerenciarExercDomicilares() {
         );
     }
 
-    // Exibe dados do aluno
-    if (userData && aluno) {
-        /*useEffect(() => {
-            try {
-                const res = axios.get(`http://localhost:8000/solicitacoes/form_exercicio_domiciliar/aluno/${aluno.id}`)
-                setFormulario(res.data);
-            } catch (err) {
-                setMsgErro(err);
-                setTipoErro("erro");
-                setFeedbackIsOpen(true);
-            }
-        })*/
 
+    // Exibe dados do aluno
+    if (userData && aluno && formulario) {
+        console.log("Formulário", formulario);
         return (
             <div className="page-container">
                 <HeaderAluno onLogout={() => setUserData(null)} />
@@ -105,7 +114,19 @@ export default function GerenciarExercDomicilares() {
                         </div>
                         <div className="info-item">
                             <label>Data da solicitação: </label>
-                            <p></p>
+                            <p>{formulario.data_solicitacao}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Curso: </label>
+                            <p>{formulario.curso}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Motivo da Solicitação: </label>
+                            <p>{formulario.motivo_solicitacao}</p>
+                        </div>
+                        <div className="info-item">
+                            <label>Período de afastamento: </label>
+                            <p>{formulario.data_inicio_afastamento} - {formulario.data_fim_afastamento}</p>
                         </div>
                     </div>
 
@@ -136,5 +157,13 @@ export default function GerenciarExercDomicilares() {
         );
     }
 
-    return null;
+    return (
+        <div className="page-container">
+            <HeaderAluno onLogout={() => setUserData(null)} />
+            <main className="container">
+                <p>Carregando dados do aluno...</p>
+            </main>
+            <Footer />
+        </div>
+    );
 }
