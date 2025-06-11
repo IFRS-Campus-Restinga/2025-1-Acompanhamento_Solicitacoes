@@ -27,3 +27,4 @@ from .posse_solicitacao import *
 from .disponibilidade import *
 from .periodo_disciplina import *
 from .periodo_disponibilidade import *
+from .form_entrega_ativ_compl import *

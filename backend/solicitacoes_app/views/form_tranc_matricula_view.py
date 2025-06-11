@@ -1,42 +1,29 @@
-from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework import generics
 from ..models import FormularioTrancamentoMatricula
 from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
-from datetime import datetime
-from rest_framework.response import Response
 from ..permissoes import CanSubmitTrancMatricula, CanViewSolicitacaoDetail
 
-
-class FormTrancamentoCreateWithSolicitacaoView(generics.ListCreateAPIView):
-    queryset = FormularioTrancamentoMatricula.objects.all()
+# ALTERADO: A view de criação agora é uma `CreateAPIView`.
+# É mais específica e segura para um endpoint que só deve criar.
+class FormTrancamentoMatriculaCreateView(generics.CreateAPIView):
+    """
+    Endpoint para CRIAR uma nova solicitação do tipo "Trancamento de Matrícula".
+    """
+    # queryset é necessário, mas como não vamos listar nada, pode ser .none()
+    queryset = FormularioTrancamentoMatricula.objects.none()
     serializer_class = FormularioTrancamentoMatriculaSerializer
-    #permission_classes = [AllowAny]
-    permission_classes = [CanSubmitTrancMatricula] 
+    permission_classes = [CanSubmitTrancMatricula]
+
+    # REMOVIDO: O método create() foi removido.
+    # A classe genérica `CreateAPIView` já implementa toda a lógica de
+    # validação, salvamento e retorno de resposta HTTP de forma otimizada.
+    # Manter a implementação padrão é mais limpo e seguro.
 
 
-    def create(self, request, *args, **kwargs):
-        print("🔥 [Django] Dados recebidos no POST:")
-        for k, v in request.data.items():
-            print(f"   📥 {k}: {v}")
-
-        serializer = self.get_serializer(data=request.data)
-
-        if not serializer.is_valid():
-            print("❌ Erros de validação:", serializer.errors)
-            return Response(serializer.errors, status=400)
-
-        print("✅ Dados validados. Salvando...")
-        self.perform_create(serializer)
-
-        print("✅ Salvo com sucesso!")
-
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-
-
+# NENHUMA ALTERAÇÃO NECESSÁRIA AQUI.
+# Esta view já estava correta para ver/atualizar/deletar um item específico.
 class FormTrancamentoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()
     serializer_class = FormularioTrancamentoMatriculaSerializer
-    #permission_classes = [AllowAny]
     permission_classes = [CanViewSolicitacaoDetail] 
     lookup_field = "id"

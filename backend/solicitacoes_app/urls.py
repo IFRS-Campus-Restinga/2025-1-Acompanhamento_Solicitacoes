@@ -139,7 +139,7 @@ urlpatterns = [
     path('responsaveis/', ResponsavelListCreateView.as_view(), name='responsavel-list'),
     path('responsaveis/<int:pk>/', ResponsavelRetrieveUpdateDestroyView.as_view(), name='responsavel-detail'),
     
-    path("formularios-trancamento/", FormTrancamentoCreateWithSolicitacaoView.as_view()),
+    path("formularios-trancamento/", FormTrancamentoMatriculaCreateView.as_view()),
     path("formularios-trancamento/<int:id>/", FormTrancamentoDetail.as_view()),
 
     path("dispensa_ed_fisica/", FormDispEdFisicaViewListCreate.as_view(), name='dispensa_ed_fisica_list_create'),
@@ -170,8 +170,8 @@ urlpatterns = [
     path('form_ativ_compl/', FormEntregaAtivComplListCreate.as_view(), name='form_ativ_compl_list_create'),
     path('form_ativ_compl/<int:id>/', FormEntregaAtivComplUpdate.as_view(), name='form_ativ_compl_update'),
 
-    path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
-    path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
+    path('todas-solicitacoes/', SolicitacaoListView.as_view(), name='solicitacao-list-create'),
+    path('todas-solicitacoes/<int:id>/', SolicitacaoDetailView.as_view(), name='solicitacao_detail'),
 
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
