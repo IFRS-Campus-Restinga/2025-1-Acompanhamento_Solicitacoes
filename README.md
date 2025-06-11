@@ -35,12 +35,37 @@ Para instalar todos as dependências requeridas do BackEnd, digite no cmd:
 pip install -r requirements.txt 
 ```
 
+Instale o Google Auth:
+```
+pip install google-auth
+```
+```
+pip install --user google-auth
+```
 E para instalar todos as dependências requeridas do FrontEnd, digite no cmd:
 
 ```
 npm install
 ```
 
+Agora falta pouco, faça isso para criar os modelos de usuarios, salvá-los no banco e então criar dados com o script:
+```
+py manage.py makemigrations solicitacoes_app
+```
+```
+py manage.py migrate
+```
+```
+py manage.py cadastro_objetos
+```
+Depois é só rodar no back:
+```
+py manage.py runserver
+```
+E rodar no front:
+```
+npm start
+```
 <h3> Obrigada aos Nossos Professores!</h3>
 
 | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/3741540?v=4" width="115"><br><sub>Ricardo Luis dos Santos</sub>](https://github.com/rlsantos) | [<img loading="lazy" src="https://avatars.githubusercontent.com/u/8059230?v=4" width="115"><br><sub>Eliana Pereira</sub>](https://github.com/elianapereira) |
