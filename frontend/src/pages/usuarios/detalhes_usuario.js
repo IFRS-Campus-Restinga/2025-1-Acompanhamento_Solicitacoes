@@ -64,7 +64,7 @@ export default function DetalhesUsuario() {
             {usuario.grupo === "Aluno" && (
               <>
                 <p><strong>Matrícula:</strong> {usuario.grupo_detalhes?.matricula}</p>
-                <p><strong>Curso:</strong> {usuario.grupo_detalhes?.curso}</p>
+                <p><strong>Curso:</strong> {usuario.grupo_detalhes?.curso_nome}</p>
                 <p><strong>Ano de Ingresso:</strong> {usuario.grupo_detalhes?.ano_ingresso}</p>
               </>
             )}
