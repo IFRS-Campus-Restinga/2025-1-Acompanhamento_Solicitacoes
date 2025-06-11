@@ -174,7 +174,7 @@ class Command(BaseCommand):
         ads = Ppc.objects.get(codigo="ads/101.2018")
         Disciplina.objects.get_or_create(
             nome="Desenvolvimento de Sistemas 2", codigo="DEVII",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_SEMESTRE}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.QUINTO_SEMESTRE}
         )
         Disciplina.objects.get_or_create(
             nome="Banco de Dados 1", codigo="BD1",
@@ -182,7 +182,7 @@ class Command(BaseCommand):
         )
         Disciplina.objects.get_or_create(
             nome="Engenharia de Software", codigo="ESW10",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_SEMESTRE}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.SEXTO_SEMESTRE}
         )
         Disciplina.objects.get_or_create(
             nome="Gestão de Projetos", codigo="GDP20",
@@ -190,7 +190,7 @@ class Command(BaseCommand):
         )
         Disciplina.objects.get_or_create(
             nome="Turismo Sustentável", codigo="TURS1",
-            defaults={"ppc": ads, "periodo": PeriodoDisciplina.PRIMEIRO_SEMESTRE}
+            defaults={"ppc": ads, "periodo": PeriodoDisciplina.QUARTO_SEMESTRE}
         )
         
         # Disciplinas do PPC de Técnico de Informática
