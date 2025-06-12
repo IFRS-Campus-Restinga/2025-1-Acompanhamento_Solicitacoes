@@ -1,25 +1,39 @@
+from datetime import timezone
 from rest_framework import generics
-from rest_framework.permissions import IsAuthenticated
-
 from ..models import Solicitacao
-from ..serializers.polymorphic_serializer import SolicitacaoPolymorphicSerializer
-from ..permissoes import CanViewSolicitacaoDetail # Sua permissão
+from ..serializers.solicitacao_serializer import SolicitacaoSerializer
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
+from ..permissoes import IsCRE
+from ..permissoes import CanViewSolicitacaoDetail
 
-class SolicitacaoListView(generics.ListAPIView):
-    """
-    View para LISTAR TODAS as solicitações de todos os tipos.
-    """
-    queryset = Solicitacao.objects.all().select_related('aluno__usuario')
-    serializer_class = SolicitacaoPolymorphicSerializer
-    permission_classes = [IsAuthenticated]
-    
-class SolicitacaoDetailView(generics.RetrieveAPIView):
-    """
-    View para VER os detalhes de UMA solicitação específica,
-    independentemente do seu tipo.
-    """
+
+
+class SolicitacaoListCreate(generics.ListCreateAPIView):
     queryset = Solicitacao.objects.all()
-    serializer_class = SolicitacaoPolymorphicSerializer
+    serializer_class = SolicitacaoSerializer
+    
+    def perform_create(self, serializer):
+        # Verifica disponibilidade antes de criar
+        nome_formulario = serializer.validated_data.get('nome_formulario')
+        if nome_formulario:
+            from ..models import Disponibilidade
+            try:
+                disp = Disponibilidade.objects.get(
+                    formulario=nome_formulario,
+                    ativo=True
+                )
+                hoje = timezone.now().date()
+                if not disp.sempre_disponivel and (hoje < disp.data_inicio or hoje > disp.data_fim):
+                    raise PermissionDenied("Este formulário não está disponível no momento.")
+            except Disponibilidade.DoesNotExist:
+                pass
+        serializer.save()
+
+class SolicitacaoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Solicitacao.objects.all()
+    serializer_class = SolicitacaoSerializer
     lookup_field = 'id'
-    permission_classes = [CanViewSolicitacaoDetail]
-        
+    #permission_classes = [IsCRE]
+    permission_classes = [CanViewSolicitacaoDetail] 
+
