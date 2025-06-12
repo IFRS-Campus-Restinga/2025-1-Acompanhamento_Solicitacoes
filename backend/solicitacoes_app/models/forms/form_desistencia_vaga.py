@@ -1,20 +1,16 @@
-# seu_app/models/forms/form_desistencia_vaga.py
-
 from django.db import models
 from django.core.exceptions import ValidationError
 from django.core.validators import EmailValidator, RegexValidator
-
-# ALTERADO: Todas as importações que buscam modelos no diretório pai `models`
-# agora usam `..` para subir um nível.
 from ..curso import Curso
 from ..solicitacao import Solicitacao
 
 class FormDesistenciaVaga(Solicitacao):
-    NOME_FORMULARIO_IDENTIFICADOR = 'DESISTENCIAVAGA'
 
     class Meta:
         verbose_name = "Formulário de Desistência de Vaga"
     
+    nome_formulario = "Formulário de Desistência de Vaga"
+
     TIPO_CURSO_CHOICES = [
         ("medio_integrado", "Ensino Médio Integrado"),
         ("subsequente", "Curso Subsequente"),
@@ -71,10 +67,11 @@ class FormDesistenciaVaga(Solicitacao):
     )
 
     recebe_auxilio_estudantil = models.BooleanField(
-        default=False,
-        verbose_name="Recebe auxílio estudantil?"
+    default=False,
+    verbose_name="Recebe auxílio estudantil?"
     )
 
+    # Documentos
     atestado_vaga_nova_escola = models.FileField(
         upload_to='desistencia/', 
         blank=True, 
@@ -98,6 +95,7 @@ class FormDesistenciaVaga(Solicitacao):
 
     def clean(self):
         super().clean()
+
         if self.tipo_curso == "medio_integrado":
             if not self.atestado_vaga_nova_escola:
                 raise ValidationError({

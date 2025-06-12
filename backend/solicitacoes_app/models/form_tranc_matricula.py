@@ -1,18 +1,15 @@
-# seu_app/models/form_tranc_matricula.py
-
 from django.db import models
-from .solicitacao import Solicitacao
+from .solicitacao import Solicitacao   # sua classe abstrata
 
 class FormularioTrancamentoMatricula(Solicitacao):
-    # NOVO: Atributo de classe obrigatório para a lógica de disponibilidade no modelo pai.
-    # O valor deve corresponder ao que você tem no seu modelo `Disponibilidade`.
-    NOME_FORMULARIO_IDENTIFICADOR = 'TRANCAMENTOMATRICULA'
+    motivo_solicitacao = models.TextField()
     
-    # Seus campos específicos para este formulário
-    motivo_solicitacao = models.TextField(
-        verbose_name="Motivo da Solicitação"
-    )
-    
+    def save(self, *args, **kwargs):
+        self.nome_formulario = "Formulário de Trancamento de Matrícula"
+        
+        super().save(*args, **kwargs)
+        
+        
     class Meta:
         verbose_name = "Formulário de Trancamento de Matrícula"
-        verbose_name_plural = "Formulários de Trancamento de Matrícula"
+

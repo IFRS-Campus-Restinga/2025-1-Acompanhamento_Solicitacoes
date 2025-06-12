@@ -1,18 +1,16 @@
-# seu_app/models/forms/form_exercicio_domiciliar.py
-
 from django.db import models
 from datetime import date
+from django.contrib.auth import get_user_model
 
-# ALTERADO: A importação agora usa '..' para subir um nível de 'forms' para 'models'.
 from ..periodo_disciplina import PeriodoDisciplina
 from ..ppc import Ppc
 from ..curso import Curso
 from ..solicitacao import Solicitacao
-from ..disciplina import Disciplina
+from django.core.validators import MinLengthValidator, EmailValidator
+
+User = get_user_model()
 
 class FormExercicioDomiciliar(Solicitacao):
-    NOME_FORMULARIO_IDENTIFICADOR = 'EXERCICIOSDOMICILIARES'
-
     class Meta:
         verbose_name = "Formulário de Exercícios Domiciliares"
         verbose_name_plural = "Formulários de Exercícios Domiciliares"
@@ -38,10 +36,10 @@ class FormExercicioDomiciliar(Solicitacao):
     ]
 
     curso = models.ForeignKey(
-        Curso,
-        on_delete=models.CASCADE,
-        related_name="formularios_exercicios_domiciliares",
-        verbose_name="Curso"
+    Curso,
+    on_delete=models.CASCADE,
+    related_name="formularios_exercicios_domiciliares",
+    verbose_name="Curso"
     )
 
     periodo = models.CharField(
@@ -60,7 +58,7 @@ class FormExercicioDomiciliar(Solicitacao):
     )
 
     disciplinas = models.ManyToManyField(
-        Disciplina,
+        'Disciplina',
         verbose_name="Disciplinas relacionadas"
     )
 
@@ -76,7 +74,7 @@ class FormExercicioDomiciliar(Solicitacao):
         null=True,
         verbose_name="Outro Motivo"
     )
-    
+
     data_inicio_afastamento = models.DateField(
         default=date.today,
         verbose_name="Data de Início do Afastamento"
@@ -112,8 +110,10 @@ class FormExercicioDomiciliar(Solicitacao):
     )
 
     def __str__(self):
-        aluno_nome = self.aluno.usuario.nome if self.aluno and self.aluno.usuario else "Aluno não identificado"
+         # Acessa o nome do aluno através da relação com Solicitação
+        aluno_nome = self.solicitacao.aluno.usuario.nome if hasattr(self, 'solicitacao') and self.solicitacao.aluno else "Aluno não identificado"
         return f"Exercício Domiciliar - {aluno_nome} ({self.curso.nome})"
+    
     
     @property
     def periodo_afastamento(self):
