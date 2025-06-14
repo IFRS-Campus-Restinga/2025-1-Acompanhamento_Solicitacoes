@@ -24,11 +24,26 @@ export default function Formulario() {
     const [emailAluno, setEmailAluno] = useState("");
     const [matriculaAluno, setMatriculaAluno] = useState("");
 
+    const [carregando, setCarregando] = useState(true);
+
     const urls = useMemo(() => [
         "http://localhost:8000/solicitacoes/form_ativ_compl/",
     ], []);
 
     const navigate = useNavigate();
+
+    const handleUsuario = (data) => {
+        setUserData(data);
+        console.log(data);
+        setCarregando(false);
+    };
+
+    useEffect(() => {
+        if (!carregando && !userData) {
+            navigate("/");
+        }
+    }, [carregando, userData, navigate]);
+    
 
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/cursos/")
@@ -154,7 +169,17 @@ export default function Formulario() {
         }
     };
 
-    return (
+    if (carregando) {
+            return (
+                <>
+                    <BuscaUsuario dadosUsuario={handleUsuario} />
+                    <p>Carregando usuário...</p>
+                </>
+            );
+        }
+
+     if (userData) {
+        return (
         <div>
             <HeaderAluno />
             <main className="container">
@@ -220,4 +245,6 @@ export default function Formulario() {
             <Footer />
         </div>
     );
+     }   
+    
 }

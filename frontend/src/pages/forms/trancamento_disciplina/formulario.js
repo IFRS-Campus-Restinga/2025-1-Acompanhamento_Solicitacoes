@@ -6,6 +6,7 @@ import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
+import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function Formulario() {
     const [alunos, setAlunos] = useState([]);
@@ -22,7 +23,22 @@ export default function Formulario() {
     const [tipoMensagem, setTipoMensagem] = useState("sucesso");
     const [mensagemErro, setMensagemErro] = useState("");
     const [filtroDisciplina, setFiltroDisciplina] = useState("");
+    const [carregando, setCarregando] = useState(true);
+    const [userData, setUserData] = useState(null);
+
     const navigate = useNavigate();
+
+    const handleUsuario = (data) => {
+        setUserData(data);
+        console.log(data);
+        setCarregando(false);
+    };
+
+    useEffect(() => {
+        if (!carregando && !userData) {
+            navigate("/");
+        }
+    }, [carregando, userData, navigate]);
 
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/alunos/")
@@ -112,7 +128,17 @@ export default function Formulario() {
         disciplina.codigo.toLowerCase().includes(filtroDisciplina.toLowerCase())
     );
 
-    return (
+    if (carregando) {
+            return (
+                <>
+                    <BuscaUsuario dadosUsuario={handleUsuario} />
+                    <p>Carregando usuário...</p>
+                </>
+            );
+        }
+
+    if (userData) {
+return (
         <VerificadorDisponibilidade tipoFormulario="TRANCAMENTODISCIPLINA">
             <div>
                 <HeaderAluno />
@@ -269,4 +295,6 @@ export default function Formulario() {
             </div>
         </VerificadorDisponibilidade>
     );
+    }
+    
 }

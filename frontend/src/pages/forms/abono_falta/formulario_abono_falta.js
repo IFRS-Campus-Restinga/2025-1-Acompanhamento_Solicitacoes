@@ -5,6 +5,7 @@ import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import BuscaUsuario from "../../../components/busca_usuario";
 
 // Funções de validação e extração
 const extractMatriculaFromEmail = (email) => {
@@ -68,8 +69,11 @@ export default function FormularioAbonoFaltas() {
   const [alunoInfo, setAlunoInfo] = useState(null); 
   const [cursoNome, setCursoNome] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [carregando, setCarregando] = useState(true);
 
   const readonlyStyle = { backgroundColor: "#e9ecef", cursor: "not-allowed" };
+
 
   // --- Funções de busca de dados --- 
   const buscarNomeCurso = async (cursoCodigo) => {
@@ -201,6 +205,12 @@ export default function FormularioAbonoFaltas() {
           buscarDisciplinas(alunoInfo.ppc.codigo);
       }
     }, [alunoInfo]);
+
+    useEffect(() => {
+        if (!carregando && !userData) {
+            navigate("/");
+        }
+    }, [carregando, userData, navigate]);
 
   const buscarCursoPorPpc = async (ppcCodigo) => {
     if (!ppcCodigo) return;
@@ -447,7 +457,11 @@ export default function FormularioAbonoFaltas() {
     event.target.selected = !event.target.selected; // Alterna visualmente a seleção
 };
 
-
+const handleUsuario = (data) => {
+        setUserData(data);
+        console.log(data);
+        setCarregando(false);
+    };
   
     
   // Função para remover disciplina selecionada
@@ -458,8 +472,17 @@ export default function FormularioAbonoFaltas() {
     }));
   };
 
+  if (carregando) {
+          return (
+              <>
+                  <BuscaUsuario dadosUsuario={handleUsuario} />
+                  <p>Carregando usuário...</p>
+              </>
+          );
+      }
 
-  return (
+  if (userData) {
+    return (
     <div>
       <HeaderAluno />
       <main className="container">
@@ -678,5 +701,7 @@ export default function FormularioAbonoFaltas() {
       <Footer />
     </div>
   );
+  }
+  
 }
 

@@ -7,6 +7,7 @@ import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
+import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
@@ -22,11 +23,26 @@ export default function Formulario() {
     const [emailAluno, setEmailAluno] = useState("");
     const [matriculaAluno, setMatriculaAluno] = useState("");
 
+    const [carregando, setCarregando] = useState(true);
+    const [userData, setUserData] = useState(null);
+
     const urls = useMemo(() => [
         "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
     ], []);
 
     const navigate = useNavigate();
+
+    const handleUsuario = (data) => {
+        setUserData(data);
+        console.log(data);
+        setCarregando(false);
+    };
+
+    useEffect(() => {
+        if (!carregando && !userData) {
+            navigate("/");
+        }
+    }, [carregando, userData, navigate]);
 
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/")
@@ -145,9 +161,17 @@ export default function Formulario() {
         }
     };
 
+    if (carregando) {
+            return (
+                <>
+                    <BuscaUsuario dadosUsuario={handleUsuario} />
+                    <p>Carregando usuário...</p>
+                </>
+            );
+        }
 
-
-    return (
+    if (userData) {
+return (
         <div>
             <HeaderAluno />
             <main className="container">
@@ -219,4 +243,6 @@ export default function Formulario() {
             <Footer />
         </div>
     );
+    }
+    
 }

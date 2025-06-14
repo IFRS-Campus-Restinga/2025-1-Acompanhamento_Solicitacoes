@@ -5,6 +5,7 @@ import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno"; 
 import "../../../components/formulario.css";
 import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
+import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function FormularioTrancamentoMatricula() {
   const [alunos, setAlunos] = useState([]);
@@ -17,7 +18,22 @@ export default function FormularioTrancamentoMatricula() {
     arquivos: null, 
   });
 
+  const [carregando, setCarregando] = useState(true);
+  const [userData, setUserData] = useState(null);
+
   const navigate = useNavigate();
+
+  const handleUsuario = (data) => {
+        setUserData(data);
+        console.log(data);
+        setCarregando(false);
+    };
+
+    useEffect(() => {
+        if (!carregando && !userData) {
+            navigate("/");
+        }
+    }, [carregando, userData, navigate]);
 
   useEffect(() => {
     axios
@@ -148,7 +164,17 @@ export default function FormularioTrancamentoMatricula() {
     }
   };
 
-  return (
+  if (carregando) {
+          return (
+              <>
+                  <BuscaUsuario dadosUsuario={handleUsuario} />
+                  <p>Carregando usuário...</p>
+              </>
+          );
+      }
+
+      if (userData) {
+return (
     <VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
       <div>
         <HeaderAluno />
@@ -260,4 +286,6 @@ export default function FormularioTrancamentoMatricula() {
       </div>
     </VerificadorDisponibilidade>
   );
+      }
+  
 }
