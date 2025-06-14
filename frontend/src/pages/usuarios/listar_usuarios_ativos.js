@@ -77,12 +77,17 @@ export default function ListarUsuariosAtivos() {
   );
 
   // Função para confirmar exclusão
-  const confirmarExclusao = () => {
+  const confirmarExclusao = (justificativa = null) => {
     if (!usuarioId) return;
 
-    api.delete(`/usuarios/${usuarioId}/`)
+    // Se tiver justificativa, envia como parâmetro na requisição
+    const config = justificativa ? { data: { justificativa } } : {};
+
+    api.delete(`/usuarios/${usuarioId}/`, config)
       .then(() => {
-        setMensagemPopup("Usuário excluído com sucesso."); 
+        setMensagemPopup(justificativa 
+          ? "Cadastro rejeitado com sucesso." 
+          : "Usuário excluído com sucesso."); 
         setTipoMensagem("sucesso");
         setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioId));
       })
@@ -123,6 +128,11 @@ export default function ListarUsuariosAtivos() {
         setUsuarioId(null);
         setTipoAcao("");
       });
+  };
+
+  // Função para rejeitar cadastro (usando a mesma lógica de exclusão, mas com justificativa)
+  const rejeitarCadastro = (justificativa) => {
+    confirmarExclusao(justificativa);
   };
 
   // Função para lidar com a confirmação baseada no tipo de ação
@@ -189,17 +199,17 @@ export default function ListarUsuariosAtivos() {
                       }} />
                 
                       {usuario.status_usuario === "Em Analise" && (
-                        //botao aprovar cadastro
+                        // Botão Analisar com texto e cor personalizada
                         <button
                           onClick={() => {
                             setUsuarioId(usuario.id)
                             setTipoAcao("aprovar");
                             setMostrarPopup(true); 
                           }}
-                          title="Aprovar Cadastro"
-                          className="icone-botao"
+                          title="Analisar Cadastro"
+                          className="botao-analisar"
                         >
-                          <i className="bi bi-check-circle-fill icone-aprovar"></i>
+                          Analisar
                         </button>
                       )}
                     </div>
@@ -223,13 +233,18 @@ export default function ListarUsuariosAtivos() {
           // Define a mensagem com base no tipo de ação
           mensagem={tipoAcao === "excluir" 
             ? "Tem certeza que deseja excluir este usuário?" 
-            : "Tem certeza que deseja aprovar este cadastro?"}
+            : "Deseja aprovar ou rejeitar o cadastro?"}
           onConfirm={handleConfirmacao} // Chama a função que decide qual ação executar
+          onReject={rejeitarCadastro} // Nova função para rejeitar cadastro
           onCancel={() => {
             setMostrarPopup(false);
             setUsuarioId(null);
             setTipoAcao("");
           }}
+          // Exibe opção de rejeição apenas quando estamos analisando um cadastro
+          showRejectOption={tipoAcao === "aprovar"}
+          // Define o texto do botão de confirmação com base no tipo de ação
+          confirmLabel={tipoAcao === "aprovar" ? "Aprovar" : "Confirmar"}
         />
 
         <PopupFeedback
@@ -245,4 +260,3 @@ export default function ListarUsuariosAtivos() {
     </div>
   );
 }
-
