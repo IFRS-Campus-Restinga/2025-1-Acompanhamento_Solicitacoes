@@ -1,0 +1,266 @@
+/* Estilos para o overlay do modal (o fundo escurecido) */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fundo escuro semitransparente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Garante que o modal esteja acima de outros elementos */
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+/* Estilos para o conteúdo do modal (a caixa branca com o formulário) */
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 550px;
+    box-sizing: border-box;
+    transform: translateY(0);
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Estilos para elementos dentro do modal, para melhor apresentação */
+.modal-content h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #333;
+    font-size: 1.6em;
+}
+
+.modal-content .form-group {
+    margin-bottom: 20px;
+}
+
+.modal-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+.modal-content .input-text {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.modal-content .error-message {
+    color: #dc3545;
+    font-size: 0.9em;
+    margin-top: 5px;
+    display: block;
+}
+
+.modal-content .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 15px;
+    margin-top: 30px;
+}
+
+.modal-content .form-actions button {
+    padding: 12px 20px;
+    font-size: 1em;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.modal-content .form-actions button[type="submit"] {
+    background-color: #28a745;
+    color: white;
+}
+
+.modal-content .form-actions button[type="submit"]:hover {
+    background-color: #218838;
+    transform: translateY(-1px);
+}
+
+.modal-content .form-actions button[type="button"] {
+    background-color: #dc3545;
+    color: white;
+}
+
+.modal-content .form-actions button[type="button"]:hover {
+    background-color: #c82333;
+    transform: translateY(-1px);
+}
+
+/* --- Estilos para o react-datepicker --- */
+
+/* Contêiner principal do DatePicker */
+.react-datepicker__portal .react-datepicker,
+.react-datepicker-popper .react-datepicker {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fonte mais agradável */
+  border-radius: 8px; /* Bordas mais suaves */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra sutil */
+  border: 1px solid #ddd; /* Borda mais discreta */
+  background-color: #ffffff; /* Fundo branco limpo */
+}
+
+/* Header do calendário (mês/ano e botões) */
+.react-datepicker__header {
+  background-color: #f8f9fa; /* Fundo levemente cinza */
+  border-bottom: 1px solid #eee;
+  padding-top: 10px;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+
+/* Título do mês/ano */
+.react-datepicker__current-month,
+.react-datepicker__day-name {
+  color: #333; /* Cor do texto mais escura */
+  font-weight: 600;
+}
+
+/* Dias da semana (Seg, Ter, Qua...) */
+.react-datepicker__day-name {
+  color: #555;
+  font-size: 0.9em;
+  margin-bottom: 5px;
+}
+
+/* Botões de navegação (setas) */
+.react-datepicker__navigation {
+  top: 10px;
+  line-height: 1.7em;
+  border: none; /* Remover borda padrão */
+}
+
+.react-datepicker__navigation--previous {
+  left: 10px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23333" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 16px;
+  height: 16px;
+  margin-left: 5px; /* Ajuste para não ficar colado */
+}
+
+.react-datepicker__navigation--next {
+  right: 10px;
+  background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="%23333" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: center;
+  width: 16px;
+  height: 16px;
+  margin-right: 5px; /* Ajuste para não ficar colado */
+}
+
+/* Esconder o triângulo padrão da navegação */
+.react-datepicker__navigation-icon::before {
+  border-color: transparent !important;
+}
+
+/* Dias do mês */
+.react-datepicker__day {
+  width: 2.2em; /* Tamanho do dia */
+  line-height: 2.2em; /* Altura da linha para centralizar texto */
+  margin: 2px; /* Espaçamento entre os dias */
+  border-radius: 50%; /* Deixa os dias redondos */
+  transition: background-color 0.2s ease, color 0.2s ease; /* Transição suave */
+}
+
+/* Dia de hoje */
+.react-datepicker__day--today {
+  font-weight: bold;
+  color: #007bff; /* Azul vibrante */
+  background-color: #e6f2ff; /* Fundo suave para o dia de hoje */
+}
+
+/* Dias selecionados (data de início, fim, ou entre) */
+.react-datepicker__day--selected,
+.react-datepicker__day--in-selecting-range,
+.react-datepicker__day--in-range {
+  background-color: #007bff; /* Azul principal */
+  color: white;
+  border-radius: 50%;
+}
+
+/* Hover sobre os dias */
+.react-datepicker__day:hover {
+  background-color: #0056b3; /* Azul mais escuro no hover */
+  color: white;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+/* Dias do mês anterior/próximo que não são selecionáveis */
+.react-datepicker__day--outside-month {
+  color: #ccc; /* Mais claro */
+  pointer-events: none; /* Desabilita clique */
+}
+
+/* Dias desabilitados (do `excludeDates`) */
+.react-datepicker__day--disabled {
+  background-color: #f2f2f2; /* Fundo cinza claro */
+  color: #aaa; /* Texto cinza escuro */
+  cursor: not-allowed; /* Cursor de "não permitido" */
+  opacity: 0.6; /* Levemente transparente */
+  text-decoration: line-through; /* Opcional: riscar o dia */
+}
+
+/* Desabilitar hover e seleção para dias desabilitados */
+.react-datepicker__day--disabled:hover {
+  background-color: #f2f2f2; /* Mantém o fundo inalterado no hover */
+  color: #aaa;
+}
+
+/* Ajustes para o input do DatePicker para parecer um input normal */
+.react-datepicker-wrapper .react-datepicker__input-container .input-text {
+  width: 100%; /* Garante que o input ocupe a largura total */
+  padding: 10px 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box; /* Inclui padding e border no width */
+  margin-top: 5px;
+  margin-bottom: 5px; /* Espaçamento com a mensagem de erro */
+}
+
+/* Foco no input */
+.react-datepicker-wrapper .react-datepicker__input-container .input-text:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+}
+
+/* Estilo para meses/anos na seleção de meses/anos */
+.react-datepicker__month-text,
+.react-datepicker__year-text {
+  width: 4em;
+  height: 4em;
+  line-height: 4em;
+  border-radius: 5px;
+  transition: background-color 0.2s ease;
+}
+
+.react-datepicker__month-text--selected,
+.react-datepicker__year-text--selected {
+  background-color: #007bff !important;
+  color: white !important;
+}
+
+.react-datepicker__month-text:hover,
+.react-datepicker__year-text:hover {
+  background-color: #e0e0e0;
+}
+
+/* Ajuste para o pop-up do calendário */
+.react-datepicker-popper {
+  z-index: 1000; /* Garante que o calendário apareça acima de outros elementos */
+}

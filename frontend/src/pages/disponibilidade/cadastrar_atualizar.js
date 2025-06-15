@@ -308,6 +308,7 @@ export default function CadastrarAtualizarDisponibilidade() {
             periodo={currentPeriodToEdit}
             onSave={currentPeriodToEdit ? handleUpdatePeriod : handleAddPeriod}
             onCancel={() => setShowPeriodModal(false)}
+            existingPeriodsForCurrentForm={periods}
           />
         )}
 
