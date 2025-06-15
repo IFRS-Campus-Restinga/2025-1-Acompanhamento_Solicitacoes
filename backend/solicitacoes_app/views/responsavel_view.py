@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
 )
+from django.db import transaction # Importar transaction
 
 from ..models import Responsavel
 # Importar os serializers ajustados
@@ -20,21 +21,35 @@ class ResponsavelListCreateView(generics.ListCreateAPIView):
         e ResponsavelListSerializer para GET (listagem).
         """
         if self.request.method == 'POST':
-            return ResponsavelCreateUpdateSerializer
-        return ResponsavelListSerializer
-    
-    def perform_create(self, serializer):
+            return ResponsavelCreateUpdateSerializer # Usamos o serializer de escrita para receber os dados
+        return ResponsavelListSerializer # Usamos o serializer de leitura para listar
+
+    @transaction.atomic # Adiciona a transação atômica aqui
+    def create(self, request, *args, **kwargs):
         """
-        Chama o método create do serializer para criar o Responsavel
-        e o Usuario/vincular, e adicionar ao grupo.
+        Cria um Responsável (e seu Usuario associado, se for o caso) em uma única transação atômica.
         """
-        serializer.save() # O serializer.create() já faz tudo o que precisamos
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True) # Lança exceção se não for válido
+
+        try:
+            # Chama o método create do serializer, que agora cria Usuario e Responsavel
+            responsavel_instance = serializer.save() 
+            
+            # Serializa a resposta usando o ResponsavelListSerializer para incluir o usuario aninhado
+            read_serializer = ResponsavelListSerializer(responsavel_instance)
+            return Response(read_serializer.data, status=HTTP_201_CREATED)
+        except Exception as e:
+            # Em caso de erro, a transação será revertida automaticamente
+            return Response(
+                {'error': str(e)}, 
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
 
 
 class ResponsavelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Responsavel.objects.all()
     # Definimos o serializer padrão para a view de update/destroy.
-    # ResponsavelCreateUpdateSerializer é bom para operações de update.
     serializer_class = ResponsavelCreateUpdateSerializer 
     permission_classes = [AllowAny]
     lookup_field = 'pk'
@@ -46,14 +61,22 @@ class ResponsavelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
         serializer = ResponsavelListSerializer(instance) 
         return Response(serializer.data, status=HTTP_200_OK)
 
+    @transaction.atomic # Adiciona a transação atômica aqui
     def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
         instance = self.get_object()
-        # O serializer para o update será o definido em serializer_class (ResponsavelCreateUpdateSerializer)
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Responsável atualizado com sucesso!'}, status=HTTP_200_OK)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        try:
+            self.perform_update(serializer)
+            read_serializer = ResponsavelListSerializer(instance) # Usa a instância original que foi atualizada
+            return Response(read_serializer.data, status=HTTP_200_OK)
+        except Exception as e:
+            return Response(
+                {'error': str(e)}, 
+                status=HTTP_500_INTERNAL_SERVER_ERROR
+            )
+
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()

@@ -27,7 +27,9 @@ class Responsavel(BaseModel):
         
         if created: # Somente na criação do Responsável
             # Regra: Ao criar Responsável, passa o STATUSUSUARIO para EM_ANALISE
-            # if self.usuario.status_usuario == StatusUsuario.NOVO:
-                # self.usuario.status_usuario = StatusUsuario.EM_ANALISE
-                # self.usuario.save(update_fields=['status_usuario']) # Salva apenas o campo modificado
-            pass
+            if self.usuario.status_usuario == StatusUsuario.NOVO:
+                self.usuario.status_usuario = StatusUsuario.EM_ANALISE
+                self.usuario.is_active = False
+                self.usuario.save(update_fields=['status_usuario', 'is_active']) # Salva apenas os campos modificados
+
+
