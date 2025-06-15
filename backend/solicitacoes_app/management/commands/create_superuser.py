@@ -11,7 +11,7 @@ class Command(BaseCommand):
 
         # Dados do superusuário (altere conforme necessário)
         ADMIN_EMAIL = "admin@email.com"
-        ADMIN_PASSWORD = "adminpassword123"
+        ADMIN_PASSWORD = "admin"
         ADMIN_NOME = "Admin"
         ADMIN_CPF = "12345668901"    # Deve conter exatamente 11 dígitos
         ADMIN_TELEFONE = "11999999999"    # 10 ou 11 dígitos
