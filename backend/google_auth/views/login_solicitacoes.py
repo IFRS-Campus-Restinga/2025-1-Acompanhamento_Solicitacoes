@@ -1,5 +1,3 @@
-# google_auth/views/login_solicitacoes.py (Arquivo Modificado v2)
-
 import requests
 from django.shortcuts import redirect
 from urllib.parse import urlencode
