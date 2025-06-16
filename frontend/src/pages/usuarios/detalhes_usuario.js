@@ -49,7 +49,7 @@ export default function DetalhesUsuario() {
                     <div key={idx}>
                       <p><strong>Curso:</strong> {mandato.curso}</p>
                       <p><strong>Início do Mandato:</strong> {mandato.inicio_mandato}</p>
-                      <p><strong>Fim do Mandato:</strong> {mandato.fim_mandato || "Atual"}</p>
+                      <p><strong>Fim do Mandato:</strong> {mandato.fim_mandato || "-"}</p>
                       <hr />
                     </div>
                   ));

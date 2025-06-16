@@ -168,7 +168,7 @@ export default function HistoricoMandatos() {
                                         <td>{mandato.curso?.nome} ({mandato.curso?.codigo})</td>
                                         <td>{mandato.coordenador?.nome} ({mandato.coordenador?.siape})</td>
                                         <td>{formatarDataParaExibicao(mandato.inicio_mandato)}</td>
-                                        <td>{mandato.fim_mandato ? formatarDataParaExibicao(mandato.fim_mandato) : 'Atual'}</td>
+                                        <td>{mandato.fim_mandato ? formatarDataParaExibicao(mandato.fim_mandato) : '-'}</td>
                                         <td>
                                             <div className="botoes-acoes">
                                                 <BotaoEditar to={`/mandatos/editar/${mandato.id}`} />

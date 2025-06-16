@@ -74,9 +74,7 @@ import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
-import ListaMandatosPorCurso from "../pages/coordenadores/mandatos/lista_coord_mandato_por_curso.js";
 import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
-import SelecaoCursoMandato from "../pages/coordenadores/mandatos/selecao_curso_mandatos.js";
 
 
 import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
@@ -175,8 +173,6 @@ const routes = [
   
   //Mandatos
 
-  <Route path="/mandatos-selecionarcurso" element={< SelecaoCursoMandato/>} key="selecionar-curso-mandato" />,
-  <Route path="/mandatos/curso/:cursoCodigo" element={< ListaMandatosPorCurso/>} key="listar-mandatos-curso" />,
   <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
   <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
   <Route path="/mandatos" element={<HistoricoMandatos/>} key="listar-historico-mandatos" />,
