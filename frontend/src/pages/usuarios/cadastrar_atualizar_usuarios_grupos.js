@@ -5,6 +5,7 @@ import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import api from "../../services/api";
+import { getCookie } from "../../services/authUtils";
 
 const initialFormState = {
   nome: "", email: "", cpf: "", telefone: "", data_nascimento: "",
@@ -43,14 +44,78 @@ export default function CadastrarAtualizarUsuarioGrupo() {
   const [feedbackType, setFeedbackType] = useState("sucesso");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { pathname } = useLocation();
+  const location = useLocation();
   const { id, grupo } = useParams();
   const navigate = useNavigate();
   const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
   const [dataLoaded, setDataLoaded] = useState(false);
+  // Estado para controlar quais campos são somente leitura
+  const [readOnlyFields, setReadOnlyFields] = useState({
+    nome: false,
+    email: false
+  });
 
   const isEditing = !!id;
   const title = isEditing ? `Editar ${grupo.charAt(0).toUpperCase() + grupo.slice(1)}` : `Cadastrar Novo ${grupo.charAt(0).toUpperCase() + grupo.slice(1)}`;
   const submitButtonText = isEditing ? "Atualizar" : "Cadastrar";
+
+  // Efeito para carregar dados do Google do cookie
+  useEffect(() => {
+    try {
+      
+      const googleUserCookie = getCookie('googleUser');
+      
+      if (googleUserCookie) {
+        // Parsear o cookie para obter os dados do usuário
+        const googleUser = JSON.parse(googleUserCookie);
+        console.log("Dados do usuário Google obtidos do cookie:", googleUser);
+        
+        if (googleUser && (googleUser.name || googleUser.email)) {
+          // Atualizar o formulário com os dados do Google
+          setFormData(prev => ({
+            ...prev,
+            nome: googleUser.name || prev.nome,
+            email: googleUser.email || prev.email
+          }));
+          
+          // Definir quais campos serão somente leitura
+          setReadOnlyFields({
+            nome: !!googleUser.name,
+            email: !!googleUser.email
+          });
+          
+          console.log("Formulário atualizado com dados do Google:", {
+            nome: googleUser.name,
+            email: googleUser.email
+          });
+        }
+      } else {
+        console.log("Cookie 'googleUser' não encontrado");
+        
+        // Verificar também os parâmetros da URL
+        const queryParams = new URLSearchParams(location.search);
+        const googleName = queryParams.get("google_name");
+        const googleEmail = queryParams.get("google_email");
+        
+        if (googleName || googleEmail) {
+          console.log("Dados do Google encontrados na URL:", { nome: googleName, email: googleEmail });
+          
+          setFormData(prev => ({
+            ...prev,
+            nome: googleName || prev.nome,
+            email: googleEmail || prev.email
+          }));
+          
+          setReadOnlyFields({
+            nome: !!googleName,
+            email: !!googleEmail
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados do Google:", error);
+    }
+  }, [location.search]); // Executar quando a URL mudar
 
   useEffect(() => {
     async function loadCursosComPpcs() {
@@ -177,6 +242,9 @@ export default function CadastrarAtualizarUsuarioGrupo() {
 
   // Valida campo a campo no backend e é chamando no handleBlur
   async function validateField(fieldName, value) {
+    // Não validar campos somente leitura
+    if (readOnlyFields[fieldName]) return;
+    
     setErrors(prev => ({ ...prev, [fieldName]: null }));
     const url = getValidationUrl(fieldName, grupo);
     if (!url) return;
@@ -191,6 +259,10 @@ export default function CadastrarAtualizarUsuarioGrupo() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Não permitir alterações em campos somente leitura
+    if (readOnlyFields[name]) return;
+    
     setFormData(prev => ({ ...prev, [name]: value }));
     setErrors(prev => ({ ...prev, [name]: null }));
     if (name === "curso") {  
@@ -199,6 +271,9 @@ export default function CadastrarAtualizarUsuarioGrupo() {
   };
 
   const handleBlur = (e) => {
+    // Não validar campos somente leitura
+    if (readOnlyFields[e.target.name]) return;
+    
     validateField(e.target.name, e.target.value);
   };
 
@@ -223,7 +298,7 @@ export default function CadastrarAtualizarUsuarioGrupo() {
     try {
       let response;
       
-
+      
       if (isEditing) {
         // Lógica para edição
         const entityEndpoint = GRUPO_ENDPOINTS[grupo];
@@ -348,47 +423,55 @@ export default function CadastrarAtualizarUsuarioGrupo() {
     }
   };
 
-  const renderField = (field, label, type = "text", options = [], optionLabelKey = "nome", optionValueKey = "codigo") => (
-    <div className="form-group" key={field}>
-      <label>{label}:</label>
-      {type === "select" ? (
-        <select
-          name={field}
-          className={`input-text ${errors[field] ? "input-error" : ""}`}
-          value={formData[field] || ""}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        >
-          <option value="">Selecione</option>
-          {field === "ppc" && ppcsDoCurso.length > 0 &&
-            ppcsDoCurso.map(option => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))
-          }
-          
-          {field !== "ppc" && options.length > 0 &&
-            options.map(option => (
-              <option key={option?.codigo} value={option?.codigo}>
-                {option?.nome}
-              </option>
-            ))
-          }
-        </select>
-      ) : (
-        <input
-          type={type}
-          name={field}
-          className={`input-text ${errors[field] ? "input-error" : ""}`}
-          value={formData[field] || ""}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        />
-      )}
-      {errors[field] && <div className="error-text">{errors[field]}</div>}
-    </div>
-  );
+  const renderField = (field, label, type = "text", options = [], optionLabelKey = "nome", optionValueKey = "codigo") => {
+    // Verificar se o campo deve ser somente leitura
+    const isReadOnly = readOnlyFields[field] || false;
+    
+    return (
+      <div className="form-group" key={field}>
+        <label>{label}:</label>
+        {type === "select" ? (
+          <select
+            name={field}
+            className={`input-text ${errors[field] ? "input-error" : ""} ${isReadOnly ? "readonly-field" : ""}`}
+            value={formData[field] || ""}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            disabled={isReadOnly}
+          >
+            <option value="">Selecione</option>
+            {field === "ppc" && ppcsDoCurso.length > 0 &&
+              ppcsDoCurso.map(option => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))
+            }
+            
+            {field !== "ppc" && options.length > 0 &&
+              options.map(option => (
+                <option key={option?.codigo} value={option?.codigo}>
+                  {option?.nome}
+                </option>
+              ))
+            }
+          </select>
+        ) : (
+          <input
+            type={type}
+            name={field}
+            className={`input-text ${errors[field] ? "input-error" : ""} ${isReadOnly ? "readonly-field" : ""}`}
+            value={formData[field] || ""}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            readOnly={isReadOnly}
+            style={isReadOnly ? { backgroundColor: "#f0f0f0", cursor: "not-allowed" } : {}}
+          />
+        )}
+        {errors[field] && <div className="error-text">{errors[field]}</div>}
+      </div>
+    );
+  };
 
   return (
     <div>
