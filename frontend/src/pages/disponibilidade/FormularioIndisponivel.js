@@ -74,7 +74,7 @@ export default function FormularioIndisponivel() {
               </>
             )}
           </div> 
-          <BotaoVoltar className="btn-voltar" onClick={() => navigate("/aluno/minhas-solicitacoes")} />
+          <BotaoVoltar className="btn-voltar" onClick={() => navigate("/aluno/nova-solicitacao")} />
         </div>
         
       </main>
