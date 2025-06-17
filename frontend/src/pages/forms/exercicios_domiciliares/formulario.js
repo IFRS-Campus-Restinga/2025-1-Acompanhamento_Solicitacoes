@@ -7,6 +7,7 @@ import HeaderAluno from "../../../components/base/headers/header_aluno";
 import BuscaUsuario from "../../../components/busca_usuario";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import { getAuthToken, logout } from "../../../services/authUtils"; //para puxar do Google Redirect Handler
 
 import { toast } from "react-toastify";
 
@@ -95,7 +96,7 @@ export default function FormularioExercicioDomiciliar() {
         if (!codigoCurso) return;
         try {
             console.log("Buscando dados do curso:", codigoCurso);
-            const token = localStorage.getItem("appToken");
+            const token = getAuthToken(); //Alterado
             const res = await axios.get(`http://localhost:8000/solicitacoes/cursos/${codigoCurso}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -103,6 +104,7 @@ export default function FormularioExercicioDomiciliar() {
             });
             console.log("Dados do curso:", res.data);
             setCurso(res.data);
+            console.log("ID do curso retornado pela API:", res.data?.id);
             setValue("curso", res.data?.nome || ''); // Preencher campo do form
             setValue("curso_id", res.data?.id || ''); // Preencher ID do curso para o payload
 
@@ -127,7 +129,7 @@ export default function FormularioExercicioDomiciliar() {
         if (!codigoPpc) return;
         try {
             console.log("Buscando dados do PPC:", codigoPpc);
-            const token = localStorage.getItem("appToken");
+            const token = getAuthToken(); //Alterado
             const res = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${codigoPpc}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -179,8 +181,8 @@ export default function FormularioExercicioDomiciliar() {
             }
             try {
                 console.log("Buscando aluno pelo e-mail:", userData.email);
-                const token = localStorage.getItem("appToken");
-                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`, {
+                const token = getAuthToken(); //Alterado
+                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -249,7 +251,7 @@ export default function FormularioExercicioDomiciliar() {
     useEffect(() => {
         const buscarMotivos = async () => {
             try {
-                const token = localStorage.getItem("appToken");
+                const token = getAuthToken(); //Alterado
                 const res = await axios.get(
                     "http://localhost:8000/solicitacoes/motivo_exercicios/",
                     {
@@ -324,7 +326,7 @@ export default function FormularioExercicioDomiciliar() {
 
         try {
             console.log(`Buscando disciplinas para PPC: ${ppcCodigo} e Período: ${periodo}`);
-            const token = localStorage.getItem("appToken");
+            const token = getAuthToken(); //Alterado
             const res = await axios.get(
                 `http://localhost:8000/solicitacoes/disciplinas_por_ppc_e_periodo/?ppc_codigo=${ppcCodigo}&periodo=${periodo}`,
                 {
@@ -405,7 +407,7 @@ export default function FormularioExercicioDomiciliar() {
             };
             console.log("Payload FINAL para envio (Verifique 'aluno' e 'curso'):", payload); // DEBUG: Veja o que está sendo enviado!
 
-            const token = localStorage.getItem("appToken");
+            const token = getAuthToken(); //Alterado
 
             const response = await axios.post(
                 "http://localhost:8000/solicitacoes/formulario_exerc_dom/",
@@ -482,7 +484,12 @@ export default function FormularioExercicioDomiciliar() {
     if (userData && alunoNaoEncontrado) {
         return (
             <div className="page-container">
-                <HeaderAluno onLogout={() => setUserData(null)} />
+                <HeaderAluno onLogout={() => {
+                    logout(); // Chama a função do authUtils para remover os cookies
+                    setUserData(null); // Limpa o estado local para forçar o redirecionamento
+                    navigate("/"); // Redireciona para a página inicial ou de login
+                }}
+                />
                 <main className="container">
                     <h2>Aluno não encontrado no sistema.</h2>
                     <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
@@ -523,7 +530,6 @@ export default function FormularioExercicioDomiciliar() {
             
 
                     <div className="form-section">
-                        <h3>Dados do Aluno</h3>
                         <div className="form-group">
                             <label htmlFor="email">E-mail:</label>
                             <input type="email" id="email" readOnly {...register("email")} />
