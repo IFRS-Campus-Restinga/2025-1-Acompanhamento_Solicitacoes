@@ -21,4 +21,8 @@
 
     --laranja-lista:#F6C368;
     --cabecalho-lista:#ccc;
+
+    /* MENSAGEM DE ERRO*/
+
+    --mensagem-erro: #dc3545;
 }
