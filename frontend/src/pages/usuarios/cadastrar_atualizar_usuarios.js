@@ -555,7 +555,22 @@ export default function CadastrarAtualizarUsuario() {
                 <button
                   type="button"
                   onClick={handleBuscarAluno}
-                  className="buscar-button"
+                  style={{
+                    backgroundColor: "#28a745", // Verde
+                    color: "white",
+                    padding: "10px 15px",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    transition: "background-color 0.3s ease",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    // Estilos adicionais para layout:
+                    marginTop: '10px', // Espaço acima
+                    marginBottom: '20px', // Espaço abaixo
+                    marginLeft: '2px', // Espaço entre o input e o botão
+                    flexShrink: 0, // Impede que o botão encolha
+                  }}
                 >
                   Buscar
                 </button>
@@ -563,7 +578,7 @@ export default function CadastrarAtualizarUsuario() {
               {alunoBuscaErro && <div className="error-text">{alunoBuscaErro}</div>}
               {nomeAlunoEncontrado && (
                 <div className="aluno-encontrado">
-                  <p>Aluno encontrado: <strong>{nomeAlunoEncontrado}</strong></p>
+                  <p>{nomeAlunoEncontrado}</p>
                 </div>
               )}
             </div>
