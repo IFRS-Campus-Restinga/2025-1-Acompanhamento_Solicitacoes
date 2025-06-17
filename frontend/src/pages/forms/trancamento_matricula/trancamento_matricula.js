@@ -1,107 +1,165 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../../components/base/footer"; 
-import HeaderAluno from "../../../components/base/headers/header_aluno"; 
-import "../../../components/formulario.css";
-import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
+
+// Components
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
 import BuscaUsuario from "../../../components/busca_usuario";
+import "../../../components/formulario.css";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
+// COLOCAR DEPOIS DE RETURN  <VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
+// COLOCAR APÓS A ULTIMA DIV </VerificadorDisponibilidade>
+
+// Serviços de autenticação
+import { getAuthToken } from "../../../services/authUtils";
 
 export default function FormularioTrancamentoMatricula() {
-  const [alunos, setAlunos] = useState([]);
-  const [alunoSelecionado, setAlunoSelecionado] = useState(null);
-  const [ppcDetalhes, setPpcDetalhes] = useState(null);
-  const [loadingPpc, setLoadingPpc] = useState(false);
-
-  const [formData, setFormData] = useState({
-    motivo_solicitacao: "", 
-    arquivos: null, 
-  });
-
-  const [carregando, setCarregando] = useState(true);
+  // Estados para controle de usuário e aluno
   const [userData, setUserData] = useState(null);
-
+  const [carregandoUsuario, setCarregandoUsuario] = useState(true);
+  const [aluno, setAluno] = useState(null);
+  const [alunoNaoEncontrado, setAlunoNaoEncontrado] = useState(false);
+  
+  // Estados para curso e PPC
+  const [curso, setCurso] = useState(null);
+  const [ppc, setPpc] = useState(null);
+  const [loadingPpc, setLoadingPpc] = useState(false);
+  
+  // Estados para feedback e erros
+  const [msgErro, setMsgErro] = useState("");
+  const [tipoErro, setTipoErro] = useState("");
+  const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
+  
+  // Estado para o formulário
+  const [formData, setFormData] = useState({
+    motivo_solicitacao: "",
+    arquivos: null,
+  });
+  
+  // Referência para controlar busca única
+  const buscouAlunoRef = useRef(false);
   const navigate = useNavigate();
 
-  const handleUsuario = (data) => {
-        setUserData(data);
-        console.log(data);
-        setCarregando(false);
-    };
-
-    useEffect(() => {
-        if (!carregando && !userData) {
-            navigate("/");
-        }
-    }, [carregando, userData, navigate]);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/solicitacoes/alunos/") 
-      .then((res) => {
-        if (res.data && Array.isArray(res.data)) {
-          setAlunos(res.data);
-        } else {
-          setAlunos([]);
-        }
-      })
-      .catch((err) => {
-        setAlunos([]);
-        alert("Falha ao carregar a lista de alunos.");
-      });
+  // Callback para o BuscaUsuario
+  const handleUsuario = useCallback((data) => {
+    console.log("BuscaUsuario retornou:", data);
+    setUserData(data);
+    setCarregandoUsuario(false);
   }, []);
 
+  // Redireciona se não houver usuário
   useEffect(() => {
-    if (alunoSelecionado && typeof alunoSelecionado.ppc !== 'undefined' && alunoSelecionado.ppc !== null) {
-      const ppcCodigoOriginal = String(alunoSelecionado.ppc).trim();
-      
-      if (!ppcCodigoOriginal) { 
-          setPpcDetalhes(null);
-          setLoadingPpc(false); 
-          return;
-      }
+    if (!carregandoUsuario && !userData) {
+      navigate("/");
+    }
+  }, [carregandoUsuario, userData, navigate]);
 
-      const ppcCodigoEncoded = encodeURIComponent(ppcCodigoOriginal);
-      setLoadingPpc(true);
-      setPpcDetalhes(null); 
-      // CORREÇÃO: Removido /api/ da URL, assumindo que o endpoint de PPCs está sob /solicitacoes/ ou outro caminho direto.
-      // Ajuste este caminho se o endpoint de detalhes do PPC for diferente (ex: /ppcs/ ou /algum-outro-app/ppcs/).
-      const urlPpc = `http://localhost:8000/solicitacoes/ppcs/${ppcCodigoEncoded}/`; 
-      axios
-        .get(urlPpc) 
-        .then((res) => {
-          if (res.data && res.data.curso_details) { 
-            setPpcDetalhes(res.data); 
-          } else {
-            alert(`Não foi possível carregar os detalhes completos do curso/PPC para o PPC código: ${ppcCodigoOriginal}. Verifique a estrutura da resposta da API: ${urlPpc}`);
-          }
-        })
-        .catch((err) => {
-          alert(`Falha ao carregar detalhes do PPC/Curso para o código ${ppcCodigoOriginal} na URL ${urlPpc}. Erro: ${err.message}`);
-        })
-        .finally(() => {
-          setLoadingPpc(false);
+  // Busca aluno pelo e-mail quando userData estiver disponível
+  useEffect(() => {
+    const buscarAluno = async () => {
+      try {
+        console.log("Buscando aluno pelo e-mail:", userData.email);
+        const token = getAuthToken();
+        const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-    } else {
-      setPpcDetalhes(null); 
-    }
-  }, [alunoSelecionado]); 
 
-  const handleAlunoChange = (e) => {
-    const selectedAlunoId = e.target.value; 
-    if (!selectedAlunoId) {
-      setAlunoSelecionado(null);
-      return;
+        if (res.data) {
+          const usuarioEncontrado = res.data;
+          console.log("Usuário encontrado na API:", usuarioEncontrado);
+
+          // Verifique se o usuário tem um objeto Aluno associado (grupo_detalhes)
+          if (usuarioEncontrado?.grupo_detalhes) {
+            const alunoReal = usuarioEncontrado.grupo_detalhes;
+            console.log("Objeto Aluno encontrado (grupo_detalhes):", alunoReal);
+
+            setAluno(alunoReal);
+            setAlunoNaoEncontrado(false);
+
+            // Buscar dados do curso e PPC após obter aluno
+            if (alunoReal?.curso_codigo) {
+              buscarDadosCurso(alunoReal.curso_codigo);
+            }
+            
+            if (alunoReal?.ppc_codigo) {
+              buscarDadosPpc(alunoReal.ppc_codigo);
+            }
+          } else {
+            console.error("Usuário encontrado, mas sem dados de Aluno (grupo_detalhes).");
+            setAlunoNaoEncontrado(true);
+            setMsgErro("Dados de aluno não encontrados para este usuário.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
+          }
+        } else {
+          setAlunoNaoEncontrado(true);
+          setMsgErro("Aluno não encontrado no sistema.");
+          setTipoErro("erro");
+          setFeedbackIsOpen(true);
+        }
+      } catch (err) {
+        console.error("Erro ao buscar aluno:", err.response?.data || err.message);
+        setAlunoNaoEncontrado(true);
+        setMsgErro(err.response?.data?.message || "Erro ao buscar dados do aluno");
+        setTipoErro("erro");
+        setFeedbackIsOpen(true);
+      }
+    };
+
+    if (userData?.email && !buscouAlunoRef.current) {
+      buscouAlunoRef.current = true;
+      buscarAluno();
     }
-    const alunoObj = alunos.find((a) => String(a.id) === String(selectedAlunoId));
-    if (alunoObj && alunoObj.usuario && typeof alunoObj.ppc !== 'undefined') {
-        setAlunoSelecionado(alunoObj);
-    } else {
-        alert("Erro: Dados incompletos para o aluno selecionado. Verifique se a API de alunos está retornando o campo 'ppc' (código do PPC) e o objeto 'usuario'.");
-        setAlunoSelecionado(null);
+  }, [userData]);
+
+  // Buscar dados do curso
+  const buscarDadosCurso = async (codigoCurso) => {
+    try {
+      console.log("Buscando dados do curso:", codigoCurso);
+      const token = getAuthToken();
+      const res = await axios.get(`http://localhost:8000/solicitacoes/cursos/${codigoCurso}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Dados do curso:", res.data);
+      setCurso(res.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados do curso:", error);
+      setMsgErro("Erro ao buscar dados do curso.");
+      setTipoErro("erro");
+      setFeedbackIsOpen(true);
     }
   };
 
+  // Buscar dados do PPC
+  const buscarDadosPpc = async (codigoPpc) => {
+    try {
+      setLoadingPpc(true);
+      console.log("Buscando dados do PPC:", codigoPpc);
+      const token = getAuthToken();
+      const res = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${codigoPpc}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Dados do PPC:", res.data);
+      setPpc(res.data);
+    } catch (error) {
+      console.error("Erro ao buscar dados do PPC:", error);
+      setMsgErro("Erro ao buscar dados do PPC.");
+      setTipoErro("erro");
+      setFeedbackIsOpen(true);
+    } finally {
+      setLoadingPpc(false);
+    }
+  };
+
+  // Manipular mudanças nos campos do formulário
   const handleChange = (e) => {
     const { name, value, type, files } = e.target;
     if (type === "file") {
@@ -111,181 +169,209 @@ export default function FormularioTrancamentoMatricula() {
     }
   };
 
+  // Enviar formulário
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!alunoSelecionado) {
-      alert("Por favor, selecione um aluno.");
+    if (!aluno) {
+      setMsgErro("Por favor, aguarde o carregamento dos dados do aluno.");
+      setTipoErro("erro");
+      setFeedbackIsOpen(true);
       return;
     }
+    
     if (!formData.motivo_solicitacao) {
-      alert("A justificativa do trancamento é obrigatória.");
+      setMsgErro("A justificativa do trancamento é obrigatória.");
+      setTipoErro("erro");
+      setFeedbackIsOpen(true);
       return;
-    }
-    if (!ppcDetalhes || !ppcDetalhes.curso_details) { 
-        alert("Aguarde o carregamento dos detalhes do curso/PPC do aluno ou verifique se o aluno possui um PPC válido antes de submeter.");
-        return;
     }
 
     const dataToSubmit = new FormData();
-    dataToSubmit.append("motivo_solicitacao", formData.motivo_solicitacao); 
-    dataToSubmit.append("aluno", alunoSelecionado.id); 
-    dataToSubmit.append("data_solicitacao", new Date().toISOString().split("T")[0]); 
+    dataToSubmit.append("motivo_solicitacao", formData.motivo_solicitacao);
+    dataToSubmit.append("aluno", aluno.id);
+    dataToSubmit.append("data_solicitacao", new Date().toISOString().split("T")[0]);
 
     if (formData.arquivos && formData.arquivos.length > 0) {
       Array.from(formData.arquivos).forEach((file) => {
-        dataToSubmit.append("arquivos", file); 
+        dataToSubmit.append("arquivos", file);
       });
     }
     
     try {
+      const token = getAuthToken();
       await axios.post(
-        "http://localhost:8000/solicitacoes/formularios-trancamento/", 
+        "http://localhost:8000/solicitacoes/formularios-trancamento/",
         dataToSubmit,
         {
-          headers: { "Content-Type": "multipart/form-data" },
+          headers: { 
+            "Content-Type": "multipart/form-data",
+            "Authorization": `Bearer ${token}`
+          },
         }
       );
-      alert("Solicitação de trancamento de matrícula enviada com sucesso!");
-      navigate("/todas-solicitacoes"); 
+      
+      setMsgErro("Solicitação de trancamento de matrícula enviada com sucesso!");
+      setTipoErro("sucesso");
+      setFeedbackIsOpen(true);
+      
+      // Limpar formulário
+      setFormData({
+        motivo_solicitacao: "",
+        arquivos: null
+      });
+      
+      // Redirecionar após 2 segundos
+      setTimeout(() => navigate("/minhas-solicitacoes"), 2000);
     } catch (error) {
       let errorMessage = "Erro ao enviar solicitação.";
       if (error.response && error.response.data) {
         const backendErrors = error.response.data;
         if (typeof backendErrors === 'string') {
-            errorMessage = backendErrors;
-        } else { 
-            errorMessage = Object.entries(backendErrors)
-                .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-                .join('; ');
+          errorMessage = backendErrors;
+        } else {
+          errorMessage = Object.entries(backendErrors)
+            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
+            .join('; ');
         }
       }
-      alert(errorMessage);
+      
+      setMsgErro(errorMessage);
+      setTipoErro("erro");
+      setFeedbackIsOpen(true);
     }
   };
 
-  if (carregando) {
-          return (
-              <>
-                  <BuscaUsuario dadosUsuario={handleUsuario} />
-                  <p>Carregando usuário...</p>
-              </>
-          );
-      }
-
-      if (userData) {
-return (
-    <VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
-      <div>
+  // Renderização condicional durante carregamento
+  if (carregandoUsuario) {
+    return (
+      <>
+        <BuscaUsuario dadosUsuario={handleUsuario} />
         <HeaderAluno />
         <main className="container">
-          <h2>Solicitação de Trancamento de Matrícula</h2>
-          <div className="descricao-formulario">
-            <p>
-              Este formulário destina-se à solicitação de trancamento total de
-              matrícula...
-            </p>
-          </div>
+          <p>Carregando usuário...</p>
+        </main>
+        <Footer />
+      </>
+    );
+  }
 
-          <form
-            onSubmit={handleSubmit}
-            className="formulario formulario-largo"
-            encType="multipart/form-data"
-          >
-            <div className="form-group">
-              <label htmlFor="alunoSelect">Selecione o Aluno:</label>
-              <select
-                id="alunoSelect"
-                value={alunoSelecionado ? alunoSelecionado.id : ""} 
-                onChange={handleAlunoChange}
-                required
-              >
-                <option value="">Selecione o aluno</option>
-                {Array.isArray(alunos) && alunos.map((aluno) => (
-                  <option key={aluno.id} value={aluno.id}>
-                    {aluno.usuario ? aluno.usuario.nome : `Aluno ID ${aluno.id}`} ({aluno.matricula})
-                  </option>
-                ))}
-              </select>
-            </div>
+  // Renderização quando aluno não é encontrado
+  if (userData && alunoNaoEncontrado) {
+    return (
+      <div className="page-container">
+        <HeaderAluno onLogout={() => setUserData(null)} />
+        <main className="container">
+          <h2>Aluno não encontrado no sistema.</h2>
+          <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
+        </main>
+        <Footer />
+        {feedbackIsOpen && (
+          <PopupFeedback
+            mensagem={msgErro}
+            tipo={tipoErro}
+            onClose={() => setFeedbackIsOpen(false)}
+          />
+        )}
+      </div>
+    );
+  }
 
-            {alunoSelecionado && alunoSelecionado.usuario && (
-              <div className="dados-aluno-container">
-                <h3>Dados do Aluno Selecionado</h3>
-                <div className="form-group">
-                  <label>Nome:</label>
-                  <input type="text" value={alunoSelecionado.usuario.nome || ""} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>E-mail:</label>
-                  <input type="email" value={alunoSelecionado.usuario.email || ""} readOnly />
-                </div>
-                <div className="form-group">
-                  <label>Matrícula:</label>
-                  <input type="text" value={alunoSelecionado.matricula || ""} readOnly />
-                </div>
-                
-                {loadingPpc && <p>A carregar dados do curso/PPC...</p>}
-                
-                {ppcDetalhes && ppcDetalhes.curso_details ? ( 
-                  <>
-                    <div className="form-group">
-                      <label>Curso:</label>
-                      <input type="text" value={ppcDetalhes.curso_details.nome || ""} readOnly /> 
-                    </div>
-                    <div className="form-group">
-                      <label>PPC (Nome/Código):</label>
-                      <input type="text" value={ppcDetalhes.nome || ppcDetalhes.codigo || "N/D"} readOnly />
-                    </div>
-                  </>
-                ) : (
-                  !loadingPpc && alunoSelecionado && typeof alunoSelecionado.ppc !== 'undefined' && alunoSelecionado.ppc && (
-                    <p className="text-red-500">Não foi possível carregar os detalhes do curso/PPC para o código '{alunoSelecionado.ppc}'.</p>
-                  )
-                )}
+  // Renderização do formulário completo
+  if (userData && aluno) {
+    return (
+        <div className="page-container">
+          <BuscaUsuario dadosUsuario={handleUsuario} />
+          <HeaderAluno onLogout={() => setUserData(null)} />
+          <main className="container">
+            <h2>Solicitação de Trancamento de Matrícula</h2>
+            <h6 className="descricao-formulario">
+              Este formulário destina-se à solicitação de trancamento total de matrícula. 
+              É importante ressaltar que o trancamento total de matrícula não é permitido para estudantes ingressantes, alunos de cursos integrados e aqueles matriculados na modalidade de Educação de Jovens e Adultos (EJA).
+              Ao solicitar o trancamento de matrícula, o/a estudante declara estar ciente de que esta medida é válida por um período letivo. A renovação da solicitação de trancamento total da matrícula é obrigatória a cada período letivo. O não cumprimento desse procedimento resultará no cancelamento automático da matrícula.
+              Ressalta-se que o trancamento não será concedido caso o curso em que o estudante estiver matriculado esteja em processo de extinção.
+              IMPORTANTE: O trancamento total de matrícula é permitido até a quarta semana após o início das atividades letivas, conforme estabelecido em nosso calendário acadêmico.
+            </h6>
 
-                <div className="form-group">
-                  <label>Ano de Ingresso:</label>
-                  <input type="text" value={alunoSelecionado.ano_ingresso || ""} readOnly />
-                </div>
+            <div className="dados-aluno-container">
+              <div className="form-group">
+                <label>Nome:</label>
+                <input type="text" value={aluno?.nome || userData?.name || ""} readOnly />
               </div>
-            )}
+              <div className="form-group">
+                <label>E-mail:</label>
+                <input type="email" value={userData?.email || ""} readOnly />
+              </div>
+              <div className="form-group">
+                <label>Matrícula:</label>
+                <input type="text" value={aluno?.matricula || ""} readOnly />
+              </div>
+              
+              {loadingPpc && <p>A carregar dados do curso/PPC...</p>}
+              
+              {curso && (
+                <div className="form-group">
+                  <label>Curso:</label>
+                  <input type="text" value={curso?.nome || ""} readOnly />
+                </div>
+              )}
+              
+              {ppc && (
+                <div className="form-group">
+                  <label>PPC (Nome/Código):</label>
+                  <input type="text" value={ppc?.nome || ppc?.codigo || "N/D"} readOnly />
+                </div>
+              )}
+
+              <div className="form-group">
+                <label>Ano de Ingresso:</label>
+                <input type="text" value={aluno?.ano_ingresso || ""} readOnly />
+              </div>
+            </div>
 
             <hr />
             <h3>Detalhes do Trancamento</h3>
             
-            <div className="form-group">
-              <label htmlFor="motivo_solicitacao">Justificativa do trancamento:</label>
-              <textarea
-                id="motivo_solicitacao"
-                name="motivo_solicitacao" 
-                value={formData.motivo_solicitacao}
-                onChange={handleChange}
-                rows="5"
-                required
-              />
-            </div>
+            <form onSubmit={handleSubmit} className="formulario formulario-largo" encType="multipart/form-data">
+              <div className="form-group">
+                <label htmlFor="motivo_solicitacao">Justificativa do trancamento:</label>
+                <textarea
+                  id="motivo_solicitacao"
+                  name="motivo_solicitacao"
+                  value={formData.motivo_solicitacao}
+                  onChange={handleChange}
+                  rows="5"
+                  required
+                />
+              </div>
 
-            <div className="form-group">
-              <label htmlFor="arquivos">Anexos (opcional):</label>
-              <input
-                type="file"
-                id="arquivos"
-                name="arquivos" 
-                multiple
-                onChange={handleChange}
-              />
-            </div>
+              <div className="form-group">
+                <label htmlFor="arquivos">Anexos (opcional):</label>
+                <input
+                  type="file"
+                  id="arquivos"
+                  name="arquivos"
+                  multiple
+                  onChange={handleChange}
+                />
+              </div>
 
-            <button type="submit" className="submit-button" disabled={loadingPpc}>
-              {loadingPpc ? "A Carregar..." : "Enviar Solicitação"}
-            </button>
-          </form>
-        </main>
-        <Footer />
-      </div>
-    </VerificadorDisponibilidade>
-  );
-      }
-  
+              <button type="submit" className="submit-button" disabled={loadingPpc}>
+                {loadingPpc ? "A Carregar..." : "Enviar Solicitação"}
+              </button>
+            </form>
+          </main>
+          <Footer />
+          {feedbackIsOpen && (
+            <PopupFeedback
+              mensagem={msgErro}
+              tipo={tipoErro}
+              onClose={() => setFeedbackIsOpen(false)}
+            />
+          )}
+        </div>
+    );
+  }
+
+  return null;
 }
