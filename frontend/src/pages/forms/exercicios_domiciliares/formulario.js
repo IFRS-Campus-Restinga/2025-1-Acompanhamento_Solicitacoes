@@ -7,6 +7,10 @@ import HeaderAluno from "../../../components/base/headers/header_aluno";
 import BuscaUsuario from "../../../components/busca_usuario";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+
+//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
+//COLOCAR DEPOIS DE RETURN{/*<VerificadorDisponibilidade tipoFormulario="EXERCICIOSDOMICILIARES"> verifica se a solicitacao está disponivel*/}
+
 import { getAuthToken, logout } from "../../../services/authUtils"; //para puxar do Google Redirect Handler
 
 import { toast } from "react-toastify";
