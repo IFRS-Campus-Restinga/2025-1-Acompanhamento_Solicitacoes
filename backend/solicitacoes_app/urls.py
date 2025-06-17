@@ -106,7 +106,7 @@ urlpatterns = [
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
     path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
     path('usuarios/aprovar/<int:pk>/', UsuarioAprovarCadastroView.as_view(), name='usuario-aprovar'),
-    path('usuarios/<str:email>/', UsuarioDetailByEmail.as_view(), name='usuario-detail-by-email'), # Nova URL para busca por email
+    path('usuarios/buscar-por-email/<str:email>/', UsuarioDetailByEmail.as_view(), name='usuario-detail-by-email'), # Nova URL para busca por email
 
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
