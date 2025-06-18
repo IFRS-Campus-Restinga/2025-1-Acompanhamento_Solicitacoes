@@ -1,14 +1,14 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import Footer from "../../../components/base/footer";
-import HeaderCRE from "../../../components/base/headers/header_cre"; // Mantém o mesmo header
+import { Link, useNavigate } from "react-router-dom";
 
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 const SolicitacoesFinalizadas = () => {
     const [solicitacoesFinalizadas, setSolicitacoesFinalizadas] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchSolicitacoes = async () => {
@@ -50,15 +50,9 @@ const SolicitacoesFinalizadas = () => {
 
     return (
         <div>
-            <HeaderCRE />
             <main className="container">
                 {/* Título da nova página */}
                 <h2>Solicitações Finalizadas</h2>
-
-                {/* Botão para voltar para a HomeCRE (opcional, mas útil) */}
-                <div style={{ marginBottom: "20px" }}>
-                    <Link to="/cre/home" className="btn btn-secondary">Voltar para Todas as Solicitações</Link>
-                </div>
 
                 {loading ? (
                     <p>Carregando solicitações...</p>
@@ -98,8 +92,10 @@ const SolicitacoesFinalizadas = () => {
                 ) : (
                     <p>Nenhuma solicitação finalizada encontrada.</p>
                 )}
+
+                {/* Botão para voltar para a HomeCRE (opcional, mas útil) */}
+                <BotaoVoltar onClick={() => navigate("/cre/home")} />
             </main>
-            <Footer />
         </div>
     );
 };
