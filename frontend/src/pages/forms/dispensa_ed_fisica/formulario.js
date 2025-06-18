@@ -7,7 +7,7 @@ import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
-import BuscaUsuario from "../../../components/busca_usuario";
+import { getAuthToken, getGoogleUser } from "../../../services/authUtils";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
@@ -32,11 +32,14 @@ export default function Formulario() {
 
     const navigate = useNavigate();
 
-    const handleUsuario = (data) => {
-        setUserData(data);
-        console.log(data);
-        setCarregando(false);
-    };
+    useEffect(() => {
+        const handleUsuario = () => {
+        setUserData(getGoogleUser());
+        console.log(userData);
+        setCarregando(false); // Indica que a busca inicial do usuário terminou
+      };
+      handleUsuario();
+      }, [])
 
     useEffect(() => {
         if (!carregando && !userData) {
@@ -45,7 +48,11 @@ export default function Formulario() {
     }, [carregando, userData, navigate]);
 
     useEffect(() => {
-        axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/")
+        axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/", {
+            headers: {
+                Authorization: `Bearer ${getAuthToken()}`
+            }
+        })
             .then((response) => setPopularMotivosDispensa(response.data))
             .catch((err) => {
                 setMsgErro(err);
@@ -164,7 +171,6 @@ export default function Formulario() {
     if (carregando) {
             return (
                 <>
-                    <BuscaUsuario dadosUsuario={handleUsuario} />
                     <p>Carregando usuário...</p>
                 </>
             );
@@ -200,11 +206,11 @@ return (
                     {/* Campos para exibir nome, email e matrícula do aluno */}
                     <div className="form-group">
                         <label htmlFor="nome_aluno">Nome do Aluno:</label>
-                        <input type="text" id="nome_aluno" value={nomeAluno} readOnly />
+                        <input type="text" id="nome_aluno" value={userData.name} readOnly />
                     </div>
                     <div className="form-group">
                         <label htmlFor="email_aluno">Email do Aluno:</label>
-                        <input type="email" id="email_aluno" value={emailAluno} readOnly />
+                        <input type="email" id="email_aluno" value={userData.email} readOnly />
                     </div>
                     <div className="form-group">
                         <label htmlFor="matricula_aluno">Matrícula do Aluno:</label>

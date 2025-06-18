@@ -11,6 +11,7 @@ import Stepper from "../../../components/UI/stepper";
 // Bootstrap Icons CSS (caso ainda não esteja incluso globalmente)
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { getAuthToken } from "../../../services/authUtils";
 
 export default function DetalhesSolicitacao() {
     const { id } = useParams();
@@ -19,9 +20,21 @@ export default function DetalhesSolicitacao() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const token = getAuthToken();
+
+    useEffect(() => {
+        if (token) {
+            fetchSolicitacao();
+        }
+    }, [id, token])
+
     const fetchSolicitacao = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`);
+            const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.data) throw new Error("Dados da solicitação não encontrados.");
             setSolicitacao(response.data);
         } catch (err) {
@@ -31,9 +44,10 @@ export default function DetalhesSolicitacao() {
         }
     };
 
-    useEffect(() => {
-        fetchSolicitacao();
-    }, [id]);
+    const handleAlterarPrazo = () => {
+        // Redireciona para a página de alteração de prazo, passando o ID da solicitação
+        navigate(`/exercicios_domiciliares/gerenciar`);
+    };
 
     const formatarData = (dataString) => {
         if (!dataString) return '--/--/---- --:--';
@@ -75,6 +89,11 @@ export default function DetalhesSolicitacao() {
         );
     }
 
+    // Condição para exibir o botão de alterar prazo
+    const podeAlterarPrazo = solicitacao &&
+                             solicitacao.tipo === "EXERCICIOSDOMICILIARES" &&
+                             solicitacao.status === "Aprovado";
+
     return (
         <div className="page-container">
             <HeaderAluno />
@@ -87,8 +106,6 @@ export default function DetalhesSolicitacao() {
                     <Stepper statusAtual={solicitacao.status} />
                 </div>
                     
-
-
                 <div className="card mb-4">
                     <div className="card-body row">
                         <div className="col-md-6 mb-3">
@@ -110,7 +127,6 @@ export default function DetalhesSolicitacao() {
                     </div>
                 </div>
 
-
                 <div className="card mb-4">
                     <div className="card-body">
                         <h5><i className="bi bi-chat-left-text me-2"></i>Justificativa</h5>
@@ -127,8 +143,12 @@ export default function DetalhesSolicitacao() {
                     </div>
                 )}
 
-
                 <div className="text-center">
+                    {podeAlterarPrazo && (
+                        <button className="btn btn-primary me-2" onClick={handleAlterarPrazo}>
+                            <i className="bi bi-calendar-range me-2"></i>Alterar Prazo de Afastamento
+                        </button>
+                    )}
                     <BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />
                 </div>
             </main>

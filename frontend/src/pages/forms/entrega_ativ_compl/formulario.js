@@ -7,7 +7,7 @@ import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
-import BuscaUsuario from "../../../components/busca_usuario";
+import { getAuthToken, getGoogleUser } from "../../../services/authUtils";
 
 export default function Formulario() {
     const [popularCursos, setPopularCursos] = useState([]);
@@ -32,18 +32,23 @@ export default function Formulario() {
 
     const navigate = useNavigate();
 
-    const handleUsuario = (data) => {
-        setUserData(data);
-        console.log(data);
-        setCarregando(false);
-    };
+    useEffect(() => {
+        const handleUsuario = () => {
+            const user = getGoogleUser();
+            setUserData(user);
+            setCarregando(false);
+            console.log("Dados do Google User:", user);
+        };
+        handleUsuario();
+    }, []);
+
 
     useEffect(() => {
         if (!carregando && !userData) {
             navigate("/");
         }
     }, [carregando, userData, navigate]);
-    
+
 
     useEffect(() => {
         axios.get("http://localhost:8000/solicitacoes/cursos/")
@@ -156,6 +161,7 @@ export default function Formulario() {
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
+                        "Authorization": `Bearer ${getAuthToken()}`
                     },
                 }
             );
@@ -170,81 +176,81 @@ export default function Formulario() {
     };
 
     if (carregando) {
-            return (
-                <>
-                    <BuscaUsuario dadosUsuario={handleUsuario} />
-                    <p>Carregando usuário...</p>
-                </>
-            );
-        }
 
-     if (userData) {
         return (
-        <div>
-            <HeaderAluno />
-            <main className="container">
-                <h2>Formulário de Entrega de Atividades Complementares</h2>
-                <div className="descricao-formulario">
-                    <p>Neste formulário, o estudante poderá entregar os comprovantes das atividades complementares obrigatórias do seu curso.</p>
-                    <p>A análise da documentação e da carga horária é feita pela coordenação de curso. </p>
-                    <p>QUEM: Estudantes dos cursos que possuem Atividades Complementares como parte da organização curricular.</p>
-                    <p>QUANDO: A qualquer tempo, exceto para alunos concluintes, que deverão verificar a data limite para entrega no calendário acadêmico.</p>
-                    <p>Após entrega do formulário, a coordenação de curso fará a análise da solicitação em até 15 (quinze) dias e a CRE tem até 15 (quinze) dias para inserir os resultados no sistema. Este prazo pode ser estendido conforme as demandas da coordenação de curso e/ou do setor. O resultado pode ser conferido no sistema acadêmico.</p>
-                </div>
+            <>
+                <p>Carregando usuário...</p>
+            </>
+        );
+    }
 
-                <form className="formulario formulario-largo" onSubmit={postAtivCompl}>
-                    {/* Campos para exibir nome, email e matrícula do aluno */}
-                    <div className="form-group">
-                        <label htmlFor="nome_aluno">Nome do Aluno:</label>
-                        <input type="text" id="nome_aluno" value={nomeAluno} disabled />
+    if (userData) {
+        return (
+            <div>
+                <HeaderAluno />
+                <main className="container">
+                    <h2>Formulário de Entrega de Atividades Complementares</h2>
+                    <div className="descricao-formulario">
+                        <p>Neste formulário, o estudante poderá entregar os comprovantes das atividades complementares obrigatórias do seu curso.</p>
+                        <p>A análise da documentação e da carga horária é feita pela coordenação de curso. </p>
+                        <p>QUEM: Estudantes dos cursos que possuem Atividades Complementares como parte da organização curricular.</p>
+                        <p>QUANDO: A qualquer tempo, exceto para alunos concluintes, que deverão verificar a data limite para entrega no calendário acadêmico.</p>
+                        <p>Após entrega do formulário, a coordenação de curso fará a análise da solicitação em até 15 (quinze) dias e a CRE tem até 15 (quinze) dias para inserir os resultados no sistema. Este prazo pode ser estendido conforme as demandas da coordenação de curso e/ou do setor. O resultado pode ser conferido no sistema acadêmico.</p>
                     </div>
-                    <div className="form-group">
-                        <label htmlFor="email_aluno">Email do Aluno:</label>
-                        <input type="email" id="email_aluno" value={emailAluno} disabled />
-                    </div>
-                    <div className="form-group">
-                        <label htmlFor="matricula_aluno">Matrícula do Aluno:</label>
-                        <input type="text" id="matricula_aluno" value={matriculaAluno} disabled />
-                    </div>
-                    <Options
-                        url={urls}
-                        popularCampo={{
-                            aluno: {
-                                data: popularAlunos,
-                                labelKey: "id",
-                                valueKey: "id",
-                                onChange: (event) => {
-                                    const alunoId = event.target.value;
-                                    handleFormChange({ ...dados, aluno: alunoId });
+
+                    <form className="formulario formulario-largo" onSubmit={postAtivCompl}>
+                        {/* Campos para exibir nome, email e matrícula do aluno */}
+                        <div className="form-group">
+                            <label htmlFor="nome_aluno">Nome do Aluno:</label>
+                            <input type="text" id="nome_aluno" value={userData.name} disabled />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="email_aluno">Email do Aluno:</label>
+                            <input type="email" id="email_aluno" value={userData.email} disabled />
+                        </div>
+                        <div className="form-group">
+                            <label htmlFor="matricula_aluno">Matrícula do Aluno:</label>
+                            <input type="text" id="matricula_aluno" value={matriculaAluno} disabled />
+                        </div>
+                        <Options
+                            url={urls}
+                            popularCampo={{
+                                aluno: {
+                                    data: popularAlunos,
+                                    labelKey: "id",
+                                    valueKey: "id",
+                                    onChange: (event) => {
+                                        const alunoId = event.target.value;
+                                        handleFormChange({ ...dados, aluno: alunoId });
+                                    }
+                                },
+                                curso: {
+                                    data: popularCursos,
+                                    labelKey: "nome"
+                                },
+                                disciplinas: {
+                                    data: popularDisciplinas,
+                                    labelKey: "nome"
                                 }
-                            },
-                            curso: {
-                                data: popularCursos,
-                                labelKey: "nome"
-                            },
-                            disciplinas: {
-                                data: popularDisciplinas,
-                                labelKey: "nome"
-                            }
-                        }}
-                        onChange={handleFormChange}
-                        ignoreFields={IgnoreFields}
-                    />
+                            }}
+                            onChange={handleFormChange}
+                            ignoreFields={IgnoreFields}
+                        />
 
-                    
 
-                    <button type="submit" className="submit-button">Enviar</button>
-                </form>
-            </main>
-            <Feedback
-                show={popupIsOpen}
-                mensagem={msgErro?.response?.data?.detail || msgErro?.message || "Erro desconhecido!!!"}
-                tipo={popupType}
-                onClose={() => setPopupIsOpen(false)}
-            />
-            <Footer />
-        </div>
-    );
-     }   
-    
+
+                        <button type="submit" className="submit-button">Enviar</button>
+                    </form>
+                </main>
+                <Feedback
+                    show={popupIsOpen}
+                    mensagem={msgErro?.response?.data?.detail || msgErro?.message || "Erro desconhecido!!!"}
+                    tipo={popupType}
+                    onClose={() => setPopupIsOpen(false)}
+                />
+                <Footer />
+            </div>
+        );
+    }
+
 }
