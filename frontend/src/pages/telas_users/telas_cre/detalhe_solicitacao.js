@@ -12,8 +12,8 @@ import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
 //CSS - Use o mesmo CSS do aluno ou um específico para CRE
-import "../../../components/detalhes_solicitacao.css";
-import "../../../components/formulario.css";
+import "../../../components/styles/detalhes.css";
+
 
 // Mapeamento dos tipos de formulário
 const FORM_DETAIL_ENDPOINTS = {
