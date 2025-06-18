@@ -1,7 +1,5 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/base/headers/header";
-import Footer from "./../components/base/footer";
 import "./../components/base/main";
 import Login from "./login";
 
@@ -23,13 +21,11 @@ const Home = () => {
 
   return (
     <div>
-      <Header />
       <main className="container">
         <div className="login-box">
           <Login />
         </div>  
         </main>
-      <Footer />
     </div>
   );
 };
