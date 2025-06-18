@@ -1,7 +1,12 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import "./../components/base/main";
+
+//Components
+import Footer from "../../src/components/base/footer";
+import Header from "../../src/components/base/headers/header";
 import GoogleLoginButton from "./../components/GoogleLoginButton";
+
+//CSS
 import "./login.css";
 
 const Login = () => {
@@ -22,13 +27,15 @@ const Login = () => {
 
   return (
     <div>
-      <main className="container">
-        <div className="login-box">
-          <h2>Bem-vindo ao Sistema de Solicitações</h2>
-          <p>Para continuar, entre com sua conta institucional do Google.</p>
-          <GoogleLoginButton />
-        </div>  
-        </main>
+      <Header/>
+        <main className="container">
+          <div className="login-box">
+            <h2>Bem-vindo ao Sistema de Solicitações</h2>
+            <p>Para continuar, entre com sua conta institucional do Google.</p>
+            <GoogleLoginButton />
+          </div>  
+          </main>
+      <Footer/>    
     </div>
   );
 };
