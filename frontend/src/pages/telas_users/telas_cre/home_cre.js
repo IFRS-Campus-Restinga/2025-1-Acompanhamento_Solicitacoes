@@ -8,6 +8,7 @@ import "../../../components/layout-cruds.css";
 import "../../../components/tabela-cruds.css";
 import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
 import Paginacao from "../../../components/UI/paginacao";
+import "./cre.css"
 
 const HomeCRE = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
@@ -64,8 +65,8 @@ const HomeCRE = () => {
             <main className="container">
                 <h2>Solicitações</h2>
 
-                <div style={{ marginBottom: "20px", textAlign: "right" }}>
-                    <Link to="/solicitacoes-finalizadas" className="btn btn-info">
+                <div>
+                    <Link to="/solicitacoes-finalizadas" className="btn-finalizadas">
                         Ver Solicitações Finalizadas
                     </Link>
                 </div>
