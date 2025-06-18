@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "../../../components/base/footer";
-import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "./../../configuracoes/cruds"; // Mantenha este import se ele contiver estilos necessários para Link
 
 const AlunoNovaSolicitacao = () => {
@@ -54,7 +52,6 @@ const AlunoNovaSolicitacao = () => {
 
   return (
     <div>
-      <HeaderAluno />
       <main className="container" style={{ padding: '20px 20px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <h2 style={{ 
           textAlign: 'center', 
@@ -187,7 +184,6 @@ const AlunoNovaSolicitacao = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

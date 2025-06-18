@@ -1,12 +1,10 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "../../../components/base/footer";
-import HeaderCRE from "../../../components/base/headers/header_cre";
 
 import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
 import Paginacao from "../../../components/UI/paginacao";
-import "./cre.css"
+import "./cre.css";
 
 const HomeCRE = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
@@ -59,7 +57,6 @@ const HomeCRE = () => {
 
     return (
         <div>
-            <HeaderCRE />
             <main className="container">
                 <h2>Solicitações</h2>
 
@@ -116,7 +113,6 @@ const HomeCRE = () => {
                     onDadosPaginados={setSolicitacoesPaginadas}
                 />
             </main>
-            <Footer />
         </div>
     );
 };

@@ -1,10 +1,8 @@
-import HeaderAluno from "../../components/base/headers/header_aluno";
-import Footer from "../../components/base/footer";
-import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
-import { getGoogleUser, getAuthToken } from "../../services/authUtils";
+import { getAuthToken, getGoogleUser } from "../../services/authUtils";
 
 // Importe o CSS do Bootstrap para o modal (se já não estiver globalmente)
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -199,11 +197,9 @@ export default function GerenciarExercDomicilares() {
     if (carregando) {
         return (
             <div className="page-container">
-                <HeaderAluno onLogout={() => setUserData(null)} />
                 <main className="container text-center my-5">
                     <p>Carregando usuário...</p>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -212,7 +208,6 @@ export default function GerenciarExercDomicilares() {
     if (userData && aluno && formulario) {
         return (
             <div className="page-container">
-                <HeaderAluno onLogout={() => setUserData(null)} />
                 <main className="container detalhes-container">
                     <div className="card mb-4">
                         <div className="card-body row">
@@ -259,7 +254,6 @@ export default function GerenciarExercDomicilares() {
                         />
                     )}
                 </main>
-                <Footer />
 
                 {/* Modal de Edição */}
                 {isEditModalOpen && (
@@ -327,12 +321,10 @@ export default function GerenciarExercDomicilares() {
     if (userData && alunoNaoEncontrado) {
         return (
             <div className="page-container">
-                <HeaderAluno onLogout={() => setUserData(null)} />
                 <main className="container text-center my-5">
                     <h2 className="text-danger">Aluno não encontrado no sistema.</h2>
                     <p>Verifique se o e-mail Google ({userData.email}) está corretamente vinculado a um aluno no sistema.</p>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -341,12 +333,10 @@ export default function GerenciarExercDomicilares() {
     if (userData && (!aluno || !formulario)) {
         return (
             <div className="page-container">
-                <HeaderAluno onLogout={() => setUserData(null)} />
                 <main className="container text-center my-5">
                     <div className="spinner-border text-info" role="status" />
                     <p className="mt-3">Buscando dados do aluno e formulário...</p>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -354,11 +344,9 @@ export default function GerenciarExercDomicilares() {
     // Fallback genérico
     return (
         <div className="page-container">
-            <HeaderAluno onLogout={() => setUserData(null)} />
             <main className="container text-center my-5">
                 <p>Preparando a página...</p>
             </main>
-            <Footer />
         </div>
     );
 }

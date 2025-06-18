@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 //Components
-import Footer from "../../../components/base/footer";
-import HeaderCRE from "../../../components/base/headers/header_cre";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 // POPUPS
@@ -121,13 +119,11 @@ const DetalheSolicitacaoCRE = () => {
     if (loading) {
         return (
             <div className="page-container">
-                <HeaderCRE />
                 <main className="container">
                     <div className="loading-spinner">
                         <p>Carregando detalhes da solicitação...</p>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -135,7 +131,6 @@ const DetalheSolicitacaoCRE = () => {
     if (error && !solicitacaoBase) {
         return (
             <div className="page-container">
-                <HeaderCRE />
                 <main className="container">
                     <div className="error-message">
                         <p>{error}</p>
@@ -144,14 +139,12 @@ const DetalheSolicitacaoCRE = () => {
                         </button>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
 
     return (
         <div className="page-container">
-            <HeaderCRE />
             <main className="container detalhes-container">
                 <div className="detalhes-header">
                     <h2>Detalhes da Solicitação #{id}</h2>
@@ -250,7 +243,6 @@ const DetalheSolicitacaoCRE = () => {
                     onClose={() => setMostrarFeedback(false)}
                 />
             </main>
-            <Footer />
         </div>
     );
 };

@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "../../../components/base/footer";
-import HeaderCoordenador from "../../../components/base/headers/header_coordenador";
 
 const HomeCoordenador = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
@@ -56,7 +54,6 @@ const HomeCoordenador = () => {
 
   return (
     <div>
-      <HeaderCoordenador />
       <main className="container">
         <h2>Painel da Coordenação</h2>
 
@@ -111,7 +108,6 @@ const HomeCoordenador = () => {
           <p>Nenhuma solicitação encontrada.</p>
         )}
       </main>
-      <Footer />
     </div>
   );
 };

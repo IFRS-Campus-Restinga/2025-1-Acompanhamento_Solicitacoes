@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams, useLocation } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import api from "../../services/api";
 import { getCookie } from "../../services/authUtils";
@@ -445,7 +443,6 @@ export default function CadastrarAtualizarUsuario() {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container form-container">
         <h2>{id ? "Editar Usuário" : "Cadastrar Usuário"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
@@ -600,7 +597,6 @@ export default function CadastrarAtualizarUsuario() {
           onClose={handleCloseFeedback}
         />
       </main>
-      <Footer />
     </div>
   );
 }

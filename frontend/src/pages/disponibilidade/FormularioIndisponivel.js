@@ -1,8 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 
 //Componentes
-import Footer from "../../components/base/footer";
-import HeaderAluno from "../../components/base/headers/header_aluno";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
@@ -31,7 +29,6 @@ export default function FormularioIndisponivel() {
 
   return (
     <div className="page-container">
-      <HeaderAluno />
       
       <main className="content-wrapper indisponivel-container">
         <div className="card-indisponivel">
@@ -76,10 +73,7 @@ export default function FormularioIndisponivel() {
           </div> 
           <BotaoVoltar className="btn-voltar" onClick={() => navigate("/aluno/nova-solicitacao")} />
         </div>
-        
       </main>
-
-      <Footer />
       <PopupFeedback />
     </div>
   );

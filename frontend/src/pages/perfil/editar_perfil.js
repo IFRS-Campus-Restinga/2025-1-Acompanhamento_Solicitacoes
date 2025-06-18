@@ -1,7 +1,5 @@
 import axios from "axios";
 import { useState } from "react";
-import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
 import axiosInstance from "../../services/axiosInstance";
 
 
@@ -68,7 +66,6 @@ const EditarPerfil = ({ dadosIniciais }) => {
     
   return (
     <div>
-      <Header />
       <main className="container">
         <h2>Editar Perfil</h2>
     
@@ -121,7 +118,6 @@ const EditarPerfil = ({ dadosIniciais }) => {
          
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

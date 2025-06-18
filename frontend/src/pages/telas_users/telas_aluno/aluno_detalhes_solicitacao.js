@@ -3,8 +3,6 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 // Components
-import Footer from "../../../components/base/footer";
-import HeaderAluno from "../../../components/base/headers/header_aluno";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 import Stepper from "../../../components/UI/stepper";
 
@@ -64,12 +62,10 @@ export default function DetalhesSolicitacao() {
     if (loading) {
         return (
             <div className="page-container">
-                <HeaderAluno />
                 <main className="container text-center my-5">
                     <div className="spinner-border text-primary" role="status" />
                     <p className="mt-3">Carregando detalhes da solicitação...</p>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -77,14 +73,12 @@ export default function DetalhesSolicitacao() {
     if (error) {
         return (
             <div className="page-container">
-                <HeaderAluno />
                 <main className="container text-center my-5">
                     <div className="alert alert-danger">{error}</div>
                     <button onClick={() => navigate('/aluno/minhas-solicitacoes')} className="btn btn-secondary mt-3">
                         Voltar
                     </button>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -96,7 +90,6 @@ export default function DetalhesSolicitacao() {
 
     return (
         <div className="page-container">
-            <HeaderAluno />
             <main className="container my-4">
                 <div className="mb-4">
                     <h2 className="text-center">Detalhes da Solicitação #{solicitacao.id}</h2>
@@ -152,7 +145,6 @@ export default function DetalhesSolicitacao() {
                     <BotaoVoltar onClick={() => navigate("/aluno/minhas-solicitacoes")} />
                 </div>
             </main>
-            <Footer />
         </div>
     );
 }

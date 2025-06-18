@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import Footer from '../../../components/base/footer';
-import HeaderCRE from "../../../components/base/headers/header_cre";
+import { useNavigate } from 'react-router-dom';
+
+//Components
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
+
+//Botões
 import BotaoCadastrar from '../../../components/UI/botoes/botao_cadastrar';
 import BotaoEditar from "../../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
+
 import api from '../../../services/api';
 
 // BARRA PESQUISA
@@ -15,6 +18,9 @@ import BarraPesquisa from "../../../components/UI/barra_pesquisa";
 
 // PAGINAÇÃO
 import Paginacao from "../../../components/UI/paginacao";
+
+//CSS
+//import "../../../components/styles/tabela.css";
 
 // Função auxiliar para formatar a data (YYYY-MM-DD para DD/MM/YYYY)
 const formatarDataParaExibicao = (dataString) => {
@@ -133,7 +139,6 @@ export default function HistoricoMandatos() {
 
     return (
         <div>
-            <HeaderCRE />
             <main className="container">
                 <h2>Lista de Mandatos</h2>
                 <div className="botoes-wrapper">
@@ -210,7 +215,6 @@ export default function HistoricoMandatos() {
 
                 <BotaoVoltar onClick={() => navigate("/configuracoes")} />
             </main>
-            <Footer />
         </div>
     );
 }
