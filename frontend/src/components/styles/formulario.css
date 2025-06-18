@@ -6,6 +6,7 @@
 }
 
 .form-box {
+    background: #fff;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -24,6 +25,18 @@
     border-radius: 12px;
     box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
 }
+
+
+.form-group.label-reduced {
+  max-width: 525px; 
+}
+
+.form-group.label-reduced .input-area {
+  padding: 8px 12px; 
+  font-size: 0.9em; 
+  height: 36px; 
+}
+
 
 .formulario-largo {
     max-width: inherit !important;
@@ -359,4 +372,10 @@ select {
     .periodo-afastamento .datas-container {
         flex-direction: column;
     }
+}
+
+@media (max-width: 768px) {
+.form-group.label-reduced {
+    max-width: 180%;
+  }
 }
