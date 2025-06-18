@@ -157,3 +157,65 @@
  .icone-aprovar {
     color: rgb(2, 104, 2);
   }
+
+  .submit-button.reduced {
+  padding: 8px 15px; 
+  font-size: 0.96em; 
+  width: 300px;
+  height: 36px; 
+  margin-top: 10px;
+}
+
+@media (max-width: 576px) {
+  .submit-button.reduced {
+    padding: 6px 15px;
+  }
+}
+
+/*BOTÃO MOVER (APARECE EM GRUPOS)*/
+
+.btn-mover {
+  background-color: #148229;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.9em;
+  transition: background-color 0.2s ease;
+}
+
+.btn-mover:hover {
+  background-color: #0e6c1f;
+}
+
+.btn-mover-todas {
+  padding: 6px 12px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9em;
+  transition: all 0.3s;
+}
+
+.btn-mover-todas:hover {
+  background: #e0e0e0;
+}
+
+.btn-mover-todas:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+@media (max-width: 576px) {
+   .btn-mover {
+    padding: 4px 8px;
+  }
+  
+  .btn-mover-todas {
+    padding: 5px 10px;
+  }
+  
+}
