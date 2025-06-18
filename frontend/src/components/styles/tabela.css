@@ -1,0 +1,121 @@
+ /*substitui h2*/
+.tabela-titulo {
+    margin-bottom: 2rem;
+    text-align: center;
+    color: var(--cor-preta);
+    font-size: var(--tamanho-fonte-titulo-secao);
+    font-weight: var(--peso-titulo);
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid var(--verde-oficial);
+    padding-bottom: 15px;
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.tabela-cruds {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    max-width: var(--largura-maxima-conteudo);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tabela-cruds th,
+.tabela-cruds td {
+    border: 1px solid var(--cabecalho-lista);
+    padding: 10px;
+    text-align: left;
+}
+
+.tabela-cruds td {
+    padding: 2px 6px;
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+.tabela-cruds th {
+    background-color: var(--cabecalho-lista);
+}
+
+.linha-par {
+    background-color: #f9f9f9; /* Manter cinza claro */
+}
+
+.linha-impar {
+    background-color: var(--cor-branca);
+}
+
+.tabela-cruds td.descricao {
+    max-width: 300px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.botao-olho {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
+.tabela-cruds th.coluna-data,
+.tabela-cruds td.coluna-data {
+    min-width: 15%;
+    white-space: nowrap;
+}
+
+.acoes-icones {
+    display: flex;
+    gap: 10px;
+}
+
+.icone-acao {
+    cursor: pointer;
+    transition: transform 0.2s;
+    color: var(--cor-preta); /* Cor do ícone */
+}
+
+.icone-acao:hover {
+    transform: scale(1.1);
+}
+
+.remove-btn {
+    background-color: var(--botao-deletar);
+    color: var(--cor-branca);
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+    background-color: #a71420; /* Tom mais escuro do botão deletar */
+}
+
+.botoes-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+/* Estas classes parecem pertencer a telas_opcoes.css, se forem para formulários genéricos, mantenha */
+.escolha-grupo {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    text-align: center;
+}
+
+.botoes-grupos {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+}
