@@ -1,9 +1,12 @@
-import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "../../components/base/footer";
 import Header from "../../components/base/headers/header";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import { getCookie } from "../../services/authUtils";
+
+//CSS
+import "../../components/styles/telas_opcoes.css";
 
 export default function SelecionarGrupoUsuario() {
     const navigate = useNavigate();
@@ -66,14 +69,14 @@ export default function SelecionarGrupoUsuario() {
             <Header />
             <main className="container escolha-grupo">
                 <h2>Selecione o tipo de usuário para realizar cadastro:</h2>
-                <div className="botoes-grupos">
-                    <button onClick={() => handleSelect("aluno")} className="btn-discreto">
+                <div className="grid-opcoes">
+                    <button onClick={() => handleSelect("aluno")} className="link_botao_escolha">
                         Aluno
                     </button>
-                    <button onClick={() => handleSelect("coordenador")} className="btn-discreto">
+                    <button onClick={() => handleSelect("coordenador")} className="link_botao_escolha">
                         Coordenador
                     </button>
-                    <button onClick={() => handleSelect("cre")} className="btn-discreto">
+                    <button onClick={() => handleSelect("cre")} className="link_botao_escolha">
                         CRE
                     </button>
                 </div>

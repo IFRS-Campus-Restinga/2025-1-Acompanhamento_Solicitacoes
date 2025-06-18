@@ -1,0 +1,43 @@
+/*CSS OFICIAL PARA UTILIZAR EM TELAS DE ESCOLHA*/
+/*POR EXEMPLO UMA TELA COM VÁRIAS OPÇÕES DE SOLICITAÇÕES 
+PARA O USER ESCOLHER*/
+
+/*se a sua tela é parecida com essas use esse CSS: 
+Selecionar_grupo ou 
+Nova_solicitação ou 
+Cruds ou
+*/
+
+/* PARA DIV ONDE ESTÃO AS OPÇÕES CLICÁVEIS*/
+.grid-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 2rem 0;
+  }
+
+/* PARA CADA OPÇÃO CLICÁVEL SEJA UM LINK OU BOTAO*/
+.link_botao_escolha{
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    color: #333;
+    font-size: 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    font-weight: bold;
+    text-decoration: none;
+
+
+}
+
+.link_botao_escolha:hover{
+    background-color: #eee;
+    border-color: #999;
+
+}
+  
