@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./header_nav.css";
 
-const Header = () => {
+const HeaderPadrao = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate(); 
 
@@ -99,5 +99,5 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderPadrao;
 

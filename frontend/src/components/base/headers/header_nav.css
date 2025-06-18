@@ -30,7 +30,7 @@
 .logo {
     width: 220px; /* Manter a largura padrão do logo */
     height: auto;
-    max-height: 60px; /* Limita a altura do logo */
+    max-height: 75px; /* Limita a altura do logo */
 }
 
 /* CENTER NAVIGATION */
