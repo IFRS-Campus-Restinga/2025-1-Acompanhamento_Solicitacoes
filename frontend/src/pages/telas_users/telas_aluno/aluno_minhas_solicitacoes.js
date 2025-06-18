@@ -2,11 +2,6 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 
-//CSS
-import "../../../components/formulario.css";
-import "../../../components/layout-cruds.css";
-import "../../../components/tabela-cruds.css";
-
 //COMPONENTS
 import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";

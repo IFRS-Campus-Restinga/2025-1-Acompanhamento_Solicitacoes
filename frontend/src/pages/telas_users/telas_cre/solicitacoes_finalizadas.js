@@ -3,9 +3,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import HeaderCRE from "../../../components/base/headers/header_cre"; // Mantém o mesmo header
-import "../../../components/formulario.css";
-import "../../../components/layout-cruds.css";
-import "../../../components/tabela-cruds.css";
+
 
 const SolicitacoesFinalizadas = () => {
     const [solicitacoesFinalizadas, setSolicitacoesFinalizadas] = useState([]);
