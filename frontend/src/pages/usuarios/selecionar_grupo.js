@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import Header from "../../components/base/headers/header";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import { getCookie } from "../../services/authUtils";
 
@@ -66,7 +64,6 @@ export default function SelecionarGrupoUsuario() {
 
     return (
         <div>
-            <Header />
             <main className="container escolha-grupo">
                 <h2>Selecione o tipo de usuário para realizar cadastro:</h2>
                 <div className="grid-opcoes">
@@ -83,7 +80,6 @@ export default function SelecionarGrupoUsuario() {
 
                 <BotaoVoltar onClick={() => navigate("/")} />
             </main>
-            <Footer />
         </div>      
     );
 }
