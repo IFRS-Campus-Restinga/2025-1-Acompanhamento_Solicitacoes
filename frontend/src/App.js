@@ -7,9 +7,11 @@ import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
 import { BrowserRouter as Router, Routes } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
-import "./App.css";
-import './index.css';
+
 import routes from "./routes/routes";
+
+//CSS
+import "./App.css";
 import "./var.css";
 //import GoogleRedirectHandler from './components/GoogleRedirectHandler';
 
