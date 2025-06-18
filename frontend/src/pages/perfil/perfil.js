@@ -7,7 +7,7 @@ const Perfil = () => {
   const [dados, setDados] = useState(null);
 
   useEffect(() => {
-    axiosInstance.get('/perfil/')
+    axiosInstance.get('/usuarios/')
     .then(response => {
       console.log("Dados do usuário:", response.data); // Veja o que está sendo retornado
       if (!response.data) throw new Error("Dados do usuário não encontrados");

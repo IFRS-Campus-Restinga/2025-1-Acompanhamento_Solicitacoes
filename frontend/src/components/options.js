@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
+import { getAuthToken } from "../services/authUtils";
 
 export default function Options({
   url = [],
@@ -68,7 +69,11 @@ export default function Options({
 
       for (const endpoint of url) {
         try {
-          const response = await axios.options(endpoint);
+          const response = await axios.options(endpoint, {
+            headers: {
+              Authorization: `Bearer ${getAuthToken()}`
+            }
+          });
           const fields = response.data.actions.POST;
 
           for (const [key, value] of Object.entries(fields)) {

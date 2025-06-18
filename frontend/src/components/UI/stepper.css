@@ -112,6 +112,7 @@
 .bg-primary { background-color: #0d6efd !important; } /* Azul (Registrado) */
 .bg-success { background-color: #198754 !important; } /* Verde (Aprovado) */
 .bg-warning { background-color: #ffc107 !important; } /* Laranja (Em Análise) */
+.bg-danger {background-color: #ee1100 !important ;} /* Vermelho (Reprovado) */
 .bg-secondary { background-color: #6c757d !important; }
 .bg-light { background-color: #f8f9fa !important; }
 .text-muted { color: #6c757d !important; }

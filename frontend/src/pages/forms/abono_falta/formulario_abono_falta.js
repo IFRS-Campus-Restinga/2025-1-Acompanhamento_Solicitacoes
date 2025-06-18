@@ -6,6 +6,7 @@ import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import BuscaUsuario from "../../../components/busca_usuario";
+import { getGoogleUser } from "../../../services/authUtils";
 
 // Funções de validação e extração
 const extractMatriculaFromEmail = (email) => {
@@ -74,6 +75,14 @@ export default function FormularioAbonoFaltas() {
 
   const readonlyStyle = { backgroundColor: "#e9ecef", cursor: "not-allowed" };
 
+  useEffect(() => {
+    const handleUsuario = () => {
+    setUserData(getGoogleUser());
+    console.log(userData);
+    setCarregando(false); // Indica que a busca inicial do usuário terminou
+  };
+  handleUsuario();
+  }, [])
 
   // --- Funções de busca de dados --- 
   const buscarNomeCurso = async (cursoCodigo) => {
@@ -473,9 +482,11 @@ const handleUsuario = (data) => {
   };
 
   if (carregando) {
+    const getUserData = getGoogleUser();
+    setUserData(getUserData);
+    setCarregando(false);
           return (
               <>
-                  <BuscaUsuario dadosUsuario={handleUsuario} />
                   <p>Carregando usuário...</p>
               </>
           );
@@ -517,14 +528,14 @@ const handleUsuario = (data) => {
         <form onSubmit={handleSubmit} className="formulario" noValidate>
           <div className="form-group">
             <label>Nome do Aluno:</label>
-            <input type="text" name="aluno_nome" value={formData.aluno_nome} readOnly style={readonlyStyle} />
+            <input type="text" name="aluno_nome" value={userData.name} readOnly style={readonlyStyle} />
             {isLoadingUsuario && <span className="loading-text">Buscando dados...</span>}
             {erroBuscaUsuario && <span className="error-text">{erroBuscaUsuario}</span>}
           </div>
           
           <div className="form-group">
             <label>Email:</label>
-            <input type="email" name="email" value={formData.email} readOnly style={readonlyStyle} />
+            <input type="email" name="email" value={userData.email} readOnly style={readonlyStyle} />
           </div>
 
           <div className="form-group">

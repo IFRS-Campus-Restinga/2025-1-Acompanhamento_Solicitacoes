@@ -122,7 +122,7 @@ const routes = [
 
   <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
 
-  <Route path="/perfil" element={token ? <Perfil /> : <Navigate to="/" />} key="perfil" />,
+  <Route path="/perfil" element={<Perfil />} key="perfil" />,
   //<Route path="/pos-login" element={<PosLogin />} />,
 
   // Motivo Abono

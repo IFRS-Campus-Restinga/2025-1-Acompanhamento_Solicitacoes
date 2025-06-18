@@ -8,9 +8,7 @@ import HeaderAluno from "../../../components/base/headers/header_aluno";
 import BuscaUsuario from "../../../components/busca_usuario";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
-//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-// COLOCAR DEPOIS DE RETURN  <VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
-// COLOCAR APÓS A ULTIMA DIV </VerificadorDisponibilidade>
+import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 
 // Serviços de autenticação
 import { getAuthToken } from "../../../services/authUtils";
@@ -280,6 +278,7 @@ export default function FormularioTrancamentoMatricula() {
   // Renderização do formulário completo
   if (userData && aluno) {
     return (
+      <VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
         <div className="page-container">
           <BuscaUsuario dadosUsuario={handleUsuario} />
           <HeaderAluno onLogout={() => setUserData(null)} />
@@ -370,6 +369,7 @@ export default function FormularioTrancamentoMatricula() {
             />
           )}
         </div>
+      </VerificadorDisponibilidade>
     );
   }
 

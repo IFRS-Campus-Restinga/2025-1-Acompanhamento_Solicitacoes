@@ -5,6 +5,7 @@ import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
 import "../../../components/formulario.css";
 import BuscaUsuario from "../../../components/busca_usuario";
+import { getAuthToken, getGoogleUser } from "../../../services/authUtils";
 
 export default function FormularioDesistenciaVaga() {
   const { curso_codigo } = useParams();
@@ -38,11 +39,15 @@ export default function FormularioDesistenciaVaga() {
 
   const navigate = useNavigate();
 
-  const handleUsuario = (data) => {
-    setUserData(data);
-    console.log(data);
+  useEffect(() => {
+    const handleUsuario = () => {
+    setUserData(getGoogleUser());
+    console.log(userData);
     setCarregando(false); // Indica que a busca inicial do usuário terminou
   };
+  handleUsuario();
+  }, [])
+  
 
   // Redireciona se o usuário não for carregado
   useEffect(() => {
@@ -56,7 +61,7 @@ export default function FormularioDesistenciaVaga() {
   useEffect(() => {
     const buscarAluno = async () => {
       try {
-        const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
+        const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`);
         setFormData({
           ...formData,
           aluno_nome: userData.name,
@@ -218,7 +223,6 @@ export default function FormularioDesistenciaVaga() {
   if (carregando) {
     return (
       <>
-        <BuscaUsuario dadosUsuario={handleUsuario} />
         <p>Carregando usuário...</p>
       </>
     );
