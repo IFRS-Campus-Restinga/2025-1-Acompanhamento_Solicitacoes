@@ -1,5 +1,15 @@
 import { Route } from "react-router-dom";
 
+//Formulários
+
+import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
+import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario_desistencia_vaga.js";
+import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario_dispensa_ed_fisica.js";
+import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario_ativ_compl.js";
+import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario_exerc_dom.js';
+import { default as FormTrancDisciplina, default as Formulario } from "../pages/forms/trancamento_disciplina/formulario_tranc_disc.js";
+import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula.js";
+
 // Páginas
 import Configuracoes from "../pages/configuracoes/configuracoes.js";
 import Perfil from "../pages/perfil/perfil.js";
@@ -7,9 +17,8 @@ import Perfil from "../pages/perfil/perfil.js";
 
 //import Cruds from "../pages/configuracoes/cruds.js";
 import ListarSolicitacoes from "../listar_solicitacoes.js";
-import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/trancamento_matricula.js";
-import Home from "./../pages/home";
 
+import Home from "./../pages/home";
 
 // Motivos de Abono
 import CadastrarAtualizarAbono from "../pages/motivos/abono/cadastrar_atualizar_abono";
@@ -54,36 +63,17 @@ import SelecionarGrupoUsuario from "../pages/usuarios/selecionar_grupo.js";
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
 import ListarGrupos from "../pages/grupos/lista_grupo.js";
 
-//Dispensa Educação Física
-import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario.js";
-
-// Formulário de Trancamento de Disciplinas
-import Formulario from "../pages/forms/trancamento_disciplina/formulario";
-import FormTrancDisciplina from "../pages/forms/trancamento_disciplina/formulario.js";
-
 // Disponibilidade
 import CadastrarAtualizarDisponibilidade from "../pages/disponibilidade/cadastrar_atualizar.js";
 import FormularioIndisponivel from '../pages/disponibilidade/FormularioIndisponivel.js';
 import ListarDisponibilidades from "../pages/disponibilidade/listar.js";
 import VerificadorDisponibilidade from '../pages/disponibilidade/VerificadorDisponibilidade.js';
 
-// Formulário de Abono de Falta
-import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
 
 //Coordenadores
-
 //Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
-
-
-import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario';
-
-//Form desistencia Vaga
-
-import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario.js";
-
-import { Navigate } from "react-router-dom";
 
 // Importe o GoogleRedirectHandler
 import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
@@ -100,9 +90,6 @@ import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenad
 import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
 import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
 import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
-
-//Form Entrega de Atividades Complementares
-import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario.js";
 
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
