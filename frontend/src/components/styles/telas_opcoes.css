@@ -1,0 +1,158 @@
+/*CSS OFICIAL PARA UTILIZAR EM TELAS DE ESCOLHA*/
+/*POR EXEMPLO UMA TELA COM VÁRIAS OPÇÕES DE SOLICITAÇÕES 
+PARA O USER ESCOLHER*/
+
+/*se a sua tela é parecida com essas use esse CSS: 
+Selecionar_grupo ou 
+Nova_solicitação ou 
+Cruds ou
+*/
+
+/* PARA DIV ONDE ESTÃO AS OPÇÕES CLICÁVEIS*/
+.grid-opcoes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem; /* Consolidado para um gap */
+    margin: 2rem 0;
+  }
+
+/* PARA CADA OPÇÃO CLICÁVEL SEJA UM LINK OU BOTAO*/
+.link_botao_escolha{
+    padding: 0.75rem 1.5rem;
+    border: 1px solid var(--cabecalho-lista); /* Usando variável para borda */
+    background-color: #f9f9f9; /* Manter um cinza claro */
+    color: var(--cor-preta);
+    font-size: var(--tamanho-fonte-base);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.2s, border-color 0.2s;
+    font-weight: var(--peso-titulo); /* Botões com peso de título */
+    text-decoration: none;
+    text-align: center; /* Centralizar texto em botões */
+
+}
+
+.link_botao_escolha:hover{
+    background-color: #eee;
+    border-color: #999;
+
+}
+
+/*ESTILO NOVO DE OPÇÕES DE TELA CRUDS*/
+
+/* Este h2 deve ser uma classe para evitar conflitos globais */
+.tela-opcoes-titulo {
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--cor-preta);
+    font-size: var(--tamanho-fonte-titulo-secao);
+    font-weight: var(--peso-titulo);
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid var(--verde-oficial);
+    padding-bottom: 15px;
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+        
+/* Container principal para as duas colunas */
+.cruds-section-container { /* Renomeado e corrigido, antes era um 'div' genérico */
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 40px;
+    padding: 20px;
+    max-width: var(--largura-maxima-conteudo);
+    margin: 0 auto;
+    width: 100%;
+}
+
+.cruds-container { /* Mantido, parece ser o container principal da tela de cruds */
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: var(--largura-maxima-conteudo); /* Adicionado max-width para consistência */
+    margin: 0 auto;
+}
+
+.cruds-title { /* Título específico para tela de CRUDS */
+    text-align: center;
+    margin-bottom: 20px;
+    color: var(--cor-preta);
+    font-size: var(--tamanho-fonte-titulo-secao);
+    font-weight: var(--peso-titulo);
+    letter-spacing: 0.5px;
+    border-bottom: 3px solid var(--verde-oficial);
+    padding-bottom: 15px;
+    display: inline-block;
+    width: auto;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+/* Cada box de seção */
+.cruds-section {
+    flex: 1 1 45%;
+    min-width: 320px;
+    background-color: #f9f9f9;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cruds-section h3 {
+    margin-bottom: 25px;
+    color: #555; /* Manter cinza mais escuro ou criar var */
+    font-size: 2rem;
+    font-weight: var(--peso-titulo);
+    border-bottom: 2px solid var(--verde-oficial);
+    padding-bottom: 12px;
+}
+
+/* Grade de links */
+.grid-cruds {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    width: 100%;
+    max-width: 450px;
+}
+
+/* Link do card */
+.crud-link {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 15px 20px;
+    background-color: var(--cor-branca);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    text-align: left;
+    text-decoration: none;
+    color: var(--cor-preta);
+    font-weight: var(--peso-paragrafo);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    min-height: 35px;
+    width: 100%;
+    border: 1px solid #eee; /* Um cinza claro para a borda */
+}
+
+.crud-link:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+    background-color: #e6ffe6; /* Tom de verde claro no hover */
+}
+
+/* Estilo dos ícones */
+.crud-link i {
+    font-size: 1.8rem;
+    margin-right: 15px;
+    color: var(--verde-oficial); /* Usando variável */
+}

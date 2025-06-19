@@ -3,15 +3,17 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 //Components
-import Footer from "../../../components/base/footer";
-import HeaderCRE from "../../../components/base/headers/header_cre";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
-//CSS - Use o mesmo CSS do aluno ou um específico para CRE
-import "../../../components/detalhes_solicitacao.css";
-import "../../../components/formulario.css";
+// POPUPS
+import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
-// Mapeamento dos tipos de formulário (mantido igual)
+//CSS - Use o mesmo CSS do aluno ou um específico para CRE
+import "../../../components/styles/detalhes.css";
+
+
+// Mapeamento dos tipos de formulário
 const FORM_DETAIL_ENDPOINTS = {
     ABONOFALTAS: "/formulario_abono_falta/",
     TRANCAMENTODISCIPLINA: "/formulario_trancamento_disciplina/",
@@ -30,6 +32,12 @@ const DetalheSolicitacaoCRE = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Estados para o popup de resposta
+    const [mostrarPopupResponder, setMostrarPopupResponder] = useState(false);
+    const [mostrarFeedback, setMostrarFeedback] = useState(false);
+    const [mensagemPopup, setMensagemPopup] = useState("");
+    const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+
     // Função de formatação de data corrigida
     const formatarData = (dataString) => {
         if (!dataString) return '--/--/---- --:--';
@@ -46,6 +54,31 @@ const DetalheSolicitacaoCRE = () => {
         } catch (error) {
             console.error('Erro ao formatar data:', error);
             return '--/--/---- --:--';
+        }
+    };
+
+    // Função para abrir o popup de resposta
+    const handleResponderClick = () => {
+        setMostrarPopupResponder(true);
+    };
+
+    // Função para confirmar resposta
+    const confirmarResposta = (resposta) => {
+        
+        console.log("Resposta enviada:", resposta);
+        
+        
+        try {
+            //Colocar o que será feito apos enviar resposta
+
+            setMensagemPopup("Resposta enviada com sucesso!");
+            setTipoMensagem("sucesso");
+        } catch (err) {
+            setMensagemPopup("Erro ao enviar resposta.");
+            setTipoMensagem("erro");
+        } finally {
+            setMostrarPopupResponder(false);
+            setMostrarFeedback(true);
         }
     };
 
@@ -86,13 +119,11 @@ const DetalheSolicitacaoCRE = () => {
     if (loading) {
         return (
             <div className="page-container">
-                <HeaderCRE />
                 <main className="container">
                     <div className="loading-spinner">
                         <p>Carregando detalhes da solicitação...</p>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
@@ -100,7 +131,6 @@ const DetalheSolicitacaoCRE = () => {
     if (error && !solicitacaoBase) {
         return (
             <div className="page-container">
-                <HeaderCRE />
                 <main className="container">
                     <div className="error-message">
                         <p>{error}</p>
@@ -109,14 +139,12 @@ const DetalheSolicitacaoCRE = () => {
                         </button>
                     </div>
                 </main>
-                <Footer />
             </div>
         );
     }
 
     return (
         <div className="page-container">
-            <HeaderCRE />
             <main className="container detalhes-container">
                 <div className="detalhes-header">
                     <h2>Detalhes da Solicitação #{id}</h2>
@@ -182,12 +210,42 @@ const DetalheSolicitacaoCRE = () => {
                         </div>
                     </div>
                 )}
+                
+                {/* Seção de botões */}
+                <div className="botoes-acoes-detalhes">
+                    <BotaoVoltar onClick={() => navigate("/cre/home")} />
+                    
+                    <button 
+                        onClick={handleResponderClick}
+                        className="btn btn-responder"
+                        title="Responder Solicitação"
+                    >
+                        Responder
+                    </button>
+                </div>
 
-                <BotaoVoltar onClick={() => navigate("/cre/home")} />
+                {/* Popup de Confirmação para Resposta */}
+                <PopupConfirmacao
+                    show={mostrarPopupResponder}
+                    mensagem="Deseja aprovar ou rejeitar esta solicitação?"
+                    onConfirm={() => confirmarResposta("aprovado")}
+                    onReject={(justificativa) => confirmarResposta(`rejeitado: ${justificativa}`)}
+                    onCancel={() => setMostrarPopupResponder(false)}
+                    showRejectOption={true}
+                    confirmLabel="Aprovar"
+                />
+
+                {/* Popup de Feedback */}
+                <PopupFeedback
+                    show={mostrarFeedback}
+                    mensagem={mensagemPopup}
+                    tipo={tipoMensagem}
+                    onClose={() => setMostrarFeedback(false)}
+                />
             </main>
-            <Footer />
         </div>
     );
 };
 
 export default DetalheSolicitacaoCRE;
+

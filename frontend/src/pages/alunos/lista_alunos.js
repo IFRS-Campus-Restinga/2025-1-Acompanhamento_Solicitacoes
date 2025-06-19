@@ -1,7 +1,5 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import Header from "../../components/base/headers/header";
-import Footer from "../../components/footer";
 import "./lista_alunos.css";
 
 const Alunos = () => {
@@ -24,7 +22,6 @@ const Alunos = () => {
 
   return (
     <div>
-      <Header />
       <main>
         <h2>Lista de Alunos</h2>
 
@@ -61,7 +58,6 @@ const Alunos = () => {
           </table>
         )}
       </main>
-      <Footer />
     </div>
   );
 };

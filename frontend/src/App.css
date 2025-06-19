@@ -1,23 +1,46 @@
-body {
-  font-family: var(--fonte-oficial);
-  width: 100vw;
-  height: 100%;
-  margin: 0;
+/* app.css */
+@import './var.css'; /* Import de variável no topo */
+
+* {
+    box-sizing: border-box; /* Essencial para layout consistente */
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%; /* Garante que body ocupe a altura total do viewport */
+    font-family: var(--fonte-oficial);
+    font-size: var(--tamanho-fonte-base);
+    color: var(--cor-preta); /* Usando var cor-preta */
+    background-color: var(--cor-branca); /* Um fundo branco padrão */
+    line-height: 1.6;
 }
 
 #root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Faz o root ocupar a altura total da viewport */
 }
 
-
-
-div {
-  color: rgb(0, 0, 0);
+/* Estilos para links globais */
+a {
+    color: inherit; /* Herda a cor do pai */
+    text-decoration: none;
 }
 
-.texts{
-  display: flex;
+/* Reset global para selects múltiplos */
+select[multiple] {
+    -webkit-appearance: none !important;
+    -moz-appearance: none !important;
+    appearance: none !important;
+    background-image: none !important;
 }
 
+select[multiple]::-webkit-scrollbar {
+    width: 8px;
+}
+
+select[multiple]::-webkit-scrollbar-thumb {
+    background: var(--cabecalho-lista); /* Usando variável */
+    border-radius: 4px;
+}

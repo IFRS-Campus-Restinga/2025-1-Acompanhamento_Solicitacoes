@@ -1,9 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useState, useMemo } from "react";
+import { format, isWithinInterval, parseISO } from 'date-fns'; // Adicionado isWithinInterval
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
-import { format, parseISO, isWithinInterval } from 'date-fns'; // Adicionado isWithinInterval
 
 // Componentes UI
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -175,7 +173,6 @@ export default function ListarDisponibilidades() {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container">
         <h2>Disponibilidade de Formulários</h2>
 
@@ -258,7 +255,6 @@ export default function ListarDisponibilidades() {
           />
         )}
       </main>
-      <Footer />
     </div>
   );
 }

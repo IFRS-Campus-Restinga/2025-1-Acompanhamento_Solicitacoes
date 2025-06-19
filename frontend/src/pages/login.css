@@ -31,6 +31,15 @@
     align-items: center;
     gap: 1rem;
   }
+
+  .login-page-content {
+    /* Este estilo deve ir aqui ou no main.css, se você deseja centralizar o conteúdo da página */
+    display: flex;
+    justify-content: center; /* Centraliza horizontalmente dentro do main-content-wrapper */
+    align-items: center; /* Centraliza verticalmente se houver espaço */
+    flex-grow: 1; /* Permite que este container ocupe todo o espaço disponível verticalmente */
+    height: 100%; /* Garante que ele ocupe 100% da altura do MainContent */
+}
   
     
 

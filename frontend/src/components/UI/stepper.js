@@ -2,23 +2,39 @@ import React from "react";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "./stepper.css"; // Arquivo CSS separado
 
-const ETAPAS = ["Em Análise", "Aprovado", "Registrado"];
+const ETAPAS_BASE = ["Em Análise", "Aprovado", "Registrado"];
 
 const ICONES = {
   "Em Análise": "bi-clock",
   "Aprovado": "bi-check-circle",
-  "Registrado": "bi-flag"
+  "Registrado": "bi-flag",
+  "Reprovado": "bi bi-x-circle"
 };
 
 const CORES = {
   "Em Análise": { class: "bg-warning", hex: "#ffc107" }, // Laranja
   "Aprovado": { class: "bg-success", hex: "#198754" },   // Verde
-  "Registrado": { class: "bg-primary", hex: "#0d6efd" }   // Azul
+  "Registrado": { class: "bg-primary", hex: "#0d6efd" }, // Azul
+  "Reprovado": { class: "bg-danger", hex: "ee1100"} // Vermelho
 };
 
+const getEtapasAtivas = (status) => {
+  if (status === "Reprovado") {
+    return ["Em Análise", "Reprovado", "Registrado"]; // Reprovado no lugar de Aprovado
+  } else if (status === "Registrado") {
+    // Verifica se foi aprovado ou reprovado antes do registro
+    const etapaAnterior = localStorage.getItem("etapaAnterior") || "Aprovado"; // ou outro mecanismo
+    return ["Em Análise", etapaAnterior, "Registrado"];
+  }
+  return ETAPAS_BASE;
+};
+
+
 export default function Stepper({ statusAtual }) {
-  if (!ETAPAS.includes(statusAtual)) {
-    console.warn(`Status inválido: "${statusAtual}". O status deve ser um dos seguintes: ${ETAPAS.join(", ")}.`);
+  const etapasAtuais = getEtapasAtivas(statusAtual);
+
+  if (!etapasAtuais.includes(statusAtual)) {
+    console.warn(`Status inválido: "${statusAtual}". O status deve ser um dos seguintes: ${etapasAtuais.join(", ")}.`);
     return (
       <div className="stepper-wrapper">
         <p className="text-danger text-center">Erro: Status de etapa inválido.</p>
@@ -26,34 +42,29 @@ export default function Stepper({ statusAtual }) {
     );
   }
 
-  const indexAtual = ETAPAS.indexOf(statusAtual);
-  // A barra de progresso inferior está comentada, então progressoPercentual não é usada visualmente aqui.
-  const progressoPercentual = (indexAtual / (ETAPAS.length - 1)) * 100;
+  const indexAtual = etapasAtuais.indexOf(statusAtual);
+  const progressoPercentual = (indexAtual / (etapasAtuais.length - 1)) * 100;
 
   return (
     <div className="stepper-wrapper">
       <div className="stepper-stages">
-        {ETAPAS.map((etapa, index) => {
+        {etapasAtuais.map((etapa, index) => {
           const atingida = index <= indexAtual;
           const corEtapa = CORES[etapa];
-
-          let connectorBackground = "#dee2e6"; // Cor padrão (cinza) para linhas não atingidas
-          let isAnimating = false; // Flag para aplicar animação
+          let connectorBackground = "#dee2e6";
+          let isAnimating = false;
 
           if (index > 0) {
-            const corDaEtapaAnterior = CORES[ETAPAS[index - 1]]?.hex || "#dee2e6";
+            const corAnterior = CORES[etapasAtuais[index - 1]]?.hex || "#dee2e6";
 
             if ((index - 1) < indexAtual) {
-              // Se a etapa anterior já foi concluída, a linha é sólida com a cor dela
-              connectorBackground = corDaEtapaAnterior;
+              connectorBackground = corAnterior;
             }
 
-            // Se esta linha conecta a etapa ATUAL com a PRÓXIMA
-            if (index - 1 === indexAtual && indexAtual < ETAPAS.length - 1) {
-              const corDaEtapaAtual = CORES[etapa].hex; // Cor da etapa seguinte (que está para ser atingida)
-              // Define o gradiente da cor anterior para a cor atual
-              connectorBackground = `linear-gradient(to right, ${corDaEtapaAnterior}, ${corDaEtapaAtual})`;
-              isAnimating = true; // Ativa a animação para esta linha
+            if (index - 1 === indexAtual && indexAtual < etapasAtuais.length - 1) {
+              const corAtual = corEtapa.hex;
+              connectorBackground = `linear-gradient(to right, ${corAnterior}, ${corAtual})`;
+              isAnimating = true;
             }
           }
 
@@ -62,10 +73,10 @@ export default function Stepper({ statusAtual }) {
               {index > 0 && (
                 <div
                   className={`stepper-connector ${isAnimating ? 'animating' : ''}`}
-                  // Para a linha animada, usamos backgroundImage. Para as outras, backgroundColor.
-                  style={{ backgroundImage: isAnimating ? connectorBackground : 'none',
-                           backgroundColor: isAnimating ? 'transparent' : connectorBackground // Fundo transparente se for animar, senão a cor sólida
-                         }}
+                  style={{
+                    backgroundImage: isAnimating ? connectorBackground : 'none',
+                    backgroundColor: isAnimating ? 'transparent' : connectorBackground
+                  }}
                 ></div>
               )}
               <div className="stepper-item">
@@ -80,20 +91,6 @@ export default function Stepper({ statusAtual }) {
           );
         })}
       </div>
-
-      {/* A barra de progresso inferior está comentada */}
-      {/*
-      <div className="progress stepper-progress">
-        <div
-          className={`progress-bar ${CORES[statusAtual].class}`}
-          role="progressbar"
-          style={{ width: `${progressoPercentual}%` }}
-          aria-valuenow={progressoPercentual}
-          aria-valuemin="0"
-          aria-valuemax="100"
-        ></div>
-      </div>
-      */}
     </div>
   );
 }

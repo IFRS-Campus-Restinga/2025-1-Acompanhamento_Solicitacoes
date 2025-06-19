@@ -17,8 +17,28 @@
 
     --botao-cancelar:#6c757d;
 
+    --botao-enviar: #148229;
+
     /* LISTA */
+
+    --link-azul:rgb(15, 118, 228);
 
     --laranja-lista:#F6C368;
     --cabecalho-lista:#ccc;
+
+    /* MENSAGEM DE ERRO*/
+
+    --mensagem-erro: #dc3545;
+
+    /* Novas variáveis para consistência de layout e texto */
+    --largura-maxima-conteudo: 1200px; /* Unificado para o site inteiro */
+    --padding-global: 20px; /* Padding padrão para containers */
+    --altura-header: 80px; /* Altura aproximada, ajuste se necessário */
+    --altura-footer: 60px; /* Altura aproximada, ajuste se necessário */
+
+    --tamanho-fonte-base: 16px; /* Tamanho de fonte padrão */
+    --tamanho-fonte-pequena: 14px;
+    --tamanho-fonte-media: 18px;
+    --tamanho-fonte-grande: 24px;
+    --tamanho-fonte-titulo-secao: 2rem; /* Para h2 de seções */
 }
