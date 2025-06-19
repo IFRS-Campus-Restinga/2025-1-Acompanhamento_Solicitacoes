@@ -4,9 +4,15 @@
 }
 
 .descricao-formulario{
-    max-width: 800px;
+    max-width: 900px;
     text-align: center;
 }
+
+.link-documento{
+    text-decoration: dashed;
+    color: var(--link-azul);
+}
+
 
 .form-container {
     padding: 2rem;
