@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
 
 //CSS
 import "../../components/styles/telas_opcoes.css";
@@ -55,7 +53,6 @@ const Cruds = () => {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container">
         <div className="grid-opcoes">
           <Link className="link_botao_escolha" to="/usuarios">
@@ -127,16 +124,15 @@ const Cruds = () => {
               maxWidth: '450px' 
             }}>
               <Link 
-                className="crud-link" 
+                className="link_botao_escolha" 
                 to="/usuarios"
                 style={hoveredCard === 'usuarios-ativos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
                 onMouseEnter={() => setHoveredCard('usuarios-ativos')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
+                onMouseLeave={() => setHoveredCard(null)}>
                 <i className="bi bi-person-circle" style={iconStyle}></i> Usuários Ativos
               </Link>
               <Link 
-                className="crud-link" 
+                className="link_botao_escolha" 
                 to="/usuarios/inativos"
                 style={hoveredCard === 'usuarios-inativos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
                 onMouseEnter={() => setHoveredCard('usuarios-inativos')}
@@ -145,7 +141,7 @@ const Cruds = () => {
                 <i className="bi bi-person-circle" style={iconStyle}></i> Usuários Inativos
               </Link>
               <Link 
-                className="crud-link" 
+                className="link_botao_escolha" 
                 to="/usuarios/selecionargrupo"
                 style={hoveredCard === 'cadastro-grupo' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
                 onMouseEnter={() => setHoveredCard('cadastro-grupo')}
@@ -154,7 +150,7 @@ const Cruds = () => {
                 <i className="bi bi-person-circle" style={iconStyle}></i> Cadastro Aluno/CRE/Coordenador
               </Link> 
               <Link 
-                className="crud-link" 
+                className="link_botao_escolha" 
                 to="/mandatos"
                 style={hoveredCard === 'mandatos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
                 onMouseEnter={() => setHoveredCard('mandatos')}
@@ -163,7 +159,7 @@ const Cruds = () => {
                 <i className="bi bi-person-circle" style={iconStyle}></i> Mandatos
               </Link>
               <Link 
-                className="crud-link" 
+                className="link_botao_escolha" 
                 to="/grupos"
                 style={hoveredCard === 'grupos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
                 onMouseEnter={() => setHoveredCard('grupos')}
@@ -269,7 +265,6 @@ const Cruds = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
