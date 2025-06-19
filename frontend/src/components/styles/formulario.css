@@ -1,3 +1,12 @@
+.formulario-largo { /*principal estilo da largura do formulario*/
+    max-width: inherit !important;
+    width: 60%;
+}
+
+.descricao-formulario{
+    max-width: 800px;
+    text-align: center;
+}
 
 .form-container {
     padding: 2rem;
@@ -38,10 +47,7 @@
 }
 
 
-.formulario-largo {
-    max-width: inherit !important;
-    width: 100%;
-}
+
 
 /* GRUPOS DE CAMPOS */
 .formulario .form-group {
