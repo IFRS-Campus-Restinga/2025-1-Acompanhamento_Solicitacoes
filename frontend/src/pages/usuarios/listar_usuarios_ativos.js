@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../components/base/footer";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import api from "../../services/api";
 
 // POPUPS
@@ -18,9 +20,6 @@ import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
-
-//CSS
-//import "../../components/styles/tabela.css";
 
 export default function ListarUsuariosAtivos() { 
   const [usuarios, setUsuarios] = useState([]);
@@ -147,6 +146,7 @@ export default function ListarUsuariosAtivos() {
 
   return (
     <div>
+      <HeaderCRE />
       <main className="container">
         <h2>Usuários</h2>
 
@@ -256,6 +256,7 @@ export default function ListarUsuariosAtivos() {
 
         <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
+      <Footer />
     </div>
   );
 }

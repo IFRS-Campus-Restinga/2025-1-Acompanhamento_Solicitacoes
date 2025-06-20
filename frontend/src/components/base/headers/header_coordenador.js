@@ -1,56 +1,73 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getGoogleUser, logout } from "../../../services/authUtils";
 import "./../headers/header_nav.css";
 
 
 const HeaderCoordenador = () => {
   const [userData, setUserData] = useState(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); 
 
-   // Função para carregar os dados do usuário do Google a partir dos cookies
-    const loadUserData = useCallback(() => {
-        setUserData(getGoogleUser());
-    }, []);
+  useEffect(() => {
+    const storedUser = localStorage.getItem("googleUser");
+    if (storedUser) {
+      try {
+        setUserData(JSON.parse(storedUser));
+      } catch (error) {
+        console.error("Erro ao parsear dados do usuário do localStorage:", error);
+        localStorage.removeItem("googleUser"); 
+        localStorage.removeItem("appToken");
+      }
+    }
 
-    useEffect(() => {
-        // Carrega os dados do usuário assim que o componente é montado
-        loadUserData();
-
-        // Esta função será chamada quando o evento 'authChange' for disparado
-        // (por exemplo, após um login ou logout em outra aba/componente)
-        const handleAuthChange = () => {
-            console.log("Evento 'authChange' detectado. Recarregando dados do usuário.");
-            loadUserData(); // Recarrega os dados para refletir a mudança
-        };
-
-        // Adiciona um ouvinte para o evento 'authChange'
-        // Este evento deve ser disparado em logout ou onde o usuário é logado/autenticado
-        window.addEventListener("authChange", handleAuthChange);
-
-        // Limpa o ouvinte de evento quando o componente é desmontado
-        return () => {
-            window.removeEventListener("authChange", handleAuthChange);
-        };
-    }, [loadUserData]); // `loadUserData` é uma dependência do `useEffect`
-
-
-// Função para lidar com o logout do usuário
-    const handleLogout = () => {
-        logout(); // Chama a função centralizada em authUtils.js para limpar os cookies
-        setUserData(null);
-        navigate("/"); // Redireciona o usuário para a página inicial/de login
+    const handleStorageChange = (event) => {
+      if (event.key === "googleUser") {
+        if (event.newValue) {
+          try {
+            setUserData(JSON.parse(event.newValue));
+          } catch (error) {
+            setUserData(null);
+          }
+        } else {
+          setUserData(null);
+        }
+      }
     };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("googleUser");
+    localStorage.removeItem("appToken");
+    // localStorage.removeItem("refreshToken"); // Se você usar refresh tokens
+    setUserData(null);
+    // TODO: Adicionar lógica para invalidar o token no backend, se aplicável
+    navigate("/"); // Redireciona para a página de login
+    // window.location.reload(); // Força um reload para limpar qualquer estado restante, se necessário
+  };
 
   return (
     <header className="header">
       <div className="header-container">
-        <div className="left">     
+        <div className="left">
+
+          {/*<Link to="/coordenador_home">*/}
+            
             <img src="/img/logo-ifrs-branco.png" alt="logotipo do ifrs campus restinga"className="logo"/>
+
+          {/*</Link>*/}
+
         </div>
 
         <nav className="center">
           <ul className="nav-links">
+            <li>
+              <Link to="/nova-solicitacao">Nova Solicitação</Link>
+            </li>
             <li>
               <Link to="/todas-solicitacoes">Minhas Solicitações</Link>
             </li>
@@ -73,10 +90,10 @@ const HeaderCoordenador = () => {
               />
               {/* Botão de Logout */}
               <button onClick={handleLogout} title="Sair" style={{ marginLeft: "10px", background: "none", border: "none", cursor: "pointer" }}>
-                  <i className="bi bi-box-arrow-right icone" style={{ fontSize: "1.5rem", color: "white" }}></i>
+                <i className="bi bi-box-arrow-right icone" style={{ fontSize: "1.5rem", color: "white" }}></i>
               </button>
-              <Link to="/perfil" className="perfil-link" style={{ marginLeft: "5px", background: "none", border: "none", cursor: "pointer" }}>
-                  <i className="bi bi-gear-fill icone" title="Meu Perfil" style={{ fontSize: "1.1rem", color: "white" }}></i>
+              <Link to="/perfil" className="perfil-link" style={{ marginLeft: "5px"}}>
+                <i className="bi bi-gear-fill icone" title="Meu Perfil"></i>
               </Link>
             </>
           ) : (

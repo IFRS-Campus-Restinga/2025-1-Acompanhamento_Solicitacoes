@@ -2,18 +2,11 @@ import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from 'react-hook-form';
 import { useNavigate } from "react-router-dom";
-
-// Components
-import BuscaUsuario from "../../../components/busca_usuario.js";
-import PopupFeedback from "../../../components/pop_ups/popup_feedback.js";
-
-//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-//COLOCAR DEPOIS DE RETURN{/*<VerificadorDisponibilidade tipoFormulario="EXERCICIOSDOMICILIARES"> verifica se a solicitacao está disponivel*/}
-
-import "../../../components/styles/formulario.css";
-
-// Serviços de autenticação
-import { getAuthToken } from "../../../services/authUtils.js"; //para puxar do Google Redirect Handler
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
+import BuscaUsuario from "../../../components/busca_usuario";
+import "../../../components/formulario.css";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
 import { toast } from "react-toastify";
 
@@ -102,7 +95,7 @@ export default function FormularioExercicioDomiciliar() {
         if (!codigoCurso) return;
         try {
             console.log("Buscando dados do curso:", codigoCurso);
-            const token = getAuthToken(); //Alterado
+            const token = localStorage.getItem("appToken");
             const res = await axios.get(`http://localhost:8000/solicitacoes/cursos/${codigoCurso}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -110,7 +103,6 @@ export default function FormularioExercicioDomiciliar() {
             });
             console.log("Dados do curso:", res.data);
             setCurso(res.data);
-            console.log("ID do curso retornado pela API:", res.data?.id);
             setValue("curso", res.data?.nome || ''); // Preencher campo do form
             setValue("curso_id", res.data?.id || ''); // Preencher ID do curso para o payload
 
@@ -135,7 +127,7 @@ export default function FormularioExercicioDomiciliar() {
         if (!codigoPpc) return;
         try {
             console.log("Buscando dados do PPC:", codigoPpc);
-            const token = getAuthToken(); //Alterado
+            const token = localStorage.getItem("appToken");
             const res = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${codigoPpc}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -187,8 +179,8 @@ export default function FormularioExercicioDomiciliar() {
             }
             try {
                 console.log("Buscando aluno pelo e-mail:", userData.email);
-                const token = getAuthToken(); //Alterado
-                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`, {
+                const token = localStorage.getItem("appToken");
+                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
@@ -257,7 +249,7 @@ export default function FormularioExercicioDomiciliar() {
     useEffect(() => {
         const buscarMotivos = async () => {
             try {
-                const token = getAuthToken(); //Alterado
+                const token = localStorage.getItem("appToken");
                 const res = await axios.get(
                     "http://localhost:8000/solicitacoes/motivo_exercicios/",
                     {
@@ -332,7 +324,7 @@ export default function FormularioExercicioDomiciliar() {
 
         try {
             console.log(`Buscando disciplinas para PPC: ${ppcCodigo} e Período: ${periodo}`);
-            const token = getAuthToken(); //Alterado
+            const token = localStorage.getItem("appToken");
             const res = await axios.get(
                 `http://localhost:8000/solicitacoes/disciplinas_por_ppc_e_periodo/?ppc_codigo=${ppcCodigo}&periodo=${periodo}`,
                 {
@@ -413,7 +405,7 @@ export default function FormularioExercicioDomiciliar() {
             };
             console.log("Payload FINAL para envio (Verifique 'aluno' e 'curso'):", payload); // DEBUG: Veja o que está sendo enviado!
 
-            const token = getAuthToken(); //Alterado
+            const token = localStorage.getItem("appToken");
 
             const response = await axios.post(
                 "http://localhost:8000/solicitacoes/formulario_exerc_dom/",
@@ -478,9 +470,11 @@ export default function FormularioExercicioDomiciliar() {
         return (
             <>
                 <BuscaUsuario dadosUsuario={handleUsuario} />
+                <HeaderAluno />
                 <main className="container">
                     <p>Carregando usuário...</p>
                 </main>
+                <Footer />
             </>
         );
     }
@@ -488,10 +482,12 @@ export default function FormularioExercicioDomiciliar() {
     if (userData && alunoNaoEncontrado) {
         return (
             <div className="page-container">
+                <HeaderAluno onLogout={() => setUserData(null)} />
                 <main className="container">
                     <h2>Aluno não encontrado no sistema.</h2>
                     <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
                 </main>
+                <Footer />
                 {feedbackIsOpen && (
                     <PopupFeedback
                         mensagem={msgErro}
@@ -506,27 +502,28 @@ export default function FormularioExercicioDomiciliar() {
     // Renderiza o formulário principal
     return (
         <div className="page-container">
+            <HeaderAluno onLogout={() => setUserData(null)} />
             <main className="container">
-                <h2>Solicitação de Exercícios Domiciliares</h2>
-                <br></br>
-                <h6>
-                    Conforme o Art. 141. da Organização Didática do IFRS, os Exercícios
-                    Domiciliares possibilitam ao estudante realizar atividades em seu
-                    domicílio, quando houver impedimento de frequência às aulas por um
-                    período superior a 15 (quinze) dias, de acordo com o Decreto 1.044/69
-                    e com a Lei 6.202/75, tendo suas faltas abonadas durante o período de
-                    afastamento. O atendimento através de Exercício Domiciliar é um
-                    processo em que a família e a Instituição devem atuar de forma
-                    colaborativa, para que o estudante possa realizar suas atividades sem
-                    prejuízo na sua vida acadêmica. A solicitação deverá ser protocolada
-                    em até 05 (cinco) dias úteis subsequentes ao início da ausência às
-                    atividades letivas.
-                </h6>
+                 <h2>Solicitação de Exercícios Domiciliares</h2>
+                    <h6>
+                        Conforme o Art. 141. da Organização Didática do IFRS, os Exercícios
+                        Domiciliares possibilitam ao estudante realizar atividades em seu
+                        domicílio, quando houver impedimento de frequência às aulas por um
+                        período superior a 15 (quinze) dias, de acordo com o Decreto 1.044/69
+                        e com a Lei 6.202/75, tendo suas faltas abonadas durante o período de
+                        afastamento. O atendimento através de Exercício Domiciliar é um
+                        processo em que a família e a Instituição devem atuar de forma
+                        colaborativa, para que o estudante possa realizar suas atividades sem
+                        prejuízo na sua vida acadêmica. A solicitação deverá ser protocolada
+                        em até 05 (cinco) dias úteis subsequentes ao início da ausência às
+                        atividades letivas.
+                    </h6>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="formulario">
             
 
                     <div className="form-section">
+                        <h3>Dados do Aluno</h3>
                         <div className="form-group">
                             <label htmlFor="email">E-mail:</label>
                             <input type="email" id="email" readOnly {...register("email")} />
@@ -771,6 +768,7 @@ export default function FormularioExercicioDomiciliar() {
                     <button type="submit" className="submit-button">Enviar Solicitação</button>
                 </form>
             </main>
+            <Footer />
             {feedbackIsOpen && (
                 <PopupFeedback
                     mensagem={msgErro}

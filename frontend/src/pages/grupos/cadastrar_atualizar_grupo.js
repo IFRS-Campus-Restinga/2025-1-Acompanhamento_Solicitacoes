@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../components/base/footer";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import "./grupo.css";
 
@@ -296,15 +298,18 @@ export default function CadastrarAtualizarGrupo() {
   if (carregando) {
     return (
       <div>
+        <HeaderCRE />
         <main className="container form-container">
           <h2>Carregando...</h2>
         </main>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div>
+      <HeaderCRE/>
       <main className="container form-container">
         <h2>{id ? "Editar Grupo" : "Cadastrar Novo Grupo"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
@@ -436,6 +441,7 @@ export default function CadastrarAtualizarGrupo() {
           }}
         />
       </main>
+      <Footer />
     </div>
   );
 }

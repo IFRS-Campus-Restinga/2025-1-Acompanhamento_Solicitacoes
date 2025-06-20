@@ -1,10 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-
-//Componentes
+import HeaderAluno from "../../components/base/headers/header_aluno";
+import Footer from "../../components/base/footer";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
-import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
-
-//CSS
 import './FormularioIndisponivel.css';
 // Remova as importações de date-fns, elas não serão mais necessárias
 // import { format, parseISO, isValid } from 'date-fns'; 
@@ -29,6 +26,7 @@ export default function FormularioIndisponivel() {
 
   return (
     <div className="page-container">
+      <HeaderAluno />
       
       <main className="content-wrapper indisponivel-container">
         <div className="card-indisponivel">
@@ -70,10 +68,18 @@ export default function FormularioIndisponivel() {
                 {/* Opcional: Se quiser uma mensagem genérica caso não haja período específico */}
               </>
             )}
-          </div> 
-          <BotaoVoltar className="btn-voltar" onClick={() => navigate("/aluno/nova-solicitacao")} />
+          </div>
+
+          <button 
+            className="btn-voltar btn-verde"
+            onClick={() => navigate(-1)}
+          >
+            <i className="fas fa-arrow-left"></i> Voltar
+          </button>
         </div>
       </main>
+
+      <Footer />
       <PopupFeedback />
     </div>
   );

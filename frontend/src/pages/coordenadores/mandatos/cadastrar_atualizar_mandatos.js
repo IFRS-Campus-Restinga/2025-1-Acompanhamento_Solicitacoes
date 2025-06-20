@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import HeaderCRE from "../../../components/base/headers/header_cre";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
-import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 import api from "../../../services/api";
+import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
 const initialFormState = {
   coordenador: "",
@@ -121,6 +123,7 @@ export default function CadastrarAtualizarMandato() {
 
   return (
     <div>
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{title}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
@@ -202,6 +205,7 @@ export default function CadastrarAtualizarMandato() {
         />
         <BotaoVoltar onClick={() => navigate(-1)} />
       </main>
+      <Footer />
     </div>
   );
 }

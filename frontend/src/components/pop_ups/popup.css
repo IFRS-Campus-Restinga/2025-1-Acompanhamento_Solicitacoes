@@ -137,18 +137,3 @@
   }
 }
 
-.input-error {
-    border: 2px solid red;
-    outline: none;
-  }
-
-  .error-text {
-    color: red;
-    font-weight: bold;
-    margin-top: 4px;
-  }
-  .erro-mensagem {
-    color: var(--mensagem-erro);
-    margin-top: 10px;
-}
-

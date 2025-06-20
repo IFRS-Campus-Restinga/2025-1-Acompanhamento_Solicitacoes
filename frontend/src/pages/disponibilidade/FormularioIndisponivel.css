@@ -29,12 +29,12 @@
 
 .icon-container {
   font-size: 3rem;
-  color: var(--mensagem-erro);
+  color: #dc3545;
   margin-bottom: 1.5rem;
 }
 
 .card-indisponivel h2 {
-  color: var(--mensagem-erro);
+  color: #dc3545;
   margin-bottom: 1.5rem;
 }
 
@@ -56,11 +56,29 @@
   gap: 0.5rem;
 }
 
-.error-message {
-  color: var(--mensagem-erro);
-  font-weight: 500;
+.btn-voltar {
+  padding: 0.75rem 1.5rem;
+  border-radius: 5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.btn-voltar{
+.btn-verde {
+  background-color: #28a745;
+  color: white;
+}
 
+.btn-verde:hover {
+  background-color: #218838;
+  transform: translateY(-2px);
+}
+
+.error-message {
+  color: #dc3545;
+  font-weight: 500;
 }

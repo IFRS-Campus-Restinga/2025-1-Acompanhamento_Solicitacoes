@@ -1,18 +1,22 @@
 
-footer {
-    background-color: var(--verde-escuro);
-    color: var(--cor-branca);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 15px var(--padding-global);
-    width: 100%;
-    min-height: var(--altura-footer);
-    margin-top: auto; /* Garante que o footer seja empurrado para baixo */
+  footer{
+  position: relative;
+  bottom: 0;
+  width: 100%;
+  background-color:var(--verde-escuro);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 15px 10px;
+  margin-top: auto;
+  }
+
+  footer p {
+  margin: 5px 0; /* Adiciona margens nas tags de parágrafo */
+  font-size: 14px; /* Ajusta o tamanho da fonte */
 }
 
-footer p {
-    margin: 5px 0;
-    font-size: var(--tamanho-fonte-pequena);
-}
+
+

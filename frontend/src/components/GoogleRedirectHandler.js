@@ -1,7 +1,7 @@
+// GoogleRedirectHandler.js 
 import React, { useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import { setCookie } from '../services/authUtils'; // Importando a função utilitária
 
 const GoogleRedirectHandler = () => {
   const location = useLocation();
@@ -22,12 +22,9 @@ const GoogleRedirectHandler = () => {
 
         if (email && name) {
           console.log("GoogleRedirectHandler: Claims email e name encontradas."); 
-          
-          // Armazenar dados do usuário e token em cookies seguros em vez de localStorage
-          setCookie('googleUser', JSON.stringify({ name, email, picture }), 60);
-          setCookie('appToken', accessToken, 60);
-          
-          console.log("GoogleRedirectHandler: Dados salvos em cookies seguros."); 
+          localStorage.setItem('googleUser', JSON.stringify({ name, email, picture }));
+          localStorage.setItem('appToken', accessToken);
+          console.log("GoogleRedirectHandler: Dados salvos no localStorage."); 
 
           const ifrsEmailRegex = /@.*ifrs\..+/i; 
           console.log("GoogleRedirectHandler: Testando regex para email:", email); 

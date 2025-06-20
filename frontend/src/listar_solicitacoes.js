@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "./components/base/footer";
+import HeaderCRE from "./components/base/headers/header_cre";
 import PopupConfirmacao from "./components/pop_ups/popup_confirmacao";
 import PopupFeedback from "./components/pop_ups/popup_feedback";
 import BotaoDetalhar from "./components/UI/botoes/botao_detalhar";
@@ -105,16 +107,18 @@ export default function ListarSolicitacoes() {
   if (loading) {
     return (
       <div>
+        <HeaderCRE />
         <main className="container">
           <p>Carregando solicitações...</p>
         </main>
+        <Footer />
       </div>
     );
   }
 
   return (
     <div>
-
+      <HeaderCRE />
       <main className="container">
         <h2>Solicitações</h2>
 
@@ -208,6 +212,7 @@ export default function ListarSolicitacoes() {
         />
 
       </main>
+      <Footer />
     </div>
   );
 }

@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../components/base/footer";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 
 //POP-UPS IMPORTAÇÃO
@@ -77,6 +79,7 @@ export default function CadastrarAtualizarPpc() {
 
   return (
     <div>
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{codigo ? "Editar PPC" : "Cadastrar Novo PPC"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
@@ -129,6 +132,7 @@ export default function CadastrarAtualizarPpc() {
           }}
         />
       </main>
+      <Footer />
     </div>
   );
 }

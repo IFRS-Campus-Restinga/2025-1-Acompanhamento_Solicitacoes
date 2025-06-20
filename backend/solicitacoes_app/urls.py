@@ -43,7 +43,7 @@ from .views.permissoes_view import PermissaoListView
 from .views.detalhe_formularios_view import *
 from .views.atualizar_status_view import *
 
-from .views.form_exercicios_domiciliares import FormExercicioDomiciliarViewSet, FormExercicioDomiciliarGetView, FormularioExercDomUdpate
+from .views.form_exercicios_domiciliares import FormExercicioDomiciliarViewSet
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
@@ -106,7 +106,7 @@ urlpatterns = [
     path('usuarios/inativos/', UsuariosInativosView.as_view(), name='usuario-inativo'),
     path('usuarios/inativos/<int:pk>/', UsuarioReativarView.as_view(), name='usuario-reativar'),
     path('usuarios/aprovar/<int:pk>/', UsuarioAprovarCadastroView.as_view(), name='usuario-aprovar'),
-    path('usuarios/buscar-por-email/<str:email>/', UsuarioDetailByEmail.as_view(), name='usuario-detail-by-email'), # Nova URL para busca por email
+    path('usuarios/<str:email>/', UsuarioDetailByEmail.as_view(), name='usuario-detail-by-email'), # Nova URL para busca por email
 
     path('perfil/', PerfilUsuarioView.as_view(), name='perfil-usuario'),
 
@@ -165,7 +165,4 @@ urlpatterns = [
 
     path('minhas-solicitacoes/', ListarMinhasSolicitacoesView.as_view(), name='listar_minhas_solicitacoes'),
 
-    path('form_exerc_dom/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view"),
-    path('form_exerc_dom/<int:id>/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view_by_aluno"),
-    path('form_exerc_dom/update/<int:pk>/', FormularioExercDomUdpate.as_view(), name="formulario_exerc_dom_update")
     ]

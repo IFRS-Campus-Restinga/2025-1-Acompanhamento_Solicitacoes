@@ -1,14 +1,13 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
+import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
-import { getAuthToken, getGoogleUser } from "../../../services/authUtils";
-
-//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-//COLOCAR DEPOIS DE RETURN{/*<VerificadorDisponibilidade tipoFormulario="EXERCICIOSDOMICILIARES"> verifica se a solicitacao está disponivel*/}
-
+import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
@@ -33,14 +32,11 @@ export default function Formulario() {
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const handleUsuario = () => {
-        setUserData(getGoogleUser());
-        console.log(userData);
-        setCarregando(false); // Indica que a busca inicial do usuário terminou
-      };
-      handleUsuario();
-      }, [])
+    const handleUsuario = (data) => {
+        setUserData(data);
+        console.log(data);
+        setCarregando(false);
+    };
 
     useEffect(() => {
         if (!carregando && !userData) {
@@ -49,11 +45,7 @@ export default function Formulario() {
     }, [carregando, userData, navigate]);
 
     useEffect(() => {
-        axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/", {
-            headers: {
-                Authorization: `Bearer ${getAuthToken()}`
-            }
-        })
+        axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/")
             .then((response) => setPopularMotivosDispensa(response.data))
             .catch((err) => {
                 setMsgErro(err);
@@ -172,6 +164,7 @@ export default function Formulario() {
     if (carregando) {
             return (
                 <>
+                    <BuscaUsuario dadosUsuario={handleUsuario} />
                     <p>Carregando usuário...</p>
                 </>
             );
@@ -180,26 +173,41 @@ export default function Formulario() {
     if (userData) {
 return (
         <div>
+            <HeaderAluno />
             <main className="container">
                 <h2>Formulário de Dispensa de Educação Física</h2>
-                <br></br>
-                <h6 className="descricao-formulario">
-                    Ao preencher este formulário, declaro que os documentos apresentados <strong>são verdadeiros</strong>,
-                    e assumo a responsabilidade pelas informações aqui prestadas.
-                </h6>
+                <div className="descricao-formulario">
+                    <p>Este formulário é destinado aos estudantes que solicitam a dispensa da prática de Educação Física. Para solicitar a dispensa, é necessário preencher integralmente o formulário, apresentando toda documentação comprobatória.</p>
+
+                    <p>De acordo com a LDB, Lei 9394/96, Art. 26 a Educação Física, integrada à proposta pedagógica da escola, é componente curricular obrigatório da educação básica, sendo sua prática facultativa ao aluno que se enquadrar em qualquer um dos pontos a seguir: </p>
+
+                    <ul>
+                        <li>Cumprir jornada de trabalho igual ou superior a seis horas;</li>
+                        <li>Maior de trinta anos de idade;</li>
+                        <li>Prestar serviço militar inicial ou que, em situação similar, estiver obrigado à prática da educação física;</li>
+                        <li>Estar amparado pelo decreto-lei n°1.044, de 21 de outubro de 1969;</li>
+                        <li>Ter prole.</li>
+                    </ul>
+
+                    <p>QUEM: Todos os cursos.</p>
+
+                    <p>QUANDO: a qualquer momento dentro do período letivo.</p>
+
+                    <p>Após entrega do formulário, a coordenação de curso fará a análise da solicitação em até 7 (sete) dias e a CRE tem até 5 (cinco) dias úteis para inserir os resultados no sistema. Este prazo pode ser estendido conforme as demandas da coordenação de curso e/ou do setor.</p>
+                </div>
 
                 <form className="formulario formulario-largo" onSubmit={postDispensaEdFisica}>
                     {/* Campos para exibir nome, email e matrícula do aluno */}
                     <div className="form-group">
-                        <label htmlFor="email_aluno">E-mail:</label>
-                        <input type="email" id="email_aluno" value={userData.email} readOnly />
+                        <label htmlFor="nome_aluno">Nome do Aluno:</label>
+                        <input type="text" id="nome_aluno" value={nomeAluno} readOnly />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="nome_aluno">Nome Completo:</label>
-                        <input type="text" id="nome_aluno" value={userData.name} readOnly />
+                        <label htmlFor="email_aluno">Email do Aluno:</label>
+                        <input type="email" id="email_aluno" value={emailAluno} readOnly />
                     </div>
                     <div className="form-group">
-                        <label htmlFor="matricula_aluno">Matrícula:</label>
+                        <label htmlFor="matricula_aluno">Matrícula do Aluno:</label>
                         <input type="text" id="matricula_aluno" value={matriculaAluno} readOnly />
                     </div>
                     <Options
@@ -231,6 +239,8 @@ return (
                 tipo={popupType}
                 onClose={() => setPopupIsOpen(false)}
             />
+
+            <Footer />
         </div>
     );
     }

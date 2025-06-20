@@ -1,3 +1,5 @@
+# google_auth/views/login_solicitacoes.py (Arquivo Modificado v2)
+
 import requests
 from django.shortcuts import redirect
 from urllib.parse import urlencode
@@ -135,10 +137,8 @@ def google_callback(request):
             }
             query_params = urlencode(google_data)
 
-            # Verificar 'ifrs' em qualquer parte do domínio:
-            domain_part = user_email_from_google.split('@')[-1].lower() # Pega a parte depois do '@' e converte para minúsculas
-
-            if "ifrs" in domain_part: # Verifica se "ifrs" está na parte do domínio
+            # Verifica o domínio do email para decidir a URL de redirecionamento
+            if "@ifrs" in user_email_from_google.lower():
                 # Email institucional: vai para seleção de grupo
                 frontend_redirect_url = f"http://localhost:3000/usuarios/selecionargrupo?{query_params}"
             else:

@@ -1,9 +1,11 @@
 import axios from "axios";
-import { format, parseISO } from 'date-fns'; // Para formatar datas corretamente
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../components/base/footer";
+import HeaderCRE from "../../components/base/headers/header_cre";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import PeriodoForm from "../../pages/disponibilidade/PeriodoForm"; // Importe o novo componente
+import { format, parseISO } from 'date-fns'; // Para formatar datas corretamente
 
 export default function CadastrarAtualizarDisponibilidade() {
   const [formulario, setFormulario] = useState("");
@@ -175,6 +177,7 @@ export default function CadastrarAtualizarDisponibilidade() {
 
   return (
     <div>
+      <HeaderCRE />
       <main className="container form-container">
         <h2>{id ? "Editar Disponibilidade" : "Cadastrar Disponibilidade"}</h2>
 
@@ -321,6 +324,7 @@ export default function CadastrarAtualizarDisponibilidade() {
           }}
         />
       </main>
+      <Footer />
     </div>
   );
 }

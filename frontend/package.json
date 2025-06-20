@@ -13,7 +13,6 @@
     "bootstrap-icons": "^1.11.3",
     "date-fns": "^4.1.0",
     "frontend": "file:",
-    "js-cookie": "^3.0.5",
     "jwt-decode": "^4.0.0",
     "react": "^19.0.0",
     "react-datepicker": "^8.4.0",

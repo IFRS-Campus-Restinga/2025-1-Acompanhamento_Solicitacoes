@@ -1,6 +1,8 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import HeaderCRE from "../../../components/base/headers/header_cre";
 
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
@@ -79,6 +81,7 @@ export default function ListarMotivosAbono() {
 
   return (
     <div>
+      <HeaderCRE />
       <main className="container">
         <h2>Motivos de Abono</h2>
 
@@ -154,6 +157,7 @@ export default function ListarMotivosAbono() {
         <BotaoVoltar onClick={() => navigate("/configuracoes")} />
           
       </main>
+      <Footer />
     </div>
   );
 }

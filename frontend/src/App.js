@@ -5,25 +5,14 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 import React from "react";
 import "react-datepicker/dist/react-datepicker.css";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Routes } from "react-router-dom";
 import 'react-toastify/dist/ReactToastify.css';
-
-import routes from "./routes/routes";
-
-// Importe MainContent do novo caminho/nome
-import MainContent from "./components/base/main_content"; // <--- Caminho e nome atualizados
-
-import Home from "./pages/home";
-
-import Footer from "./components/base/footer";
-import HeaderSwitcher from "./components/base/headers/header_switcher";
-
-//CSS
 import "./App.css";
-import "./components/base/main.css"; // <--- Importante para as regras CSS do <main>
+import './index.css';
+import routes from "./routes/routes";
 import "./var.css";
-
 //import GoogleRedirectHandler from './components/GoogleRedirectHandler';
+
 
 class App extends React.Component {
   state = {
@@ -43,17 +32,7 @@ class App extends React.Component {
     return (
       <Router>
         {this.state.isConnected ? (
-          <div id="root">
-            {/* HeaderSwitcher aqui */}
-             <HeaderSwitcher /> {/* <-- AGORA USAMOS O SWITCHER AQUI */}
-              <MainContent> {/* <--- Agora, MainContent envolve suas rotas */}
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  {routes}
-                </Routes>
-              </MainContent>
-              <Footer/>
-          </div>
+          <Routes>{routes}</Routes>
         ) : (
           <div className="error-container">
             <h2>Erro de Conexão</h2>

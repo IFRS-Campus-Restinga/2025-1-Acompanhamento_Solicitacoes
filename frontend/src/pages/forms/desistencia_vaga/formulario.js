@@ -1,0 +1,472 @@
+import axios from "axios";
+import { useEffect, useState, useRef } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
+import "../../../components/formulario.css";
+import BuscaUsuario from "../../../components/busca_usuario";
+
+export default function FormularioDesistenciaVaga() {
+  const { curso_codigo } = useParams();
+  const [cursos, setCursos] = useState([]);
+  const [formData, setFormData] = useState({
+    aluno_nome: "",
+    email: "",
+    motivo_solicitacao: "",
+    motivo_desistencia: "",
+    menor_idade: null, // Booleano ou null para indicar não selecionado
+    recebe_auxilio_estudantil: null, // Booleano ou null para indicar não selecionado
+    tipo_curso: "",
+    curso: curso_codigo || "",
+    ano_semestre_ingresso: "",
+    atestado_vaga_nova_escola: null,
+    doc_identificacao_responsavel: null,
+    declaracao_biblioteca: null,
+  });
+
+  const [popupIsOpen, setPopupIsOpen] = useState(false);
+  const [msgErro, setMsgErro] = useState(""); // Alterado para string simples para uma única mensagem
+  const [mensagemErro, setMensagemErro] = useState(""); // Pode ser redundante com msgErro, ou usar para outra finalidade
+  const [tipoErro, setTipoErro] = useState(""); // 'erro', 'sucesso'
+  const [feedbackIsOpen, setFeedbackIsOpen] = useState(false); // Para controlar a visibilidade do feedback
+
+  const [carregando, setCarregando] = useState(true);
+  const buscouAlunoRef = useRef(false);
+  const [alunoNaoEncontrado, setAlunoNaoEncontrado] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [token, setToken] = useState(null);
+
+  const navigate = useNavigate();
+
+  const handleUsuario = (data) => {
+    setUserData(data);
+    console.log(data);
+    setCarregando(false); // Indica que a busca inicial do usuário terminou
+  };
+
+  // Redireciona se o usuário não for carregado
+  useEffect(() => {
+    // Apenas redireciona se já tentou carregar e não obteve userData
+    if (!carregando && !userData && buscouAlunoRef.current) { // Adicionado buscouAlunoRef.current para garantir que a busca já ocorreu
+      navigate("/");
+    }
+  }, [carregando, userData, navigate]);
+
+  // Busca dados do aluno se userData estiver disponível e ainda não buscou
+  useEffect(() => {
+    const buscarAluno = async () => {
+      try {
+        const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/${userData.email}/`);
+        setFormData({
+          ...formData,
+          aluno_nome: userData.name,
+          email: userData.email,
+        });
+        setToken(localStorage.getItem("appToken"));
+        console.log("Dados obtidos: ", res.data);
+      } catch (err) {
+        setAlunoNaoEncontrado(true);
+        setMsgErro(err.response?.data?.detail || err.message || "Erro desconhecido ao buscar dados do aluno.");
+        setTipoErro("erro");
+        setFeedbackIsOpen(true);
+      }
+    };
+
+    if (userData?.email && !buscouAlunoRef.current) {
+      buscouAlunoRef.current = true;
+      buscarAluno();
+    }
+  }, [userData, formData]); // Adicionado formData como dependência, pois está sendo usado no setFormData
+
+  // Busca cursos
+  useEffect(() => {
+    axios.get("http://localhost:8000/solicitacoes/cursos/")
+      .then((res) => setCursos(res.data))
+      .catch((err) => console.error("Erro ao buscar cursos:", err));
+  }, []);
+
+  useEffect(() => {
+        if (!carregando && !userData) {
+            navigate("/");
+        }
+    }, [carregando, userData, navigate]);
+
+  const handleChange = (e) => {
+    const { name, value, type, files } = e.target;
+
+    if (type === "file") {
+      setFormData({
+        ...formData,
+        [name]: files[0],
+      });
+    } else if (type === "radio") {
+      // Lógica para radio buttons
+      // Se for 'menor_idade' ou 'recebe_auxilio_estudantil', converte para booleano
+      if (name === "menor_idade" || name === "recebe_auxilio_estudantil") {
+        setFormData({
+          ...formData,
+          [name]: value === "true",
+        });
+      } else {
+        // Para outros radio buttons (como motivo_desistencia), mantém o valor da string
+        setFormData({
+          ...formData,
+          [name]: value,
+        });
+      }
+    } else {
+      // Para campos de texto, select, etc.
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // Verificação de campos obrigatórios
+    if (!formData.aluno_nome || !formData.email || !formData.ano_semestre_ingresso || !formData.tipo_curso || !formData.declaracao_biblioteca || !formData.motivo_solicitacao || !formData.motivo_desistencia) {
+      alert("Todos os campos obrigatórios devem ser preenchidos!");
+      return;
+    }
+
+    if (!["transferencia", "desistencia"].includes(formData.motivo_desistencia)) {
+      alert("Por favor, selecione o motivo da desistência.");
+      return;
+    }
+
+    if (formData.menor_idade === null) {
+      alert("Por favor, informe se é menor de idade.");
+      return;
+    }
+
+    if (formData.recebe_auxilio_estudantil === null) {
+      alert("Por favor, informe se recebe auxílio estudantil.");
+      return;
+    }
+
+    // Se "Ensino Médio Integrado", verificar documentos adicionais
+    if (formData.tipo_curso === "medio_integrado") {
+      if (!formData.atestado_vaga_nova_escola) {
+        alert("Atestado de vaga da nova escola é obrigatório para o Ensino Médio Integrado.");
+        return;
+      }
+      if (!formData.doc_identificacao_responsavel) {
+        alert("Documento de identificação do responsável é obrigatório para o Ensino Médio Integrado.");
+        return;
+      }
+    }
+
+    if (formData.tipo_curso === "superior") {
+      if (!formData.curso) {
+        alert("Selecione o curso para o tipo 'Curso Superior'.");
+        return;
+      }
+    }
+
+    const data = new FormData();
+
+    // Adiciona os arquivos
+    if (formData.atestado_vaga_nova_escola) {
+      data.append("atestado_vaga_nova_escola", formData.atestado_vaga_nova_escola);
+    }
+    if (formData.doc_identificacao_responsavel) {
+      data.append("doc_identificacao_responsavel", formData.doc_identificacao_responsavel);
+    }
+    // A declaração da biblioteca é obrigatória, então sempre será adicionada se a validação passar
+    data.append("declaracao_biblioteca", formData.declaracao_biblioteca);
+
+    // Adiciona os outros dados
+    data.append("aluno_nome", formData.aluno_nome);
+    data.append("email", formData.email);
+    data.append("motivo_desistencia", formData.motivo_desistencia);
+    data.append("motivo_solicitacao", formData.motivo_solicitacao);
+    data.append("ano_semestre_ingresso", formData.ano_semestre_ingresso);
+    data.append("menor_idade", formData.menor_idade); // Já é booleano
+    data.append("recebe_auxilio_estudantil", formData.recebe_auxilio_estudantil); // Já é booleano
+    data.append("tipo_curso", formData.tipo_curso);
+    if (formData.curso) {
+      data.append("curso", formData.curso);
+    }
+
+    try {
+      const response = await axios.post("http://localhost:8000/solicitacoes/form_desistencia_vaga/", data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          'Authorization': `Bearer ${token}`
+        },
+      });
+      alert("Formulário enviado com sucesso!");
+      navigate("/solicitacoes");
+    } catch (error) {
+      if (error.response) {
+        console.error("Erro na resposta:", error.response.data);
+        alert(`Erro: ${error.response.data.detail || JSON.stringify(error.response.data) || "Erro ao enviar solicitação."}`);
+      } else if (error.request) {
+        console.error("Erro na requisição:", error.request);
+        alert("Erro na requisição. Tente novamente.");
+      } else {
+        console.error("Erro desconhecido:", error.message);
+        alert("Erro desconhecido. Verifique o console.");
+      }
+    }
+  };
+
+  // Carregando usuário
+  if (carregando) {
+    return (
+      <>
+        <BuscaUsuario dadosUsuario={handleUsuario} />
+        <p>Carregando usuário...</p>
+      </>
+    );
+  }
+  
+
+  // Se o usuário foi encontrado e não há erro
+  if (userData && !alunoNaoEncontrado) {
+    return (
+      <div>
+        <HeaderAluno />
+        <main className="container">
+          <h1>Solicitação de Desistência de Vaga</h1>
+          <h6><br></br>Este formulário destina-se a solicitação de desistência da vaga. Para desistir da vaga no IFRS Campus Restinga você deverá preencher o formulário, e anexar a documentação necessária, conforme segue:</h6>
+          <form onSubmit={handleSubmit} className="formulario" encType="multipart/form-data">
+            <div className="form-group">
+              <label>Nome do Aluno:</label>
+              <input
+                type="text"
+                name="aluno_nome"
+                value={formData.aluno_nome}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Email:</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Motivo da Desistência:</label>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name="motivo_desistencia"
+                    value="transferencia"
+                    checked={formData.motivo_desistencia === "transferencia"}
+                    onChange={handleChange} // Use o handleChange genérico aqui
+                    required
+                  />
+                  Transferência para outra escola
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="motivo_desistencia"
+                    value="desistencia"
+                    checked={formData.motivo_desistencia === "desistencia"}
+                    onChange={handleChange} // Use o handleChange genérico aqui
+                    required
+                  />
+                  Desistência da vaga
+                </label>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Motivo da Solicitação:</label>
+              <textarea
+                name="motivo_solicitacao"
+                value={formData.motivo_solicitacao}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Ano/Semestre de Ingresso:</label>
+              <input
+                type="text"
+                name="ano_semestre_ingresso"
+                value={formData.ano_semestre_ingresso}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Recebe Auxílio Estudantil?</label>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name="recebe_auxilio_estudantil"
+                    value="true" // Mantenha como string para o input
+                    checked={formData.recebe_auxilio_estudantil === true} // Compare com booleano
+                    onChange={handleChange} // Usa handleChange para converter
+                    required
+                  />
+                  Sim
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="recebe_auxilio_estudantil"
+                    value="false" // Mantenha como string para o input
+                    checked={formData.recebe_auxilio_estudantil === false} // Compare com booleano
+                    onChange={handleChange} // Usa handleChange para converter
+                    required
+                  />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <div className="form-group">
+              <label>Tipo de Curso:</label>
+              <select
+                name="tipo_curso"
+                value={formData.tipo_curso}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Selecione o tipo de curso</option>
+                <option value="medio_integrado">Ensino Médio Integrado</option>
+                <option value="subsequente">Curso Subsequente</option>
+                <option value="eja">Curso EJA</option>
+                <option value="superior">Curso Superior</option>
+              </select>
+            </div>
+
+            {formData.tipo_curso === "superior" && (
+              <div className="form-group">
+                <label>Curso:</label>
+                <select
+                  name="curso"
+                  value={formData.curso}
+                  onChange={handleChange}
+                  required={formData.tipo_curso === "superior"} // Opcional: Adicionar required condicionalmente
+                >
+                  <option value="">Selecione um curso</option>
+                  {cursos.map((curso) => (
+                    <option key={curso.codigo} value={curso.codigo}>
+                      {curso.nome}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {formData.tipo_curso === "medio_integrado" && (
+              <>
+                <div className="form-group">
+                  <label>Atestado de Vaga da Nova Escola:</label>
+                  <input
+                    type="file"
+                    name="atestado_vaga_nova_escola"
+                    multiple
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={handleChange}
+                    required={formData.tipo_curso === "medio_integrado"} // Adicionado required condicionalmente
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Documento de Identificação do Responsável:</label>
+                  <input
+                    type="file"
+                    name="doc_identificacao_responsavel"
+                    multiple
+                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                    onChange={handleChange}
+                    required={formData.tipo_curso === "medio_integrado"} // Adicionado required condicionalmente
+                  />
+                </div>
+              </>
+            )}
+
+            <div className="form-group">
+              <label>Declaração de Nada Consta da Biblioteca:</label>
+              <small>
+                Você pode obter a declaração de nada consta da biblioteca diretamente no sistema<br></br>
+                <a href="https://biblioteca.ifrs.edu.br/meupergamum" target="_blank" rel="noopener noreferrer">https://biblioteca.ifrs.edu.br/meupergamum</a>
+              </small>
+              <input
+                type="file"
+                name="declaracao_biblioteca"
+                multiple
+                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>É menor de idade?</label>
+              <div>
+                <label>
+                  <input
+                    type="radio"
+                    name="menor_idade"
+                    value="true" // Mantenha como string para o input
+                    checked={formData.menor_idade === true} // Compare com booleano
+                    onChange={handleChange} // Usa handleChange para converter
+                    required
+                  />
+                  Sim
+                </label>
+                <label>
+                  <input
+                    type="radio"
+                    name="menor_idade"
+                    value="false" // Mantenha como string para o input
+                    checked={formData.menor_idade === false} // Compare com booleano
+                    onChange={handleChange} // Usa handleChange para converter
+                    required
+                  />
+                  Não
+                </label>
+              </div>
+            </div>
+
+            <button type="submit" className="submit-button">Enviar</button>
+          </form>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Aluno não encontrado
+  if (userData && alunoNaoEncontrado) {
+    return (
+      <div className="page-container">
+        <HeaderAluno onLogout={() => setUserData(null)} />
+        <main className="container">
+          <h2>Aluno não encontrado no sistema.</h2>
+          <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
+          {msgErro && <p className="error-message">{msgErro}</p>} {/* Exibe a mensagem de erro */}
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // Caso nenhum dos retornos condicionais acima seja acionado,
+  // e se houver alguma situação inesperada onde userData é null
+  // mas carregando é false e alunoNaoEncontrado é false (que não deveria acontecer
+  // com a lógica atual), este retorno seria o fallback.
+  // Você pode adicionar um retorno para este cenário ou refinar a lógica acima.
+  return null; // ou um componente de erro genérico
+}
