@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./header_nav.css";
 
-const Header = () => {
+const HeaderPadrao = () => {
   const [userData, setUserData] = useState(null);
   const navigate = useNavigate(); 
 
@@ -53,13 +53,9 @@ const Header = () => {
     <header className="header">
       <div className="header-container">
         <div className="left">
-          <Link to="/">
-            <img
-              src="/img/logo-ifrs-branco.png" 
-              alt="logotipo do ifrs campus restinga"
-              className="logo"
-            />
-          </Link>
+
+            <img src="/img/logo-ifrs-branco.png" alt="logotipo do ifrs campus restinga" className="logo"/>
+
         </div>
 
         <nav className="center">
@@ -99,5 +95,5 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default HeaderPadrao;
 
