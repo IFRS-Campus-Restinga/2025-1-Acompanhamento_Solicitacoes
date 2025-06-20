@@ -5,8 +5,8 @@ export default function BotaoAnalisar({ onClick, title = "Analisar Cadastro" }) 
         <button
             onClick={onClick}
             title={title}
-            className="botao-analisar">
-            <i class="bi bi-exclamation-circle"></i>
+            className="icone-botao">
+            <i className="bi bi-exclamation-square botao-analisar"></i>
         </button>
     );
 }

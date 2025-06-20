@@ -1,5 +1,6 @@
 /*GERAL */
   .botoes-acoes {
+    cursor: pointer ;
     margin-top: 20px;
     display: flex;
     gap: 10px;
@@ -122,13 +123,6 @@
 
 .icone-detalhar:hover {
   color: #000000; /* Cinza mais escuro no hover */
-}
-
-.botao-olho {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
 }
 
 /*BOTÃO ENVIAR*/
@@ -268,4 +262,20 @@
 .close-button:hover {
   background-color: var(--verde-escuro);
 }
+
+/*BOTÃO ANALISAR*/
+
+.botao-analisar {
+  color: rgb(209, 127, 4); 
+  font-size: 1.2rem;
+  transition: color 0.2s;
+  padding: 0px 3px;
+}
+
+.botao-analisar:hover {
+  color:  rgb(225, 163, 8); 
+}
+
+
+
 
