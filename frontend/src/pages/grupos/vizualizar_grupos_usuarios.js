@@ -1,8 +1,14 @@
-import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
+
+//Components
+import BotaoFechar from "../../components/UI/botoes/botao_fechar";
+//CSS
 import './lista_grupos_usuarios.css';
 
 export default function VisualizarUsuariosGrupoModal({ show, onClose, grupo }) {
+  const navigate = useNavigate();
   const [usuarios, setUsuarios] = useState([]);
   const [usuariosFiltrados, setUsuariosFiltrados] = useState([]);
   const [filtro, setFiltro] = useState('');
@@ -130,11 +136,8 @@ const USER_DETAIL_ENDPOINT = '/solicitacoes/usuarios/'; // Endpoint confirmado p
           )}
         </div>
 
-        <div className="modal-footer">
-          <button onClick={onClose} className="close-button">
-            Fechar
-          </button>
-        </div>
+          <BotaoFechar onClose={onClose} />
+
       </div>
     </div>
   );
