@@ -1,7 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
 import api from "../../services/api";
 
 // POPUPS
@@ -12,6 +10,7 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import Paginacao from "../../components/UI/paginacao";
 
 // BOTÕES
+import BotaoAnalisar from "../../components/UI/botoes/botao_analisar";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoDetalhar from "../../components/UI/botoes/botao_detalhar";
 import BotaoEditar from "../../components/UI/botoes/botao_editar";
@@ -146,7 +145,6 @@ export default function ListarUsuariosAtivos() {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container">
         <h2>Usuários</h2>
 
@@ -165,7 +163,7 @@ export default function ListarUsuariosAtivos() {
         {usuariosFiltrados.length === 0 ? (
           <p><br />Nenhum usuário encontrado!</p>
         ) : (
-          <table className="tabela-cruds">
+          <table className="tabela-geral">
             <thead>
               <tr>
                 <th>Nome</th>
@@ -199,18 +197,13 @@ export default function ListarUsuariosAtivos() {
                       }} />
                 
                       {usuario.status_usuario === "Em Analise" && (
-                        // Botão Analisar com texto e cor personalizada
-                        <button
-                          onClick={() => {
-                            setUsuarioId(usuario.id)
-                            setTipoAcao("aprovar");
-                            setMostrarPopup(true); 
-                          }}
-                          title="Analisar Cadastro"
-                          className="botao-analisar"
-                        >
-                          Analisar
-                        </button>
+                        <BotaoAnalisar 
+                            onClick={() => {
+                              setUsuarioId(usuario.id);
+                              setTipoAcao("aprovar");
+                              setMostrarPopup(true);
+                            }}
+                        />
                       )}
                     </div>
                   </td>
@@ -256,7 +249,6 @@ export default function ListarUsuariosAtivos() {
 
         <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
-      <Footer />
     </div>
   );
 }
