@@ -5,8 +5,7 @@ export default function BotaoExcluir({ onClick, title = "Excluir" }) {
     <button
       onClick={onClick}
       title={title}
-      className="icone-botao"
-    >
+      className="icone-botao">
       <i className="bi bi-trash3-fill icone-excluir"></i>
     </button>
   );
