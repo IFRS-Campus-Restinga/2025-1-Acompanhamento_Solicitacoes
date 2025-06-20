@@ -44,3 +44,8 @@ select[multiple]::-webkit-scrollbar-thumb {
     background: var(--cabecalho-lista); /* Usando variável */
     border-radius: 4px;
 }
+
+.link-documento{ /*ver se fica aqui pois é geral - para todos os links visiveis ex: PDF para baixar*/
+    text-decoration: dashed;
+    color: var(--link-azul);
+}
