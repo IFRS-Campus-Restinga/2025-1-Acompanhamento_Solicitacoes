@@ -3,11 +3,11 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
+import BuscaUsuario from "../../../components/busca_usuario";
 import "../../../components/formulario.css";
 import IgnoreFields from "../../../components/ignoreFields";
 import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
-import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function Formulario() {
     const [popularMotivosDispensa, setPopularMotivosDispensa] = useState([]);
@@ -196,7 +196,7 @@ return (
                     <p>Após entrega do formulário, a coordenação de curso fará a análise da solicitação em até 7 (sete) dias e a CRE tem até 5 (cinco) dias úteis para inserir os resultados no sistema. Este prazo pode ser estendido conforme as demandas da coordenação de curso e/ou do setor.</p>
                 </div>
 
-                <form className="formulario formulario-largo" onSubmit={postDispensaEdFisica}>
+                <form className="formulario formulario-largura" onSubmit={postDispensaEdFisica}>
                     {/* Campos para exibir nome, email e matrícula do aluno */}
                     <div className="form-group">
                         <label htmlFor="nome_aluno">Nome do Aluno:</label>

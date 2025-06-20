@@ -1,11 +1,11 @@
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../../components/base/footer"; 
-import HeaderAluno from "../../../components/base/headers/header_aluno"; 
+import Footer from "../../../components/base/footer";
+import HeaderAluno from "../../../components/base/headers/header_aluno";
+import BuscaUsuario from "../../../components/busca_usuario";
 import "../../../components/formulario.css";
 import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function FormularioTrancamentoMatricula() {
   const [alunos, setAlunos] = useState([]);
@@ -189,7 +189,7 @@ return (
 
           <form
             onSubmit={handleSubmit}
-            className="formulario formulario-largo"
+            className="formulario formulario-largura"
             encType="multipart/form-data"
           >
             <div className="form-group">

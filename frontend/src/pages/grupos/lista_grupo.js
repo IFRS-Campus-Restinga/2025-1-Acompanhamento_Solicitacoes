@@ -24,6 +24,9 @@ import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 // BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
+//CSS
+import '../../components/styles/tabela.css';
+
 import './lista_grupos_usuarios.css';
 import VisualizarUsuariosGrupoModal from "./vizualizar_grupos_usuarios.js";
 
@@ -120,7 +123,6 @@ export default function ListarGrupos() {
         <h2>Grupos</h2>
 
         <div className="botoes-wrapper" style={{ marginBottom: "20px", marginTop: "20px" }}>
-          {/* Assumindo que a rota de cadastro é /grupos/cadastrar */}
           <BotaoCadastrar to="/grupos/cadastrar" title="Criar Novo Grupo" /> 
         </div>
 
@@ -138,7 +140,7 @@ export default function ListarGrupos() {
         ) : gruposFiltrados.length === 0 && !filtro ? (
           <p style={{ marginTop: "20px" }}>Nenhum grupo cadastrado.</p>
         ) : (
-          <table className="tabela-cruds" style={{ marginTop: "20px" }}>
+          <table className="tabela-geral" style={{ marginTop: "20px" }}>
             <thead>
               <tr>
                 <th>ID</th>

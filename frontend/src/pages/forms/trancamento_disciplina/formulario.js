@@ -3,10 +3,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Footer from "../../../components/base/footer";
 import HeaderAluno from "../../../components/base/headers/header_aluno";
+import BuscaUsuario from "../../../components/busca_usuario";
 import "../../../components/formulario.css";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-import BuscaUsuario from "../../../components/busca_usuario";
 
 export default function Formulario() {
     const [alunos, setAlunos] = useState([]);
@@ -152,7 +152,7 @@ return (
                         <p>QUANDO: A solicitação de trancamento de componente curricular poderá ser feita dentro de cada período letivo, conforme prazo estabelecido em nosso calendário acadêmico.</p>
                     </div>
 
-                    <form className="formulario formulario-largo" onSubmit={handleSubmit}>
+                    <form className="formulario formulario-largura" onSubmit={handleSubmit}>
                         <div className="form-group">
                             <label>Aluno:</label>
                             <select onChange={handleAlunoChange} required>

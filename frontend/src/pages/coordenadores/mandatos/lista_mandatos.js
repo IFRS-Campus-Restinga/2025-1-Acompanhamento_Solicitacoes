@@ -152,7 +152,7 @@ export default function HistoricoMandatos() {
                     </p>
                 ) : (
                     <>
-                        <table className="tabela-cruds">
+                        <table className="tabela-geral">
                             <thead>
                                 <tr>
                                     <th>Curso</th>
