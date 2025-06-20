@@ -1,0 +1,47 @@
+/*CSS SÓ DE TABELAS*/
+
+.tabela-geral {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    max-width: var(--largura-maxima-conteudo);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.tabela-geral th,
+.tabela-geral td {
+    border: 1px solid var(--cabecalho-lista);
+    padding: 10px;
+    text-align: left;
+}
+
+.tabela-geral td {
+    padding: 2px 6px;
+    line-height: 1.5;
+    vertical-align: middle;
+}
+
+.tabela-geral th {
+    background-color: var(--cabecalho-lista);
+}
+
+.linha-par {
+    background-color: #f9f9f9; /* Manter cinza claro */
+}
+
+.linha-impar {
+    background-color: var(--cor-branca);
+}
+
+.tabela-geral td.descricao {
+    max-width: 300px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+}
+
+.tabela-geral th.coluna-data,
+.tabela-geral td.coluna-data {
+    min-width: 15%;
+    white-space: nowrap;
+}
