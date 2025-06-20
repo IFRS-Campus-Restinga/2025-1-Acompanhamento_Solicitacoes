@@ -327,7 +327,7 @@ export default function FormularioDispensaEdFisica() {
                         conforme informações abaixo prestadas.
                     </h6>
 
-                    <form className="formulario formulario-largo" onSubmit={handleSubmit}>
+                    <form className="formulario formulario-largura" onSubmit={handleSubmit}>
 
                     <div className="dados-aluno-container">
                         <div className="form-group">

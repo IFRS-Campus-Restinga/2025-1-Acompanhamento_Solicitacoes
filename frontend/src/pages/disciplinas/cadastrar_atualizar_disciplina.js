@@ -108,7 +108,7 @@ export default function CadastrarAtualizarDisciplina() {
     <div>
       <main className="container form-container">
         <h2>{codigoParam ? "Editar Disciplina" : "Cadastrar Nova Disciplina"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Nome da Disciplina:</label>
             <input

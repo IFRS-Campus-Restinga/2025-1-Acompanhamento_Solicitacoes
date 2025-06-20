@@ -431,7 +431,7 @@ export default function FormularioAbonoFaltas() {
                             <p>(disponível em: <a className="link-documento" href="https://ifrs.edu.br/wp-content/uploads/2024/01/ANEXO_RES_1-2024_OD_VERSAO_FINAL_JAN.2024.pdf">https://ifrs.edu.br/wp-content/uploads/2024/01/ANEXO_RES_1-2024_OD_VERSAO_FINAL_JAN.2024.pdf</a>)</p>
                         </h6>
                         
-                        <form className="formulario formulario-largo" onSubmit={handleSubmit}>
+                        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
 
                         <div className="dados-aluno-container">
                             <div className="form-group">

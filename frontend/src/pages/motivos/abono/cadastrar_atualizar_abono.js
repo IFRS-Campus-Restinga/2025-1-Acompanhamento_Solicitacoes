@@ -82,7 +82,7 @@ export default function CadastrarAtualizarAbono() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Motivo de Abono" : "Cadastrar Novo Motivo de Abono"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Descrição:</label>
             <textarea

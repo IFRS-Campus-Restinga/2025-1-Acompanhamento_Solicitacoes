@@ -94,7 +94,7 @@ export default function CadastrarAtualizarTurma() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Turma" : "Cadastrar Nova Turma"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Nome da Turma:</label>
             <input

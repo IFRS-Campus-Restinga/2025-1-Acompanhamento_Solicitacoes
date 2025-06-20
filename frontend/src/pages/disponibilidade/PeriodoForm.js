@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Certifique-se que esta linha está presente
 import './PeriodoFormModal.css'; // Seu CSS para o modal
 
-import { parseISO, format, isValid, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
+import { eachDayOfInterval, endOfDay, format, isValid, parseISO, startOfDay } from 'date-fns';
 
 // A única nova prop esperada é 'existingPeriodsForCurrentForm'
 export default function PeriodoForm({ periodo, onSave, onCancel, existingPeriodsForCurrentForm = [] }) {
@@ -86,9 +86,9 @@ export default function PeriodoForm({ periodo, onSave, onCancel, existingPeriods
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content form-box">
+      <div className="modal-content">
         <h3>{periodo ? 'Editar Período' : 'Adicionar Novo Período'}</h3>
-        <form onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Data Início:</label>
             <DatePicker

@@ -53,7 +53,7 @@ export default function CadastrarAtualizarExercicios() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Motivo de Exercicios" : "Cadastrar Novo Motivo de Exercicios"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Descrição:</label>
             <textarea

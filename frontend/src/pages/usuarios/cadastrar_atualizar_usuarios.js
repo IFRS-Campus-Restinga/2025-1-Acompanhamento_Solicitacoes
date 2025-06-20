@@ -4,6 +4,9 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import api from "../../services/api";
 import { getCookie } from "../../services/authUtils";
 
+//CSS
+import "../../components/styles/formulario.css";
+
 const initialState = {
   nome: "",
   email: "",
@@ -445,7 +448,8 @@ export default function CadastrarAtualizarUsuario() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Usuário" : "Cadastrar Usuário"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="nome">Nome:</label>
             <input

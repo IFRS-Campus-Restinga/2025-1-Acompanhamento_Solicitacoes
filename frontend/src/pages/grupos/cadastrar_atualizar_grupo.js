@@ -307,7 +307,7 @@ export default function CadastrarAtualizarGrupo() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Grupo" : "Cadastrar Novo Grupo"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group label-reduced">
             <label>Nome:</label>
             <input

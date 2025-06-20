@@ -401,7 +401,7 @@ const handlePeriodoChange = (e) => {
                             após o início das atividades letivas, conforme estabelecido em nosso calendário acadêmico.
                         </h6>
 
-                        <form className="formulario formulario-largo" onSubmit={rhfHandleSubmit(onSubmitForm)}>
+                        <form className="formulario formulario-largura" onSubmit={rhfHandleSubmit(onSubmitForm)}>
 
                         <div className="dados-aluno-container">
                             <div className="form-group">

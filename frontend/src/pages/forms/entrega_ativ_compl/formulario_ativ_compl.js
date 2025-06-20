@@ -338,7 +338,7 @@ export default function FormularioAtividadesComplementares() {
                         poderá ser verificada diretamente no sistema acadêmico, após os trâmites legais.   
                     </h6>
 
-                    <form className="formulario formulario-largo" onSubmit={handleSubmit}>
+                    <form className="formulario formulario-largura" onSubmit={handleSubmit}>
 
                     <div className="dados-aluno-container">
                         <div className="form-group">

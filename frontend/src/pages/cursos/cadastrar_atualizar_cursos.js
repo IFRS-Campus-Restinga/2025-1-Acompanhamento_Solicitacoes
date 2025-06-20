@@ -94,7 +94,7 @@ export default function CadastrarAtualizarCursos() {
     <div>
       <main className="container form-container">
         <h2>{codigo ? "Editar Curso" : "Cadastrar Novo Curso"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Código do Curso:</label>
             {codigo ? (

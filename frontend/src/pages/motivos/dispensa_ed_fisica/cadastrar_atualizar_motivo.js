@@ -62,7 +62,7 @@ export default function CadastrarAtualizarMotivoDispensa() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Motivo de Dispensa de Educação Física" : "Cadastrar Novo Motivo de Dispensa de Educação Física"}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label>Descrição:</label>
             <textarea

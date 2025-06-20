@@ -123,7 +123,7 @@ export default function CadastrarAtualizarMandato() {
     <div>
       <main className="container form-container">
         <h2>{title}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
             <label htmlFor="coordenador">Coordenador:</label>
             <select

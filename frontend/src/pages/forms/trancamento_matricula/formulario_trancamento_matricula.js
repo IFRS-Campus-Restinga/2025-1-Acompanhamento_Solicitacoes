@@ -294,7 +294,7 @@ export default function FormularioTrancamentoMatricula() {
               <hr></hr><strong>IMPORTANTE:</strong> O trancamento total de matrícula é permitido até a quarta semana após o início das atividades letivas, conforme estabelecido em nosso calendário acadêmico.
             </h6>
 
-            <form onSubmit={handleSubmit} className="formulario formulario-largo" encType="multipart/form-data">
+            <form onSubmit={handleSubmit} className="formulario formulario-largura" encType="multipart/form-data">
 
             <div className="dados-aluno-container">
               <div className="form-group">

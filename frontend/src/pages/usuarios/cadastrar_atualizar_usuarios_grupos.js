@@ -476,7 +476,7 @@ export default function CadastrarAtualizarUsuarioGrupo() {
     <div>
       <main className="container form-container">
         <h2>{title}</h2>
-        <form className="form-box" onSubmit={handleSubmit}>
+        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           {renderField("nome", "Nome")}
           {renderField("email", "Email", "email")}
           {renderField("cpf", "CPF")}
