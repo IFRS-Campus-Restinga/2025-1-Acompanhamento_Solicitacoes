@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
 
 //POP-UPS IMPORTAÇÃO
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
@@ -71,7 +69,6 @@ export default function ListarDisciplinas() {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container">
         <h2>Disciplinas</h2>
 
@@ -150,7 +147,6 @@ export default function ListarDisciplinas() {
           onDadosPaginados={() => {}}
         />
       </main>
-      <Footer />
     </div>
   );
 }

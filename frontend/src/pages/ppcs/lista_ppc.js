@@ -1,15 +1,17 @@
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
+
+//Components
 import PopupConfirmacao from "../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import Paginacao from "../../components/UI/paginacao";
+
+//Botões
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoEditar from "../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
-import Paginacao from "../../components/UI/paginacao";
 
 export default function ListarPpc() {
   const navigate = useNavigate();
@@ -74,7 +76,6 @@ export default function ListarPpc() {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container">
         <h2>PPCs</h2>
 
@@ -144,7 +145,6 @@ export default function ListarPpc() {
 
         <BotaoVoltar onClick={() => navigate("/configuracoes")} />
       </main>
-      <Footer />
     </div>
   );
 }

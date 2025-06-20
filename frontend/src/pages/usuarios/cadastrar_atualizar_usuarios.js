@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import api from "../../services/api";
+import { getCookie } from "../../services/authUtils";
 
 const initialState = {
   nome: "",
@@ -11,7 +10,7 @@ const initialState = {
   cpf: "",
   telefone: "",
   data_nascimento: "",
-  is_active: true, // Manter o default para novos usuários, o backend ajustará
+  is_active: true, 
   is_responsavel: false,
   aluno_cpf: "",
 };
@@ -28,9 +27,74 @@ export default function CadastrarAtualizarUsuario() {
   const [alunoBuscaErro, setAlunoBuscaErro] = useState("");
   const [isAlunoBuscadoEValido, setIsAlunoBuscadoEValido] = useState(false);
   const [isConcluirBtnDisabled, setIsConcluirBtnDisabled] = useState(true);
+  
+  // Estado para controlar quais campos são somente leitura
+  const [readOnlyFields, setReadOnlyFields] = useState({
+    nome: false,
+    email: false
+  });
 
   const navigate = useNavigate();
+  const location = useLocation(); // Para acessar os query params
   const { id } = useParams();
+
+  // Efeito para carregar dados do Google do cookie
+  useEffect(() => {
+    try {
+      
+      const googleUserCookie = getCookie('googleUser');
+      
+      if (googleUserCookie) {
+        // Parsear o cookie para obter os dados do usuário
+        const googleUser = JSON.parse(googleUserCookie);
+        console.log("Dados do usuário Google obtidos do cookie:", googleUser);
+        
+        if (googleUser && (googleUser.name || googleUser.email)) {
+          // Atualizar o formulário com os dados do Google
+          setFormData(prev => ({
+            ...prev,
+            nome: googleUser.name || prev.nome,
+            email: googleUser.email || prev.email
+          }));
+          
+          // Definir quais campos serão somente leitura
+          setReadOnlyFields({
+            nome: !!googleUser.name,
+            email: !!googleUser.email
+          });
+          
+          console.log("Formulário atualizado com dados do Google:", {
+            nome: googleUser.name,
+            email: googleUser.email
+          });
+        }
+      } else {
+        console.log("Cookie 'googleUser' não encontrado");
+        
+        // Verificar também os parâmetros da URL
+        const queryParams = new URLSearchParams(location.search);
+        const googleName = queryParams.get("google_name");
+        const googleEmail = queryParams.get("google_email");
+        
+        if (googleName || googleEmail) {
+          console.log("Dados do Google encontrados na URL:", { nome: googleName, email: googleEmail });
+          
+          setFormData(prev => ({
+            ...prev,
+            nome: googleName || prev.nome,
+            email: googleEmail || prev.email
+          }));
+          
+          setReadOnlyFields({
+            nome: !!googleName,
+            email: !!googleEmail
+          });
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao obter dados do Google:", error);
+    }
+  }, [location.search]); // Executar quando a URL mudar
 
   const carregarUsuario = useCallback(async (usuarioId) => {
     try {
@@ -99,6 +163,9 @@ export default function CadastrarAtualizarUsuario() {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    
+    // Não permitir alterações em campos somente leitura
+    if (readOnlyFields[name]) return;
 
     if (type === "checkbox") {
       setFormData((prev) => ({
@@ -136,6 +203,9 @@ export default function CadastrarAtualizarUsuario() {
   };
 
   const handleBlur = (e) => {
+    // Não validar campos somente leitura
+    if (readOnlyFields[e.target.name]) return;
+    
     // const { name, value } = e.target;
     // validarCampo(name, value); // Validação de campo a campo desativada por enquanto
   };
@@ -345,115 +415,175 @@ export default function CadastrarAtualizarUsuario() {
             }
             if (error.response.data.detail) {
                 errorMessages.push(error.response.data.detail);
-            } 
-            
-            // Catch-all para outros erros diretos do serializer ResponsavelCreateUpdateSerializer
+            }
+            // Para erros de campos específicos no nível do usuário
             for (const key in error.response.data) {
                 if (key !== 'usuario' && key !== 'aluno_cpf' && key !== 'non_field_errors' && key !== 'detail') {
-                    if (Array.isArray(error.response.data[key])) {
-                        errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data[key].join(', ')}`);
-                    } else {
-                        errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data[key]}`);
-                    }
+                    errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data[key].join(', ')}`);
                 }
             }
-            
-            setMensagem(`Erro de validação: ${errorMessages.join('\n') || "Verifique os campos."}`);
-            setTipoMensagem("erro");
-            setShowFeedback(true);
+        } else if (error.response?.data?.detail) {
+            errorMessages.push(error.response.data.detail);
         } else {
-            setMensagem(`Erro ${error.response?.status || ""}: ${error.response?.data?.detail || "Erro ao salvar usuário/responsável."}`);
-            setTipoMensagem("erro");
-            setShowFeedback(true);
+            errorMessages.push("Erro desconhecido ao salvar. Tente novamente.");
         }
+
+        setMensagem(errorMessages.join('\n'));
+        setTipoMensagem("erro");
+        setShowFeedback(true);
     }
   };
 
-  const fecharFeedback = useCallback(() => {
-      setShowFeedback(false);
-      // Redireciona para /usuarios apenas se for um novo cadastro e sucesso
-      if (tipoMensagem === "sucesso" && !id) { 
-          navigate("/usuarios");
-      }
-  }, [navigate, id, tipoMensagem]);
+  const handleCloseFeedback = () => {
+    setShowFeedback(false);
+    if (tipoMensagem === "sucesso") {
+      navigate("/usuarios");
+    }
+  };
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container form-container">
-        <h2>{id ? "Editar Usuário" : "Cadastrar Novo Usuário"}</h2>
+        <h2>{id ? "Editar Usuário" : "Cadastrar Usuário"}</h2>
         <form className="form-box" onSubmit={handleSubmit}>
-          {Object.keys(initialState)
-            .filter((key) => key !== "is_active" && key !== "is_responsavel" && key !== "aluno_cpf") 
-            .map((field) => (
-              <div className="form-group" key={field}>
-                <label>{field.replace("_", " ").replace(/\b\w/g, (l) => l.toUpperCase())}:</label>
-                <input
-                  type={field === "email" ? "email" : field === "data_nascimento" ? "date" : "text"}
-                  name={field}
-                  className={`input-text ${errors[field] ? "input-error" : ""}`}
-                  value={formData[field] || ""}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  required
-                />
-                {errors[field] && <div className="error-text">{errors[field]}</div>}
-              </div>
-            ))}
           <div className="form-group">
-            <label>
-              <input
-                type="checkbox"
-                name="is_responsavel"
-                checked={formData.is_responsavel} 
-                onChange={handleChange}
-                id="isResponsavelCheckbox"
-              />
-              É responsável por um aluno?
-            </label>
+            <label htmlFor="nome">Nome:</label>
+            <input
+              type="text"
+              id="nome"
+              name="nome"
+              className={`input-text ${errors.nome ? "input-error" : ""} ${readOnlyFields.nome ? "readonly-field" : ""}`}
+              value={formData.nome}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={readOnlyFields.nome}
+              style={readOnlyFields.nome ? { backgroundColor: "#f0f0f0", cursor: "not-allowed" } : {}}
+              required
+            />
+            {errors.nome && <div className="error-text">{errors.nome}</div>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email:</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className={`input-text ${errors.email ? "input-error" : ""} ${readOnlyFields.email ? "readonly-field" : ""}`}
+              value={formData.email}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              readOnly={readOnlyFields.email}
+              style={readOnlyFields.email ? { backgroundColor: "#f0f0f0", cursor: "not-allowed" } : {}}
+              required
+            />
+            {errors.email && <div className="error-text">{errors.email}</div>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="cpf">CPF:</label>
+            <input
+              type="text"
+              id="cpf"
+              name="cpf"
+              className={`input-text ${errors.cpf ? "input-error" : ""}`}
+              value={formData.cpf}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+            />
+            {errors.cpf && <div className="error-text">{errors.cpf}</div>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="telefone">Telefone:</label>
+            <input
+              type="text"
+              id="telefone"
+              name="telefone"
+              className={`input-text ${errors.telefone ? "input-error" : ""}`}
+              value={formData.telefone}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+            />
+            {errors.telefone && <div className="error-text">{errors.telefone}</div>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="data_nascimento">Data de Nascimento:</label>
+            <input
+              type="date"
+              id="data_nascimento"
+              name="data_nascimento"
+              className={`input-text ${errors.data_nascimento ? "input-error" : ""}`}
+              value={formData.data_nascimento}
+              onChange={handleChange}
+              onBlur={handleBlur}
+              required
+            />
+            {errors.data_nascimento && <div className="error-text">{errors.data_nascimento}</div>}
+          </div>
+
+          <div className="form-group checkbox-group">
+            <input
+              type="checkbox"
+              id="is_responsavel"
+              name="is_responsavel"
+              checked={formData.is_responsavel}
+              onChange={handleChange}
+            />
+            <label htmlFor="is_responsavel">É responsável por um aluno</label>
           </div>
 
           {formData.is_responsavel && (
-            <div className="form-group" id="cadastroResponsavelSection">
-              <label htmlFor="alunoCpfBusca">CPF do Aluno:</label>
-              <input
-                type="text"
-                id="alunoCpfBusca"
-                className={`input-text ${alunoBuscaErro ? "input-error" : ""}`}
-                placeholder="Digite o CPF do aluno"
-                value={cpfBusca}
-                onChange={handleCpfBuscaChange}
-                maxLength="14"
-                style={{ marginBottom: '10px' }}
-              />
-              <button
-                type="button"
-                id="buscarAlunoBtn"
-                onClick={handleBuscarAluno}
-                className="submit-button"
-                style={{ 
-                  width: '100px',
-                  padding: '8px 10px',
-                  minWidth: 'unset',
-                  display: 'block',
-                  marginLeft: '0',
-                  marginTop: '2px'
-                }} 
-              >
-                Buscar
-              </button>
-              
-              {nomeAlunoEncontrado && <p id="nomeAlunoEncontrado" style={{ color: 'black', marginTop: '30px' }}>{nomeAlunoEncontrado}</p>}
-              {alunoBuscaErro && <p id="alunoBuscaErro" style={{ color: 'red', marginTop: '30px' }}>{alunoBuscaErro}</p>}
-              
-              {errors.aluno_cpf && <div className="error-text">{errors.aluno_cpf}</div>}
+            <div className="form-group">
+              <label htmlFor="cpf_busca">CPF do Aluno:</label>
+              <div className="input-with-button">
+                <input
+                  type="text"
+                  id="cpf_busca"
+                  name="cpf_busca"
+                  className={`input-text ${alunoBuscaErro ? "input-error" : ""}`}
+                  value={cpfBusca}
+                  onChange={handleCpfBuscaChange}
+                  placeholder="Digite o CPF do aluno"
+                />
+                <button
+                  type="button"
+                  onClick={handleBuscarAluno}
+                  style={{
+                    backgroundColor: "#28a745", // Verde
+                    color: "white",
+                    padding: "10px 15px",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    fontWeight: "bold",
+                    transition: "background-color 0.3s ease",
+                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
+                    // Estilos adicionais para layout:
+                    marginTop: '10px', // Espaço acima
+                    marginBottom: '20px', // Espaço abaixo
+                    marginLeft: '2px', // Espaço entre o input e o botão
+                    flexShrink: 0, // Impede que o botão encolha
+                  }}
+                >
+                  Buscar
+                </button>
+              </div>
+              {alunoBuscaErro && <div className="error-text">{alunoBuscaErro}</div>}
+              {nomeAlunoEncontrado && (
+                <div className="aluno-encontrado">
+                  <p>{nomeAlunoEncontrado}</p>
+                </div>
+              )}
             </div>
           )}
 
           <button
             type="submit"
             className="submit-button"
-            id="concluirCadastroBtn"
             disabled={isConcluirBtnDisabled}
           >
             {id ? "Atualizar" : "Cadastrar"}
@@ -464,10 +594,9 @@ export default function CadastrarAtualizarUsuario() {
           show={showFeedback}
           mensagem={mensagem}
           tipo={tipoMensagem}
-          onClose={fecharFeedback}
+          onClose={handleCloseFeedback}
         />
       </main>
-      <Footer />
     </div>
   );
 }

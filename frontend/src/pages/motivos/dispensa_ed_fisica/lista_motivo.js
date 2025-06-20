@@ -1,8 +1,7 @@
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Footer from "../../../components/base/footer";
-import HeaderCRE from "../../../components/base/headers/header_cre";
+
 import PopupConfirmacao from '../../../components/pop_ups/popup_confirmacao';
 import PopupFeedback from '../../../components/pop_ups/popup_feedback';
 import BarraPesquisa from '../../../components/UI/barra_pesquisa';
@@ -78,7 +77,6 @@ export default function ListarMotivoDispensa() {
 
     return (
         <div>
-            <HeaderCRE />
             <main className='container'>
                 <h2>Motivos de dispensa de educação física</h2>
 
@@ -154,7 +152,6 @@ export default function ListarMotivoDispensa() {
                 <BotaoVoltar onClick={() => navigate("/configuracoes")} />
 
             </main>
-            <Footer />
         </div>
     );
 }

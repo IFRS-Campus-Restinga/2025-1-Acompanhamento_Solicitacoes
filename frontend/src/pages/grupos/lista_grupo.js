@@ -2,10 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-// COMPONENTES BASE
-import Footer from "../../components/base/footer";
 // Ajuste na importação do Header conforme o último arquivo do usuário
-import HeaderCRE from "../../components/base/headers/header_cre";
 import "./grupo.css";
 
 // POPUPS
@@ -118,7 +115,6 @@ export default function ListarGrupos() {
   return (
     <div>
       {/* Usando HeaderCRE conforme o último arquivo do usuário */}
-      <HeaderCRE /> 
       <main className="container">
         <h2>Grupos</h2>
 
@@ -214,7 +210,6 @@ export default function ListarGrupos() {
         {/* Usando a navegação do último arquivo do usuário */}
         <BotaoVoltar onClick={() => navigate("/configuracoes")} /> 
       </main>
-      <Footer />
     </div>
   );
 }

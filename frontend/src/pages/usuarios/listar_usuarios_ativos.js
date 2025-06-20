@@ -20,6 +20,9 @@ import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 //BARRA PESQUISA
 import BarraPesquisa from "../../components/UI/barra_pesquisa";
 
+//CSS
+//import "../../components/styles/tabela.css";
+
 export default function ListarUsuariosAtivos() { 
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);

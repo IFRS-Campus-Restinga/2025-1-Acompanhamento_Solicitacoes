@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import Footer from "../../components/base/footer";
-import HeaderCRE from "../../components/base/headers/header_cre";
 
 export default function DetalhesUsuario() {
   const { id } = useParams();
@@ -20,7 +18,6 @@ export default function DetalhesUsuario() {
 
   return (
     <div>
-      <HeaderCRE />
       <main className="container">
         <h2>Detalhes do Usuário</h2>
 
@@ -49,7 +46,7 @@ export default function DetalhesUsuario() {
                     <div key={idx}>
                       <p><strong>Curso:</strong> {mandato.curso}</p>
                       <p><strong>Início do Mandato:</strong> {mandato.inicio_mandato}</p>
-                      <p><strong>Fim do Mandato:</strong> {mandato.fim_mandato || "Atual"}</p>
+                      <p><strong>Fim do Mandato:</strong> {mandato.fim_mandato || "-"}</p>
                       <hr />
                     </div>
                   ));
@@ -84,7 +81,6 @@ export default function DetalhesUsuario() {
           </div>
         )}
       </main>
-      <Footer />
     </div>
   );
 }

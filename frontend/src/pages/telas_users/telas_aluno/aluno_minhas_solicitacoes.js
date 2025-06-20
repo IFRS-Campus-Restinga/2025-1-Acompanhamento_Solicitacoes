@@ -2,14 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../../services/api";
 
-//CSS
-import "../../../components/formulario.css";
-import "../../../components/layout-cruds.css";
-import "../../../components/tabela-cruds.css";
-
 //COMPONENTS
-import Footer from "../../../components/base/footer";
-import HeaderAluno from "../../../components/base/headers/header_aluno";
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
@@ -104,7 +97,6 @@ const MinhasSolicitacoesAluno = () => {
 
     return (
         <div>
-            <HeaderAluno />
              <main className="container">
                 <h2>Solicitações</h2>
 
@@ -198,7 +190,6 @@ const MinhasSolicitacoesAluno = () => {
                 />
                 
             </main>
-            <Footer />
         </div>
     );
 };

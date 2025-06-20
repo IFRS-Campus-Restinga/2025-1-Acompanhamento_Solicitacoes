@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Header from "../components/base/headers/header";
-import Footer from "./../components/base/footer";
-import "./../components/base/main";
-import Login from "./login";
+
+//Components
+import GoogleLoginButton from "../components/GoogleLoginButton";
+
+//CSS
+import "./login.css";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -22,14 +24,12 @@ const Home = () => {
   };
 
   return (
-    <div>
-      <Header />
-      <main className="container">
-        <div className="login-box">
-          <Login />
-        </div>  
-        </main>
-      <Footer />
+    <div className="login-page-content">
+      <div className="login-box">
+        <h2>Bem-vindo ao Sistema de Solicitações</h2>
+        <p>Para continuar, entre com sua conta institucional do Google.</p>
+        <GoogleLoginButton onClick={handleLogin} />
+      </div>  
     </div>
   );
 };
