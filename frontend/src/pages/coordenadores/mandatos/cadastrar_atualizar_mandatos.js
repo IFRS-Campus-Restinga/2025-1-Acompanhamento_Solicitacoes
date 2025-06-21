@@ -4,6 +4,9 @@ import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 import api from "../../../services/api";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 const initialFormState = {
   coordenador: "",
   curso: "",
@@ -170,7 +173,7 @@ export default function CadastrarAtualizarMandato() {
               type="date"
               id="inicio_mandato"
               name="inicio_mandato"
-              className={`input-text ${errors.inicio_mandato ? "input-error" : ""}`}
+              className={`input-data ${errors.inicio_mandato ? "input-error" : ""}`}
               value={formData.inicio_mandato || ""}
               onChange={handleChange}
               required
@@ -184,7 +187,7 @@ export default function CadastrarAtualizarMandato() {
               type="date"
               id="fim_mandato"
               name="fim_mandato"
-              className={`input-text ${errors.fim_mandato ? "input-error" : ""}`}
+              className={`input-data ${errors.fim_mandato ? "input-error" : ""}`}
               value={formData.fim_mandato || ""}
               onChange={handleChange}
             />

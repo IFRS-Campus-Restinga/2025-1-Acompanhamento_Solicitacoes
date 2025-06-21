@@ -3,6 +3,9 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
+//CSS
+import "../../components/styles/formulario.css";
+
 import api from "../../services/api";
 import { getCookie } from "../../services/authUtils";
 
@@ -459,7 +462,7 @@ export default function CadastrarAtualizarUsuarioGrupo() {
           <input
             type={type}
             name={field}
-            className={`input-text ${errors[field] ? "input-error" : ""} ${isReadOnly ? "readonly-field" : ""}`}
+            className={`input-data ${errors[field] ? "input-error" : ""} ${isReadOnly ? "readonly-field" : ""}`}
             value={formData[field] || ""}
             onChange={handleChange}
             onBlur={handleBlur}

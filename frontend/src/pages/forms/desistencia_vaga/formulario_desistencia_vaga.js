@@ -5,6 +5,9 @@ import BuscaUsuario from "../../../components/busca_usuario";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 //import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 // Serviços de autenticação
 import { getAuthToken } from "../../../services/authUtils";
 

@@ -6,6 +6,9 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import Popup from "../../../components/pop_ups/popup_feedback";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 export default function CadastrarAtualizarMotivoDispensa() {
   const [popupMsg, setPopupMsg] = useState(null);
   const [msgType, setMsgType] = useState(null);

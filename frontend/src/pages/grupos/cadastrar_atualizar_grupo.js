@@ -4,6 +4,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import "./grupo.css";
 
+//CSS
+import "../../components/styles/formulario.css";
+
 export default function CadastrarAtualizarGrupo() {
   const [nome, setNome] = useState("");
   const [permissoesDisponiveis, setPermissoesDisponiveis] = useState([]);
@@ -307,8 +310,8 @@ export default function CadastrarAtualizarGrupo() {
     <div>
       <main className="container form-container">
         <h2>{id ? "Editar Grupo" : "Cadastrar Novo Grupo"}</h2>
-        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
-          <div className="form-group label-reduced">
+        <form className="formulario formulario-largura " onSubmit={handleSubmit}>
+          <div className="form-group">
             <label>Nome:</label>
             <input
               type="text"

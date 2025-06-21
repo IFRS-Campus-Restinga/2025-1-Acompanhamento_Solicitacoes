@@ -5,6 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 export default function CadastrarAtualizarExercicios() {
   const [descricao, setDescricao] = useState("");
   const [showFeedback, setShowFeedback] = useState(false);

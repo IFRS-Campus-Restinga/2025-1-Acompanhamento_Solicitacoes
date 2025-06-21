@@ -125,6 +125,13 @@
   color: #000000; /* Cinza mais escuro no hover */
 }
 
+.botao-olho {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+}
+
 /*BOTÃO ENVIAR*/
 
   .submit-button,

@@ -13,6 +13,8 @@ import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
 
+//import "../../components/styles/tabela.css";
+
 export default function ListarDisponibilidades() {
   const navigate = useNavigate();
   const [disponibilidades, setDisponibilidades] = useState([]);
@@ -190,7 +192,7 @@ export default function ListarDisponibilidades() {
         {dadosParaTabela.length === 0 ? (
           <p><br />Nenhuma disponibilidade encontrada!</p>
         ) : (
-          <table className="tabela-cruds">
+          <table className="tabela-geral">
             <thead>
               <tr>
                 <th>Formulário</th>

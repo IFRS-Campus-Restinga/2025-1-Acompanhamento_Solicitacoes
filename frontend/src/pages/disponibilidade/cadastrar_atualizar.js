@@ -5,6 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import PeriodoForm from "../../pages/disponibilidade/PeriodoForm"; // Importe o novo componente
 
+//CSS
+import "../../components/styles/formulario.css";
+
 export default function CadastrarAtualizarDisponibilidade() {
   const [formulario, setFormulario] = useState("");
   const [ativo, setAtivo] = useState(true);

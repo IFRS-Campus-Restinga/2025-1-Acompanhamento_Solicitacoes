@@ -6,6 +6,9 @@ import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
+//CSS
+import "../../components/styles/formulario.css";
+
 import { useLocation } from "react-router-dom";
 
 export default function CadastrarAtualizarPpc() {

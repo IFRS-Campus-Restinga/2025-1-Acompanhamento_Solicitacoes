@@ -520,7 +520,7 @@ export default function CadastrarAtualizarUsuario() {
               type="date"
               id="data_nascimento"
               name="data_nascimento"
-              className={`input-text ${errors.data_nascimento ? "input-error" : ""}`}
+              className={`input-data ${errors.data_nascimento ? "input-error" : ""}`}
               value={formData.data_nascimento}
               onChange={handleChange}
               onBlur={handleBlur}

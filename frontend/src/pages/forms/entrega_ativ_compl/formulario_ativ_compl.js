@@ -8,6 +8,9 @@ import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 // Serviços de autenticação
 import { getAuthToken } from "../../../services/authUtils";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 export default function FormularioAtividadesComplementares() {
     // Estados para controle de usuário e aluno
     const [userData, setUserData] = useState(null);

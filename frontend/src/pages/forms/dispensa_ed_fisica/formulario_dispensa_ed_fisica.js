@@ -6,6 +6,9 @@ import Options from "../../../components/options";
 import Feedback from "../../../components/pop_ups/popup_feedback";
 import { getAuthToken, getGoogleUser } from "../../../services/authUtils";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 //import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 //COLOCAR DEPOIS DE RETURN{/*<VerificadorDisponibilidade tipoFormulario="EXERCICIOSDOMICILIARES"> verifica se a solicitacao está disponivel*/}
 

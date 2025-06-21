@@ -3,6 +3,9 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css'; // Certifique-se que esta linha está presente
 import './PeriodoFormModal.css'; // Seu CSS para o modal
 
+//CSS
+import "../../components/styles/formulario.css";
+
 import { eachDayOfInterval, endOfDay, format, isValid, parseISO, startOfDay } from 'date-fns';
 
 // A única nova prop esperada é 'existingPeriodsForCurrentForm'

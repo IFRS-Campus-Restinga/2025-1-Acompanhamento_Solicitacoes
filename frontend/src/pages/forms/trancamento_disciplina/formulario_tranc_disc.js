@@ -10,6 +10,9 @@ import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 // Serviços de autenticação
 import { getAuthToken } from "../../../services/authUtils";
 
+//CSS
+import "../../../components/styles/formulario.css";
+
 export default function FormularioTrancamentoDisciplina() {
     const { register, 
         handleSubmit: rhfHandleSubmit, 
@@ -445,7 +448,6 @@ const handlePeriodoChange = (e) => {
 
 
                              {/* Seleção de Período */}
-                            <div className="form-section">
                                 <div className="form-group">
                                     <label htmlFor="periodo">Período:</label>
                                     <select
@@ -464,7 +466,6 @@ const handlePeriodoChange = (e) => {
                                     </select>
                                     {errors.periodo && <span className="error-text">{errors.periodo.message}</span>}
                                 </div>
-                            </div>
                             {/* Input for filtering disciplines (add this if you want it) */}
                             <div className="form-group">
                                 <label htmlFor="filtroDisciplina">Filtrar Disciplinas:</label>

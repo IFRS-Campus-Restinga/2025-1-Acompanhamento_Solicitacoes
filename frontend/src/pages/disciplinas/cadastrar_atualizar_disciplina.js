@@ -5,6 +5,9 @@ import { useNavigate, useParams } from "react-router-dom";
 //POP-UPS IMPORTAÇÃO
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 
+//CSS
+import "../../components/styles/formulario.css";
+
 export default function CadastrarAtualizarDisciplina() {
   const [nome, setNome] = useState("");
   const [codigo, setCodigo] = useState("");
@@ -151,8 +154,7 @@ export default function CadastrarAtualizarDisciplina() {
                 placeholder="Buscar Ppcs..."
                 value={filtro}
                 onChange={(e) => setFiltro(e.target.value)}
-                className="input-pesquisa"
-              />
+                className="input-pesquisa"/>
             </div>
             <div className="ppc-selection-box">
               {filteredPpcs.map((ppc) => (

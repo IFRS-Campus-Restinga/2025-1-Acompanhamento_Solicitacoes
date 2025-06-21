@@ -475,6 +475,7 @@ export default function FormularioAbonoFaltas() {
                             <div className="form-group">
                                 <label htmlFor="data_inicio_afastamento">Data Inicial do Afastamento:</label>
                                 <input
+                                    className="input-data "
                                     type="date"
                                     id="data_inicio_afastamento"
                                     name="data_inicio_afastamento"
@@ -488,6 +489,7 @@ export default function FormularioAbonoFaltas() {
                             <div className="form-group">
                                 <label htmlFor="data_fim_afastamento">Data Final do Afastamento:</label>
                                 <input
+                                    className="input-data"
                                     type="date"
                                     id="data_fim_afastamento"
                                     name="data_fim_afastamento"
