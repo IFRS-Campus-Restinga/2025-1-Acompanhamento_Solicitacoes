@@ -1,0 +1,98 @@
+/* BOTÕES RADIO/CHECKBOX */
+.formulario .form-group .radio-checkbox-group { /* Adicione uma classe no seu JSX para isso */
+    display: flex;
+    gap: 2rem;
+    margin-top: 0.5rem;
+}
+
+.formulario .form-group input[type="radio"],
+.formulario .form-group input[type="checkbox"] {
+    margin-right: 0.5rem;
+}
+/* GRUPO DE CHECKBOX ÚNICO (ex: consegue_realizar_atividades_remotas) */
+.checkbox-group {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    gap: 10px;
+}
+
+.checkbox-group label {
+    margin-bottom: 0;
+    font-weight: var(--peso-paragrafo);
+}
+
+.checkbox-group input[type="checkbox"] {
+    margin-right: 0;
+}
+/* GRUPO DE CHECKBOXES DE DISCIPLINAS */
+.disciplinas-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 15px;
+    padding: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: var(--cor-branca);
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 5px;
+}
+
+.disciplina-checkbox {
+    display: flex;
+    align-items: center;
+    padding: 8px 10px;
+    border: 1px solid #eee; /* Cinza claro */
+    border-radius: 5px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.disciplina-checkbox:hover {
+    background-color: #f0f0f0;
+}
+
+.disciplina-checkbox input[type="checkbox"] {
+    margin-right: 10px;
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+.disciplina-checkbox label {
+    font-weight: var(--peso-paragrafo);
+    margin-bottom: 0;
+    cursor: pointer;
+    flex-grow: 1;
+}
+
+.disciplina-checkbox input[type="checkbox"]:checked + label {
+    color: var(--verde-oficial); /* Cor verde para selecionado */
+    font-weight: var(--peso-paragrafo);
+}
+
+
+/* Container da lista */
+.ppc-selection-box {
+    border: 1px solid var(--cabecalho-lista); /* Usando var */
+    border-radius: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+/* Itens da lista */
+.ppc-option {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.ppc-option:hover {
+    background-color: #f5f5f5;
+}
+
+/* Item selecionado */
+.ppc-option.selected {
+    background-color: #e0f7fa; /* Tom de azul água claro */
+    font-weight: var(--peso-titulo);
+}
