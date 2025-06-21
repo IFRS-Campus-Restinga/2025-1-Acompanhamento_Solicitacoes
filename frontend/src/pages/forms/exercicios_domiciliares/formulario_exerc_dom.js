@@ -15,7 +15,6 @@ import "../../../components/styles/formulario.css";
 // Serviços de autenticação
 import { getAuthToken } from "../../../services/authUtils.js"; //para puxar do Google Redirect Handler
 
-import { toast } from "react-toastify";
 
 export default function FormularioExercicioDomiciliar() {
     // React Hook Form
@@ -59,8 +58,11 @@ export default function FormularioExercicioDomiciliar() {
     const [periodoSelecionado, setPeriodoSelecionado] = useState(""); // Usado para o <select> de período
     const [periodosDisponiveis, setPeriodosDisponiveis] = useState([]); // Opções para o <select> de período
 
-    const [disciplinasFiltradas, setDisciplinasFiltradas] = useState([]);
-    const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState({}); // Para checkboxes de disciplinas
+    // Estados para o novo sistema de busca e seleção de disciplinas
+    const [todasDisciplinas, setTodasDisciplinas] = useState([]); // Todas as disciplinas do período
+    const [disciplinasFiltradas, setDisciplinasFiltradas] = useState([]); // Disciplinas filtradas pela busca
+    const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]); // Disciplinas selecionadas pelo usuário
+    const [filtroDisciplina, setFiltroDisciplina] = useState(""); // Texto de busca para filtrar disciplinas
     const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
     const [erroBuscaDisciplinas, setErroBuscaDisciplinas] = useState("");
 
@@ -315,13 +317,14 @@ export default function FormularioExercicioDomiciliar() {
 
     // Função para buscar disciplinas (AGORA USANDO O NOVO ENDPOINT E FILTRANDO POR PPC E PERÍODO)
     const buscarDisciplinas = useCallback(async (ppcCodigo, periodo) => {
-        console.log("--- DEBUG DISCIPLINAS ---"); //
-        console.log("Estado 'aluno':", aluno); //
-        console.log("PPC Código (aluno?.ppc_codigo):", aluno?.ppc_codigo); // CORREÇÃO AQUI
-        console.log("Período Selecionado:", periodoSelecionado); //
+        console.log("--- DEBUG DISCIPLINAS ---");
+        console.log("Estado 'aluno':", aluno);
+        console.log("PPC Código (aluno?.ppc_codigo):", aluno?.ppc_codigo);
+        console.log("Período Selecionado:", periodoSelecionado);
 
         if (!ppcCodigo || !periodo) {
-            console.log("Não buscou disciplinas: PPC ou Período ausente/inválido para buscarDisciplinas."); //
+            console.log("Não buscou disciplinas: PPC ou Período ausente/inválido para buscarDisciplinas.");
+            setTodasDisciplinas([]);
             setDisciplinasFiltradas([]);
             setErroBuscaDisciplinas("Selecione um período para carregar as disciplinas.");
             return;
@@ -332,7 +335,7 @@ export default function FormularioExercicioDomiciliar() {
 
         try {
             console.log(`Buscando disciplinas para PPC: ${ppcCodigo} e Período: ${periodo}`);
-            const token = getAuthToken(); //Alterado
+            const token = getAuthToken();
             const res = await axios.get(
                 `http://localhost:8000/solicitacoes/disciplinas_por_ppc_e_periodo/?ppc_codigo=${ppcCodigo}&periodo=${periodo}`,
                 {
@@ -342,156 +345,176 @@ export default function FormularioExercicioDomiciliar() {
                 }
             );
             console.log("Disciplinas encontradas:", res.data.disciplinas);
-            setDisciplinasFiltradas(res.data.disciplinas);
+            
+            // Armazenar todas as disciplinas e inicializar as disciplinas filtradas
+            setTodasDisciplinas(res.data.disciplinas || []);
+            setDisciplinasFiltradas(res.data.disciplinas || []);
+            
+            // Limpar o filtro de busca
+            setFiltroDisciplina("");
+            
+            // Limpar disciplinas selecionadas quando mudar o período
+            setDisciplinasSelecionadas([]);
+            setValue("disciplinas", []);
         } catch (error) {
             console.error("Erro ao buscar disciplinas:", error.response?.data || error.message);
             setErroBuscaDisciplinas("Erro ao buscar disciplinas. Verifique o período selecionado ou a conexão.");
+            setTodasDisciplinas([]);
             setDisciplinasFiltradas([]);
         } finally {
             setIsLoadingDisciplinas(false);
         }
-    }, [aluno, periodoSelecionado]); // Dependências: aluno (para o log), periodoSelecionado. `buscarDisciplinas` é agora a função que usa esses valores.
+    }, [aluno, periodoSelecionado, setValue]);
 
-    // useEffect para carregar disciplinas automaticamente quando o período ou PPC do aluno mudam
+    // useEffect para carregar disciplinas automaticamente quando o período mudar
     useEffect(() => {
-        // Só busca disciplinas se já tiver o ppc_codigo do aluno E um período válido selecionado
-        if (aluno?.ppc_codigo && periodoSelecionado) { // CORREÇÃO AQUI: aluno já é o grupo_detalhes
-            buscarDisciplinas(aluno.ppc_codigo, periodoSelecionado); //
+        if (periodoSelecionado && aluno?.ppc_codigo) {
+            buscarDisciplinas(aluno.ppc_codigo, periodoSelecionado);
+        }
+    }, [periodoSelecionado, aluno, buscarDisciplinas]);
+
+    // Função para filtrar disciplinas com base no texto de busca
+    useEffect(() => {
+        if (filtroDisciplina.trim() === "") {
+            // Se o filtro estiver vazio, mostrar todas as disciplinas
+            setDisciplinasFiltradas(todasDisciplinas);
         } else {
-            setDisciplinasFiltradas([]); // Limpar disciplinas se não houver PPC ou período
-        }
-    }, [aluno, periodoSelecionado, buscarDisciplinas]); 
-
-    // Manipular seleção do dropdown de período
-    const handlePeriodoChange = (e) => {
-        const periodo = e.target.value;
-        setPeriodoSelecionado(periodo);
-        setDisciplinasSelecionadas({}); // Limpar disciplinas selecionadas ao mudar o período
-    };
-
-    // Manipular seleção de checkboxes de disciplinas (mantido)
-    const handleDisciplinaChange = (event) => {
-        const { name, checked } = event.target;
-        setDisciplinasSelecionadas(prev => ({
-            ...prev,
-            [name]: checked
-        }));
-    };
-
-    // Enviar formulário (ajustado para usar IDs corretos do aluno e formato de payload)
-    const onSubmit = async (data) => {
-        console.log("Dados do formulário para envio:", data);
-
-        const disciplinasSelecionadasArray = Object.keys(disciplinasSelecionadas).filter(k => disciplinasSelecionadas[k]);
-        if (disciplinasSelecionadasArray.length === 0) {
-            setMsgErro("Por favor, selecione pelo menos uma disciplina.");
-            setTipoErro("erro");
-            setFeedbackIsOpen(true);
-            return;
-        }
-
-        if (!aluno?.id) {
-            setMsgErro("Dados do aluno não carregados. Tente novamente.");
-            setTipoErro("erro");
-            setFeedbackIsOpen(true);
-            return;
-        }
-
-        try {
-            const payload = {
-                aluno: aluno.id,
-                motivo_solicitacao: data.motivo_solicitacao,
-                data_inicio_afastamento: data.data_inicio_afastamento,
-                data_fim_afastamento: data.data_fim_afastamento,
-                documento_apresentado: data.documento_apresentado,
-                periodo: periodoSelecionado,
-                curso: data.curso_id, // CORREÇÃO AQUI: Enviando o ID do curso
-                outro_motivo: data.motivo_solicitacao === "outro" ? data.outro_motivo : undefined,
-                outro_documento: data.documento_apresentado === "outro" ? data.outro_documento : undefined,
-                consegue_realizar_atividades: data.consegue_realizar_atividades, // Campo obrigatório
-                disciplinas: disciplinasSelecionadasArray,
-            };
-            console.log("Payload FINAL para envio (Verifique 'aluno' e 'curso'):", payload); // DEBUG: Veja o que está sendo enviado!
-
-            const token = getAuthToken(); //Alterado
-
-            const response = await axios.post(
-                "http://localhost:8000/solicitacoes/formulario_exerc_dom/",
-                payload,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                }
+            // Filtrar disciplinas pelo nome ou código
+            const filtradas = todasDisciplinas.filter(
+                disciplina => 
+                    disciplina.nome.toLowerCase().includes(filtroDisciplina.toLowerCase()) ||
+                    disciplina.codigo.toLowerCase().includes(filtroDisciplina.toLowerCase())
             );
+            setDisciplinasFiltradas(filtradas);
+        }
+    }, [filtroDisciplina, todasDisciplinas]);
 
-            if (data.anexos && data.anexos.length > 0) {
-                const formId = response.data.id;
-                const anexoFormData = new FormData();
-                for (let i = 0; i < data.anexos.length; i++) {
-                    anexoFormData.append("anexos", data.anexos[i]);
+    // Função para selecionar uma disciplina
+    const selecionarDisciplina = (disciplina) => {
+        // Verificar se a disciplina já está selecionada
+        const jaSelecionada = disciplinasSelecionadas.some(d => d.codigo === disciplina.codigo);
+        
+        if (!jaSelecionada) {
+            // Adicionar à lista de selecionadas
+            const novasSelecionadas = [...disciplinasSelecionadas, disciplina];
+            setDisciplinasSelecionadas(novasSelecionadas);
+            
+            // Atualizar o campo do formulário com os códigos das disciplinas
+            const codigosDisciplinas = novasSelecionadas.map(d => d.codigo);
+            setValue("disciplinas", codigosDisciplinas);
+        }
+    };
+
+    // Função para remover uma disciplina selecionada
+    const removerDisciplina = (codigo) => {
+        const novasSelecionadas = disciplinasSelecionadas.filter(d => d.codigo !== codigo);
+        setDisciplinasSelecionadas(novasSelecionadas);
+        
+        // Atualizar o campo do formulário com os códigos das disciplinas
+        const codigosDisciplinas = novasSelecionadas.map(d => d.codigo);
+        setValue("disciplinas", codigosDisciplinas);
+    };
+
+    // Função para lidar com a mudança no select de período
+    const handlePeriodoChange = (e) => {
+        const novoPeriodo = e.target.value;
+        setPeriodoSelecionado(novoPeriodo);
+        setValue("periodo", novoPeriodo);
+    };
+
+    // Função para enviar o formulário
+    const onSubmit = async (data) => {
+        console.log("Dados do formulário:", data);
+        
+        // Verificar se há disciplinas selecionadas
+        if (!disciplinasSelecionadas.length) {
+            setMsgErro("Selecione pelo menos uma disciplina.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
+            return;
+        }
+        
+        try {
+            // Preparar os dados para envio
+            const formData = new FormData();
+            
+            // Adicionar campos do formulário
+            Object.keys(data).forEach(key => {
+                if (key === "disciplinas") {
+                    // Disciplinas já são tratadas separadamente
+                    return;
                 }
-                anexoFormData.append("solicitacao_id", formId);
-
-                try {
-                    await axios.post(
-                        "http://localhost:8000/solicitacoes/anexos/",
-                        anexoFormData,
-                        {
-                            headers: {
-                                Authorization: `Bearer ${token}`,
-                                "Content-Type": "multipart/form-data",
-                            },
-                        }
-                    );
-                    toast.success("Anexos enviados com sucesso!");
-                } catch (anexoError) {
-                    console.error("Erro ao enviar anexos:", anexoError.response?.data || anexoError.message);
-                    toast.warn("Formulário enviado, mas houve erro ao anexar documentos.");
+                
+                if (data[key] !== undefined && data[key] !== null) {
+                    formData.append(key, data[key]);
+                }
+            });
+            
+            // Adicionar disciplinas selecionadas
+            disciplinasSelecionadas.forEach(disciplina => {
+                formData.append("disciplinas", disciplina.codigo);
+            });
+            
+            // Adicionar anexos se existirem
+            if (data.anexos && data.anexos.length) {
+                for (let i = 0; i < data.anexos.length; i++) {
+                    formData.append("anexos", data.anexos[i]);
                 }
             }
-
-            console.log("Resposta da API (sucesso):", response.data);
+            
+            // Enviar para a API
+            const token = getAuthToken();
+            const response = await axios.post(
+                "http://localhost:8000/solicitacoes/exercicios_domiciliares/",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+            
+            console.log("Resposta da API:", response.data);
+            
+            // Mostrar feedback de sucesso
             setMsgErro("Solicitação enviada com sucesso!");
             setTipoErro("sucesso");
             setFeedbackIsOpen(true);
-
-            reset();
-            setDisciplinasSelecionadas({});
-            setDisciplinasFiltradas([]);
-            setPeriodoSelecionado("");
-            setPeriodosDisponiveis([]);
-            setAluno(null); // Limpar estado do aluno para forçar nova busca se necessário
-
-            setTimeout(() => navigate('/minhas-solicitacoes'), 2000);
-
+            
+            // Redirecionar após 2 segundos
+            setTimeout(() => {
+                navigate("/minhas-solicitacoes");
+            }, 2000);
+            
         } catch (error) {
-            console.error("Erro ao enviar solicitação:", error.response?.data || error.message);
-            setMsgErro(error.response?.data?.message || "Erro ao enviar solicitação. Tente novamente.");
+            console.error("Erro ao enviar formulário:", error.response?.data || error.message);
+            setMsgErro(error.response?.data?.detail || "Erro ao enviar solicitação. Verifique os dados e tente novamente.");
             setTipoErro("erro");
             setFeedbackIsOpen(true);
         }
     };
 
+    // Renderização condicional durante carregamento
     if (carregandoUsuario) {
         return (
             <>
                 <BuscaUsuario dadosUsuario={handleUsuario} />
-                <main className="container">
+                <div className="container">
                     <p>Carregando usuário...</p>
-                </main>
+                </div>
             </>
         );
     }
 
+    // Renderização quando aluno não é encontrado
     if (userData && alunoNaoEncontrado) {
         return (
             <div className="page-container">
-                <main className="container">
+                <div className="container">
                     <h2>Aluno não encontrado no sistema.</h2>
                     <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
-                </main>
+                </div>
                 {feedbackIsOpen && (
                     <PopupFeedback
                         mensagem={msgErro}
@@ -523,8 +546,7 @@ export default function FormularioExercicioDomiciliar() {
                     atividades letivas.
                 </h6>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="formulario">
-            
+                    <form onSubmit={handleSubmit(onSubmit)} className="formulario formulario-largura">
 
                     <div className="form-section">
                         <div className="form-group">
@@ -552,8 +574,6 @@ export default function FormularioExercicioDomiciliar() {
                     </div>
 
                     {/* Seleção de Período */}
-                    <div className="form-section">
-                  
                         <div className="form-group">
                             <label htmlFor="periodo">Período:</label>
                             <select
@@ -572,39 +592,78 @@ export default function FormularioExercicioDomiciliar() {
                             </select>
                             {errors.periodo && <span className="error-text">{errors.periodo.message}</span>}
                         </div>
-                    </div>
 
                     {/* Seleção de Disciplinas */}
                     <div className="form-group">
-                         <label>Disciplinas do Período:</label>
+                        <label>Disciplinas:</label>
+                        <div className="barra-pesquisa">
+                            <i className="bi bi-search icone-pesquisa"></i>
+                            <input
+                                type="text"
+                                placeholder="Buscar disciplinas..."
+                                value={filtroDisciplina}
+                                onChange={(e) => setFiltroDisciplina(e.target.value)}
+                                className="input-pesquisa"
+                                disabled={isLoadingDisciplinas || todasDisciplinas.length === 0}
+                                style={{ paddingLeft: '30px', height: '38px' }} 
+                            />
+                        </div>
+                        
                         {isLoadingDisciplinas ? (
                             <p>Carregando disciplinas...</p>
-                        ) : erroBuscaDisciplinas ? (
-                            <p className="error-text">{erroBuscaDisciplinas}</p>
-                        ) : disciplinasFiltradas.length > 0 ? (
-                            <div className="disciplinas-list">
-                                {disciplinasFiltradas.map((disciplina) => (
-                                    <div key={disciplina.codigo} className="disciplina-checkbox"> {/* */}
-                                        <input
-                                            type="checkbox"
-                                            id={`disciplina-${disciplina.codigo}`}
-                                            name={disciplina.codigo}
-                                            checked={!!disciplinasSelecionadas[disciplina.codigo]}
-                                            onChange={handleDisciplinaChange}
-                                        />
-                                        <label htmlFor={`disciplina-${disciplina.codigo}`}>
-                                            {disciplina.nome} ({disciplina.codigo})
-                                        </label>
-                                    </div>
-                                ))}
-                            </div>
                         ) : (
-                            <p>Nenhuma disciplina encontrada para este período. Selecione um período acima.</p>
-                        )}
-                        {Object.keys(disciplinasSelecionadas).filter(k => disciplinasSelecionadas[k]).length === 0 && (
-                            <span className="error-text">Selecione pelo menos uma disciplina.</span>
-                        )}
-                    </div>
+                            <>
+                                {erroBuscaDisciplinas ? (
+                                    <div className="erro">{erroBuscaDisciplinas}</div>
+                                ) : (
+                                    <>
+                                        {disciplinasFiltradas.length > 0 ? (
+                                                <div className="disciplina-selection-box">
+                                                    {disciplinasFiltradas.map((disciplina) => (
+                                                        <div 
+                                                            key={disciplina.codigo}
+                                                            className={`disciplina-option ${disciplinasSelecionadas.some(d => d.codigo === disciplina.codigo) ? 'selected' : ''}`}
+                                                            onClick={() => selecionarDisciplina(disciplina)}
+                                                        >
+                                                            {disciplina.nome} ({disciplina.codigo})
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <div className="aviso">
+                                                    {todasDisciplinas.length === 0 
+                                                        ? "Selecione um período para ver as disciplinas disponíveis." 
+                                                        : "Nenhuma disciplina encontrada com o filtro aplicado."}
+                                                </div>
+                                            )}
+                                        </>
+                                    )}
+                                </>
+                            )}
+                        </div>
+
+                        {/* ÁREA DE DISCIPLINAS SELECIONADAS */}
+                        <div className="form-group">
+                            <hr></hr>
+                            {disciplinasSelecionadas.length > 0 ? (
+                                <div className="disciplinas-selecionadas-container">
+                                    {disciplinasSelecionadas.map((disciplina) => (
+                                        <div key={disciplina.codigo} className="selected-disciplina-box">
+                                            {disciplina.nome} ({disciplina.codigo})
+                                            <button
+                                                type="button"
+                                                onClick={() => removerDisciplina(disciplina.codigo)}
+                                                className="remove-btn"
+                                            >
+                                                X
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="aviso">Nenhuma disciplina selecionada.</div>
+                            )}
+                        </div>
 
                      {/* Motivo da solicitação */}
                         <div className="form-group">
@@ -722,6 +781,7 @@ export default function FormularioExercicioDomiciliar() {
                                 <div>
                                     <label htmlFor="data_inicio_afastamento">Data Inicial:</label>
                                     <input
+                                        className="input-data"
                                         type="date"
                                         id="data_inicio_afastamento"
                                         {...register("data_inicio_afastamento", { required: "Data inicial é obrigatória." })}
@@ -731,6 +791,7 @@ export default function FormularioExercicioDomiciliar() {
                                 <div>
                                     <label htmlFor="data_fim_afastamento">Data Final:</label>
                                     <input
+                                        className="input-data"
                                         type="date"
                                         id="data_fim_afastamento"
                                         {...register("data_fim_afastamento", { required: "Data final é obrigatória." })}
