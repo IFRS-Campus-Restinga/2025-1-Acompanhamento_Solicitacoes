@@ -7,42 +7,6 @@ import "../../components/styles/telas_opcoes.css";
 
 const Cruds = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
-
-  // Estilo base para os cards de link
-  const cardLinkStyle = {
-    display: 'flex',
-    flexDirection: 'row', // Alinhar ícone e texto na mesma linha
-    alignItems: 'center',
-    justifyContent: 'flex-start', // Alinhar conteúdo à esquerda
-    padding: '15px 20px',
-    backgroundColor: 'white',
-    borderRadius: '12px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
-    textAlign: 'left',
-    textDecoration: 'none',
-    color: '#333',
-    fontWeight: '600',
-    transition: 'transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease',
-    minHeight: '35px', // Altura mínima para os cards
-    width: '100%', 
-    border: '1px solid #eee',
-  };
-
-  // Estilo de hover para os cards de link (alterado para verde claro)
-  const cardLinkHoverStyle = {
-    transform: 'translateY(-3px)',
-    boxShadow: '0 8px 18px rgba(0, 0, 0, 0.12)',
-    backgroundColor: '#e6ffe6', // Verde muito clarinho no hover
-  };
-
-  // Estilo para os ícones dentro dos cards (alterado para verde)
-  const iconStyle = {
-    fontSize: '1.8rem', // Tamanho adequado para ícones
-    marginRight: '15px', // Espaçamento entre ícone e texto
-    color: '#28a745', // Verde padrão
-  };
-
-  // Estado para controlar o hover de cada card individualmente
   const [hoveredCard, setHoveredCard] = useState(null);
 
   useEffect(() => {
@@ -51,218 +15,134 @@ const Cruds = () => {
       .catch(err => console.error("Erro ao buscar solicitações:", err));
   }, []);
 
+  
   return (
-    <div>
+    <div className="colunas-container">
       <main className="container">
-        <div className="grid-opcoes">
-          <Link className="link_botao_escolha" to="/usuarios">
-            <i className="bi bi-person-circle"></i> Usuários Ativos
-          </Link>
-          <Link className="link_botao_escolha" to="/usuarios/inativos">
-            <i className="bi bi-person-circle"></i> Usuários Inativos
-          </Link>
-          <Link className="link_botao_escolha" to="/usuarios/selecionargrupo">
-            <i className="bi bi-person-circle"></i> Cadastro Aluno/CRE/Coordenador
-          </Link>         
-          <Link className="link_botao_escolha" to="/mandatos">
-            <i className="bi bi-person-circle"></i>  Mandatos
-          </Link>
-          <Link className="link_botao_escolha" to="/grupos">
-            <i className="bi bi-people-fill"></i> Grupos
-          </Link>
-          <Link className="link_botao_escolha" to="/turmas">
-            <i className="bi bi-people"></i> Turmas
-          </Link>
-          <Link className="link_botao_escolha" to="/disciplinas">
-            <i className="bi bi-book"></i> Disciplinas
-          </Link>
-          <Link className="link_botao_escolha" to="/ppcs">
-            <i className="bi bi-layout-text-window-reverse"></i> PPCs
-          </Link>
-          <Link className="link_botao_escolha" to="/cursos">
-            <i className="bi bi-mortarboard"></i> Cursos
-          </Link>
-          <Link className="link_botao_escolha" to="/disponibilidades">
-            <i className="bi bi-calendar-check"></i> Disponibilidade de Formulários
-          </Link>
-          <Link className="link_botao_escolha" to="/motivo_abono">
-            <i className="bi bi-calendar-x-fill"></i> Abono de Faltas
-          </Link>
-          <Link className="link_botao_escolha" to="/motivo_exercicios">
-            <i className="bi bi-journal-text"></i> Exercícios Domiciliares
-          </Link>
-          <Link className="link_botao_escolha" to="/motivo_dispensa">
-            <i className="bi bi-person-arms-up"></i> Dispensa de Educação Física
-          </Link>
-
+        <h1 className="colunas-title">Gestão do Sistema</h1>
+        
+        <div className="colunas-section-container">
           {/* Seção 1: Usuários e Grupos */}
-          <div style={{ 
-            flex: '1 1 45%', 
-            minWidth: '320px', 
-            backgroundColor: '#f9f9f9',
-            padding: '25px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-            border: '1px solid #ddd',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
-            <h3 style={{ 
-              marginBottom: '25px', 
-              color: '#555', 
-              fontSize: '2rem', 
-              fontWeight: '600',
-              borderBottom: '2px solid #218838', // Borda alterada para verde escuro
-              paddingBottom: '12px'
-            }}>Usuários</h3> {/* Subtítulo */}
-            <div className="grid-cruds" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr', 
-              gap: '20px', 
-              width: '100%',
-              maxWidth: '450px' 
-            }}>
+          <section className="colunas-section">
+            <h3>Usuários</h3>
+            <div className="grid-colunas">
               <Link 
-                className="link_botao_escolha" 
                 to="/usuarios"
-                style={hoveredCard === 'usuarios-ativos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'usuarios-ativos' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('usuarios-ativos')}
                 onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-person-circle" style={iconStyle}></i> Usuários Ativos
+                <i className="bi bi-person-circle"></i> Usuários Ativos
               </Link>
+              
               <Link 
-                className="link_botao_escolha" 
                 to="/usuarios/inativos"
-                style={hoveredCard === 'usuarios-inativos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'usuarios-inativos' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('usuarios-inativos')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-person-circle" style={iconStyle}></i> Usuários Inativos
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-person-circle"></i> Usuários Inativos
               </Link>
+              
               <Link 
-                className="link_botao_escolha" 
                 to="/usuarios/selecionargrupo"
-                style={hoveredCard === 'cadastro-grupo' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'cadastro-grupo' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('cadastro-grupo')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-person-circle" style={iconStyle}></i> Cadastro Aluno/CRE/Coordenador
-              </Link> 
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-person-circle"></i> Cadastro Aluno/CRE/Coordenador
+              </Link>
+              
               <Link 
-                className="link_botao_escolha" 
                 to="/mandatos"
-                style={hoveredCard === 'mandatos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'mandatos' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('mandatos')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-person-circle" style={iconStyle}></i> Mandatos
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-person-circle"></i> Mandatos
               </Link>
+              
               <Link 
-                className="link_botao_escolha" 
                 to="/grupos"
-                style={hoveredCard === 'grupos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'grupos' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('grupos')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-people-fill" style={iconStyle}></i> Grupos
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-people-fill"></i> Grupos
               </Link>
             </div>
-          </div>
+          </section>
 
-          {/* Seção 2: Cadastrar (Demais Entidades) */}
-          <div style={{ 
-            flex: '1 1 45%',
-            minWidth: '320px',
-            backgroundColor: '#f9f9f9',
-            padding: '25px',
-            borderRadius: '12px',
-            boxShadow: '0 4px 15px rgba(0,0,0,0.1)',
-            border: '1px solid #ddd',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center'
-          }}>
-            <h3 style={{ 
-              marginBottom: '25px', 
-              color: '#555', 
-              fontSize: '2rem', 
-              fontWeight: '600',
-              borderBottom: '2px solid #218838', // Borda alterada para verde escuro
-              paddingBottom: '12px'
-            }}>Cadastrar</h3> {/* Subtítulo */}
-            <div className="grid-cruds" style={{ 
-              display: 'grid', 
-              gridTemplateColumns: '1fr', 
-              gap: '20px', 
-              width: '100%',
-              maxWidth: '450px'
-            }}>
+          {/* Seção 2: Cadastros Acadêmicos */}
+          <section className="colunas-section">
+            <h3>Cadastros Acadêmicos</h3>
+            <div className="grid-colunas">
               <Link 
-                className="crud-link" 
-                to="/disponibilidades"
-                style={hoveredCard === 'disponibilidades' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
-                onMouseEnter={() => setHoveredCard('disponibilidades')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-calendar-check" style={iconStyle}></i> Disponibilidade de Formulários
+                to="/turmas"
+                className={`colunas-link ${hoveredCard === 'turmas' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('turmas')}
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-people"></i> Turmas
               </Link>
+              
               <Link 
-                className="crud-link" 
                 to="/disciplinas"
-                style={hoveredCard === 'disciplinas' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'disciplinas' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('disciplinas')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-book" style={iconStyle}></i> Disciplinas
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-book"></i> Disciplinas
               </Link>
+              
               <Link 
-                className="crud-link" 
                 to="/ppcs"
-                style={hoveredCard === 'ppcs' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'ppcs' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('ppcs')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-layout-text-window-reverse" style={iconStyle}></i> PPCs
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-layout-text-window-reverse"></i> PPCs
               </Link>
+              
               <Link 
-                className="crud-link" 
                 to="/cursos"
-                style={hoveredCard === 'cursos' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
+                className={`colunas-link ${hoveredCard === 'cursos' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('cursos')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-mortarboard" style={iconStyle}></i> Cursos
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-mortarboard"></i> Cursos
               </Link>
+              
               <Link 
-                className="crud-link" 
-                to="/motivo_abono"
-                style={hoveredCard === 'motivo-abono' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
-                onMouseEnter={() => setHoveredCard('motivo-abono')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-calendar-x-fill" style={iconStyle}></i> Motivos Abono de Faltas
-              </Link>
-              <Link 
-                className="crud-link" 
-                to="/motivo_exercicios"
-                style={hoveredCard === 'motivo-exercicios' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
-                onMouseEnter={() => setHoveredCard('motivo-exercicios')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-journal-text" style={iconStyle}></i> Motivos Exercícios Domiciliares
-              </Link>
-              <Link 
-                className="crud-link" 
-                to="/motivo_dispensa"
-                style={hoveredCard === 'motivo-dispensa' ? {...cardLinkStyle, ...cardLinkHoverStyle} : cardLinkStyle}
-                onMouseEnter={() => setHoveredCard('motivo-dispensa')}
-                onMouseLeave={() => setHoveredCard(null)}
-              >
-                <i className="bi bi-person-arms-up" style={iconStyle}></i> Motivos Dispensa de Educação Física
+                to="/disponibilidades"
+                className={`colunas-link ${hoveredCard === 'disponibilidades' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('disponibilidades')}
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-calendar-check"></i> Disponibilidade de Formulários
               </Link>
             </div>
-          </div>
+          </section>
+
+          {/* Seção 3: Motivos de Solicitações */}
+          <section className="colunas-section">
+            <h3>Motivos de Solicitações</h3>
+            <div className="grid-colunas">
+              <Link 
+                to="/motivo_abono"
+                className={`colunas-link ${hoveredCard === 'motivo-abono' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('motivo-abono')}
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-calendar-x-fill"></i> Abono de Faltas
+              </Link>
+              
+              <Link 
+                to="/motivo_exercicios"
+                className={`colunas-link ${hoveredCard === 'motivo-exercicios' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('motivo-exercicios')}
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-journal-text"></i> Exercícios Domiciliares
+              </Link>
+              
+              <Link 
+                to="/motivo_dispensa"
+                className={`colunas-link ${hoveredCard === 'motivo-dispensa' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('motivo-dispensa')}
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-person-arms-up"></i> Dispensa de Educação Física
+              </Link>
+            </div>
+          </section>
         </div>
       </main>
     </div>

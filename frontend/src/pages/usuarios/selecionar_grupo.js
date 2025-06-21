@@ -67,14 +67,14 @@ export default function SelecionarGrupoUsuario() {
             <main className="container escolha-grupo">
                 <h2>Selecione o tipo de usuário para realizar cadastro:</h2>
                 <div className="grid-opcoes">
-                    <button onClick={() => handleSelect("aluno")} className="link_botao_escolha">
-                        Aluno
+                    <button onClick={() => handleSelect("aluno")} className="link_botao_escolha ">
+                        <i class="bi bi-backpack2-fill"></i>Aluno
                     </button>
-                    <button onClick={() => handleSelect("coordenador")} className="link_botao_escolha">
-                        Coordenador
+                    <button onClick={() => handleSelect("coordenador")} className="link_botao_escolha ">
+                        <i class="bi bi-person-gear"></i>Coordenador
                     </button>
-                    <button onClick={() => handleSelect("cre")} className="link_botao_escolha">
-                        CRE
+                    <button onClick={() => handleSelect("cre")} className="link_botao_escolha ">
+                        <i class="bi bi-journal-bookmark-fill"></i>CRE
                     </button>
                 </div>
 
