@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 //Components
-import GoogleLoginButton from "../components/GoogleLoginButton";
+import BotaoGoogleLogin from "../components/UI/botoes/botao_google_login";
 
 //CSS
-import "./login.css";
+import "../components/styles/telas_opcoes.css";
 
 const Home = () => {
   const navigate = useNavigate();
@@ -28,7 +28,7 @@ const Home = () => {
       <div className="login-box">
         <h2>Bem-vindo ao Sistema de Solicitações</h2>
         <p>Para continuar, entre com sua conta institucional do Google.</p>
-        <GoogleLoginButton onClick={handleLogin} />
+        <BotaoGoogleLogin onClick={handleLogin} />
       </div>  
     </div>
   );

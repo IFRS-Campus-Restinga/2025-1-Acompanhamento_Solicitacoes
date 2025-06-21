@@ -39,7 +39,7 @@
     background-color: var(--verde-escuro);
   } 
 
-  
+
 /*BOTÃO ANALISAR (!)*/
 
 .botao-analisar {
@@ -189,6 +189,36 @@
   background-color: var(--verde-escuro);
 }
 
+/*BOTÃO GOOGLE LOGIN (G) */
+
+.botao-google{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    color: #333;
+    border: 2px solid #148229;
+    border-radius: 20px;
+    padding: 8px 14px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s, transform 0.1s;
+    height: 42px;
+  }
+  
+  .botao-google:hover {
+    background-color: rgb(234, 234, 234);
+    transform: scale(1.02);
+  }
+  
+  .icone-google {
+    width: 25px;
+    height: 25px;
+    margin-right: 10px;
+  }
+
   /*BOTÃO VOLTAR (<--) */
 
   .botao-voltar {
@@ -215,6 +245,7 @@
     margin-top: 2rem;
     text-align: left;
   }
+
 
 
 
