@@ -17,12 +17,10 @@ const AlunoNovaSolicitacao = () => {
   return (
     <div className="colunas-container">
       <main className="container">
-        
+        <h2 className="tela-opcoes-titulo ">Solicitações</h2>
         <div className="colunas-section-container">
           {/* PRIMEIRA FILEIRA: 4 Formulários */}
-    
           <section className="colunas-section">
-            <h2 className="tela-opcoes-titulo ">Solicitações</h2>
             <div className="grid-colunas">
               <Link 
                 className="colunas-link" 
@@ -32,7 +30,7 @@ const AlunoNovaSolicitacao = () => {
                 data-hovered={hoveredCard === 'trancamento_matricula'}
               >
                 <i className="bi bi-box-arrow-right form-icon"></i>
-                Solicitação de Trancamento de Matrícula
+                Trancamento de Matrícula
               </Link>
 
               <Link 
@@ -43,7 +41,7 @@ const AlunoNovaSolicitacao = () => {
                 data-hovered={hoveredCard === 'trancamento_disciplina'}
               >
                 <i className="bi bi-x-octagon-fill form-icon"></i>
-                Solicitação de Trancamento de Componente Curricular
+                Trancamento de Componente Curricular
               </Link>
 
               <Link 
@@ -68,7 +66,9 @@ const AlunoNovaSolicitacao = () => {
                 Entrega de Atividades Complementares
               </Link>
             </div>
+          </section>  
           {/* SEGUNDA FILEIRA: 3 Formulários */}
+          <section className="colunas-section">
             <div className="grid-colunas">
               <Link 
                 className="colunas-link" 
@@ -78,7 +78,7 @@ const AlunoNovaSolicitacao = () => {
                 data-hovered={hoveredCard === 'dispensa_ed_fisica'}
               >
                 <i className="bi bi-person-arms-up form-icon"></i>
-                Solicitação de Dispensa de Educação Física
+                Dispensa de Educação Física
               </Link>
 
               <Link 
@@ -89,7 +89,7 @@ const AlunoNovaSolicitacao = () => {
                 data-hovered={hoveredCard === 'abono_falta'}
               >
                 <i className="bi bi-calendar-x-fill form-icon"></i>
-                Solicitação de Justificativa / Abono de Faltas
+                Justificativa / Abono de Faltas
               </Link>
 
               <Link 
@@ -100,7 +100,7 @@ const AlunoNovaSolicitacao = () => {
                 data-hovered={hoveredCard === 'exercicio_domiciliar'}
               >
                 <i className="bi bi-house-check-fill form-icon"></i>
-                Solicitação de Exercícios Domiciliares
+                Exercícios Domiciliares
               </Link>
             </div>
           </section>
