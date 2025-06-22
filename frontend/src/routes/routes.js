@@ -211,7 +211,7 @@ const routes = [
   <Route path="/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="solicitacoes_finalizadas" />,
 
   //Tela Coordenador
-  <Route path="/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
+  <Route path="/coordenador/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
 
   //Tela Aluno
   <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
