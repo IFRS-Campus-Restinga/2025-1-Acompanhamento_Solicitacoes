@@ -91,6 +91,9 @@ import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes
 import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
 import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
 
+//Tela Externo
+import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
+
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
 
@@ -212,6 +215,9 @@ const routes = [
 
   //Tela Coordenador
   <Route path="/coordenador/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
+
+  //Tela Externo
+  <Route path="/externo/desistencia-vaga" element={<ExternoHome />} key="home_externo" />,
 
   //Tela Aluno
   <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
