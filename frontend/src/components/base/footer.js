@@ -1,10 +1,11 @@
-import React from "react";
 import "./footer.css";
 
 const footer = () => {
   return (
     <footer>
-      <p>&copy; 2025 IFRS - Todos os direitos reservados.</p>
+      <p>IFRS - Instituto Federal do Rio Grande do Sul – Campus Restinga Rua Alberto Hoffmann, 285 
+      | Bairro Restinga | Porto Alegre/RS
+      </p>
     </footer>
   );
 };
