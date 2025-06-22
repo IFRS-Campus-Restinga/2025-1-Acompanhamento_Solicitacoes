@@ -19,7 +19,7 @@ const GestaoSistema = () => {
   return (
     <div className="colunas-container">
       <main className="container">
-        <h1 className="colunas-title">Gestão do Sistema</h1>
+        <h2 className="tela-opcoes-titulo ">Gestão do Sistema</h2>
         
         <div className="colunas-section-container">
           {/* Seção 1: Usuários e Grupos */}

@@ -71,7 +71,6 @@ Cruds ou
     text-align: center;
     margin-bottom: 20px;
     color: var(--cor-preta);
-    font-size: var(--tamanho-fonte-titulo-secao);
     font-weight: var(--peso-titulo);
     letter-spacing: 0.5px;
     border-bottom: 3px solid var(--verde-oficial);
