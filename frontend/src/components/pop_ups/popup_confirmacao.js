@@ -5,10 +5,11 @@ export default function PopupConfirmacao({
   show, 
   mensagem, 
   onConfirm, 
-  onReject,
+  onReject, 
   onCancel,
   showRejectOption = false,
-  confirmLabel = "Confirmar" 
+  confirmLabel = "Confirmar",
+  usuarioDetalhes = null // Nova prop para receber os detalhes do usuário
 }) {
   const [justificativa, setJustificativa] = useState("");
   const [mostrarErro, setMostrarErro] = useState(false);
@@ -33,12 +34,64 @@ export default function PopupConfirmacao({
     onCancel();
   };
 
+  // Renderiza os detalhes do usuário com base no grupo
+  const renderizarDetalhesUsuario = () => {
+    if (!usuarioDetalhes) return null;
+
+    return (
+      <div className="detalhes-usuario-popup">
+        <h5>Dados do Usuário:</h5>
+        <div className="detalhes-usuario-conteudo">
+          <p><strong>Nome:</strong> {usuarioDetalhes.nome}</p>
+          <p><strong>Email:</strong> {usuarioDetalhes.email}</p>
+          <p><strong>CPF:</strong> {usuarioDetalhes.cpf}</p>
+          <p><strong>Telefone:</strong> {usuarioDetalhes.telefone}</p>
+          <p><strong>Tipo de Usuário:</strong> {usuarioDetalhes.grupo === "Responsavel" ? "Responsável" : usuarioDetalhes.grupo}</p>
+
+          {usuarioDetalhes.grupo === "Coordenador" && (
+            <>
+              <p><strong>SIAPE:</strong> {usuarioDetalhes.grupo_detalhes?.siape}</p>
+              {(() => {
+                const mandatos = usuarioDetalhes.grupo_detalhes?.mandatos_coordenador || [];
+                if (mandatos.length === 0) {
+                  return <p><em>Sem mandatos registrados.</em></p>;
+                }
+                return mandatos.map((mandato, idx) => (
+                  <div key={idx} className="mandato-item">
+                    <p><strong>Curso:</strong> {mandato.curso}</p>
+                    <p><strong>Início do Mandato:</strong> {mandato.inicio_mandato}</p>
+                    <p><strong>Fim do Mandato:</strong> {mandato.fim_mandato || "-"}</p>
+                  </div>
+                ));
+              })()}
+            </>
+          )}
+
+          {usuarioDetalhes.grupo === "CRE" && (
+            <p><strong>SIAPE:</strong> {usuarioDetalhes.grupo_detalhes?.siape}</p>
+          )}
+
+          {usuarioDetalhes.grupo === "Responsável" && (
+            <>
+              <p><strong>Responsável de:</strong> {usuarioDetalhes.grupo_detalhes?.aluno || "Nenhum aluno"}</p>
+              <p><strong>E-mail do aluno:</strong> {usuarioDetalhes.grupo_detalhes?.email_aluno || "Não cadastrado"}</p>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="popup-backdrop">
       <div className="popup-box">
-        <p className="popup-mensagem">{mensagem || "Tem certeza que deseja continuar?"}</p>
+        <p className="popup-mensagem"><strong>{mensagem || "Tem certeza que deseja continuar?"}</strong></p>
         
- {/* Campo de justificativa para rejeição - exibido apenas quando showRejectOption é true */}
+        {/* Detalhes do usuário - exibido apenas quando usuarioDetalhes é fornecido */}
+        <div className="popup-box-detalhes">
+        {usuarioDetalhes && renderizarDetalhesUsuario()}
+        </div>
+        {/* Campo de justificativa para rejeição - exibido apenas quando showRejectOption é true */}
         {showRejectOption && (
           <div className="justificativa-container">
             <label htmlFor="justificativa">Justificativa, para o caso de rejeição de cadastro:</label>

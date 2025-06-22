@@ -52,6 +52,16 @@
   animation: fadeIn 0.3s ease-in-out;
 }
 
+.popup-box-detalhes {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  min-width: 300px;
+  max-width: 500px;
+  text-align: left;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
 .popup-box button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
