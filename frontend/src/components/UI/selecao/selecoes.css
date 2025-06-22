@@ -96,3 +96,69 @@
     background-color: #e0f7fa; /* Tom de azul água claro */
     font-weight: var(--peso-titulo);
 }
+
+/*CSS FEITOS 20/06 ATUALIZADOS - de preferencia usar só esses abaixo*/
+
+.disciplina-selection-box {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.disciplina-option {
+  padding: 8px 12px;
+  cursor: pointer;
+  border-bottom: 1px solid #eee;
+}
+
+.disciplina-option:hover {
+  background-color: #f0f0f0;
+}
+
+.disciplina-option.selected {
+  background-color: #e6f7ff;
+  border-left: 3px solid #1890ff;
+}
+
+.disciplinas-selecionadas-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.selected-disciplina-box {
+  display: flex;
+  align-items: center;
+  background-color: #e6f7ff;
+  border: 1px solid #91d5ff;
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  color: #ff4d4f;
+  cursor: pointer;
+  margin-left: 8px;
+  font-weight: bold;
+}
+
+  .remove-btn {
+    background-color: var(--botao-deletar);
+    color: var(--cor-branca);
+    border: none;
+    border-radius: 5px;
+    margin-left: 10px;
+    padding: 4px 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+}
+
+.remove-btn:hover {
+    background-color: #a71420; /* Tom mais escuro do botão deletar */
+}
