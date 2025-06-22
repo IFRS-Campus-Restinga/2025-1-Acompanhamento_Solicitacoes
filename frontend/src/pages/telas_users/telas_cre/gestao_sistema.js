@@ -3,9 +3,9 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
 //CSS
-import "../../components/styles/telas_opcoes.css";
+import "../../../components/styles/telas_opcoes.css";
 
-const Cruds = () => {
+const GestaoSistema = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [hoveredCard, setHoveredCard] = useState(null);
 
@@ -149,4 +149,4 @@ const Cruds = () => {
   );
 };
 
-export default Cruds;
+export default GestaoSistema;

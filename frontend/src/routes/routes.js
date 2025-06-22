@@ -11,8 +11,8 @@ import { default as FormTrancDisciplina, default as Formulario } from "../pages/
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula.js";
 
 // Páginas
-import Configuracoes from "../pages/configuracoes/configuracoes.js";
 import Perfil from "../pages/perfil/perfil.js";
+import GestaoSistema from "../pages/telas_users/telas_cre/gestao_sistema";
 //import PosLogin from "../pages/pos_login";
 
 //import Cruds from "../pages/configuracoes/cruds.js";
@@ -107,7 +107,7 @@ const routes = [
   //página inicial
   <Route path="/" element={<Home />} key="home" />,
 
-  <Route path="/configuracoes" element={<Configuracoes />} key="configuracoes" />,
+  <Route path="/cre/gestao-sistema" element={<GestaoSistema />} key="configuracoes" />,
 
   <Route path="/perfil" element={<Perfil />} key="perfil" />,
   //<Route path="/pos-login" element={<PosLogin />} />,
