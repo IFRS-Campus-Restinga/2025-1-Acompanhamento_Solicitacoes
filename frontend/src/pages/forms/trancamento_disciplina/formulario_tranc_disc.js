@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import BuscaUsuario from "../../../components/busca_usuario";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 import BotaoEnviarSolicitacao from "../../../components/UI/botoes/botao_enviar_solicitacao";
-//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
+import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 //<VerificadorDisponibilidade tipoFormulario="TRANCAMENTODISCIPLINA"></VerificadorDisponibilidade>
 
 // Serviços de autenticação
@@ -530,6 +530,7 @@ export default function FormularioTrancamentoDisciplina() {
     // Renderização do formulário completo
     if (userData && aluno) {
         return (
+            <VerificadorDisponibilidade tipoFormulario="TRANCAMENTODISCIPLINA">
                 <div className="page-container">
                     <BuscaUsuario dadosUsuario={handleUsuario} />
                     <main className="container">
@@ -716,6 +717,7 @@ export default function FormularioTrancamentoDisciplina() {
                         />
                     )}
                 </div>
+            </VerificadorDisponibilidade>
         );
     }
 
