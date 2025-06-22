@@ -27,12 +27,14 @@ export default function ListarUsuariosAtivos() {
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
   const [usuarioId, setUsuarioId] = useState(null); 
+  const [usuarioDetalhes, setUsuarioDetalhes] = useState(null); 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [tipoAcao, setTipoAcao] = useState(""); // Para diferenciar entre exclusão e aprovação
+  const [carregandoDetalhes, setCarregandoDetalhes] = useState(false);
   const navigate = useNavigate();
   const itensPorPagina = 10;
 
@@ -57,6 +59,27 @@ export default function ListarUsuariosAtivos() {
   useEffect(() => {
     fetchUsuariosAtivos();
   }, []);
+
+  // Função para buscar detalhes do usuário
+  const fetchDetalhesUsuario = (id) => {
+    setCarregandoDetalhes(true);
+    api.get(`/usuarios/${id}/`)
+      .then((res) => {
+        setUsuarioDetalhes(res.data);
+        setMostrarPopup(true);
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar detalhes do usuário:", err);
+        setMensagemPopup(
+          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar detalhes do usuário."}`
+        );
+        setTipoMensagem("erro");
+        setMostrarFeedback(true);
+      })
+      .finally(() => {
+        setCarregandoDetalhes(false);
+      });
+  };
 
   // Função para filtrar usuários
   const filtrarUsuarios = () => {
@@ -104,6 +127,7 @@ export default function ListarUsuariosAtivos() {
         setMostrarPopup(false);
         setMostrarFeedback(true);
         setUsuarioId(null);
+        setUsuarioDetalhes(null);
         setTipoAcao("");
       });
   };
@@ -128,6 +152,7 @@ export default function ListarUsuariosAtivos() {
         setMostrarPopup(false);
         setMostrarFeedback(true);
         setUsuarioId(null);
+        setUsuarioDetalhes(null);
         setTipoAcao("");
       });
   };
@@ -146,7 +171,7 @@ export default function ListarUsuariosAtivos() {
     }
   };
 
-  return (
+    return (
     <div>
       <main className="container">
         <h2>Usuários</h2>
@@ -162,6 +187,12 @@ export default function ListarUsuariosAtivos() {
             setPaginaAtual(1);
           }}
         />
+
+        {carregandoDetalhes && (
+          <div className="carregando-overlay">
+            <p>Carregando detalhes do usuário...</p>
+          </div>
+        )}
 
         {usuariosFiltrados.length === 0 ? (
           <p><br />Nenhum usuário encontrado!</p>
@@ -205,6 +236,7 @@ export default function ListarUsuariosAtivos() {
                               setUsuarioId(usuario.id);
                               setTipoAcao("aprovar");
                               setMostrarPopup(true);
+                              fetchDetalhesUsuario(usuario.id);
                             }}
                         />
                       )}
@@ -236,11 +268,14 @@ export default function ListarUsuariosAtivos() {
             setMostrarPopup(false);
             setUsuarioId(null);
             setTipoAcao("");
+            setUsuarioDetalhes(null);
           }}
           // Exibe opção de rejeição apenas quando estamos analisando um cadastro
           showRejectOption={tipoAcao === "aprovar"}
           // Define o texto do botão de confirmação com base no tipo de ação
           confirmLabel={tipoAcao === "aprovar" ? "Aprovar" : "Confirmar"}
+          // Passa os detalhes do usuário quando disponíveis
+          usuarioDetalhes={usuarioDetalhes}
         />
 
         <PopupFeedback
