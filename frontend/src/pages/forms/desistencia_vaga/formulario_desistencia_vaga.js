@@ -352,19 +352,6 @@ export default function FormularioDispensaEdFisica() {
                         </div>
                     </div>
                     
-                        
-                        <div className="form-group">
-                            <label htmlFor="ano_semestre_ingresso">Ano/Semestre de Ingresso:</label>
-                            <input
-                                type="text"
-                                id="ano_semestre_ingresso"
-                                name="ano_semestre_ingresso"
-                                value={formData.ano_semestre_ingresso}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                        
                         <div className="form-group">
                             <label htmlFor="motivo_solicitacao">Motivo da Solicitação:</label>
                             <select

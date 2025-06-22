@@ -6,6 +6,9 @@ import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
 import Paginacao from "../../../components/UI/paginacao";
 import "./cre.css";
 
+//CSS
+import "../../../components/styles/tabela.css";
+
 const HomeCRE = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -71,7 +74,7 @@ const HomeCRE = () => {
                 ) : error ? (
                     <p style={{ color: "red" }}>{error}</p>
                 ) : solicitacoes.length > 0 ? (
-                    <table className="tabela-cruds tabela-solicitacoes">
+                    <table className="tabela-geral tabela-solicitacoes">
                         <thead>
                             <tr>
                                 <th>Tipo</th>

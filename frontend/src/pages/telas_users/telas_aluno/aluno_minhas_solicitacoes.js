@@ -9,6 +9,9 @@ import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
 import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import Paginacao from "../../../components/UI/paginacao";
 
+//CSS
+import "../../../components/styles/tabela.css";
+
 
 const MinhasSolicitacoesAluno = () => {
      const navigate = useNavigate();
@@ -119,7 +122,7 @@ const MinhasSolicitacoesAluno = () => {
               ) : (
                 <>
 
-                <table className="tabela-cruds tabela-solicitacoes">
+                <table className="tabela-geral tabela-solicitacoes">
                 <thead>
                     <tr>
                     <th>Tipo</th>

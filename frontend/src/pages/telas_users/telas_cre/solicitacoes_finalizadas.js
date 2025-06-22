@@ -4,6 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
+//CSS
+import "../../../components/styles/tabela.css";
+
 const SolicitacoesFinalizadas = () => {
     const [solicitacoesFinalizadas, setSolicitacoesFinalizadas] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -59,7 +62,7 @@ const SolicitacoesFinalizadas = () => {
                 ) : error ? (
                     <p style={{ color: "red" }}>{error}</p>
                 ) : solicitacoesFinalizadas.length > 0 ? (
-                    <table className="tabela-cruds tabela-solicitacoes">
+                    <table className="tabela-geral tabela-solicitacoes">
                         <thead>
                             <tr>
                                 <th>Tipo de Formulário</th>

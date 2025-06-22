@@ -1,10 +1,13 @@
 import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from 'react-hook-form';
 import { useNavigate } from "react-router-dom";
 
 // Components
 import BuscaUsuario from "../../../components/busca_usuario";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import BotaoEnviarSolicitacao from '../../../components/UI/botoes/botao_enviar_solicitacao';
+
 //import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 //<VerificadorDisponibilidade tipoFormulario="TRANCAMENTOMATRICULA">
 
@@ -15,6 +18,15 @@ import "../../../components/styles/formulario.css";
 import { getAuthToken } from "../../../services/authUtils";
 
 export default function FormularioTrancamentoMatricula() {
+
+   const {
+        register,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        watch
+    } = useForm();
+
   // Estados para controle de usuário e aluno
   const [userData, setUserData] = useState(null);
   const [carregandoUsuario, setCarregandoUsuario] = useState(true);
@@ -30,6 +42,9 @@ export default function FormularioTrancamentoMatricula() {
   const [msgErro, setMsgErro] = useState("");
   const [tipoErro, setTipoErro] = useState("");
   const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
+
+  // Estado de loading para enviar os dados do forms para solicitacao
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   // Estado para o formulário
   const [formData, setFormData] = useState({
@@ -100,6 +115,8 @@ export default function FormularioTrancamentoMatricula() {
           setTipoErro("erro");
           setFeedbackIsOpen(true);
         }
+
+
       } catch (err) {
         console.error("Erro ao buscar aluno:", err.response?.data || err.message);
         setAlunoNaoEncontrado(true);
@@ -169,78 +186,93 @@ export default function FormularioTrancamentoMatricula() {
   };
 
   // Enviar formulário
-  const handleSubmit = async (e) => {
-    e.preventDefault();
 
-    if (!aluno) {
-      setMsgErro("Por favor, aguarde o carregamento dos dados do aluno.");
+  const onSubmit = async (data) => {
+  setIsSubmitting(true);
+    if (!data.motivo_solicitacao || !data.auxilio_estudantil) {
+      setMsgErro("Preencha todos os campos obrigatórios");
       setTipoErro("erro");
       setFeedbackIsOpen(true);
       return;
     }
-    
-    if (!formData.motivo_solicitacao) {
-      setMsgErro("A justificativa do trancamento é obrigatória.");
-      setTipoErro("erro");
-      setFeedbackIsOpen(true);
-      return;
-    }
-
-    const dataToSubmit = new FormData();
-    dataToSubmit.append("motivo_solicitacao", formData.motivo_solicitacao);
-    dataToSubmit.append("aluno", aluno.id);
-    dataToSubmit.append("data_solicitacao", new Date().toISOString().split("T")[0]);
-
-    if (formData.arquivos && formData.arquivos.length > 0) {
-      Array.from(formData.arquivos).forEach((file) => {
-        dataToSubmit.append("arquivos", file);
-      });
-    }
-    
+  
     try {
+      // Validação inicial dos dados obrigatórios
+      if (!aluno?.id || !curso?.codigo || !ppc?.codigo || !userData?.id) {
+        throw new Error("Dados incompletos do aluno/curso. Recarregue a página e tente novamente.");
+      }
+      const formData = new FormData();
+      
+      // Dados básicos do formulário
+      formData.append('motivo_solicitacao', data.motivo_solicitacao);
+      formData.append('auxilio_estudantil', data.auxilio_estudantil);
+      
+      // Dados do aluno (dos inputs dos Cookies)
+      formData.append('aluno_id', aluno.id);
+      formData.append('matricula', aluno.matricula);
+      formData.append('curso_id', data.curso_id);
+      formData.append('curso_codigo', curso.codigo);
+      formData.append('ppc_codigo', ppc.codigo);
+      formData.append('usuario_solicitante', userData.id);
+
+      //Metadados automáticos
+      formData.append('data_solicitacao', new Date().toISOString().split('T')[0]);
+      formData.append('status', 'pendente');
+      formData.append('tipo_solicitacao', 'TRANCAMENTO_MATRICULA');
+      
+      //Arquivos anexos (opcional)
+      if (data.arquivos && data.arquivos.length > 0) {
+        Array.from(data.arquivos).forEach((file, index) => {
+          formData.append(`arquivo_${index}`, file); // Nomeação explícita
+        });
+      }
+
       const token = getAuthToken();
-      await axios.post(
+      const response = await axios.post(
         "http://localhost:8000/solicitacoes/formularios-trancamento/",
-        dataToSubmit,
+        formData,
         {
           headers: { 
             "Content-Type": "multipart/form-data",
             "Authorization": `Bearer ${token}`
           },
+          timeout: 10000 // Timeout de 10 segundos
         }
       );
-      
+
+      // Feedback de sucesso  
       setMsgErro("Solicitação de trancamento de matrícula enviada com sucesso!");
       setTipoErro("sucesso");
       setFeedbackIsOpen(true);
-      
-      // Limpar formulário
-      setFormData({
-        motivo_solicitacao: "",
-        arquivos: null
-      });
-      
-      // Redirecionar após 2 segundos
-      setTimeout(() => navigate("/minhas-solicitacoes"), 2000);
-    } catch (error) {
-      let errorMessage = "Erro ao enviar solicitação.";
-      if (error.response && error.response.data) {
-        const backendErrors = error.response.data;
-        if (typeof backendErrors === 'string') {
-          errorMessage = backendErrors;
-        } else {
-          errorMessage = Object.entries(backendErrors)
-            .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-            .join('; ');
-        }
-      }
-      
-      setMsgErro(errorMessage);
-      setTipoErro("erro");
-      setFeedbackIsOpen(true);
-    }
-  };
 
+      // Redirecionamento com delay  
+      setTimeout(() => navigate("/aluno/minhas-solicitacoes"), 2000);
+
+    } catch (error) {
+    console.error("Erro detalhado:", error);
+    
+    // Tratamento refinado de erros
+    const errorMessage = error.response?.data?.detail || 
+                        error.response?.data?.message || 
+                        error.message || 
+                        "Erro desconhecido ao enviar solicitação";
+    
+    setMsgErro(errorMessage);
+    setTipoErro("erro");
+    setFeedbackIsOpen(true);
+    
+    // Log adicional para desenvolvimento
+    if (process.env.NODE_ENV === 'development') {
+      console.error("Detalhes do erro:", {
+        config: error.config,
+        response: error.response
+      });
+    }
+  } finally {
+    setIsSubmitting(false);
+  }
+};
+      
   // Renderização condicional durante carregamento
   if (carregandoUsuario) {
     return (
@@ -274,9 +306,8 @@ export default function FormularioTrancamentoMatricula() {
 
   // Renderização do formulário completo
   if (userData && aluno) {
+    
     return (
-
-      
 
         <div className="page-container">
           <BuscaUsuario dadosUsuario={handleUsuario} />
@@ -294,20 +325,20 @@ export default function FormularioTrancamentoMatricula() {
               <hr></hr><strong>IMPORTANTE:</strong> O trancamento total de matrícula é permitido até a quarta semana após o início das atividades letivas, conforme estabelecido em nosso calendário acadêmico.
             </h6>
 
-            <form onSubmit={handleSubmit} className="formulario formulario-largura" encType="multipart/form-data">
-
+            <form onSubmit={handleSubmit(onSubmit)} className="formulario formulario-largura" encType="multipart/form-data">
+            
             <div className="dados-aluno-container">
               <div className="form-group">
                 <label>E-mail:</label>
-                <input type="email" value={userData?.email || ""} readOnly />
+                <input type="email" id="email" readOnly {...register("email")} value={userData?.email || ""} />
               </div>
               <div className="form-group">
                 <label>Nome Completo:</label>
-                <input type="text" value={aluno?.nome || userData?.name || ""} readOnly />
+                <input type="text" id="nome_completo" readOnly {...register("nome_completo")} value={aluno?.nome || userData?.name || ""}/>
               </div>
               <div className="form-group">
                 <label>Matrícula:</label>
-                <input type="text" value={aluno?.matricula || ""} readOnly />
+                <input type="text" id="matricula" readOnly {...register("matricula")}  value={aluno?.matricula || ""}/>
               </div>
               
               {loadingPpc && <p>A carregar dados do curso/PPC...</p>}
@@ -315,66 +346,66 @@ export default function FormularioTrancamentoMatricula() {
               {curso && (
                 <div className="form-group">
                   <label>Curso:</label>
-                  <input type="text" value={curso?.nome || ""} readOnly />
+                  <input type="text" id="curso" readOnly {...register("curso")}  value={curso?.nome || ""} />
+                  {/* Campo oculto para o ID do curso */}
+                  <input type="hidden" {...register("curso_id")} value={curso?.nome || ""} />
+                  {/* Campos ocultos para códigos de aluno e PPC */}
+                  <input type="hidden" {...register("aluno_id")} value={aluno?.id || ""} />
+                  <input type="hidden" {...register("curso_codigo")}value={curso?.codigo || ""} />
+                  <input type="hidden" {...register("ppc_codigo")} value={ppc?.codigo || ""}/>
+                  {/* Data atual automática */}
+                  <input type="hidden" {...register("data_solicitacao")} value={new Date().toISOString().split('T')[0]}/>
+
+                  {/* Status padrão */}
+                  <input type="hidden" {...register("status")} value="pendente"/>
+
+                  {/* Tipo de solicitação */}
+                  <input type="hidden" {...register("tipo_solicitacao")} value="TRANCAMENTO_MATRICULA"/>
                 </div>
               )}
-              
-              {ppc && (
+     
+              {/* Campo para ver se o aluno recebe auxilio*/}
                 <div className="form-group">
-                  <label>PPC (Nome/Código):</label>
-                  <input type="text" value={ppc?.nome || ppc?.codigo || "N/D"} readOnly />
-                </div>
-              )}
-
-              <div className="form-group">
-                <label>Ano/Semestre de Ingresso:</label>
-                <input type="text" value={aluno?.ano_ingresso || ""} readOnly />
-              </div>
-            </div>
-
-            {/*<hr />  dá quebra de linha*/}
-
-          
-              <div className="form-group">
-                <label htmlFor="motivo_solicitacao">Justificativa do trancamento:</label>
-                <textarea
-                  id="motivo_solicitacao"
-                  name="motivo_solicitacao"
-                  value={formData.motivo_solicitacao}
-                  onChange={handleChange}
-                  rows="5"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="arquivos">Anexos (opcional):</label>
-                <input
-                  type="file"
-                  id="arquivos"
-                  name="arquivos"
-                  multiple
-                  onChange={handleChange}
-                />
-              </div>
-               {/* Campo para ver se o aluno recebe auxilio 
-                <div className="form-group">
-                    <label htmlFor="consegue_realizar_atividades">Recebe auxílio estudantil?</label>
+                    <label>Recebe auxílio estudantil?</label>
                     <select
-                        id="consegue_realizar_atividades"
-                        {...register("consegue_realizar_atividades", { required: "Este campo é obrigatório." })}
+                        {...register("auxilio_estudantil", { required: "Este campo é obrigatório." })}
                     >
                         <option value="">Selecione</option>
                         <option value={true}>Sim</option>
                         <option value={false}>Não</option>
                     </select>
-                    {errors.consegue_realizar_atividades && <span className="error-text">{errors.consegue_realizar_atividades.message}</span>}
+                    {errors.auxilio_estudantil && <span className="error-text">{errors.auxilio_estudantil.message}</span>}
                 </div>
-                */}
+          
+              <div className="form-group">
+                <label>Justificativa:</label>
+                <textarea
+                  {...register("motivo_solicitacao", { 
+                  required: "Justificativa é obrigatória",
+                  minLength: {
+                    value: 20,
+                    message: "Mínimo 20 caracteres"
+                  }
+                })}
+                rows="5"
+              />
+              {errors.motivo_solicitacao && (
+                <span className="error-text">{errors.motivo_solicitacao.message}</span>
+              )}
+              </div>
 
-              <button type="submit" className="submit-button" disabled={loadingPpc}>
-                {loadingPpc ? "A Carregar..." : "Enviar Solicitação"}
-              </button>
+              <div className="form-group">
+                <label>Anexos (opcional):</label>
+                <input
+                  type="file"
+                  {...register("arquivos")}
+                  multiple
+                />
+              </div>    
+            </div>  
+
+            <BotaoEnviarSolicitacao isSubmitting={isSubmitting}/>
+
             </form>
           </main>
           {feedbackIsOpen && (

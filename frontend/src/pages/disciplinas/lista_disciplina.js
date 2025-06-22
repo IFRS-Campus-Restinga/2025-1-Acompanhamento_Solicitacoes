@@ -15,6 +15,9 @@ import BotaoEditar from "../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
+//CSS
+import "../../components/styles/tabela.css";
+
 export default function ListarDisciplinas() {
   const navigate = useNavigate();
   const [disciplinas, setDisciplinas] = useState([]);

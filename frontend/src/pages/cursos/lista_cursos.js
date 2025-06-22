@@ -13,6 +13,8 @@ import BotaoEditar from "../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
+//CSS
+import "../../components/styles/tabela.css";
 
 export default function ListarCursos() {
   const navigate = useNavigate();
@@ -97,7 +99,7 @@ export default function ListarCursos() {
           />
         </div>
 
-        <table className="tabela-cruds">
+        <table className="tabela-geral">
           <thead>
             <tr>
               <th>Código</th>

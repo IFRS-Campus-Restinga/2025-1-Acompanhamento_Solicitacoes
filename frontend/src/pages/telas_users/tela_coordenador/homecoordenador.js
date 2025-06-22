@@ -2,6 +2,9 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+//CSS
+import "../../../components/styles/tabela.css";
+
 const HomeCoordenador = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +65,7 @@ const HomeCoordenador = () => {
         ) : error ? (
           <p style={{ color: "red" }}>{error}</p>
         ) : solicitacoes.length > 0 ? (
-          <table className="tabela-cruds">
+          <table className="tabela-geral">
             <thead>
               <tr>
                 <th>Tipo</th>

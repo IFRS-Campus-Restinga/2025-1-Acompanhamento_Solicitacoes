@@ -13,7 +13,7 @@ import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import Paginacao from "../../components/UI/paginacao";
 
-//import "../../components/styles/tabela.css";
+import "../../components/styles/tabela.css";
 
 export default function ListarDisponibilidades() {
   const navigate = useNavigate();

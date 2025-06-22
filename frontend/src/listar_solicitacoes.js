@@ -9,6 +9,9 @@ import Paginacao from "./components/UI/paginacao";
 
 import api from "./services/api"; // Seu arquivo de configuração da API
 
+//CSS
+import "./components/styles/tabela.css";
+
 export default function ListarSolicitacoes() {
   const navigate = useNavigate();
 
@@ -136,7 +139,7 @@ export default function ListarSolicitacoes() {
         {solicitacoesFiltradas.length === 0 && !loading ? (
           <p className="mensagem-central">Nenhuma solicitação encontrada com os filtros atuais.</p>
         ) : (
-          <table className="tabela-cruds tabela-solicitacoes">
+          <table className="tabela-geral tabela-solicitacoes">
             <thead>
               <tr>
                 <th>ID</th>

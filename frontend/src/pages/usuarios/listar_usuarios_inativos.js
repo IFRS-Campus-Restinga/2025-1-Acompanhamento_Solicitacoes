@@ -108,7 +108,7 @@ export default function ListarUsuariosInativos() {
         {usuariosFiltrados.length === 0 ? (
           <p><br />Nenhum usuário inativo encontrado!</p>
         ) : (
-          <table className="tabela-cruds">
+          <table className="tabela-geral">
             <thead>
               <tr>
                 <th>Nome</th>

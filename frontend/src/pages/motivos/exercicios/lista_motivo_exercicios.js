@@ -17,6 +17,9 @@ import BotaoEditar from "../../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../../components/UI/botoes/botao_excluir";
 import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 
+//CSS
+import "../../../components/styles/tabela.css";
+
 
 export default function ListarMotivosExercicios() {
   const navigate = useNavigate();
@@ -100,7 +103,7 @@ export default function ListarMotivosExercicios() {
         {motivosFiltrados.length === 0 ? (
           <p><br />Nenhum motivo encontrado!</p>
         ) : (
-          <table className="tabela-cruds">
+          <table className="tabela-geral">
             <thead>
               <tr>
                 <th>Descrição</th>

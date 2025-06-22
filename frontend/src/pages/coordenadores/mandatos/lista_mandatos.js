@@ -20,7 +20,7 @@ import BarraPesquisa from "../../../components/UI/barra_pesquisa";
 import Paginacao from "../../../components/UI/paginacao";
 
 //CSS
-//import "../../../components/styles/tabela.css";
+import "../../../components/styles/tabela.css";
 
 // Função auxiliar para formatar a data (YYYY-MM-DD para DD/MM/YYYY)
 const formatarDataParaExibicao = (dataString) => {
