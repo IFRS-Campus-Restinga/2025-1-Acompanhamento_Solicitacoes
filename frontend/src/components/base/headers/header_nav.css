@@ -1,4 +1,3 @@
-/* header_nav.css */
 .header {
     background-color: var(--verde-oficial);
     padding: 10px 0;
@@ -13,39 +12,52 @@
 .header-container {
     display: flex;
     align-items: center;
+    /* NOVIDADE: Usamos space-between para empurrar o logo para a esquerda,
+                 o nav (botões) para o centro e a info do usuário para a direita. */
     justify-content: space-between;
-    max-width: var(--largura-maxima-conteudo); /* Usando a variável unificada */
-    margin: 0 auto;
-    padding: 0 var(--padding-global); /* Usando a variável unificada */
-    width: 100%;
+    max-width: var(--largura-maxima-conteudo); /* Sua largura máxima definida */
+    margin: 0 auto; /* Centraliza o container horizontalmente */
+    padding: 0 var(--padding-global); /* Mantém o padding global nas laterais do container */
+    width: 100%; /* Garante que o container ocupe toda a largura disponível dentro do max-width */
 }
 
-/* LEFT SECTION */
+/* LEFT SECTION - ONDE O LOGO ESTÁ */
 .left {
     display: flex;
     align-items: center;
-    gap: 15px;
+    flex-shrink: 0; /* Impede que o logo encolha */
+    /* Remove padding-left aqui, pois o padding do container já resolve. */
+    /* Se o logo ainda parecer muito grudado, adicione margin-right ao .logo */
 }
 
 .logo {
     width: 220px; /* Manter a largura padrão do logo */
     height: auto;
     max-height: 75px; /* Limita a altura do logo */
+    /* Pode adicionar um margin-right aqui se precisar de espaço entre o logo e o .center */
 }
 
-/* CENTER NAVIGATION */
+/* CENTER NAVIGATION - ONDE OS BOTÕES DE NAVEGAÇÃO FICARÃO */
 .center {
-    flex: 1;
+    /* NOVIDADE CRÍTICA: flex-grow: 1 para o centro ocupar todo o espaço disponível. */
     display: flex;
-    justify-content: center;
+    /* NOVIDADE CRÍTICA: space-evenly para distribuir os links de forma equidistante. */
+    /* Isso fará com que o espaço seja dividido igualmente ANTES, ENTRE e DEPOIS dos itens. */
+    justify-content: space-evenly;
+    padding: 0 20px; /* Adiciona um padding horizontal interno para afastar os botões das bordas do 'center' */
+    /* O valor '20px' é um ponto de partida, ajuste conforme a necessidade visual. */
 }
 
 .nav-links {
     display: flex;
     list-style: none;
-    gap: 25px;
+    /* NOVIDADE: O gap entre os links não será tão relevante com justify-content: space-evenly no pai. */
+    /* Mas é bom manter para uma fallback ou se mudar a distribuição no .center. */
+    gap:50px; /* Mantido um gap, mas o espaçamento será dominado pelo space-evenly */
     margin: 0;
     padding: 0;
+    width: 100%; /* Garante que a lista de links ocupe todo o espaço do .center */
+    justify-content: space-evenly; /* Repetido para garantir, mas o pai .center já deve cuidar */
 }
 
 .nav-links li a,
@@ -53,20 +65,29 @@
     color: var(--cor-branca);
     text-decoration: none;
     font-size: var(--tamanho-fonte-base);
-    font-weight: var(--peso-paragrafo); /* Usando peso do parágrafo para links */
-    padding: 8px 12px;
+    font-weight: var(--peso-paragrafo);
+    padding: 8px 15px;
     border-radius: 4px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.2s;
     display: inline-block;
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .nav-links li a:hover,
 .dropdown-toggle:hover {
     background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
 }
 
-/* DROPDOWN STYLES */
+.nav-links li a:active,
+.dropdown-toggle:active {
+    background-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(0);
+}
+
+
+/* DROPDOWN STYLES (mantidos como estavam) */
 .dropdown-container {
     position: relative;
 }
@@ -79,7 +100,6 @@
     padding-right: 25px;
 }
 
-/* Seta do dropdown */
 .dropdown-toggle::after {
     content: '';
     position: absolute;
@@ -98,7 +118,6 @@
     transform: translateY(-50%) rotate(180deg);
 }
 
-/* Lista de opções */
 .dropdown-menu {
     position: absolute;
     top: 100%;
@@ -139,21 +158,22 @@
 }
 
 .dropdown-menu a:hover {
-    background-color: #f5f5f5; /* Um cinza claro */
+    background-color: #f5f5f5;
     color: var(--verde-oficial);
 }
 
-.dropdown-menu .bi { /* Ícones do Bootstrap Icons, por exemplo */
+.dropdown-menu .bi {
     color: var(--verde-oficial);
     font-size: var(--tamanho-fonte-base);
     width: 20px;
 }
 
-/* RIGHT SECTION */
+/* RIGHT SECTION - INFORMAÇÕES DO USUÁRIO */
 .right {
     display: flex;
     align-items: center;
     gap: 10px;
+    flex-shrink: 0; /* Impede que a seção encolha */
 }
 
 .profile-pic {
@@ -161,41 +181,41 @@
     height: 36px;
     border-radius: 50%;
     object-fit: cover;
+    border: 2px solid var(--cor-branca);
 }
 
-.mensagem-usuario { /* Renomeado para mais clareza */
+.mensagem-usuario {
     color: var(--cor-branca);
-    display: flex; /* Mantido flex para o gap */
-    gap: 25px; /* Verifique se este gap faz sentido para este elemento */
     margin: 0;
     padding: 0;
     font-size: var(--tamanho-fonte-base);
     font-weight: var(--peso-paragrafo);
-    padding: 8px 12px;
-    border-radius: 4px;
-    display: inline-block; /* O display:flex acima pode sobrepor, verifique */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
 }
 
-/* Overlay para fechar dropdown ao clicar fora */
-.dropdown-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    z-index: 999;
+/* Ícones de Logout e Perfil */
+.header-icon-button {
+    background: none;
+    border: none;
+    color: var(--cor-branca);
+    font-size: var(--tamanho-fonte-grande);
+    cursor: pointer;
+    transition: color 0.2s ease, transform 0.2s ease;
+    padding: 5px;
 }
 
-.dropdown-container.open .dropdown-overlay {
-    display: block;
+.header-icon-button:hover {
+    color: rgba(255, 255, 255, 0.7);
+    transform: scale(1.1);
 }
 
-/* Estilos adicionais para a seção superior do header, baseados na imagem */
+/* Outros estilos adicionais que você tinha, revisados se necessário */
 .header-top-menu {
     display: flex;
     gap: 40px;
-    margin-bottom: 20px; /* Espaçamento entre o menu superior e a navegação */
 }
 
 .header-top-menu-item {
@@ -204,6 +224,7 @@
     font-size: var(--tamanho-fonte-base);
     font-weight: var(--peso-paragrafo);
     cursor: pointer;
+    white-space: nowrap;
 }
 
 .header-user-section {
@@ -219,27 +240,14 @@
 }
 
 .user-avatar-circle {
-    background-color: var(--laranja-lista); /* Usando a cor laranja da lista, pode ser uma nova variável */
+    background-color: var(--laranja-lista);
     border-radius: 50%;
     width: 40px;
     height: 40px;
     display: flex;
     justify-content: center;
     align-items: center;
-    color: var(--cor-preta); /* Texto do avatar, se for inicial do nome */
+    color: var(--cor-preta);
     font-weight: var(--peso-titulo);
     font-size: var(--tamanho-fonte-media);
-}
-
-.header-icon-button {
-    background: none;
-    border: none;
-    color: var(--cor-branca);
-    font-size: var(--tamanho-fonte-grande);
-    cursor: pointer;
-    transition: color 0.2s ease;
-}
-
-.header-icon-button:hover {
-    color: rgba(255, 255, 255, 0.7);
 }

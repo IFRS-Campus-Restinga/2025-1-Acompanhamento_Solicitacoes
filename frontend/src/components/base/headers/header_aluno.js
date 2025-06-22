@@ -1,48 +1,42 @@
 import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getGoogleUser, logout } from "../../../services/authUtils";
-import "./../headers/header_nav.css";
+import "./../headers/header_nav.css"; // Garanta que este caminho está correto
 
-const HeaderAluno = (//{onLogout}
-) => {
-  const [userData, setUserData] = useState(null);
-  const navigate = useNavigate();
+const HeaderAluno = () => {
+    const [userData, setUserData] = useState(null);
+    const navigate = useNavigate();
 
-   // Função para carregar os dados do usuário do Google a partir dos cookies
+    // Função para carregar os dados do usuário do Google a partir dos cookies
     const loadUserData = useCallback(() => {
         setUserData(getGoogleUser());
     }, []);
 
     useEffect(() => {
-        // Carrega os dados do usuário assim que o componente é montado
         loadUserData();
 
-        // Esta função será chamada quando o evento 'authChange' for disparado
-        // (por exemplo, após um login ou logout em outra aba/componente)
         const handleAuthChange = () => {
             console.log("Evento 'authChange' detectado. Recarregando dados do usuário.");
-            loadUserData(); // Recarrega os dados para refletir a mudança
+            loadUserData();
         };
 
-        // Adiciona um ouvinte para o evento 'authChange'
-        // Este evento deve ser disparado em logout ou onde o usuário é logado/autenticado
         window.addEventListener("authChange", handleAuthChange);
 
-        // Limpa o ouvinte de evento quando o componente é desmontado
         return () => {
             window.removeEventListener("authChange", handleAuthChange);
         };
-    }, [loadUserData]); // `loadUserData` é uma dependência do `useEffect`
+    }, [loadUserData]);
 
- // Função para lidar com o logout do usuário
+    // Função para lidar com o logout do usuário
     const handleLogout = () => {
         logout(); // Chama a função centralizada em authUtils.js para limpar os cookies
         setUserData(null);
+        // Limpa a role temporária do localStorage para o próximo login ou acesso.
+        localStorage.removeItem('tempUserRole');
         navigate("/"); // Redireciona o usuário para a página inicial/de login
     };
 
-
-  return (
+    return (
         <header className="header">
             <div className="header-container">
                 <div className="left">
@@ -51,11 +45,17 @@ const HeaderAluno = (//{onLogout}
 
                 <nav className="center">
                     <ul className="nav-links">
+                        {/* Botão Formulários (redireciona para /aluno/nova-solicitacao) */}
                         <li>
-                            <Link to="/aluno/nova-solicitacao">Nova Solicitação</Link>
+                            <Link to="/aluno/nova-solicitacao" className="nav-link-item">Formulários</Link>
                         </li>
+                        {/* Botão Minhas Solicitações (mantido) */}
                         <li>
-                            <Link to="/aluno/minhas-solicitacoes">Minhas Solicitações</Link>
+                            <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
+                        </li>
+                        {/* Novo botão Acompanhar (redireciona para /aluno/acompanhar) */}
+                        <li>
+                            <Link to="/aluno/acompanhar" className="nav-link-item">Acompanhar</Link>
                         </li>
                     </ul>
                 </nav>
@@ -78,8 +78,6 @@ const HeaderAluno = (//{onLogout}
                             </Link>
                         </>
                     ) : (
-                        // Se não houver dados do usuário, mostra a mensagem de boas-vindas genérica
-                        // O redirecionamento para a página de login geralmente ocorre em um nível superior
                         <>
                             <p className="mensagem-usuario">Bem-vindo</p>
                         </>
@@ -91,4 +89,3 @@ const HeaderAluno = (//{onLogout}
 };
 
 export default HeaderAluno;
-
