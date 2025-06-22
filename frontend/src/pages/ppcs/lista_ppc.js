@@ -146,7 +146,7 @@ export default function ListarPpc() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
+        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
       </main>
     </div>
   );

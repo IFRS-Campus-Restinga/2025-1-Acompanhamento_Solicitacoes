@@ -208,7 +208,7 @@ export default function ListarGrupos() {
         />
 
         {/* Usando a navegação do último arquivo do usuário */}
-        <BotaoVoltar onClick={() => navigate("/configuracoes")} /> 
+        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} /> 
       </main>
     </div>
   );

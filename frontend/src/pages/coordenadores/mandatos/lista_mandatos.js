@@ -213,7 +213,7 @@ export default function HistoricoMandatos() {
                 />
 
 
-                <BotaoVoltar onClick={() => navigate("/configuracoes")} />
+                <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
             </main>
         </div>
     );

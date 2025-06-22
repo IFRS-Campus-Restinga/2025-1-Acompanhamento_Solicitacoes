@@ -24,7 +24,7 @@ const GestaoSistema = () => {
         <div className="colunas-section-container">
           {/* Seção 1: Usuários e Grupos */}
           <section className="colunas-section">
-            <h3>Usuários</h3>
+            <h3>Contas</h3>
             <div className="grid-colunas">
               <Link 
                 to="/usuarios"
@@ -40,14 +40,6 @@ const GestaoSistema = () => {
                 onMouseEnter={() => setHoveredCard('usuarios-inativos')}
                 onMouseLeave={() => setHoveredCard(null)}>
                 <i className="bi bi-person-circle"></i> Usuários Inativos
-              </Link>
-              
-              <Link 
-                to="/usuarios/selecionargrupo"
-                className={`colunas-link ${hoveredCard === 'cadastro-grupo' ? 'hovered' : ''}`}
-                onMouseEnter={() => setHoveredCard('cadastro-grupo')}
-                onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-person-circle"></i> Cadastro Aluno/CRE/Coordenador
               </Link>
               
               <Link 
@@ -70,14 +62,15 @@ const GestaoSistema = () => {
 
           {/* Seção 2: Cadastros Acadêmicos */}
           <section className="colunas-section">
-            <h3>Cadastros Acadêmicos</h3>
+            <h3>Configurar</h3>
             <div className="grid-colunas">
+
               <Link 
-                to="/turmas"
-                className={`colunas-link ${hoveredCard === 'turmas' ? 'hovered' : ''}`}
-                onMouseEnter={() => setHoveredCard('turmas')}
+                to="/disponibilidades"
+                className={`colunas-link ${hoveredCard === 'disponibilidades' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('disponibilidades')}
                 onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-people"></i> Turmas
+                <i className="bi bi-calendar-check"></i> Disponibilidade de Formulário
               </Link>
               
               <Link 
@@ -85,7 +78,7 @@ const GestaoSistema = () => {
                 className={`colunas-link ${hoveredCard === 'disciplinas' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('disciplinas')}
                 onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-book"></i> Disciplinas
+                <i className="bi bi-book"></i> Cadastrar Disciplina
               </Link>
               
               <Link 
@@ -93,7 +86,7 @@ const GestaoSistema = () => {
                 className={`colunas-link ${hoveredCard === 'ppcs' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('ppcs')}
                 onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-layout-text-window-reverse"></i> PPCs
+                <i className="bi bi-layout-text-window-reverse"></i> Cadastrar PPC
               </Link>
               
               <Link 
@@ -101,22 +94,14 @@ const GestaoSistema = () => {
                 className={`colunas-link ${hoveredCard === 'cursos' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('cursos')}
                 onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-mortarboard"></i> Cursos
-              </Link>
-              
-              <Link 
-                to="/disponibilidades"
-                className={`colunas-link ${hoveredCard === 'disponibilidades' ? 'hovered' : ''}`}
-                onMouseEnter={() => setHoveredCard('disponibilidades')}
-                onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-calendar-check"></i> Disponibilidade de Formulários
+                <i className="bi bi-mortarboard"></i> Cadastrar Curso
               </Link>
             </div>
           </section>
 
           {/* Seção 3: Motivos de Solicitações */}
           <section className="colunas-section">
-            <h3>Motivos de Solicitações</h3>
+            <h3>Cadastrar Motivos de Solicitações</h3>
             <div className="grid-colunas">
               <Link 
                 to="/motivo_abono"

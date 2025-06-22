@@ -51,11 +51,16 @@ const HeaderCRE = () => {
         <nav className="center">
           <ul className="nav-links">
             <li>
-              <Link to="/cre/home">Minhas Solicitações</Link>
+              <Link to="/cre/home">Para Registrar</Link>
             </li>
             <li>
-              <Link to="/configuracoes" className="configuracoes-link">
-                Configurações
+              <Link to="/cre/gestao-sistema" className="configuracoes-link">
+                Gestão do Sistema
+              </Link>
+            </li>
+            <li>
+              <Link to="/cre/desistencia-vaga">
+                Desistência de Vaga
               </Link>
             </li>
           </ul>
