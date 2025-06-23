@@ -7,6 +7,8 @@ from django.contrib.auth import get_user_model, login
 from google.oauth2 import id_token as google_id_token
 from google.auth.transport import requests as google_requests
 from google_auth.serializers import get_tokens_for_user
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
 
 
 User = get_user_model() 
@@ -152,3 +154,47 @@ def google_callback(request):
         print(f"Error during user check/redirect logic: {e}")
         return JsonResponse({"error": "An unexpected error occurred during the login process.", "details": str(e)}, status=500)
 
+@api_view(['GET'])
+def verificar_usuario(request):
+    """
+    Verifica se um usuário com o email fornecido existe no sistema
+    e retorna seus grupos.
+    """
+    email = request.query_params.get('email')
+    
+    if not email:
+        return JsonResponse({
+            'error': 'Email não fornecido',
+            'exists': False,
+            'groups': []
+        }, status=400)
+    
+    try:
+        # Adicionar logs para depuração
+        print(f"Verificando usuário com email: {email}")
+        
+        user = User.objects.filter(email=email).first()
+        
+        if user:
+            # Usuário existe, retornar seus grupos
+            groups = list(user.groups.values_list('name', flat=True))
+            print(f"Usuário encontrado. Grupos: {groups}")
+            return JsonResponse({
+                'exists': True,
+                'groups': groups
+            })
+        else:
+            # Usuário não existe
+            print(f"Usuário com email {email} não encontrado")
+            return JsonResponse({
+                'exists': False,
+                'groups': []
+            })
+    
+    except Exception as e:
+        print(f"Erro ao verificar usuário: {str(e)}")
+        return JsonResponse({
+            'error': str(e),
+            'exists': False,
+            'groups': []
+        }, status=500)

@@ -168,4 +168,6 @@ urlpatterns = [
     path('form_exerc_dom/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view"),
     path('form_exerc_dom/<int:id>/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view_by_aluno"),
     path('form_exerc_dom/update/<int:pk>/', FormularioExercDomUdpate.as_view(), name="formulario_exerc_dom_update")
+
+    
     ]
