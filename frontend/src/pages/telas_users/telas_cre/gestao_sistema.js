@@ -26,6 +26,14 @@ const GestaoSistema = () => {
           <section className="colunas-section">
             <h3>Contas</h3>
             <div className="grid-colunas">
+              <Link
+                to="/usuarios/selecionargrupo"
+                className={`colunas-link ${hoveredCard === 'cadastro-grupo' ? 'hovered' : ''}`}
+                onMouseEnter={() => setHoveredCard('cadastro-grupo')}
+                onMouseLeave={() => setHoveredCard(null)}>
+                <i className="bi bi-person-circle"></i> Cadastrar usuários
+              </Link>
+
               <Link 
                 to="/usuarios"
                 className={`colunas-link ${hoveredCard === 'usuarios-ativos' ? 'hovered' : ''}`}
@@ -50,13 +58,6 @@ const GestaoSistema = () => {
                 <i className="bi bi-person-circle"></i> Mandatos
               </Link>
               
-              <Link 
-                to="/grupos"
-                className={`colunas-link ${hoveredCard === 'grupos' ? 'hovered' : ''}`}
-                onMouseEnter={() => setHoveredCard('grupos')}
-                onMouseLeave={() => setHoveredCard(null)}>
-                <i className="bi bi-people-fill"></i> Grupos
-              </Link>
             </div>
           </section>
 

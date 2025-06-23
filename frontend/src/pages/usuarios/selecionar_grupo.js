@@ -78,7 +78,7 @@ export default function SelecionarGrupoUsuario() {
                     </button>
                 </div>
 
-                <BotaoVoltar onClick={() => navigate("/")} />
+                <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
             </main>
         </div>      
     );
