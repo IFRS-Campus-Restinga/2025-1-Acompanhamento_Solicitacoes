@@ -46,7 +46,7 @@ export default function PopupConfirmacao({
           <p><strong>Email:</strong> {usuarioDetalhes.email}</p>
           <p><strong>CPF:</strong> {usuarioDetalhes.cpf}</p>
           <p><strong>Telefone:</strong> {usuarioDetalhes.telefone}</p>
-          <p><strong>Tipo de Usuário:</strong> {usuarioDetalhes.grupo === "Responsavel" ? "Responsável" : usuarioDetalhes.grupo}</p>
+          <p><strong>Tipo de Usuário:</strong> {usuarioDetalhes.grupo === "Responsavel" ? "Responsavel" : usuarioDetalhes.grupo}</p>
 
           {usuarioDetalhes.grupo === "Coordenador" && (
             <>
@@ -71,7 +71,7 @@ export default function PopupConfirmacao({
             <p><strong>SIAPE:</strong> {usuarioDetalhes.grupo_detalhes?.siape}</p>
           )}
 
-          {usuarioDetalhes.grupo === "Responsável" && (
+          {usuarioDetalhes.grupo === "Responsavel" && (
             <>
               <p><strong>Responsável de:</strong> {usuarioDetalhes.grupo_detalhes?.aluno || "Nenhum aluno"}</p>
               <p><strong>E-mail do aluno:</strong> {usuarioDetalhes.grupo_detalhes?.email_aluno || "Não cadastrado"}</p>

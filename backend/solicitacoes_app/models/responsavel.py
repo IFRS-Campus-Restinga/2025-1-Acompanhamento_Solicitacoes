@@ -15,8 +15,6 @@ class Responsavel(BaseModel):
 
     objects = ResponsavelManager()
 
-    def __str__(self):
-        return f"Responsável - {self.usuario.nome}"
     
     def delete(self, using=None, keep_parents=False):
         super().delete(using=using, keep_parents=keep_parents)
@@ -29,7 +27,14 @@ class Responsavel(BaseModel):
             # Regra: Ao criar Responsável, passa o STATUSUSUARIO para EM_ANALISE
             if self.usuario.status_usuario == StatusUsuario.NOVO:
                 self.usuario.status_usuario = StatusUsuario.EM_ANALISE
-                self.usuario.is_active = False
-                self.usuario.save(update_fields=['status_usuario', 'is_active']) # Salva apenas os campos modificados
+                self.usuario.save() 
+                
+       
+    def __str__(self):
+        return f"Responsável - {self.usuario.nome}"
+    
+    class Meta:
+        verbose_name = "Responsavel"
+        verbose_name_plural = "Responsaveis"     
 
 

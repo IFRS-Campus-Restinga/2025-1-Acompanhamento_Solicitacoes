@@ -32,7 +32,7 @@ export default function DetalhesUsuario() {
             <p><strong>CPF:</strong> {usuario.cpf}</p>
             <p><strong>Telefone:</strong> {usuario.telefone}</p>
             <p><strong>Data de Nascimento:</strong> {usuario.data_nascimento}</p>
-            <p><strong>Tipo de Usuário:</strong> {usuario.grupo === "Responsavel" ? "Responsável" : usuario.grupo}</p>
+            <p><strong>Tipo de Usuário:</strong> {usuario.grupo === "Responsavel" ? "Responsavel" : usuario.grupo}</p>
 
             {usuario.grupo === "Coordenador" && (
               <>
@@ -66,7 +66,7 @@ export default function DetalhesUsuario() {
               </>
             )}
 
-            {usuario.grupo === "Responsável" && (
+            {usuario.grupo === "Responsavel" && (
               <>
                 <p><strong>Responsável de:</strong> {usuario.grupo_detalhes?.aluno || "Nenhum aluno"}</p>
                 <p><strong>E-mail do aluno:</strong> {usuario.grupo_detalhes?.email_aluno || "Não cadastrado"}</p>

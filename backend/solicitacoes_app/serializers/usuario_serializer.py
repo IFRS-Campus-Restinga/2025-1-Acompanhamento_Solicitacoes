@@ -83,7 +83,7 @@ class UsuarioSerializerComGrupos(serializers.ModelSerializer):
             return "CRE"
         if hasattr(obj, 'responsavel') and obj.responsavel is not None:
             print(f"DEBUG_SERIALIZER: {obj.email} é Responsável.")
-            return "Responsável"
+            return "Responsavel"
         print(f"DEBUG_SERIALIZER: {obj.email} é Externo (nenhum papel específico encontrado).")
         return "Externo"
     

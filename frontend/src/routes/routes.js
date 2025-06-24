@@ -159,7 +159,9 @@ const routes = [
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
   <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} key="cadastrar-usuarios-grupo" />,
   <Route path="/usuarios/editar/:grupo/:id" element={<CadastrarAtualizarUsuarioGrupo />} key="atualizar-usuarios-grupo" />,
-
+  <Route path="/usuarios/editar/externo/:id" element={<CadastrarAtualizarUsuario />} key="atualizar-usuarios-externo" />,
+  <Route path="/usuarios/editar/responsavel/:id" element={<CadastrarAtualizarUsuario />} key="atualizar-usuarios-responsavel" />,
+  
   
   //Mandatos
 

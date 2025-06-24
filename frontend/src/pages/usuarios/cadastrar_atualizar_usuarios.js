@@ -13,9 +13,17 @@ const initialState = {
   cpf: "",
   telefone: "",
   data_nascimento: "",
-  is_active: true, 
+  is_active: true,
   is_responsavel: false,
   aluno_cpf: "",
+};
+
+// Mapeamento de campos para validação - ajustado para o aluno_cpf
+const getValidationUrl = (fieldName) => {
+  if (fieldName === "aluno_cpf") {
+    return null;
+  }
+  return "usuarios/";
 };
 
 export default function CadastrarAtualizarUsuario() {
@@ -30,7 +38,10 @@ export default function CadastrarAtualizarUsuario() {
   const [alunoBuscaErro, setAlunoBuscaErro] = useState("");
   const [isAlunoBuscadoEValido, setIsAlunoBuscadoEValido] = useState(false);
   const [isConcluirBtnDisabled, setIsConcluirBtnDisabled] = useState(true);
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
+  const [responsavelId, setResponsavelId] = useState(null); 
+
   // Estado para controlar quais campos são somente leitura
   const [readOnlyFields, setReadOnlyFields] = useState({
     nome: false,
@@ -38,20 +49,24 @@ export default function CadastrarAtualizarUsuario() {
   });
 
   const navigate = useNavigate();
-  const location = useLocation(); // Para acessar os query params
-  const { id } = useParams();
+  const location = useLocation();
+  const { id: idFromUrl } = useParams(); 
+
+  const isEditing = !!idFromUrl;
+  const title = isEditing ? "Editar Usuário" : "Cadastrar Usuário";
+  const submitButtonText = isEditing ? "Atualizar" : "Cadastrar";
 
   // Efeito para carregar dados do Google do cookie
   useEffect(() => {
     try {
       
       const googleUserCookie = getCookie('googleUser');
-      
+
       if (googleUserCookie) {
         // Parsear o cookie para obter os dados do usuário
         const googleUser = JSON.parse(googleUserCookie);
         console.log("Dados do usuário Google obtidos do cookie:", googleUser);
-        
+
         if (googleUser && (googleUser.name || googleUser.email)) {
           // Atualizar o formulário com os dados do Google
           setFormData(prev => ({
@@ -59,13 +74,13 @@ export default function CadastrarAtualizarUsuario() {
             nome: googleUser.name || prev.nome,
             email: googleUser.email || prev.email
           }));
-          
+
           // Definir quais campos serão somente leitura
           setReadOnlyFields({
             nome: !!googleUser.name,
             email: !!googleUser.email
           });
-          
+
           console.log("Formulário atualizado com dados do Google:", {
             nome: googleUser.name,
             email: googleUser.email
@@ -73,21 +88,21 @@ export default function CadastrarAtualizarUsuario() {
         }
       } else {
         console.log("Cookie 'googleUser' não encontrado");
-        
+
         // Verificar também os parâmetros da URL
         const queryParams = new URLSearchParams(location.search);
         const googleName = queryParams.get("google_name");
         const googleEmail = queryParams.get("google_email");
-        
+
         if (googleName || googleEmail) {
           console.log("Dados do Google encontrados na URL:", { nome: googleName, email: googleEmail });
-          
+
           setFormData(prev => ({
             ...prev,
             nome: googleName || prev.nome,
             email: googleEmail || prev.email
           }));
-          
+
           setReadOnlyFields({
             nome: !!googleName,
             email: !!googleEmail
@@ -97,41 +112,97 @@ export default function CadastrarAtualizarUsuario() {
     } catch (error) {
       console.error("Erro ao obter dados do Google:", error);
     }
-  }, [location.search]); // Executar quando a URL mudar
+  }, [location.search]);
 
-  const carregarUsuario = useCallback(async (usuarioId) => {
+  const carregarUsuario = useCallback(async (id) => {
+    setMensagem(""); // Limpa mensagens anteriores
+    setTipoMensagem("sucesso"); // Reseta o tipo de mensagem
+
+    let dataToLoad = null;
+    let isResponsavelUser = false;
+    let currentResponsavelId = null;
+
     try {
-      const response = await api.get(`usuarios/${usuarioId}/`);
-      const usuario = response.data;
+      // Tenta buscar como um usuário comum primeiro
+      const userResponse = await api.get(`usuarios/${id}/`);
+      const usuario = userResponse.data;
 
-      if (usuario.data_nascimento) {
-        const data = new Date(usuario.data_nascimento);
-        usuario.data_nascimento = data.toISOString().split("T")[0];
+      if (usuario.grupo === "Responsavel" && usuario.grupo_detalhes) {
+        // Se o usuário é um Responsável (e tem grupo_detalhes), busca os dados completos do responsável
+        const responsavelIdFromUserApi = usuario.grupo_detalhes.id;
+        const responsavelResponse = await api.get(`responsaveis/${responsavelIdFromUserApi}/`);
+        dataToLoad = responsavelResponse.data; // Esta é a resposta da API de responsáveis
+        isResponsavelUser = true;
+        currentResponsavelId = responsavelResponse.data.id; // Armazena o ID real do responsável
+      } else {
+        // É um usuário comum (não responsável)
+        dataToLoad = usuario; // Esta é a resposta da API de usuários
+        isResponsavelUser = false;
+        currentResponsavelId = null;
       }
+    } catch (userError) {
+      console.warn(`Erro ao carregar usuário como 'usuarios/${id}':`, userError);
+      // Se falhou como usuário, tenta buscar como responsável diretamente
+      try {
+        const responsavelResponse = await api.get(`responsaveis/${id}/`);
+        dataToLoad = responsavelResponse.data; 
+        isResponsavelUser = true;
+        currentResponsavelId = responsavelResponse.data.id; 
+      } catch (responsavelError) {
+        console.error(`Erro ao carregar usuário como 'responsaveis/${id}':`, responsavelError);
+        setMensagem(`Erro ao carregar usuário. ID ${id} não encontrado como usuário ou responsável.`);
+        setTipoMensagem("erro");
+        setShowFeedback(true);
+        return; // Sai da função se ambas as tentativas falharem
+      }
+    }
 
-      // Ajuste para carregar corretamente dados de responsável ao editar
-      if (usuario.grupo === "Responsavel" && usuario.responsavel) { // Acessa diretamente 'responsavel' que vem aninhado agora
+    // Processa os dados carregados (seja usuário ou responsável)
+    if (dataToLoad) {
+      if (isResponsavelUser) {
+        const userData = dataToLoad.usuario;
+        const alunoData = dataToLoad.aluno;
+
+        if (userData.data_nascimento) {
+          const data = new Date(userData.data_nascimento);
+          userData.data_nascimento = data.toISOString().split("T")[0];
+        }
+
         setFormData({
-          ...usuario,
+          ...userData, 
           is_responsavel: true,
-          aluno_cpf: usuario.responsavel.aluno.cpf, // Acessa o CPF do aluno pelo aninhamento
+          aluno_cpf: alunoData?.cpf || "", 
         });
-        setCpfBusca(usuario.responsavel.aluno.cpf);
-        // Ao carregar um responsável existente, tenta buscar o nome do aluno
-        try {
-          const alunoResponse = await api.get(`alunos/buscar_por_cpf/?cpf=${usuario.responsavel.aluno.cpf}`);
-          setNomeAlunoEncontrado(alunoResponse.data.nome_aluno); // Apenas o nome
-          setAlunoBuscaErro("");
-          setIsAlunoBuscadoEValido(true);
-        } catch (alunoError) {
-          console.error("Erro ao carregar nome do aluno do responsável:", alunoError);
+        setCpfBusca(alunoData?.cpf || "");
+        setResponsavelId(dataToLoad.id); 
+
+        
+        if (alunoData?.cpf) {
+          try {
+            const alunoResponse = await api.get(`alunos/buscar_por_cpf/?cpf=${alunoData.cpf}`);
+            setNomeAlunoEncontrado(alunoResponse.data.nome_aluno);
+            setAlunoBuscaErro("");
+            setIsAlunoBuscadoEValido(true);
+          } catch (alunoError) {
+            console.error("Erro ao buscar nome do aluno associado:", alunoError);
+            setNomeAlunoEncontrado("");
+            setAlunoBuscaErro("Erro ao buscar nome do aluno associado.");
+            setIsAlunoBuscadoEValido(false);
+          }
+        } else {
           setNomeAlunoEncontrado("");
-          setAlunoBuscaErro("Erro ao buscar nome do aluno associado.");
+          setAlunoBuscaErro("");
           setIsAlunoBuscadoEValido(false);
         }
       } else {
+
+        if (dataToLoad.data_nascimento) {
+          const data = new Date(dataToLoad.data_nascimento);
+          dataToLoad.data_nascimento = data.toISOString().split("T")[0];
+        }
+
         setFormData({
-          ...usuario,
+          ...dataToLoad, 
           is_responsavel: false,
           aluno_cpf: "",
         });
@@ -139,78 +210,106 @@ export default function CadastrarAtualizarUsuario() {
         setNomeAlunoEncontrado("");
         setAlunoBuscaErro("");
         setIsAlunoBuscadoEValido(false);
+        setResponsavelId(null);
       }
-    } catch (error) {
-      console.error("Erro ao carregar usuário:", error);
-      setMensagem(`Erro ${error.response?.status || ""}: ${error.response?.data?.detail || "Erro ao carregar usuário."}`);
-      setTipoMensagem("erro");
-      setShowFeedback(true);
     }
   }, []);
 
+  // Efeito para carregar o usuário quando o ID na URL muda
   useEffect(() => {
-    if (id) {
-      carregarUsuario(id);
+    if (idFromUrl) {
+      carregarUsuario(idFromUrl);
     }
-  }, [id, carregarUsuario]);
+  }, [idFromUrl, carregarUsuario]);
 
-  const validarCampo = useCallback(async (fieldName, value) => {
-    // A validação individual de campos pode ser feita se houver um endpoint para isso.
-    // Como a validação mais robusta agora será no submit da criação de Responsavel,
-    // e o endpoint de Usuario/ não será mais chamado diretamente para criação de Responsável,
-    // podemos focar a validação aqui no frontend ou na submissão completa.
-    // Por simplicidade, vamos manter a validação na submissão principal.
-    // Essa parte do código pode precisar de revisão mais profunda se a validação em tempo real for crucial.
-    return; // Desativa a validação em tempo real por enquanto para simplificar o fluxo.
-  }, [id]);
+  // Função auxiliar para formatar CPF
+  const formatCpf = (cpf) => {
+    const cleanCpf = cpf.replace(/\D/g, '');
+    if (cleanCpf.length > 9) {
+      return cleanCpf.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
+    } else if (cleanCpf.length > 6) {
+      return cleanCpf.replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');
+    } else if (cleanCpf.length > 3) {
+      return cleanCpf.replace(/^(\d{3})$/, '$1');
+    }
+    return cleanCpf;
+  };
+
+  // Valida campo a campo no backend (exceto aluno_cpf)
+  async function validateField(fieldName, value) {
+    if (readOnlyFields[fieldName] || fieldName === "aluno_cpf") return;
+
+    setErrors(prev => ({ ...prev, [fieldName]: null }));
+    const url = getValidationUrl(fieldName);
+    if (!url) return;
+
+    try {
+      await api[isEditing ? "patch" : "post"](url, { [fieldName]: value });
+    } catch (error) {
+      if (error.response?.status === 400) {
+        if (error.response?.data?.usuario && error.response.data.usuario[fieldName]) {
+          //Verifica se é um array antes de chamar join()
+          const errorMsg = Array.isArray(error.response.data.usuario[fieldName])
+            ? error.response.data.usuario[fieldName].join(', ')
+            : error.response.data.usuario[fieldName];
+          setErrors(prev => ({ ...prev, [fieldName]: errorMsg }));
+        }
+        else if (error.response?.data?.[fieldName]) {
+          //Verifica se é um array antes de chamar join()
+          const errorMsg = Array.isArray(error.response.data[fieldName])
+            ? error.response.data[fieldName].join(', ')
+            : error.response.data[fieldName];
+          setErrors(prev => ({ ...prev, [fieldName]: errorMsg }));
+        }
+      }
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    
-    // Não permitir alterações em campos somente leitura
+
     if (readOnlyFields[name]) return;
 
     if (type === "checkbox") {
       setFormData((prev) => ({
         ...prev,
         [name]: checked,
-        ...(name === "is_responsavel" && !checked && { aluno_cpf: "" }), 
+        ...(name === "is_responsavel" && !checked && { aluno_cpf: "" }),
       }));
       if (name === "is_responsavel" && !checked) {
         setCpfBusca("");
         setNomeAlunoEncontrado("");
         setAlunoBuscaErro("");
         setIsAlunoBuscadoEValido(false);
+        setResponsavelId(null); // Limpa o ID do responsável se desmarcar
       } else if (name === "is_responsavel" && checked) {
         setIsAlunoBuscadoEValido(false);
       }
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
     }
+
+    setErrors(prev => ({ ...prev, [name]: null }));
   };
 
   const handleCpfBuscaChange = (e) => {
     let value = e.target.value.replace(/\D/g, '');
-    if (value.length > 9) {
-        value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2})$/, '$1.$2.$3-$4');
-    } else if (value.length > 6) {
-        value = value.replace(/^(\d{3})(\d{3})(\d{3})$/, '$1.$2.$3');
-    } else if (value.length > 3) {
-        value = value.replace(/^(\d{3})$/, '$1');
+    if (value.length > 11) {
+      value = value.substring(0, 11);
     }
-    setCpfBusca(value);
+    setCpfBusca(formatCpf(value));
+
+    setFormData((prev) => ({ ...prev, aluno_cpf: value }));
+
     setNomeAlunoEncontrado("");
     setAlunoBuscaErro("");
     setIsAlunoBuscadoEValido(false);
-    setFormData((prev) => ({ ...prev, aluno_cpf: "" }));
   };
 
   const handleBlur = (e) => {
-    // Não validar campos somente leitura
     if (readOnlyFields[e.target.name]) return;
-    
-    // const { name, value } = e.target;
-    // validarCampo(name, value); // Validação de campo a campo desativada por enquanto
+
+    validateField(e.target.name, e.target.value);
   };
 
   const handleBuscarAluno = async () => {
@@ -218,7 +317,6 @@ export default function CadastrarAtualizarUsuario() {
     setNomeAlunoEncontrado("");
     setAlunoBuscaErro("");
     setIsAlunoBuscadoEValido(false);
-    setFormData((prev) => ({ ...prev, aluno_cpf: "" }));
 
     if (!cpfLimpo || cpfLimpo.length !== 11) {
       setAlunoBuscaErro('Por favor, digite um CPF válido (11 dígitos).');
@@ -229,7 +327,7 @@ export default function CadastrarAtualizarUsuario() {
       const response = await api.get(`alunos/buscar_por_cpf/?cpf=${cpfLimpo}`);
       const data = response.data;
 
-      setNomeAlunoEncontrado(data.nome_aluno); // APENAS O NOME DO ALUNO
+      setNomeAlunoEncontrado(data.nome_aluno);
       setAlunoBuscaErro("");
       setIsAlunoBuscadoEValido(true);
       setFormData((prev) => ({ ...prev, aluno_cpf: cpfLimpo }));
@@ -244,7 +342,7 @@ export default function CadastrarAtualizarUsuario() {
 
   useEffect(() => {
     let formIsValid = true;
-    
+
     const requiredFields = ['nome', 'email', 'cpf', 'telefone', 'data_nascimento'];
     for (const field of requiredFields) {
       if (!formData[field]) {
@@ -254,192 +352,169 @@ export default function CadastrarAtualizarUsuario() {
     }
 
     if (formData.is_responsavel) {
-      if (!isAlunoBuscadoEValido) {
+      if (!isAlunoBuscadoEValido || !formData.aluno_cpf) {
         formIsValid = false;
       }
     }
 
+    if (Object.values(errors).some(error => error !== null)) {
+      formIsValid = false;
+    }
+
     setIsConcluirBtnDisabled(!formIsValid);
 
-  }, [formData, isAlunoBuscadoEValido]);
+  }, [formData, isAlunoBuscadoEValido, errors]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({}); // Limpa erros anteriores
-    let currentErrors = {};
+    if (isSubmitting) return;
 
-    // Validação de frontend: Se for responsável, o aluno deve ter sido buscado e validado
-    if (formData.is_responsavel && !isAlunoBuscadoEValido) {
-        currentErrors = { ...currentErrors, aluno_cpf: "Busque e valide o aluno responsável." };
-    }
+    setIsSubmitting(true);
+    setSubmissionSuccessful(false);
+    setErrors({});
 
-    // Validação de frontend: Formato básico de e-mail
-    if (!formData.email.includes('@')) { 
-        currentErrors = { ...currentErrors, email: "Email inválido." };
-    }
-
-    // Se houver erros de validação no frontend, exibe e interrompe o envio
-    if (Object.keys(currentErrors).length > 0) {
-        setErrors(currentErrors);
-        setMensagem("Preencha todos os campos obrigatórios e valide o aluno.");
-        setTipoMensagem("erro");
-        setShowFeedback(true);
-        return;
-    }
+    const isResponsavel = formData.is_responsavel;
+    const operacaoTexto = isEditing ? "atualizado" : "criado";
+    const tipoUsuarioTexto = isResponsavel ? "responsavel" : "Usuário externo";
 
     try {
-        if (id) {
-            // Cenário de EDIÇÃO DE USUÁRIO EXISTENTE (incluindo Responsável)
-            // Se o usuário era Responsável, a atualização deve ir para o endpoint de Responsável
-            // Se o usuário NÃO era Responsável e se tornou, ou se manteve Externo, vai para Usuario
-            if (formData.is_responsavel) {
-                const updateResponsibleData = {
-                    usuario: { // Inclua os dados do usuário dentro de 'usuario' para o serializer
-                        nome: formData.nome,
-                        email: formData.email,
-                        cpf: formData.cpf.replace(/\D/g, ''),
-                        telefone: formData.telefone.replace(/\D/g, ''),
-                        data_nascimento: formData.data_nascimento,
-                        is_active: formData.is_active,
-                    },
-                    aluno_cpf: formData.aluno_cpf.replace(/\D/g, ''),
-                };
-                // A rota para update de responsável é /responsaveis/{id_do_responsavel}/
-                // O `id` na URL é o ID do USUARIO, precisamos do ID do RESPONSAVEL para PATCH/PUT
-                // Isso é um ponto crítico. Para simplificar, vou assumir que o 'id' na URL pode ser
-                // usado para buscar o responsável associado, ou que a API de ResponsibleRetrieveUpdateDestroyView
-                // já faz isso internamente, mas o ideal seria o front passar o ID do responsável.
-                // Como workaround, a gente vai passar o ID do usuário e o backend precisaria
-                // encontrar o responsável por esse usuário. Isso precisa ser testado ou ajustado no backend.
-                // OU, o frontend precisaria buscar o ID do responsável no `carregarUsuario`.
-                // Por agora, vamos usar a rota de usuário para update, ou se for responsável,
-                // vamos precisar de uma forma de saber o ID do responsável.
-                
-                // Opção 1: Se a edição de Responsável for via a rota de Responsáveis com o ID do Responsável
-                // await api.put(`responsaveis/${id_do_responsavel}/`, updateResponsibleData); 
-                
-                // Opção 2: Se a edição de Responsável for por aqui e tiver que fazer um POST ou PUT no Responsavel
-                // e o usuário já existe e é responsável. Vamos manter a lógica para `usuarios/` se o 'id' for do usuário
-                // e não do responsável, o que parece ser o caso.
-                
-                // Se o usuário está sendo EDITADO (id existe) e ele está marcado como responsavel,
-                // A GENTE ATUALIZA O USUARIO NORMALMENTE E IGNORA A PARTE DE RESPONSAVEL,
-                // POIS O VINCULO COM O ALUNO É FEITO NA CRIAÇÃO E DEPOIS GERENCIADO PELO MODEL RESPONSAVEL
-                // OU O VÍNCULO SÓ É ATUALIZADO PELO MODEL RESPONSAVEL SE OS DADOS DO ALUNO VIEREM NO UPDATE.
-                // Dada a complexidade, vamos manter a rota /usuarios para updates de dados de usuário,
-                // e a criação de vínculo como Responsável é só na criação inicial.
-                // Se a intenção é poder ALTERAR o aluno associado a um responsável, precisaria de uma rota específica para isso.
-                
-                // Para o update, vamos sempre usar o endpoint de usuário base, a menos que a rota de Responsável
-                // (RetrieveUpdateDestroy) seja realmente para atualizar o registro de Responsável.
-                // Como você disse para não tocar em coordenador_view.py, presumo que a lógica de update é mais simples para Responsável.
-                // Portanto, um update de Responsável é um update do usuário base. Se o vínculo aluno precisar ser alterado,
-                // precisaria de uma requisição PATCH/PUT específica para /responsaveis/{id_responsavel}/.
-                
-                // POR ENQUANTO, MANTEREMOS O FLUXO DE UPDATE SIMPLES PARA O USUÁRIO BASE:
-                const updateUserData = {
-                    nome: formData.nome,
-                    email: formData.email,
-                    cpf: formData.cpf.replace(/\D/g, ''),
-                    telefone: formData.telefone.replace(/\D/g, ''),
-                    data_nascimento: formData.data_nascimento,
-                    is_active: formData.is_active,
-                };
-                await api.put(`usuarios/${id}/`, updateUserData);
-                setMensagem("Usuário atualizado com sucesso!");
+      let response;
 
-            } else { // Edição de usuário NÃO-Responsável (externo ou outro tipo)
-                const updateUserData = {
-                    nome: formData.nome,
-                    email: formData.email,
-                    cpf: formData.cpf.replace(/\D/g, ''),
-                    telefone: formData.telefone.replace(/\D/g, ''),
-                    data_nascimento: formData.data_nascimento,
-                    is_active: formData.is_active,
-                };
-                await api.put(`usuarios/${id}/`, updateUserData); 
-                setMensagem("Usuário atualizado com sucesso!");
-            }
+      // Dados do usuário (comuns a ambos os tipos)
+      const usuarioData = {
+        nome: formData.nome,
+        email: formData.email,
+        cpf: formData.cpf.replace(/\D/g, ''),
+        telefone: formData.telefone.replace(/\D/g, ''),
+        data_nascimento: formData.data_nascimento,
+        is_active: formData.is_active,
+      };
 
+      if (isEditing) {
+        if (isResponsavel) {
+          // Edição de responsável
+          if (!responsavelId) {
+            throw new Error("ID do responsável não encontrado para edição.");
+          }
+          const updateResponsibleData = {
+            // Os campos de usuário são enviados DENTRO de um objeto 'usuario'
+            usuario: {
+              ...usuarioData,
+            },
+            aluno_cpf: formData.aluno_cpf.replace(/\D/g, ''),
+          };
+
+          console.log(`Atualizando responsavel com ID ${responsavelId}:`, updateResponsibleData);
+
+          // Usa o responsavelId para a chamada PUT/PATCH para a API de responsáveis
+          response = await api.put(`responsaveis/${responsavelId}/`, updateResponsibleData);
+          setMensagem("Responsável atualizado com sucesso!");
         } else {
-            // Cenário de CRIAÇÃO DE NOVO USUÁRIO
-            if (formData.is_responsavel) {
-                // Se for Responsável, faz uma ÚNICA chamada para o endpoint de Responsável
-                const responsibleCreationData = {
-                    usuario: { // Aninha os dados do usuário
-                        nome: formData.nome,
-                        email: formData.email,
-                        cpf: formData.cpf.replace(/\D/g, ''),
-                        telefone: formData.telefone.replace(/\D/g, ''),
-                        data_nascimento: formData.data_nascimento,
-                        // Não passar is_active aqui, o backend vai definir como false
-                        // Também não passar password, o backend pode definir um padrão ou exigir um campo
-                    },
-                    aluno_cpf: formData.aluno_cpf.replace(/\D/g, ''), 
-                };
-                const response = await api.post("responsaveis/", responsibleCreationData);
-                console.log("Resposta do cadastro de Responsável:", response.data);
-                setMensagem("Responsável cadastrado com sucesso!");
-            } else {
-                // Se for Usuário Externo, faz a chamada para o endpoint de Usuário
-                const newUserBaseData = {
-                    nome: formData.nome,
-                    email: formData.email,
-                    cpf: formData.cpf.replace(/\D/g, ''), 
-                    telefone: formData.telefone.replace(/\D/g, ''),
-                    data_nascimento: formData.data_nascimento,
-                    // is_active: true por padrão para usuário externo se não houver aprovação.
-                    // O backend do Usuario.save() já trata de status.
-                };
-                const response = await api.post("usuarios/", newUserBaseData); 
-                console.log("Resposta do cadastro de Usuário Externo:", response.data);
-                setMensagem("Usuário externo cadastrado com sucesso!");
-            }
+          // Edição de Usuário externo
+          console.log(`Atualizando usuário externo com ID ${idFromUrl}:`, usuarioData);
+          response = await api.put(`usuarios/${idFromUrl}/`, usuarioData);
+          setMensagem("Usuário externo atualizado com sucesso!");
         }
-        setTipoMensagem("sucesso");
-        setShowFeedback(true);
+      } else {
+        // Lógica de Criação
+        if (isResponsavel) {
+          // Criação de responsável
+          const responsibleCreationData = {
+            // Os campos de usuário são enviados DENTRO de um objeto 'usuario'
+            usuario: {
+              ...usuarioData,
+            },
+            aluno_cpf: formData.aluno_cpf.replace(/\D/g, ''),
+          };
 
+          console.log("Criando novo responsavel:", responsibleCreationData);
+          response = await api.post("responsaveis/", responsibleCreationData);
+          setMensagem("Responsável cadastrado com sucesso!");
+        } else {
+          // Criação de Usuário externo (não responsável)
+          console.log("Criando novo usuário externo:", usuarioData);
+          response = await api.post("usuarios/", usuarioData);
+          setMensagem("Usuário externo cadastrado com sucesso!");
+        }
+      }
+
+      console.log(`${tipoUsuarioTexto} ${operacaoTexto} com sucesso:`, response.data);
+      setTipoMensagem("sucesso");
+      setShowFeedback(true);
+      setSubmissionSuccessful(true);
+
+      if (!isEditing) {
+        setFormData(initialState);
+        setCpfBusca("");
+        setNomeAlunoEncontrado("");
+        setIsAlunoBuscadoEValido(false);
+        setResponsavelId(null);
+      }
     } catch (error) {
-        console.error("Erro ao salvar usuário/responsável:", error.response);
-        let errorMessages = [];
+      console.error(`Erro ao ${operacaoTexto.toLowerCase()} ${tipoUsuarioTexto.toLowerCase()}:`, error.response);
 
-        if (error.response?.status === 400 && error.response.data) {
-            // Lógica de tratamento de erros aprimorada para erros aninhados
-            if (error.response.data.usuario) { // Erros do serializer de usuário aninhado
-                for (const key in error.response.data.usuario) {
-                    errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data.usuario[key].join(', ')}`);
-                }
-            }
-            if (error.response.data.aluno_cpf) {
-                 errorMessages.push(`CPF do Aluno: ${error.response.data.aluno_cpf.join(', ')}`);
-            }
-            if (error.response.data.non_field_errors) {
-                errorMessages.push(`Geral: ${error.response.data.non_field_errors.join(', ')}`);
-            }
-            if (error.response.data.detail) {
-                errorMessages.push(error.response.data.detail);
-            }
-            // Para erros de campos específicos no nível do usuário
-            for (const key in error.response.data) {
-                if (key !== 'usuario' && key !== 'aluno_cpf' && key !== 'non_field_errors' && key !== 'detail') {
-                    errorMessages.push(`${key.replace(/_/g, ' ')}: ${error.response.data[key].join(', ')}`);
-                }
-            }
-        } else if (error.response?.data?.detail) {
-            errorMessages.push(error.response.data.detail);
-        } else {
-            errorMessages.push("Erro desconhecido ao salvar. Tente novamente.");
+      let errorMessages = [];
+      const errorData = error.response?.data;
+
+      if (error.response?.status === 400 && errorData) {
+        // Processar erros de campos de usuário
+        if (errorData.usuario) {
+          for (const key in errorData.usuario) {
+            const fieldName = key.replace(/_/g, ' ');
+            const errorValue = errorData.usuario[key];
+            // Correção: Verifica se é um array antes de chamar join()
+            const errorMsg = Array.isArray(errorValue) ? errorValue.join(', ') : errorValue;
+            errorMessages.push(`${fieldName}: ${errorMsg}`);
+            setErrors(prev => ({ ...prev, [key]: errorMsg }));
+          }
         }
 
-        setMensagem(errorMessages.join('\n'));
-        setTipoMensagem("erro");
-        setShowFeedback(true);
+        // Processar erro do CPF do aluno (se houver)
+        if (errorData.aluno_cpf) {
+          const errorValue = errorData.aluno_cpf;
+          //Verifica se é um array antes de chamar join()
+          const errorMsg = Array.isArray(errorValue) ? errorValue.join(', ') : errorValue;
+          errorMessages.push(`CPF do Aluno: ${errorMsg}`);
+          setErrors(prev => ({ ...prev, aluno_cpf: errorMsg }));
+        }
+
+        // Processar erros gerais (non_field_errors)
+        if (errorData.non_field_errors) {
+          errorMessages.push(`Geral: ${errorData.non_field_errors.join(', ')}`);
+        }
+
+        // Processar erro de detalhe
+        if (errorData.detail) {
+          errorMessages.push(errorData.detail);
+        }
+
+        // Processar outros erros de campo diretos no payload do responsável
+        for (const key in errorData) {
+          if (!['usuario', 'aluno_cpf', 'non_field_errors', 'detail'].includes(key)) {
+            const fieldName = key.replace(/_/g, ' ');
+            const errorMsg = Array.isArray(errorData[key]) ? errorData[key].join(', ') : errorData[key];
+            errorMessages.push(`${fieldName}: ${errorMsg}`);
+            setErrors(prev => ({ ...prev, [key]: errorMsg }));
+          }
+        }
+      } else if (errorData?.detail) {
+        errorMessages.push(errorData.detail);
+      } else {
+        errorMessages.push(`Erro desconhecido ao ${operacaoTexto.toLowerCase()} ${tipoUsuarioTexto.toLowerCase()}. Tente novamente.`);
+      }
+
+      setMensagem(errorMessages.join('\n'));
+      setTipoMensagem("erro");
+      setShowFeedback(true);
+      setSubmissionSuccessful(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleCloseFeedback = () => {
     setShowFeedback(false);
-    if (tipoMensagem === "sucesso") {
+    if (submissionSuccessful) {
       navigate("/usuarios");
     }
   };
@@ -447,7 +522,7 @@ export default function CadastrarAtualizarUsuario() {
   return (
     <div>
       <main className="container form-container">
-        <h2>{id ? "Editar Usuário" : "Cadastrar Usuário"}</h2>
+        <h2>{title}</h2>
 
         <form className="formulario formulario-largura" onSubmit={handleSubmit}>
           <div className="form-group">
@@ -520,7 +595,7 @@ export default function CadastrarAtualizarUsuario() {
               type="date"
               id="data_nascimento"
               name="data_nascimento"
-              className={`input-data ${errors.data_nascimento ? "input-error" : ""}`}
+              className={`input-text ${errors.data_nascimento ? "input-error" : ""}`}
               value={formData.data_nascimento}
               onChange={handleChange}
               onBlur={handleBlur}
@@ -548,7 +623,7 @@ export default function CadastrarAtualizarUsuario() {
                   type="text"
                   id="cpf_busca"
                   name="cpf_busca"
-                  className={`input-text ${alunoBuscaErro ? "input-error" : ""}`}
+                  className={`input-text ${alunoBuscaErro || errors.aluno_cpf ? "input-error" : ""}`}
                   value={cpfBusca}
                   onChange={handleCpfBuscaChange}
                   placeholder="Digite o CPF do aluno"
@@ -556,30 +631,16 @@ export default function CadastrarAtualizarUsuario() {
                 <button
                   type="button"
                   onClick={handleBuscarAluno}
-                  style={{
-                    backgroundColor: "#28a745", // Verde
-                    color: "white",
-                    padding: "10px 15px",
-                    border: "none",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    fontWeight: "bold",
-                    transition: "background-color 0.3s ease",
-                    boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-                    // Estilos adicionais para layout:
-                    marginTop: '10px', // Espaço acima
-                    marginBottom: '20px', // Espaço abaixo
-                    marginLeft: '2px', // Espaço entre o input e o botão
-                    flexShrink: 0, // Impede que o botão encolha
-                  }}
+                  className="buscar-button"
                 >
                   Buscar
                 </button>
               </div>
               {alunoBuscaErro && <div className="error-text">{alunoBuscaErro}</div>}
+              {errors.aluno_cpf && <div className="error-text">{errors.aluno_cpf}</div>}
               {nomeAlunoEncontrado && (
                 <div className="aluno-encontrado">
-                  <p>{nomeAlunoEncontrado}</p>
+                  <p>Aluno encontrado: <strong>{nomeAlunoEncontrado}</strong></p>
                 </div>
               )}
             </div>
@@ -588,9 +649,9 @@ export default function CadastrarAtualizarUsuario() {
           <button
             type="submit"
             className="submit-button"
-            disabled={isConcluirBtnDisabled}
+            disabled={isConcluirBtnDisabled || isSubmitting}
           >
-            {id ? "Atualizar" : "Cadastrar"}
+            {isSubmitting ? "Processando..." : submitButtonText}
           </button>
         </form>
 
