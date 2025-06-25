@@ -1,0 +1,1 @@
+from .solicitacao_serializer import *

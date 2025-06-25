@@ -1,7 +1,7 @@
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny
 
-from ..models.form_abono_falta import FormAbonoFalta
+from ..models import FormAbonoFalta
 from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
 from rest_framework.decorators import api_view
 import json

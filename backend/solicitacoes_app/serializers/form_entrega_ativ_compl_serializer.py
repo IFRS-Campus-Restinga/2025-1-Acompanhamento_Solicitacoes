@@ -2,9 +2,10 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from rest_framework import serializers
 from ..models.disciplina import Disciplina
-from ..models.form_entrega_ativ_compl import FormEntregaAtivCompl
+from ..models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
+from .solicitacao_serializer import BaseSolicitacaoModelSerializer
 
-class FormEntregaAtivComplSerializer(serializers.ModelSerializer):
+class FormEntregaAtivComplSerializer(BaseSolicitacaoModelSerializer):
     disciplinas = serializers.PrimaryKeyRelatedField(
         many=True,
         queryset=Disciplina.objects.all(),
@@ -37,6 +38,8 @@ class FormEntregaAtivComplSerializer(serializers.ModelSerializer):
         validated_data["anexos"] = caminhos  # Salva os caminhos no campo 'anexos' do modelo
 
         disciplinas_data = validated_data.pop('disciplinas', [])
-        form_entrega = FormEntregaAtivCompl.objects.create(**validated_data)
+        # form_entrega = FormEntregaAtivCompl.objects.create(**validated_data)
+        # form_entrega.disciplinas.set(disciplinas_data)
+        form_entrega = super().create(validated_data)
         form_entrega.disciplinas.set(disciplinas_data)
         return form_entrega

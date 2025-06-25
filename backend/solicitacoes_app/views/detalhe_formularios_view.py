@@ -26,7 +26,7 @@ class DetalhesFormularioView(RetrieveAPIView):
     View para retornar os detalhes de uma solicitação específica,
     usando o serializer apropriado com base no campo 'nome_formulario'.
     """
-    queryset = Solicitacao.objects.all() 
+    # queryset = Solicitacao.objects.all() 
     lookup_url_kwarg = 'solicitacao_id' 
 
     def get_serializer_class(self):

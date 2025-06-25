@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from ..models import FormExercicioDomiciliar
+from .solicitacao_serializer import BaseSolicitacaoModelSerializer
 
-class FormExercicioDomiciliarSerializer(serializers.ModelSerializer):
+class FormExercicioDomiciliarSerializer(BaseSolicitacaoModelSerializer):
     class Meta:
         model = FormExercicioDomiciliar
-        fields = '__all__'  # ou lista os campos manualmente
+        fields = '__all__'

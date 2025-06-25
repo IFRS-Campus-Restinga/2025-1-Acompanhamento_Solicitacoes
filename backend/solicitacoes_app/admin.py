@@ -1,9 +1,12 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from .models import *
+from .models.forms.form_tranc_matricula import FormularioTrancamentoMatricula
+from .models.forms.form_tranc_disciplina import FormTrancDisciplina
+from .models.forms.form_dispensa_ed_fisica import *
 from .models.forms.form_desistencia_vaga import FormDesistenciaVaga
 from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
-from .models.form_entrega_ativ_compl import FormEntregaAtivCompl
+from .models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 from .models.forms.historico_afastamento import HistoricoAfastamento
 
 # Registro padrão dos outros modelos
@@ -23,7 +26,7 @@ admin.site.register(FormTrancDisciplina)
 admin.site.register(FormDesistenciaVaga)
 admin.site.register(FormExercicioDomiciliar)
 admin.site.register(Nome)
-admin.site.register(Solicitacao)
+# admin.site.register(Solicitacao)
 admin.site.register(Disponibilidade)
 admin.site.register(PeriodoDisponibilidade)
 admin.site.register(FormEntregaAtivCompl)

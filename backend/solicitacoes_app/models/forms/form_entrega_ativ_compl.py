@@ -3,13 +3,13 @@ import mimetypes
 import os
 from django.conf import settings
 
-from ..utils.google_drive import upload_to_drive
-from .solicitacao import Solicitacao
+from ...utils.google_drive import upload_to_drive
+from ..solicitacao import Solicitacao
 from django.db import models
-from .aluno import Aluno
-from .curso import Curso
-from .disciplina import Disciplina
-from .multi_file_field import MultiFileField
+from ..aluno import Aluno
+from ..curso import Curso
+from ..disciplina import Disciplina
+from ..multi_file_field import MultiFileField
 from datetime import date
 
 class FormEntregaAtivCompl(Solicitacao):
@@ -17,11 +17,10 @@ class FormEntregaAtivCompl(Solicitacao):
         verbose_name="Disciplinas",
         help_text="Selecione as disciplinas"
     )
-    
     anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos")
 
     def save(self, *args, **kwargs):
-        self.nome_formulario = "Entrega de Atividades Complementares"
+        self.nome_formulario = 'ENTREGAATIVCOMPL'
         if not self.data_solicitacao:  # 👈 Se não tiver data, define como agora
             self.data_solicitacao = date.isoformat()
         
@@ -41,3 +40,4 @@ class FormEntregaAtivCompl(Solicitacao):
     
     class Meta:
         verbose_name = "Formulário de Atividades Complementares"
+        verbose_name_plural = "Formulários de Atividades Complementares"

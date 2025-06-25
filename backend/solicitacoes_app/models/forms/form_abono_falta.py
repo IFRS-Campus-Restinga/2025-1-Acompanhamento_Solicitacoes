@@ -1,30 +1,30 @@
 from datetime import date
 from django.db import models
-from ..models import MotivoAbono, Curso, Disciplina
+from .. import MotivoAbono, Curso, Disciplina
 from django.core.exceptions import ValidationError
-from .solicitacao import Solicitacao
+from ..solicitacao import Solicitacao
 from django.db.models import RESTRICT
-from .ppc import Ppc 
+from ..ppc import Ppc 
 
 class FormAbonoFalta(Solicitacao):
 
-    curso = models.ForeignKey(
-    Curso,
-    on_delete=models.CASCADE,
-    verbose_name="Curso"
-    )
+    # curso = models.ForeignKey(
+    # Curso,
+    # on_delete=models.CASCADE,
+    # verbose_name="Curso"
+    # )
 
-    ppc = models.ForeignKey(
-        Ppc,
-        on_delete=models.CASCADE,
-        null=True
-    )
+    # ppc = models.ForeignKey(
+    #     Ppc,
+    #     on_delete=models.CASCADE,
+    #     null=True
+    # )
 
-    disciplinas = models.ManyToManyField(
-        Disciplina,
-        verbose_name="Disciplinas relacionadas",
-        help_text="Selecione as disciplinas"
-    )
+    # disciplinas = models.ManyToManyField(
+    #     Disciplina,
+    #     verbose_name="Disciplinas relacionadas",
+    #     help_text="Selecione as disciplinas"
+    # )
 
     motivo_solicitacao = models.ForeignKey(
         MotivoAbono, 
@@ -56,11 +56,6 @@ class FormAbonoFalta(Solicitacao):
     class Meta:
         verbose_name = "Formulário de Abono de Faltas"
     
-    
-    def __str__(self):
-         # Acessa o nome do aluno através da relação com Solicitação
-        aluno_nome = self.solicitacao.aluno.usuario.nome if hasattr(self, 'solicitacao') and self.solicitacao.aluno else "Aluno não identificado"
-        return f"Abono de Falta - {aluno_nome} ({self.curso.nome})"
     
     def clean(self):
         if self.data_fim_afastamento < self.data_inicio_afastamento:

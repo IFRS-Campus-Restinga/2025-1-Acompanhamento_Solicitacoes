@@ -16,4 +16,4 @@ from .form_entrega_ativ_compl_view import *
 from .solicitacao_view import *
 from .turma_view import *
 from .detalhe_formularios_view import *
-from .atualizar_status_view import *
+from .INATIVO_atualizar_status_view import *

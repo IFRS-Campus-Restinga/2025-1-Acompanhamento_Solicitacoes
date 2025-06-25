@@ -1,6 +1,6 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
 from rest_framework.permissions import AllowAny
-from ..models.form_entrega_ativ_compl import FormEntregaAtivCompl
+from ..models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
 from ..models.solicitacao import Solicitacao
 from django.contrib.contenttypes.models import ContentType

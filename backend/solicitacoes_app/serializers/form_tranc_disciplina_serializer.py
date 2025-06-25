@@ -1,28 +1,22 @@
 from rest_framework import serializers
 from ..models import FormTrancDisciplina, Disciplina
+from .solicitacao_serializer import BaseSolicitacaoModelSerializer
 
-class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
+class FormTrancDisciplinaSerializer(BaseSolicitacaoModelSerializer):
     disciplinas = serializers.PrimaryKeyRelatedField(
         queryset=Disciplina.objects.all(),
         many=True,
         required=True,
-        pk_field=serializers.CharField()  # Para usar 'codigo' como PK
+        pk_field=serializers.CharField()
     )
-    ingressante = serializers.BooleanField(
-        required=False,  # Não obrigatório (default=False)
-        default=False
-    )
-
+    ingressante = serializers.BooleanField(required=False, default=False)
+    
     class Meta:
         model = FormTrancDisciplina
-        fields = '__all__'
-        read_only_fields = ['data_solicitacao']
-
-    def create(self, validated_data):
-        return super().create(validated_data)
+        fields = '__all__' 
 
     def validate(self, data):
-        if len(data.get('disciplinas', [])) < 1:
+        if self.instance is None and len(data.get('disciplinas', [])) < 1:
             raise serializers.ValidationError(
                 {"disciplinas": "Selecione pelo menos 1 disciplina."}
             )
@@ -30,6 +24,7 @@ class FormTrancDisciplinaSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
+        
         data['disciplinas'] = [
             {"codigo": d.codigo, "nome": d.nome}
             for d in instance.disciplinas.all()

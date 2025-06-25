@@ -1,6 +1,6 @@
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny
-from ..models import FormularioTrancamentoMatricula
+from ..models.forms.form_tranc_matricula import FormularioTrancamentoMatricula
 from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
 from datetime import datetime
 from rest_framework.response import Response

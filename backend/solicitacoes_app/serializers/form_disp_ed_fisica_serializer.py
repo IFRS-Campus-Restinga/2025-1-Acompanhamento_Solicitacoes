@@ -1,9 +1,10 @@
 from rest_framework import serializers
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from ..models.form_dispensa_ed_fisica import FormDispensaEdFisica
+from ..models.forms.form_dispensa_ed_fisica import FormDispensaEdFisica
+from .solicitacao_serializer import BaseSolicitacaoModelSerializer
 
-class FormDispEdFisicaSerializer(serializers.ModelSerializer):
+class FormDispEdFisicaSerializer(BaseSolicitacaoModelSerializer):
     anexos = serializers.ListField(
         child=serializers.FileField(),
         write_only=True,
@@ -22,5 +23,5 @@ class FormDispEdFisicaSerializer(serializers.ModelSerializer):
             path = default_storage.save(f'uploads/{arquivo.name}', ContentFile(arquivo.read()))
             caminhos.append(path)
 
-        validated_data["anexos"] = caminhos
-        return FormDispensaEdFisica.objects.create(**validated_data)
+        instance = super().create(validated_data)
+        return instance

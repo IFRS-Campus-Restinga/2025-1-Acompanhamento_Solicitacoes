@@ -41,7 +41,7 @@ from .views.periodo_disponibilidade_view import (
 from .views.permissoes_view import PermissaoListView
 
 from .views.detalhe_formularios_view import *
-from .views.atualizar_status_view import *
+from .views.INATIVO_atualizar_status_view import *
 
 from .views.form_exercicios_domiciliares import FormExercicioDomiciliarViewSet, FormExercicioDomiciliarGetView, FormularioExercDomUdpate
 
@@ -49,7 +49,7 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'formulario_exerc_dom', FormExercicioDomiciliarViewSet, basename='form_exerc')
 
-from .views.listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView 
+from .views.solicitacao_view import MinhasSolicitacoesListView 
 
 from .views.historico_afastamento_view import HistoricoAfastamentoViewList
 
@@ -149,8 +149,8 @@ urlpatterns = [
     path('form_ativ_compl/', FormEntregaAtivComplListCreate.as_view(), name='form_ativ_compl_list_create'),
     path('form_ativ_compl/<int:id>/', FormEntregaAtivComplUpdate.as_view(), name='form_ativ_compl_update'),
 
-    path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
-    path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
+    # path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
+    # path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
 
     path('disponibilidades/', DisponibilidadeListCreateView.as_view(), name='disponibilidade-list-create'),
     path('disponibilidades/<int:id>/', DisponibilidadeRetrieveUpdateDestroyView.as_view(), name='disponibilidade-detail'),
