@@ -51,6 +51,8 @@ router.register(r'formulario_exerc_dom', FormExercicioDomiciliarViewSet, basenam
 
 from .views.listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView 
 
+from .views.historico_afastamento_view import HistoricoAfastamentoViewList
+
 
 app_name = 'solicitacoes_app'
        
@@ -167,7 +169,9 @@ urlpatterns = [
 
     path('form_exerc_dom/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view"),
     path('form_exerc_dom/<int:id>/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view_by_aluno"),
-    path('form_exerc_dom/update/<int:pk>/', FormularioExercDomUdpate.as_view(), name="formulario_exerc_dom_update")
+    path('form_exerc_dom/update/<int:pk>/', FormularioExercDomUdpate.as_view(), name="formulario_exerc_dom_update"),
+
+    path('form_exerc_dom/historico/<int:id>/', HistoricoAfastamentoViewList.as_view(), name="historico_afastamento"),
 
     
     ]

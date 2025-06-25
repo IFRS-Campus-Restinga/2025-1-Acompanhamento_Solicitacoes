@@ -4,6 +4,7 @@ from .models import *
 from .models.forms.form_desistencia_vaga import FormDesistenciaVaga
 from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
 from .models.form_entrega_ativ_compl import FormEntregaAtivCompl
+from .models.forms.historico_afastamento import HistoricoAfastamento
 
 # Registro padrão dos outros modelos
 admin.site.register(Curso)
@@ -26,6 +27,7 @@ admin.site.register(Solicitacao)
 admin.site.register(Disponibilidade)
 admin.site.register(PeriodoDisponibilidade)
 admin.site.register(FormEntregaAtivCompl)
+admin.site.register(HistoricoAfastamento)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)

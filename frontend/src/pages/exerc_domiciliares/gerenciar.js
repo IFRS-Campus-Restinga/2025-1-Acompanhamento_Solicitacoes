@@ -9,6 +9,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 // Importe os ícones do Bootstrap (se já não estiver globalmente)
 import "bootstrap-icons/font/bootstrap-icons.css";
 
+import Stepper from "../../components/UI/stepper";
+
 export default function GerenciarExercDomicilares() {
     const [msgErro, setMsgErro] = useState("");
     const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
@@ -25,10 +27,18 @@ export default function GerenciarExercDomicilares() {
 
     // --- Novos estados para o formulário de edição ---
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-    const [novaDataInicio, setNovaDataInicio] = useState("");
+    const [justificativa, setJustificativa] = useState("");
     const [novaDataFim, setNovaDataFim] = useState("");
     const [novoAnexo, setNovoAnexo] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false); // Para desabilitar o botão durante o envio
+    const [historicoAlteracoes, setHistoricoAlteracoes] = useState([]);
+    const [formData, setFormData] = useState({
+        nova_data_fim: "",
+        anexos: null,
+        aluno: null,
+        form_exercicio_domiciliar: null,
+        justificativa: ""
+    })
 
     const buscouAlunoRef = useRef(false);
     const navigate = useNavigate();
@@ -57,11 +67,15 @@ export default function GerenciarExercDomicilares() {
         const buscarAluno = async () => {
             try {
                 const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`);
-                
+
                 if (Array.isArray(res.data) && res.data.length > 0) {
                     setAluno(res.data[0]);
                 } else if (res.data) {
                     setAluno(res.data);
+                    setFormData(prev => ({
+                        ...prev,
+                        aluno: res.data.grupo_detalhes.id
+                    }));
                 } else {
                     setAlunoNaoEncontrado(true);
                     setMsgErro("Aluno não encontrado para o e-mail fornecido.");
@@ -90,25 +104,17 @@ export default function GerenciarExercDomicilares() {
             if (!token) return; // Garante que o token esteja disponível
 
             try {
-                // Endpoint para buscar o formulário de exercícios domiciliares pelo ID do aluno
-                // Conforme discutido, se você tem um `ListAPIView` filtrando por query_param
-                // a URL seria `form_exerc_dom/?aluno_id=${aluno.id}`.
-                // Se você tem uma `@action` customizada no ViewSet, a URL seria
-                // `form_exerc_dom/by-aluno-id/${aluno.id}/`.
-                // A URL abaixo assume que você está usando a ação customizada `by-aluno-id`
-                // ou que o endpoint /form_exerc_dom/{pk}/ pode ser usado com o ID do aluno
-                // se a API for configurada para buscar por aluno.id no PK.
-                // Ajuste a URL conforme a sua API:
+
                 const res = await axios.get(`http://localhost:8000/solicitacoes/form_exerc_dom/${aluno.grupo_detalhes.id}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`
                     }
                 });
-                
+
                 // Se a API retornar um único objeto diretamente
                 setFormulario(res.data[0]);
                 // Inicializa os estados do formulário de edição com os dados atuais
-                setNovaDataInicio(res.data[0].data_inicio_afastamento.split('T')[0]); // Formato YYYY-MM-DD
+
                 setNovaDataFim(res.data[0].data_fim_afastamento.split('T')[0]); // Formato YYYY-MM-DD
 
                 console.log("Formulário obtido:", res.data);
@@ -125,6 +131,26 @@ export default function GerenciarExercDomicilares() {
         }
     }, [aluno, token]); // Dependência do token também
 
+    useEffect(() => {
+        const buscarHistorico = async () => {
+            try {
+                const res = await axios.get(`http://localhost:8000/solicitacoes/form_exerc_dom/historico/${formulario.id}/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                });
+                setHistoricoAlteracoes(res.data); // Array com objetos contendo: nova_data_afastamento, anexos, justificativa
+            } catch (err) {
+                console.error("Erro ao buscar histórico de alterações:", err);
+            }
+        };
+
+        if (formulario?.id && token) {
+            buscarHistorico();
+        }
+    }, [formulario, token]);
+
+
     const formatarData = (dataString) => {
         if (!dataString) return '--/--/----';
         try {
@@ -140,7 +166,6 @@ export default function GerenciarExercDomicilares() {
     const openEditModal = () => {
         // Preenche o modal com os dados atuais do formulário
         if (formulario) {
-            setNovaDataInicio(formulario.data_inicio_afastamento.split('T')[0]);
             setNovaDataFim(formulario.data_fim_afastamento.split('T')[0]);
             setNovoAnexo(null); // Limpa o arquivo selecionado
         }
@@ -153,36 +178,46 @@ export default function GerenciarExercDomicilares() {
     };
 
     const handleFileChange = (e) => {
-        setNovoAnexo(e.target.files[0]);
+        const { files } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            anexos: files
+        }));
     };
 
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         setIsSubmitting(true);
-        setFeedbackIsOpen(false); // Fecha qualquer feedback anterior
+        setFeedbackIsOpen(false);
 
-        const formData = new FormData();
-        formData.append('data_inicio_afastamento', novaDataInicio);
-        formData.append('data_fim_afastamento', novaDataFim);
-        if (novoAnexo) {
-            formData.append('documento_comprobatorio', novoAnexo);
+        const dataToSubmit = new FormData();
+        dataToSubmit.append('aluno', formData.aluno);
+        dataToSubmit.append('form_exercicio_domiciliar', formulario.id);
+        dataToSubmit.append('nova_data_fim_afastamento', novaDataFim);
+        dataToSubmit.append('justificativa', justificativa);
+
+        if (formData.anexos) {
+            for (let i = 0; i < formData.anexos.length; i++) {
+                dataToSubmit.append("anexos", formData.anexos[i]);
+            }
         }
 
         try {
-            // Envia um PATCH para atualizar parcialmente o formulário
-            // A URL deve ser para o detalhe do formulário, usando o ID do formulário
-            const res = await axios.patch(`http://localhost:8000/solicitacoes/form_exerc_dom/update/${formulario.id}/`, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data', // Importante para envio de arquivos
-                    'Authorization': `Bearer ${token}`
+            const res = await axios.post(
+                `http://localhost:8000/solicitacoes/form_exerc_dom/historico/${formulario.id}/`,
+                dataToSubmit,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data',
+                        'Authorization': `Bearer ${token}`
+                    }
                 }
-            });
+            );
 
-            setFormulario(res.data); // Atualiza o estado do formulário com os dados mais recentes
             setMsgErro("Período de afastamento atualizado com sucesso!");
             setTipoErro("sucesso");
             setFeedbackIsOpen(true);
-            closeEditModal(); // Fecha o modal após o sucesso
+            closeEditModal();
         } catch (err) {
             console.error("Erro ao atualizar formulário:", err.response || err);
             setMsgErro(err.response?.data?.detail || err.response?.data?.message || err.message || "Erro ao atualizar período de afastamento.");
@@ -227,15 +262,53 @@ export default function GerenciarExercDomicilares() {
                                 <h6><i className="bi bi-calendar-range me-2"></i>Período de afastamento:</h6>
                                 <p>{formatarData(formulario.data_inicio_afastamento)} - {formatarData(formulario.data_fim_afastamento)}</p>
                             </div>
-                            {formulario.documento_comprobatorio && (
+                            {formulario.anexos && (
                                 <div className="col-12 mb-3">
                                     <h6><i className="bi bi-file-earmark-arrow-down me-2"></i>Documento Comprobatório Atual:</h6>
                                     <p>
-                                        <a href={formulario.documento_comprobatorio} target="_blank" rel="noopener noreferrer">
+                                        <a href={formulario.anexos} target="_blank" rel="noopener noreferrer">
                                             Visualizar Documento <i className="bi bi-box-arrow-up-right ms-1"></i>
                                         </a>
                                     </p>
                                 </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="card mb-4">
+                        <div className="card-header">
+                            <h5><i className="bi bi-clock-history me-2"></i>Histórico de Alterações no Afastamento</h5>
+                        </div>
+                        <div className="card-body">
+                            {historicoAlteracoes.length > 0 ? (
+                                <ul className="list-group">
+                                    {historicoAlteracoes.map((item, index) => (
+                                        <li key={index} className="list-group-item">
+                                            <p><strong>Data da Solicitação:</strong> {formatarData(formulario.data_solicitacao)} </p>
+                                            <p><strong>Novo período de afastamento:</strong> {formatarData(formulario.data_inicio_afastamento)} - {formatarData(item.nova_data_fim_afastamento)}</p>
+                                            {item.justificativa && (
+                                                <p><strong>Justificativa:</strong> {item.justificativa}</p>
+                                            )}
+                                            {/*
+                                            {item.anexos?.length > 0 && (
+                                                <p>
+                                                    <strong>Anexos:</strong><br />
+                                                    {item.anexos.map((anexo, i) => (
+                                                        <a key={i} href={anexo} target="_blank" rel="noopener noreferrer" className="d-block mb-1">
+                                                            <i className="bi bi-paperclip me-1"></i> Anexo {i + 1}
+                                                        </a>
+                                                    ))}
+                                                </p>
+                                            )}
+                                                */}
+                                                <p><div className="container">
+                                                                    <Stepper statusAtual={item.status} />
+                                                                </div></p>
+                                        </li>
+                                    ))}
+                                </ul>
+                            ) : (
+                                <p>Nenhuma alteração registrada.</p>
                             )}
                         </div>
                     </div>
@@ -266,17 +339,7 @@ export default function GerenciarExercDomicilares() {
                                 </div>
                                 <form onSubmit={handleEditSubmit}>
                                     <div className="modal-body">
-                                        <div className="mb-3">
-                                            <label htmlFor="novaDataInicio" className="form-label">Nova Data de Início:</label>
-                                            <input
-                                                type="date"
-                                                className="form-control"
-                                                id="novaDataInicio"
-                                                value={novaDataInicio}
-                                                onChange={(e) => setNovaDataInicio(e.target.value)}
-                                                required
-                                            />
-                                        </div>
+
                                         <div className="mb-3">
                                             <label htmlFor="novaDataFim" className="form-label">Nova Data de Fim:</label>
                                             <input
@@ -285,6 +348,16 @@ export default function GerenciarExercDomicilares() {
                                                 id="novaDataFim"
                                                 value={novaDataFim}
                                                 onChange={(e) => setNovaDataFim(e.target.value)}
+                                                required
+                                            />
+                                        </div>
+                                        <div className="mb-3">
+                                            <label htmlFor="justificativa" className="form-label">Justificativa/Observações:</label>
+                                            <textarea
+                                                className="form-control"
+                                                id="justificativa"
+                                                value={justificativa}
+                                                onChange={(e) => setJustificativa(e.target.value)}
                                                 required
                                             />
                                         </div>

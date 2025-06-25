@@ -11,7 +11,7 @@ import { default as FormTrancDisciplina, default as Formulario } from "../pages/
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula.js";
 
 // Páginas
-import Perfil from "../pages/perfil/perfil.js";
+import Perfil from "../pages/perfil/editar_perfil.js";
 import GestaoSistema from "../pages/telas_users/telas_cre/gestao_sistema";
 //import PosLogin from "../pages/pos_login";
 

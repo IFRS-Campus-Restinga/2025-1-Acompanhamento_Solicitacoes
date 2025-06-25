@@ -1,123 +1,168 @@
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { useState } from "react";
 import axiosInstance from "../../services/axiosInstance";
+import { getGoogleUser } from "../../services/authUtils";
 
+const EditarPerfil = () => {
+  const [dadosUsuario, setDadosUsuario] = useState({
+    nome: "",
+    email: "",
+    telefone: "",
+    data_nascimento: "",
+    id: null
+  });
 
+  const [dadosEspecificos, setDadosEspecificos] = useState({});
+  const [tipo, setTipo] = useState("");
+  const [carregando, setCarregando] = useState(true);
 
-const EditarPerfil = ({ dadosIniciais }) => {
-    // Define valores padrão se 'dadosIniciais' for null ou undefined
-    const usuarioInicial = dadosIniciais?.usuario || {
-      nome: "",
-      email: "",
-      telefone: "",
-      data_nascimento: ""
+  useEffect(() => {
+    const fetchDadosUsuario = async () => {
+      const user = getGoogleUser();
+      if (!user?.email) {
+        alert("Usuário não autenticado.");
+        return;
+      }
+
+      try {
+        const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${user.email}/`);
+        const dados = Array.isArray(res.data) ? res.data[0] : res.data;
+        if (!dados) throw new Error("Dados de usuário não encontrados.");
+
+        const tipoUsuario = dados.grupo?.toLowerCase();
+        const dataFormatada = dados.data_nascimento?.split("T")[0] || "";
+
+        setTipo(tipoUsuario);
+        setDadosUsuario({
+          id: dados.id,
+          nome: dados.nome,
+          email: dados.email,
+          telefone: dados.telefone || "",
+          data_nascimento: dataFormatada
+        });
+
+        setDadosEspecificos(dados.grupo_detalhes?.ppc || {});
+      } catch (error) {
+        console.error("Erro ao carregar dados do usuário:", error);
+        alert("Erro ao carregar dados do perfil.");
+      } finally {
+        setCarregando(false);
+      }
     };
-    const especificosIniciais = dadosIniciais?.[dadosIniciais?.tipo] || {};
-  
-    const [dadosUsuario, setDadosUsuario] = useState(usuarioInicial);
-    const [dadosEspecificos, setDadosEspecificos] = useState(especificosIniciais);
-    const tipo = dadosIniciais?.tipo || "";
-  
-    // Se 'dadosIniciais' for null, exibe uma mensagem de erro no retorno
-    if (!dadosIniciais) {
-      return <p>Erro ao carregar os dados do perfil.</p>;
+
+    fetchDadosUsuario();
+  }, []);
+
+  const handleChangeUsuario = (e) => {
+    setDadosUsuario({ ...dadosUsuario, [e.target.name]: e.target.value });
+  };
+
+  const handleChangeEspecifico = (e) => {
+    setDadosEspecificos({ ...dadosEspecificos, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!dadosUsuario.nome || !dadosUsuario.email || !dadosUsuario.data_nascimento) {
+    alert("Preencha todos os campos obrigatórios.");
+    return;
+  }
+
+  try {
+    await axiosInstance.put(`solicitacoes/usuarios/${dadosUsuario.id}/`, dadosUsuario);
+
+    if (tipo && dadosEspecificos) {
+      const endpointMap = {
+        aluno: `/alunos/${dadosUsuario.id}/`,
+        coordenador: `/coordenadores/${dadosUsuario.id}/`,
+        cre: `/cres/${dadosUsuario.id}/`
+      };
+
+      // Certifique-se de que ppc está presente
+      if (!dadosEspecificos.ppc) {
+        alert("Um PPC deve ser selecionado.");
+        return;
+      }
+
+      await axios.patch(`http://localhost:8000/${endpointMap[tipo]}`, dadosEspecificos);
     }
 
-      const handleChangeUsuario = (e) => {
-        setDadosUsuario({ ...dadosUsuario, [e.target.name]: e.target.value });
-      };
-    
-      const handleChangeEspecifico = (e) => {
-        setDadosEspecificos({ ...dadosEspecificos, [e.target.name]: e.target.value });
-      };
+    alert("Perfil atualizado com sucesso!");
+    window.location.href = "/home";
+  } catch (error) {
+    console.error("Erro ao atualizar:", error);
+    alert("Erro ao atualizar dados.");
+  }
+};
 
-      const handleSubmit = async (e) => {
-        e.preventDefault();
 
-        // Validação antes de enviar a requisição
-        if (!dadosUsuario.nome || !dadosUsuario.email || !dadosUsuario.data_nascimento) {
-          alert("Todos os campos obrigatórios devem ser preenchidos.");
-          return;
-        }
-    
-        try {
-           // Atualiza os dados do usuário no backend
-          await axiosInstance.put(`/usuarios/${dadosUsuario.id}/`, dadosUsuario);
-    
-          // Se o usuário for aluno, coordenador ou CRE, atualiza os dados específicos
-          if (tipo && dadosEspecificos) {
-            const endpointMap = {
-              aluno: `/alunos/${dadosUsuario.id}/`,
-              coordenador: `/coordenadores/${dadosUsuario.id}/`,
-              cre: `/cres/${dadosUsuario.id}/`
-            };
-    
-            await axios.put(endpointMap[tipo], dadosEspecificos);
-          }
-    
-          alert("Dados atualizados com sucesso!");
-          window.location.href = "/home"; // Redireciona o usuário após o update
-        } catch (error) {
-          console.error("Erro ao atualizar:", error);
-          alert("Erro ao atualizar dados");
-        }
-      };
+  if (carregando) {
+    return <main className="container text-center mt-5">Carregando dados do perfil...</main>;
+  }
 
-    
   return (
-    <div>
-      <main className="container">
-        <h2>Editar Perfil</h2>
-    
-         <form onSubmit={handleSubmit} className="p-4 bg-white shadow rounded w-full max-w-lg mx-auto mt-6">
-            <h2 className="text-xl font-bold mb-4">Editar Perfil</h2>
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-6">
+          <div className="card shadow">
+            <div className="card-header bg-primary text-white text-center fw-bold">
+              Editar Perfil
+            </div>
+            <div className="card-body">
+              <form onSubmit={handleSubmit}>
+                <div className="mb-3">
+                  <label className="form-label">Nome:</label>
+                  <input type="text" name="nome" value={dadosUsuario.nome} onChange={handleChangeUsuario} className="form-control" />
+                </div>
 
-            <label className="block mb-2">Nome:</label>
-            <input name="nome" value={dadosUsuario.nome} onChange={handleChangeUsuario} className="border p-2 w-full mb-4" />
+                <div className="mb-3">
+                  <label className="form-label">Email:</label>
+                  <input type="email" name="email" value={dadosUsuario.email} disabled className="form-control" />
+                </div>
 
-            <label className="block mb-2">Email:</label>
-            <input name="email" value={dadosUsuario.email} onChange={handleChangeUsuario} className="border p-2 w-full mb-4" />
+                <div className="mb-3">
+                  <label className="form-label">Telefone:</label>
+                  <input type="text" name="telefone" value={dadosUsuario.telefone} onChange={handleChangeUsuario} className="form-control" />
+                </div>
 
-            <label className="block mb-2">Telefone:</label>
-            <input name="telefone" value={dadosUsuario.telefone} onChange={handleChangeUsuario} className="border p-2 w-full mb-4" />
+                <div className="mb-3">
+                  <label className="form-label">Data de Nascimento:</label>
+                  <input type="date" name="data_nascimento" value={dadosUsuario.data_nascimento} disabled className="form-control" />
+                </div>
 
-            <label className="block mb-2">Data de Nascimento:</label>
-            <input type="date" name="data_nascimento" value={dadosUsuario.data_nascimento} onChange={handleChangeUsuario} className="border p-2 w-full mb-4" />
+                {tipo === "aluno" && (
+                  <>
+                    <div className="mb-3">
+                      <label className="form-label">Matrícula:</label>
+                      <input type="text" name="matricula" value={dadosEspecificos.matricula || ""} disabled className="form-control" />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Turma:</label>
+                      <input type="text" name="turma" value={dadosEspecificos.turma || ""} onChange={handleChangeEspecifico} className="form-control" />
+                    </div>
+                    <div className="mb-3">
+                      <label className="form-label">Ano de Ingresso:</label>
+                      <input type="text" name="ano_ingresso" value={dadosEspecificos.ano_ingresso || ""} onChange={handleChangeEspecifico} className="form-control" />
+                    </div>
+                  </>
+                )}
 
-            {tipo === "aluno" && (
-              <>
-                <label className="block mb-2">Matrícula:</label>
-                <input name="matricula" value={dadosEspecificos.matricula} onChange={handleChangeEspecifico} className="border p-2 w-full mb-4" />
+                {(tipo === "coordenador" || tipo === "cre") && (
+                  <div className="mb-3">
+                    <label className="form-label">SIAPE:</label>
+                    <input type="text" name="siape" value={dadosEspecificos.siape || ""} disabled className="form-control" />
+                  </div>
+                )}
 
-                <label className="block mb-2">Turma:</label>
-                <input name="turma" value={dadosEspecificos.turma} onChange={handleChangeEspecifico} className="border p-2 w-full mb-4" />
-
-                <label className="block mb-2">Ano de Ingresso:</label>
-                <input name="ano_ingresso" value={dadosEspecificos.ano_ingresso} onChange={handleChangeEspecifico} className="border p-2 w-full mb-4" />
-              </>
-            )}
-
-            {tipo === "coordenador" && (
-              <>
-                <label className="block mb-2">SIAPE:</label>
-                <input name="siape" value={dadosEspecificos.siape} onChange={handleChangeEspecifico} className="border p-2 w-full mb-4" />
-              </>
-            )}
-
-            {tipo === "cre" && (
-              <>
-                <label className="block mb-2">SIAPE:</label>
-                <input name="siape" value={dadosEspecificos.siape} onChange={handleChangeEspecifico} className="border p-2 w-full mb-4" />
-              </>
-            )}
-
-            <button type="submit" className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Salvar</button>
-        </form>
-
-        <div className="perfil">
-         
+                <div className="text-center">
+                  <button type="submit" className="btn btn-primary px-4">Salvar</button>
+                </div>
+              </form>
+            </div>
+          </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 };
