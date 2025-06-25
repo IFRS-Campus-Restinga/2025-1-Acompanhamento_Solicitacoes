@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, Disciplina, Aluno, Turma, Nome
-from ...models.tipo_falta import TipoFalta
+from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, MotivoDesistencia, Disciplina, Aluno, Turma, Nome
+from ...models.campos_solic_models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
 from ...models.mandato import Mandato
@@ -100,6 +100,8 @@ class Command(BaseCommand):
             defaults={"curso": curso7}
         )
 
+        # ---- AJUSTADO conforme google forms ----
+
         # Motivos de Abono
         MotivoAbono.objects.get_or_create(
             descricao="Problema de saúde, através de documento oficial, carimbado e assinado",
@@ -150,19 +152,25 @@ class Command(BaseCommand):
             defaults={"tipo_falta": TipoFalta.FA}
         )
 
-        # Motivos de Dispensa
-        MotivoDispensa.objects.get_or_create(descricao="Prática esportiva federada reconhecida")
-        MotivoDispensa.objects.get_or_create(descricao="Limitação física ou recomendação médica")
-        MotivoDispensa.objects.get_or_create(descricao="Emprego formal em horário conflitante")
-        MotivoDispensa.objects.get_or_create(descricao="Responsabilidades familiares ou domésticas")
-        MotivoDispensa.objects.get_or_create(descricao="Distância excessiva entre residência e campus")
+        # Motivos de Dispensa 
+        MotivoDispensa.objects.get_or_create(descricao="Cumprir jornada de trabalho igual ou superior a seis horas")
+        MotivoDispensa.objects.get_or_create(descricao="Maior de trinta anos de idade")
+        MotivoDispensa.objects.get_or_create(descricao="Prestar serviço militar inicial ou que, em situação similar, estiver obrigado à prática da educação física")
+        MotivoDispensa.objects.get_or_create(descricao="Estar amparado pelo decreto-lei nº 1.044, de 21 de outubro de 1969")
+        MotivoDispensa.objects.get_or_create(descricao="Ter prole")
 
         # Motivos de Exercícios
-        MotivoExercicios.objects.get_or_create(descricao="Atividade profissional de tempo integral")
-        MotivoExercicios.objects.get_or_create(descricao="Estágio supervisionado obrigatório")
-        MotivoExercicios.objects.get_or_create(descricao="Serviço militar obrigatório")
-        MotivoExercicios.objects.get_or_create(descricao="Treinamento esportivo intensivo")
-        MotivoExercicios.objects.get_or_create(descricao="Participação em programa de intercâmbio acadêmico")
+        MotivoExercicios.objects.get_or_create(descricao="Problemas de saúde, conforme inciso I do art. 142 da OD.")
+        MotivoExercicios.objects.get_or_create(descricao="Licença Maternidade, conforme inciso II do art. 142 da OD.")
+        MotivoExercicios.objects.get_or_create(descricao="Acompanhamento de familiar (primeiro grau) com problemas de saúde, inciso III, art. 142 da OD.")
+        MotivoExercicios.objects.get_or_create(descricao="Gestantes que sofreram aborto, falecimento do recém-nascido ou natimorto (IV, 142, OD)")
+        MotivoExercicios.objects.get_or_create(descricao="Adoção de criança, conforme inciso V, art. 142 da OD.")
+        MotivoExercicios.objects.get_or_create(descricao="Licença cônjuge/companheiro de parturiente/puérperas, conforme inciso VI do art. 142 da OD.")
+        MotivoExercicios.objects.get_or_create(descricao="Mães lactantes - IN 12/2024 - PROEN-REI")
+
+        #Motivo Desistencia
+        MotivoDesistencia.objects.get_or_create(descricao="Transferência para outra escola")
+        MotivoDesistencia.objects.get_or_create(descricao="Desistência da vaga")
 
         # Disciplinas do PPC de ADS
         ads = Ppc.objects.get(codigo="ads/101.2018")
@@ -400,7 +408,7 @@ class Command(BaseCommand):
         modelos_cre = [
             Aluno, Coordenador, CRE, Curso, Disciplina, FormAbonoFalta, FormDesistenciaVaga,
             FormDispensaEdFisica, FormEntregaAtivCompl, FormExercicioDomiciliar, FormTrancDisciplina,
-            FormularioTrancamentoMatricula, Mandato, MotivoAbono, MotivoDispensa, MotivoExercicios,
+            FormularioTrancamentoMatricula, Mandato, MotivoAbono, MotivoDispensa, MotivoExercicios,MotivoDesistencia,
             Nome, Ppc, Responsavel, Solicitacao, Turma, Usuario
         ]
         
@@ -415,7 +423,7 @@ class Command(BaseCommand):
         modelos_coordenador_view = [
             Aluno, Coordenador, CRE, Curso, Disciplina, FormAbonoFalta, FormDesistenciaVaga,
             FormDispensaEdFisica, FormEntregaAtivCompl, FormExercicioDomiciliar, FormTrancDisciplina,
-            FormularioTrancamentoMatricula, Mandato, MotivoAbono, MotivoDispensa, MotivoExercicios,
+            FormularioTrancamentoMatricula, Mandato, MotivoAbono, MotivoDispensa, MotivoExercicios,MotivoDesistencia,
             Nome, Ppc, Responsavel, Solicitacao, Turma, Usuario
         ]
         
@@ -427,7 +435,7 @@ class Command(BaseCommand):
         
         # Edição de motivos e solicitações
         modelos_coordenador_edit = [
-            MotivoAbono, MotivoDispensa, MotivoExercicios, Solicitacao
+            MotivoAbono, MotivoDispensa, MotivoExercicios,MotivoDesistencia, Solicitacao
         ]
         
         for modelo in modelos_coordenador_edit:
@@ -439,7 +447,7 @@ class Command(BaseCommand):
         # 3. Grupo Aluno
         # Visualização de modelos específicos
         modelos_aluno_view = [
-            Curso, Disciplina, MotivoAbono, MotivoDispensa, MotivoExercicios, Ppc, Solicitacao, Turma
+            Curso, Disciplina, MotivoAbono, MotivoDispensa, MotivoExercicios,MotivoDesistencia, Ppc, Solicitacao, Turma
         ]
         
         for modelo in modelos_aluno_view:
@@ -463,7 +471,7 @@ class Command(BaseCommand):
         # 4. Grupo Responsável
         # Visualização de modelos específicos
         modelos_responsavel_view = [
-            Curso, Disciplina, MotivoAbono, MotivoDispensa, MotivoExercicios, Ppc, Solicitacao, Turma
+            Curso, Disciplina, MotivoAbono, MotivoDispensa, MotivoExercicios,MotivoDesistencia, Ppc, Solicitacao, Turma
         ]
         
         for modelo in modelos_responsavel_view:
