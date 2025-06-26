@@ -130,7 +130,7 @@ class FormExercicioDomiciliarDetailView(generics.RetrieveAPIView):
 class FormDispEdFisicaDetailView(generics.RetrieveAPIView):
     queryset = FormDispensaEdFisica.objects.all()
     serializer_class = FormDispEdFisicaSerializer
-    permission_classes = [-, CanViewSolicitacaoDetail]
+    permission_classes = [IsAuthenticated, CanViewSolicitacaoDetail]
     lookup_field = 'pk'
     
 class FormEntregaAtivComplDetailView(generics.RetrieveAPIView):

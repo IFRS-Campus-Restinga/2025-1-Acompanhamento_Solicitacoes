@@ -1,9 +1,6 @@
 from .estaticas import *
 from .curso_view import *
 from .ppc_view import *
-from .motivo_abono_view import *
-from .motivo_dispensa_view import *
-from .motivo_exercicios_view import *
 from .coordenador_view import *
 from .aluno_view import *
 from .cre_view import *
@@ -17,3 +14,7 @@ from .solicitacao_view import *
 from .turma_view import *
 from .detalhe_formularios_view import *
 from .INATIVO_atualizar_status_view import *
+
+from .campos_solic_views.motivo_abono_view import *
+from .campos_solic_views.motivo_dispensa_view import *
+from .campos_solic_views.motivo_exercicios_view import *

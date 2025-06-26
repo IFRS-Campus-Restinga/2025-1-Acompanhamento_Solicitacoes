@@ -5,7 +5,7 @@ import os
 from django.conf import settings
 
 from ...utils.google_drive import upload_to_drive
-from ...models.motivo_dispensa import MotivoDispensa
+from ...models.campos_solic_models.motivo_dispensa import MotivoDispensa
 from ..solicitacao import Solicitacao
 from ..curso import Curso
 from django.db.models import ForeignKey, CharField, RESTRICT

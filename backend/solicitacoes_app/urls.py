@@ -8,7 +8,7 @@ from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrie
 from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
 from .views.disciplina_view import *
-from .views.tipo_falta_view import *
+from .views.campos_solic_views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
 from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView, UsuarioAprovarCadastroView,  UsuarioDetailByEmail
@@ -25,6 +25,9 @@ from .views.nome_view import *
 from .views.perfil_usuario_view import *
 from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
+
+from .views.atualizar_status_view import AtualizarStatusSolicitacaoView
+from .views.INATIVO_listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView
 
 #Motivos / Campos de SOlicitações
 from .views.campos_solic_views.motivo_abono_view import *

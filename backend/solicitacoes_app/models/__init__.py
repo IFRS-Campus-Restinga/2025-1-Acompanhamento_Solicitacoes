@@ -7,27 +7,19 @@ from .cre import *
 from .aluno import *
 from .responsavel import *
 from .disciplina import *
-from .campos_solic_models.tipo_falta import *
 from .turma import *
 from .solicitacao import *
-from .forms.form_tranc_matricula import *
-from .forms.form_dispensa_ed_fisica import *
-from .anexo import *
-from .forms.form_abono_falta import *
 from .status_usuario import *
 from .mandato import *
-from .forms.form_tranc_disciplina import *
-from .forms.form_exercicio_domiciliar import *
-from .forms.form_desistencia_vaga import *
 from .nome import *
 from .posse_solicitacao import *
 from .disponibilidade import *
 from .periodo_disciplina import *
 from .periodo_disponibilidade import *
+from .anexo import *
+
+from .forms.form_tranc_disciplina import *
 from .forms.form_entrega_ativ_compl import *
-#Campos Solic
-from .campos_solic_models.motivo_abono import *
-from .campos_solic_models.tipo_falta import *
-from .campos_solic_models.motivo_dispensa import *
-from .campos_solic_models.motivo_exercicios import *
-from .campos_solic_models.motivo_desistencia import *
+from .forms.form_abono_falta import *
+
+from .campos_solic_models.tipo_falta import TipoFalta

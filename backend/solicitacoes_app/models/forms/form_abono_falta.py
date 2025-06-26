@@ -1,10 +1,11 @@
 from datetime import date
 from django.db import models
-from .. import MotivoAbono, Curso, Disciplina
+#from .. import  Curso, Disciplina
+from solicitacoes_app.models.campos_solic_models.motivo_abono import MotivoAbono
 from django.core.exceptions import ValidationError
 from ..solicitacao import Solicitacao
 from django.db.models import RESTRICT
-from ..ppc import Ppc 
+#from ..ppc import Ppc 
 
 class FormAbonoFalta(Solicitacao):
 

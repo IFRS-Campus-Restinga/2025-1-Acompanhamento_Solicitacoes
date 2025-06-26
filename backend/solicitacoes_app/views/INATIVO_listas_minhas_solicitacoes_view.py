@@ -1,14 +1,14 @@
 
 from rest_framework import generics
 from ..models import Solicitacao 
-from ..serializers.solicitacao_serializer import SolicitacaoSerializer
+from ..serializers.solicitacao_serializer import SolicitacaoListSerializer
 from ..permissoes import CanListOwnSolicitacoes, _is_in_group 
 
 class ListarMinhasSolicitacoesView(generics.ListAPIView):
     """
     Lista as solicitações pertencentes ao usuário logado (Aluno, Responsável ou Externo).
     """
-    serializer_class = SolicitacaoSerializer
+    serializer_class = SolicitacaoListSerializer
     permission_classes = [CanListOwnSolicitacoes]
 
     def get_queryset(self):
