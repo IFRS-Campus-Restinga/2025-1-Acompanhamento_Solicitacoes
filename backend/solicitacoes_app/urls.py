@@ -3,9 +3,7 @@ from django.urls import path, include
 from .views.estaticas import api_root, saudacao
 from .views.curso_view import *
 from .views.ppc_view import *
-from .views.motivo_abono_view import *
-from .views.motivo_dispensa_view import *
-from .views.motivo_exercicios_view import *
+
 from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView
 from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
@@ -27,6 +25,13 @@ from .views.nome_view import *
 from .views.perfil_usuario_view import *
 from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
+
+#Motivos / Campos de SOlicitações
+from .views.campos_solic_views.motivo_abono_view import *
+from .views.campos_solic_views.motivo_dispensa_view import *
+from .views.campos_solic_views.motivo_exercicios_view import *
+from .views.campos_solic_views.motivo_desistencia_view import *
+from .views.campos_solic_views.atividade_complementar_view import *
 
 from .views.disponibilidade_view import (
     DisponibilidadeListCreateView,
@@ -80,6 +85,11 @@ urlpatterns = [
 
     path('motivo_exercicios/', MotivoExerciciosListCreateView.as_view(), name="listar_motivo_exercicios"),
     path('motivo_exercicios/<int:pk>/', MotivoExerciciosRetrieveUpdateDestroyView.as_view(), name="crud_motivo_exercicios"),
+
+    path('motivos-desistencia/', MotivoDesistenciaListCreateView.as_view(), name='motivos-desistencia-list'),
+    path('motivos-desistencia/<int:pk>/', MotivoDesistenciaRetrieveUpdateDestroyView.as_view(), name='motivos-desistencia-detail'),
+    path('atividades-complementares/', AtividadeComplementarListCreateView.as_view(), name='atividades-complementares-list'),
+    path('atividades-complementares/<int:pk>/', AtividadeComplementarRetrieveUpdateDestroyView.as_view(), name='atividades-complementares-detail'),
 
     path('coordenadores/', CoordenadorListCreateView.as_view(), name='coordenador-list'),
     path('coordenadores/<int:pk>/', CoordenadorRetrieveUpdateDestroyView.as_view(), name='coordenador-detail'),
