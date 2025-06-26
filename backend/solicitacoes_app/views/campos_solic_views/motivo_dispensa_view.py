@@ -1,8 +1,8 @@
 from rest_framework import generics
-from ..models.motivo_dispensa import MotivoDispensa
-from ..serializers.motivo_dispensa_serializer import MotivoDispensaSerializer
+from ...models.campos_solic_models.motivo_dispensa import MotivoDispensa
+from ...serializers.campos_solic_serializers.motivo_desistencia_serializer import MotivoDispensaSerializer
 from rest_framework.permissions import AllowAny
-from ..permissoes import CanManageMotivos, IsCRE
+from ...permissoes import CanManageMotivos, IsCRE
 
 
 class MotivoDispensaListService(generics.ListCreateAPIView): 

@@ -1,8 +1,8 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
-from ..models import MotivoAbono
-from ..serializers.motivo_abono_serializer import MotivoAbonoSerializer
-from ..permissoes import CanManageMotivos, IsCRE
+from ...models import MotivoAbono
+from ...serializers.campos_solic_serializers.motivo_abono_serializer import MotivoAbonoSerializer
+from ...permissoes import CanManageMotivos, IsCRE
 
 
 class MotivoAbonoListCreateView(generics.ListCreateAPIView):

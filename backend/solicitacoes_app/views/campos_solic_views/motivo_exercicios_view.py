@@ -3,9 +3,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK
 
-from ..models.motivo_exercicios import MotivoExercicios
-from ..serializers.motivo_exercicios_serializer import MotivoExerciciosSerializer
-from ..permissoes import CanManageMotivos, IsCRE
+from ...models.campos_solic_models.motivo_exercicios import MotivoExercicios
+from ...serializers.campos_solic_serializers.motivo_exercicios_serializer import MotivoExerciciosSerializer
+from ...permissoes import CanManageMotivos, IsCRE
 
 
 class MotivoExerciciosListCreateView(generics.ListCreateAPIView):
