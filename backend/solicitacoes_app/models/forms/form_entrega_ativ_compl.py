@@ -11,11 +11,17 @@ from ..curso import Curso
 from ..disciplina import Disciplina
 from ..multi_file_field import MultiFileField
 from datetime import date
+from ..campos_solic_models.atividade_complementar import AtividadeComplementar
 
 class FormEntregaAtivCompl(Solicitacao):
     disciplinas = models.ManyToManyField(Disciplina,
         verbose_name="Disciplinas",
         help_text="Selecione as disciplinas"
+    )
+    #para vincular atividades_complementares ao form para o aluno escrever nos campos
+    atividades_complementares = models.ManyToManyField(AtividadeComplementar,
+        verbose_name="Atividades Complementares",
+        help_text="Liste as atividades complementares com nome e carga horária."
     )
     anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos")
 
