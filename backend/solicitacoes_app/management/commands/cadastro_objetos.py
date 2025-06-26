@@ -8,12 +8,12 @@ from ...models.coordenador import Coordenador
 from ...models.mandato import Mandato
 from ...models.cre import CRE
 from ...models.forms.form_desistencia_vaga import FormDesistenciaVaga
-from ...models.form_abono_falta import FormAbonoFalta
-from ...models.form_dispensa_ed_fisica import FormDispensaEdFisica
-from ...models.form_entrega_ativ_compl import FormEntregaAtivCompl
+from ...models.forms.form_abono_falta import FormAbonoFalta
+from ...models.forms.form_dispensa_ed_fisica import FormDispensaEdFisica
+from ...models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 from ...models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
-from ...models.form_tranc_disciplina import FormTrancDisciplina
-from ...models.form_tranc_matricula import FormularioTrancamentoMatricula
+from ...models.forms.form_tranc_disciplina import FormTrancDisciplina
+from ...models.forms.form_tranc_matricula import FormularioTrancamentoMatricula
 from ...models.solicitacao import Solicitacao
 from ...models.responsavel import Responsavel
 from ...models.periodo_disciplina import PeriodoDisciplina
