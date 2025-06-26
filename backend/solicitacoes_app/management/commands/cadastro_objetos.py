@@ -1,7 +1,12 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth.models import Group, Permission
 from django.contrib.contenttypes.models import ContentType
-from ...models import Curso, Ppc, MotivoAbono, MotivoDispensa, MotivoExercicios, MotivoDesistencia, Disciplina, Aluno, Turma, Nome
+from solicitacoes_app.models.curso import Curso
+from solicitacoes_app.models.ppc import Ppc
+from solicitacoes_app.models.disciplina import Disciplina
+from solicitacoes_app.models.aluno import Aluno
+from solicitacoes_app.models.turma import Turma
+from solicitacoes_app.models.nome import Nome
 from ...models.campos_solic_models.tipo_falta import TipoFalta
 from ...models.usuario import Usuario
 from ...models.coordenador import Coordenador
@@ -17,6 +22,13 @@ from ...models.forms.form_tranc_matricula import FormularioTrancamentoMatricula
 from ...models.solicitacao import Solicitacao
 from ...models.responsavel import Responsavel
 from ...models.periodo_disciplina import PeriodoDisciplina
+
+#Motivos
+
+from ...models.campos_solic_models.motivo_abono import MotivoAbono
+from ...models.campos_solic_models.motivo_dispensa import MotivoDispensa 
+from ...models.campos_solic_models.motivo_exercicios import MotivoExercicios
+from ...models.campos_solic_models.motivo_desistencia import MotivoDesistencia
 
 class Command(BaseCommand):
     help = 'Popula o banco de dados com dados iniciais e configura permissões para os grupos'
