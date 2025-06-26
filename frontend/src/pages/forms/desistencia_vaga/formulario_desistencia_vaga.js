@@ -11,7 +11,7 @@ import "../../../components/styles/formulario.css";
 // Serviços de autenticação
 import { getAuthToken } from "../../../services/authUtils";
 
-export default function FormularioDispensaEdFisica() {
+export default function FormularioDesistenciaVaga() {
     // Estados para controle de usuário e aluno
     const [userData, setUserData] = useState(null);
     const [carregandoUsuario, setCarregandoUsuario] = useState(true);
@@ -23,7 +23,7 @@ export default function FormularioDispensaEdFisica() {
     const [ppc, setPpc] = useState(null);
     
     // Estados para motivos de dispensa
-    const [motivosDispensa, setMotivosDispensa] = useState([]);
+    const [motivosDesistencia, setMotivosDesistencia] = useState([]);
     const [isLoadingMotivos, setIsLoadingMotivos] = useState(true);
     
     // Estado para o formulário
@@ -174,29 +174,32 @@ export default function FormularioDispensaEdFisica() {
         }
     };
 
-    // Carregar motivos de dispensa
+
+    // Para buscar motivos de desistência (ajustado o nome da função e a URL)
     useEffect(() => {
-        const buscarMotivosDispensa = async () => {
+        const buscarMotivosDesistencia = async () => { // <--- Renomeado a função
             try {
                 const token = getAuthToken();
-                const res = await axios.get("http://localhost:8000/solicitacoes/motivo_dispensa/", {
+                // A URL já está correta para motivos de desistência
+                const res = await axios.get("http://localhost:8000/solicitacoes/motivos-desistencia/", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setMotivosDispensa(res.data);
+                setMotivosDesistencia(res.data); // <--- Populando a variável correta
                 setIsLoadingMotivos(false);
             } catch (err) {
-                console.error("Erro ao buscar motivos de dispensa:", err);
-                setMsgErro("Erro ao buscar motivos de dispensa.");
+                console.error("Erro ao buscar motivos de desistência:", err); // <--- Mensagem de erro ajustada
+                setMsgErro("Erro ao buscar motivos de desistência.");
                 setTipoPopup("erro");
                 setPopupIsOpen(true);
                 setIsLoadingMotivos(false);
             }
         };
-        
-        buscarMotivosDispensa();
+
+        buscarMotivosDesistencia();
     }, []);
+
 
     // Manipular mudanças nos campos do formulário
     const handleChange = (e) => {
@@ -262,7 +265,7 @@ export default function FormularioDispensaEdFisica() {
             
             const token = getAuthToken();
             await axios.post(
-                "http://localhost:8000/solicitacoes/dispensa_ed_fisica/",
+                "http://localhost:8000/solicitacoes/desistencia_vaga/",
                 dataToSubmit,
                 {
                     headers: {
@@ -362,7 +365,7 @@ export default function FormularioDispensaEdFisica() {
                                 required
                             >
                                 <option value="">Selecione o motivo</option>
-                                {motivosDispensa.map(motivo => (
+                                {motivosDesistencia.map(motivo => (
                                     <option key={motivo.id} value={motivo.id}>
                                         {motivo.descricao}
                                     </option>

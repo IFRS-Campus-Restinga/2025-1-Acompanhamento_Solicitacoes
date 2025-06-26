@@ -175,11 +175,16 @@ const routes = [
   <Route path="/grupos/cadastrar" element={<CadastrarAtualizarGrupo />} key="cadastrar-grupos" />,
   <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
 
-  // Formulário de Dispensa de Educação Física
+  //Forms
+  <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
+  <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
+  <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
+  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />,
+  <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatricula />} key="trancamento_matricula" />,
   <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> ,
- 
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />}  key="formulario-disciplina-curso"/>,
+
 
   <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
   <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
@@ -194,16 +199,6 @@ const routes = [
     }
     key="verificador-formulario"
   />,
-
-  <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
-
-  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />,
-
-  <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatricula />} key="trancamento_matricula" />,
-
-  //from desistencia vaga
-
-  <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
 
   //Solicitacoes
   <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
@@ -226,9 +221,6 @@ const routes = [
   <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
   <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
 
-  //Form de entrega de atividades complementares
-  <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
-  
   //Tela gerenciamento Exerciícios Domiciliares
   <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
  ];
