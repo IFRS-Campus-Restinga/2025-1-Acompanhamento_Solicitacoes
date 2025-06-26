@@ -1,10 +1,10 @@
 from rest_framework.serializers import ModelSerializer
-from ..models.motivo_exercicios import MotivoExercicios
+from ...models.campos_solic_models.motivo_dispensa import MotivoDispensa
 
-class MotivoExerciciosSerializer(ModelSerializer):
+class MotivoDispensaSerializer(ModelSerializer):
 
     class Meta:
-        model = MotivoExercicios
+        model = MotivoDispensa
         fields = [
             'id',
             'descricao'
