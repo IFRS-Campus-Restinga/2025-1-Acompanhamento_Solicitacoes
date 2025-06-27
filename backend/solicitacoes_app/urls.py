@@ -186,16 +186,8 @@ urlpatterns = [
     # path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
     # # NOVA URL para buscar disciplinas por PPC e período (a ser usada no seu formulário de exercícios)
     # path("disciplinas_por_ppc_e_periodo/", disciplinas_por_ppc_e_periodo, name="disciplinas_por_ppc_e_periodo"),
-    path(
-        'disciplinas/por-curso/<path:curso_codigo>/', 
-        DisciplinasPorCursoView.as_view(), 
-        name='disciplinas-por-curso'
-    ),
-    path(
-        'disciplinas/por-ppc-periodo/', 
-        DisciplinasPorPpcPeriodoView.as_view(), 
-        name='disciplinas-por-ppc-periodo'
-    ),
+    path('disciplinas/por-curso/<path:curso_codigo>/',DisciplinasPorCursoView.as_view(),name='disciplinas-por-curso'),
+    path('disciplinas/por-ppc-periodo/',DisciplinasPorPpcPeriodoView.as_view(),name='disciplinas-por-ppc-periodo'),
 
     path('nomes/', NomeListCreateView.as_view(), name='nome-list'),
     path('nomes/<str:pk>/', NomeRetrieveUpdateDestroyView.as_view(), name='nome-detail'),
