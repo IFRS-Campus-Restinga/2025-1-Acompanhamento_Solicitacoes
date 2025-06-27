@@ -6,3 +6,4 @@ class FormularioTrancamentoMatriculaSerializer(BaseSolicitacaoModelSerializer):
     class Meta:
         model = FormularioTrancamentoMatricula
         fields = '__all__'
+        read_only_fields = ['aluno']
