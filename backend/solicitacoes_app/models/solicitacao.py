@@ -91,3 +91,7 @@ class Solicitacao(BaseModel):
             return disp.data_inicio <= hoje <= disp.data_fim
         except Disponibilidade.DoesNotExist:
             return True
+    
+    def __str__(self):
+        nome_aluno = self.aluno.usuario.get_full_name() if hasattr(self.aluno.usuario, 'get_full_name') and self.aluno.usuario.get_full_name() else self.aluno.usuario.username
+        return f"{self.get_nome_formulario_display()} | {nome_aluno} - {self.data_solicitacao.strftime('%d/%m/%Y')}"
