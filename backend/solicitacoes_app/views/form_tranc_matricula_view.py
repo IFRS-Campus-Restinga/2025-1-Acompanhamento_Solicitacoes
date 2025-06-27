@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from ..permissoes import CanSubmitTrancMatricula, CanViewSolicitacaoDetail
 
 
-class FormTrancamentoCreateWithSolicitacaoView(generics.ListCreateAPIView):
+class FormTrancamentoListCreateView(generics.ListCreateAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()
     serializer_class = FormularioTrancamentoMatriculaSerializer
     #permission_classes = [AllowAny]
@@ -34,7 +34,7 @@ class FormTrancamentoCreateWithSolicitacaoView(generics.ListCreateAPIView):
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
-class FormTrancamentoDetail(generics.RetrieveUpdateDestroyAPIView):
+class FormTrancamentoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()
     serializer_class = FormularioTrancamentoMatriculaSerializer
     #permission_classes = [AllowAny]

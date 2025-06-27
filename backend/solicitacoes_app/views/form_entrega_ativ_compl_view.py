@@ -1,4 +1,4 @@
-from rest_framework.generics import ListCreateAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny
 from ..models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
@@ -8,14 +8,14 @@ from datetime import datetime
 from ..permissoes import CanSubmitEntregaAtivCompl, CanViewSolicitacaoDetail
 
 
-class FormEntregaAtivComplListCreate(ListCreateAPIView):
+class FormEntregaAtivComplListCreateView(ListCreateAPIView):
     queryset = FormEntregaAtivCompl.objects.all()
     serializer_class = FormEntregaAtivComplSerializer
     #permission_classes = [AllowAny]
     permission_classes = [CanSubmitEntregaAtivCompl]
 
 
-class FormEntregaAtivComplUpdate(RetrieveUpdateAPIView):
+class FormEntregaAtivComplRetrieveUpdateDestroyView(RetrieveUpdateDestroyAPIView):
     queryset = FormEntregaAtivCompl.objects.all()
     serializer_class = FormEntregaAtivComplSerializer
     #permission_classes = [AllowAny]

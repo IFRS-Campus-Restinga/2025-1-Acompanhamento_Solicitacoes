@@ -7,7 +7,7 @@ from ..serializers.form_desistencia_vaga_serializer import FormDesistenciaVagaSe
 from ..permissoes import CanSubmitDesistenciaVaga
 
 
-class FormDesistenciaVagaListCreate(generics.ListCreateAPIView):
+class FormDesistenciaVagaListCreateView(generics.ListCreateAPIView):
     """
     Endpoint para listar e criar formulários de desistência de vaga.
     """
@@ -22,7 +22,7 @@ class FormDesistenciaVagaListCreate(generics.ListCreateAPIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response({"erro": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
     
-class FormDesistenciaVagaDetail(generics.RetrieveAPIView):
+class FormDesistenciaVagaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     Endpoint para visualizar um formulário de desistência de vaga específico.
     """

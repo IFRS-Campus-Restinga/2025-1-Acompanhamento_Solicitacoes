@@ -18,7 +18,9 @@ from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
 from .views.form_abono_falta_view import *
 from .views.mandato_view import MandatoOrdenadoListView, MandatoListCreateView, MandatoRetrieveUpdateDestroyView
-from .views.form_tranc_disciplina_view import FormTrancDisciplinaListCreate, FormTrancDisciplinaDetail, disciplinas_por_curso, disciplinas_por_ppc_e_periodo
+from .views.form_tranc_disciplina_view import disciplinas_por_curso, disciplinas_por_ppc_e_periodo
+
+
 
 from .views.form_desistencia_vaga_view import *
 from .views.nome_view import *
@@ -51,15 +53,56 @@ from .views.permissoes_view import PermissaoListView
 from .views.detalhe_formularios_view import *
 from .views.INATIVO_atualizar_status_view import *
 
-from .views.form_exercicios_domiciliares import FormExercicioDomiciliarViewSet, FormExercicioDomiciliarGetView, FormularioExercDomUdpate
+# from .views.form_exercicios_domiciliares_view import FormExercicioDomiciliarViewSet, FormExercicioDomiciliarGetView, FormularioExercDomUdpate
 
 from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
-router.register(r'formulario_exerc_dom', FormExercicioDomiciliarViewSet, basename='form_exerc')
+# router.register(r'formulario_exerc_dom', FormExercicioDomiciliarViewSet, basename='form_exerc')
 
 from .views.solicitacao_view import MinhasSolicitacoesListView 
 
 from .views.historico_afastamento_view import HistoricoAfastamentoViewList
+
+
+## URLS IMPORTCOES NOVAS:
+from .views import (
+    solicitacao_view,
+    atualizar_status_view,
+    form_abono_falta_view,
+    form_desistencia_vaga_view, # Deixaremos aqui, mesmo que em stand-by
+    form_disp_ed_fisica_view,
+    form_entrega_ativ_compl_view,
+    form_exercicios_domiciliares_view, # Corrigido para o nome do arquivo da imagem
+    form_tranc_disciplina_view,
+    form_tranc_matricula_view
+)
+
+# =================================================================================
+# 2. MAPA DE VIEWS (O padrão que você gostou, agora com os nomes corretos)
+# Aqui mapeamos a chave da URL para a classe de view correta.
+# =================================================================================
+
+# Supondo que em cada arquivo você tenha uma classe ...ListCreateView
+FORM_LIST_CREATE_VIEWS = {
+    'trancamento-matricula': form_tranc_matricula_view.FormTrancamentoListCreateView,
+    'trancamento-disciplina': form_tranc_disciplina_view.FormTrancDisciplinaListCreateView,
+    'abono-falta': form_abono_falta_view.FormAbonoFaltaListCreateView,
+    'exercicios-domiciliares': form_exercicios_domiciliares_view.FormExercicioDomiciliarListCreateView,
+    'dispensa-ed-fisica': form_disp_ed_fisica_view.FormDispEdFisicaListCreateView,
+    'entrega-ativ-compl': form_entrega_ativ_compl_view.FormEntregaAtivComplListCreateView,
+    'desistencia-vaga': form_desistencia_vaga_view.FormDesistenciaVagaListCreateView,
+}
+
+# Supondo que em cada arquivo você tenha uma classe ...RetrieveUpdateDestroyView
+FORM_DETAIL_VIEWS = {
+    'trancamento-matricula': form_tranc_matricula_view.FormTrancamentoRetrieveUpdateDestroyView,
+    'trancamento-disciplina': form_tranc_disciplina_view.FormTrancDisciplinaRetrieveUpdateDestroyView,
+    'abono-falta': form_abono_falta_view.FormAbonoFaltaRetrieveUpdateDestroyView,
+    'exercicios-domiciliares': form_exercicios_domiciliares_view.FormExercicioDomiciliarRetrieveUpdateDestroyView,
+    'dispensa-ed-fisica': form_disp_ed_fisica_view.FormDispEdFisicaRetrieveUpdateDestroyView,
+    'entrega-ativ-compl': form_entrega_ativ_compl_view.FormEntregaAtivComplRetrieveUpdateDestroyView,
+    'desistencia-vaga': form_desistencia_vaga_view.FormDesistenciaVagaRetrieveUpdateDestroyView,
+}
 
 
 app_name = 'solicitacoes_app'
@@ -127,41 +170,26 @@ urlpatterns = [
 
     path('responsaveis/', ResponsavelListCreateView.as_view(), name='responsavel-list'),
     path('responsaveis/<int:pk>/', ResponsavelRetrieveUpdateDestroyView.as_view(), name='responsavel-detail'),
-    
-    path("formularios-trancamento/", FormTrancamentoCreateWithSolicitacaoView.as_view()),
-    path("formularios-trancamento/<int:id>/", FormTrancamentoDetail.as_view()),
-
-    path("dispensa_ed_fisica/", FormDispEdFisicaViewListCreate.as_view(), name='dispensa_ed_fisica_list_create'),
-    path("dispensa_ed_fisica/<int:id>/", FormDispEdFisicaViewUpdateDelete.as_view(), name='dispensa_ed_fisica_update_delete'),
 
     path("anexos/", AnexoViewGetOrCreate.as_view(), name='anexos_listar_cadastrar'),
     path("anexos/<int:pk>/", AnexoViewUpdateOrDelete.as_view(), name='anexo_atualizar_deletar'),
     path("anexos/forms/<int:pk>/", AnexoGetFormDispensa.as_view(), name='listar_anexos_por-formulario'),
     
-    path("formulario_abono_falta/", FormAbonoFaltaViewListCreate.as_view(), name='abono_falta_list_create'),
-    path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaViewUpdateDelete.as_view(), name='abono_falta_update_delete'),
+    path("formulario_abono_falta/", FormAbonoFaltaListCreateView.as_view(), name='abono_falta_list_create'),
+    path("formulario_abono_falta/<int:pk>/", FormAbonoFaltaRetrieveUpdateDestroyView.as_view(), name='abono_falta_update_delete'),
     
     path("mandatos/", MandatoListCreateView.as_view(), name='mandato-list'),
     path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
     path('mandatos/historico/', MandatoOrdenadoListView.as_view(), name='historico_mandatos_por_curso'),
     
-    
-    path("formulario_trancamento_disciplina/", FormTrancDisciplinaListCreate.as_view(), name="listar_cadastrar_form_trancamento_disciplina"),
-    path("formulario_trancamento_disciplina/<int:id>/", FormTrancDisciplinaDetail.as_view(), name="detalhar_atualizar_deletar_form_trancamento_disciplina"),
      # URL antiga de disciplinas por curso (para ser removida ou renomeada se usada em outros lugares)
     path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
     # NOVA URL para buscar disciplinas por PPC e período (a ser usada no seu formulário de exercícios)
     path("disciplinas_por_ppc_e_periodo/", disciplinas_por_ppc_e_periodo, name="disciplinas_por_ppc_e_periodo"),
     
-    path('form_desistencia_vaga/', FormDesistenciaVagaListCreate.as_view(), name='form_desistencia_vaga_create'),
-    path('form_desistencia_vaga/<int:id>/', FormDesistenciaVagaDetail.as_view(), name='form_desistencia_vaga_detail'),
 
     path('nomes/', NomeListCreateView.as_view(), name='nome-list'),
     path('nomes/<str:pk>/', NomeRetrieveUpdateDestroyView.as_view(), name='nome-detail'),
-
-    path('form_ativ_compl/', FormEntregaAtivComplListCreate.as_view(), name='form_ativ_compl_list_create'),
-    path('form_ativ_compl/<int:id>/', FormEntregaAtivComplUpdate.as_view(), name='form_ativ_compl_update'),
-
     # path('todas-solicitacoes/', SolicitacaoListCreate.as_view(), name='solicitacao-list-create'),
     # path('todas-solicitacoes/<int:id>/', SolicitacaoRetrieveUpdateDestroyView.as_view(), name='solicitacao_update_delete'),
 
@@ -179,12 +207,20 @@ urlpatterns = [
     path('solicitacoes/permissoes/', PermissaoListView.as_view()),
 
     path('minhas-solicitacoes/', ListarMinhasSolicitacoesView.as_view(), name='listar_minhas_solicitacoes'),
-
-    path('form_exerc_dom/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view"),
-    path('form_exerc_dom/<int:id>/', FormExercicioDomiciliarGetView.as_view(), name="formulario_exerc_dom_view_by_aluno"),
-    path('form_exerc_dom/update/<int:pk>/', FormularioExercDomUdpate.as_view(), name="formulario_exerc_dom_update"),
+    
+    path('formularios/<str:form_type_key>/<int:pk>/status/', atualizar_status_view.AtualizarStatusSolicitacaoView.as_view(), name='atualizar-status-solicitacao'),
 
     path('form_exerc_dom/historico/<int:id>/', HistoricoAfastamentoViewList.as_view(), name="historico_afastamento"),
 
     
-    ]
+]
+
+for key, ViewClass in FORM_LIST_CREATE_VIEWS.items():
+    urlpatterns.append(
+        path(f'formularios/{key}/', ViewClass.as_view(), name=f'form-{key}-list-create')
+    )
+
+for key, ViewClass in FORM_DETAIL_VIEWS.items():
+    urlpatterns.append(
+        path(f'formularios/{key}/<int:pk>/', ViewClass.as_view(), name=f'form-{key}-detail')
+    )

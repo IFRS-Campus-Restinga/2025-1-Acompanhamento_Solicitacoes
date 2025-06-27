@@ -188,7 +188,7 @@ export default function FormularioTrancamentoMatricula() {
 
   const onSubmit = async (data) => {
   setIsSubmitting(true);
-    if (!data.motivo_solicitacao || !data.auxilio_estudantil) {
+    if (!data.motivo_solicitacao) {
       setMsgErro("Preencha todos os campos obrigatórios");
       setTipoErro("erro");
       setFeedbackIsOpen(true);
@@ -204,7 +204,6 @@ export default function FormularioTrancamentoMatricula() {
       
       // Dados básicos do formulário
       formData.append('motivo_solicitacao', data.motivo_solicitacao);
-      formData.append('auxilio_estudantil', data.auxilio_estudantil);
       
       // Dados do aluno (dos inputs dos Cookies)
       formData.append('aluno_id', aluno.id);
@@ -362,19 +361,6 @@ export default function FormularioTrancamentoMatricula() {
                   <input type="hidden" {...register("tipo_solicitacao")} value="TRANCAMENTO_MATRICULA"/>
                 </div>
               )}
-     
-              {/* Campo para ver se o aluno recebe auxilio*/}
-                <div className="form-group">
-                    <label>Recebe auxílio estudantil?</label>
-                    <select
-                        {...register("auxilio_estudantil", { required: "Este campo é obrigatório." })}
-                    >
-                        <option value="">Selecione</option>
-                        <option value={true}>Sim</option>
-                        <option value={false}>Não</option>
-                    </select>
-                    {errors.auxilio_estudantil && <span className="error-text">{errors.auxilio_estudantil.message}</span>}
-                </div>
           
               <div className="form-group">
                 <label>Justificativa:</label>

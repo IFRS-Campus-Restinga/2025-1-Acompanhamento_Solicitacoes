@@ -15,7 +15,7 @@ from ..serializers.form_buscar_info_serializer import AlunoInfoSerializer
 from ..permissoes import IsAluno, IsResponsavel
 from rest_framework.permissions import IsAuthenticated
 
-class FormAbonoFaltaViewListCreate(generics.ListCreateAPIView):
+class FormAbonoFaltaListCreateView(generics.ListCreateAPIView):
     queryset = FormAbonoFalta.objects.all()
     serializer_class = FormAbonoFaltaSerializer
     #permission_classes = [AllowAny]
@@ -44,7 +44,7 @@ class FormAbonoFaltaViewListCreate(generics.ListCreateAPIView):
 
 
 
-class FormAbonoFaltaViewUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+class FormAbonoFaltaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FormAbonoFalta.objects.all()
     serializer_class = FormAbonoFaltaSerializer
     permission_classes = [AllowAny]

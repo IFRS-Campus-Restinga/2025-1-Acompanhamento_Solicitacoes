@@ -8,7 +8,7 @@ from ..serializers.form_tranc_disciplina_serializer import FormTrancDisciplinaSe
 from ..permissoes import CanSubmitTrancDisciplina, CanViewSolicitacaoDetail
 
 
-class FormTrancDisciplinaListCreate(generics.ListCreateAPIView):
+class FormTrancDisciplinaListCreateView(generics.ListCreateAPIView):
     """
     Endpoint para listar e criar formulários de trancamento de disciplinas.
     (Versão corrigida - 21/05/2025)
@@ -25,16 +25,22 @@ class FormTrancDisciplinaListCreate(generics.ListCreateAPIView):
         
         # Salva o formulário (a herança com Solicitacao já trata tudo)
         serializer.save()  
-
-class FormTrancDisciplinaDetail(generics.RetrieveAPIView):
+        
+# ALTERADO: A classe agora herda de RetrieveUpdateDestroyAPIView e foi renomeada
+# para refletir suas novas capacidades (Detalhar, Atualizar, Deletar).
+class FormTrancDisciplinaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
-    Endpoint para visualizar um formulário específico.
+    Vê detalhes (GET), Atualiza (PUT/PATCH) e Deleta (DELETE) um formulário
+    de Trancamento de Disciplina específico pelo seu ID.
     """
     queryset = FormTrancDisciplina.objects.all()
     serializer_class = FormTrancDisciplinaSerializer
-    #permission_classes = [AllowAny]
     permission_classes = [CanViewSolicitacaoDetail] 
-    lookup_field = "id"
+    
+    # MANTIDO: O campo de busca continua o mesmo.
+    # DRF usa 'pk' por padrão, mas 'id' também funciona se seu modelo usar 'id'.
+    # Usar 'pk' é uma prática mais comum.
+    lookup_field = "pk" 
 
 @api_view(['GET'])
 def disciplinas_por_curso(request, curso_codigo):
