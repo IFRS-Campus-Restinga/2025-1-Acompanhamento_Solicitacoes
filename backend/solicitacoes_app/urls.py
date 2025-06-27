@@ -18,7 +18,7 @@ from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
 from .views.form_abono_falta_view import *
 from .views.mandato_view import MandatoOrdenadoListView, MandatoListCreateView, MandatoRetrieveUpdateDestroyView
-from .views.form_tranc_disciplina_view import disciplinas_por_curso, disciplinas_por_ppc_e_periodo
+from .views.form_tranc_disciplina_view import *
 
 
 
@@ -182,11 +182,20 @@ urlpatterns = [
     path("mandatos/<int:pk>/", MandatoRetrieveUpdateDestroyView.as_view(), name='mandato-detail'),
     path('mandatos/historico/', MandatoOrdenadoListView.as_view(), name='historico_mandatos_por_curso'),
     
-     # URL antiga de disciplinas por curso (para ser removida ou renomeada se usada em outros lugares)
-    path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
-    # NOVA URL para buscar disciplinas por PPC e período (a ser usada no seu formulário de exercícios)
-    path("disciplinas_por_ppc_e_periodo/", disciplinas_por_ppc_e_periodo, name="disciplinas_por_ppc_e_periodo"),
-    
+    #  # URL antiga de disciplinas por curso (para ser removida ou renomeada se usada em outros lugares)
+    # path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
+    # # NOVA URL para buscar disciplinas por PPC e período (a ser usada no seu formulário de exercícios)
+    # path("disciplinas_por_ppc_e_periodo/", disciplinas_por_ppc_e_periodo, name="disciplinas_por_ppc_e_periodo"),
+    path(
+        'disciplinas/por-curso/<path:curso_codigo>/', 
+        DisciplinasPorCursoView.as_view(), 
+        name='disciplinas-por-curso'
+    ),
+    path(
+        'disciplinas/por-ppc-periodo/', 
+        DisciplinasPorPpcPeriodoView.as_view(), 
+        name='disciplinas-por-ppc-periodo'
+    ),
 
     path('nomes/', NomeListCreateView.as_view(), name='nome-list'),
     path('nomes/<str:pk>/', NomeRetrieveUpdateDestroyView.as_view(), name='nome-detail'),

@@ -42,48 +42,50 @@ class FormTrancDisciplinaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestro
     # Usar 'pk' é uma prática mais comum.
     lookup_field = "pk" 
 
-@api_view(['GET'])
-def disciplinas_por_curso(request, curso_codigo):
-    """
-    Endpoint para listar disciplinas de um curso (mantido original).
-    """
-    try:
-        disciplinas = Disciplina.objects.filter(ppc__curso__codigo=curso_codigo).distinct()
-        return Response({
-            "disciplinas": [
-                {"codigo": d.codigo, "nome": d.nome} for d in disciplinas
-            ]
-        }, status=200)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+
+##FUNCOES MUDADAS PARA CLASSES E PASSADAS PARA A VIEWS DE DISCIPLINAS  
+# @api_view(['GET'])
+# def disciplinas_por_curso(request, curso_codigo):
+#     """
+#     Endpoint para listar disciplinas de um curso (mantido original).
+#     """
+#     try:
+#         disciplinas = Disciplina.objects.filter(ppc__curso__codigo=curso_codigo).distinct()
+#         return Response({
+#             "disciplinas": [
+#                 {"codigo": d.codigo, "nome": d.nome} for d in disciplinas
+#             ]
+#         }, status=200)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=500)
     
-@api_view(['GET'])
-def disciplinas_por_ppc_e_periodo(request):
-    """
-    Endpoint para listar disciplinas filtradas por PPC e Período.
-    Ex: /api/disciplinas/?ppc_codigo=ads/101.2018&periodo=1º Semestre
-    """
-    ppc_codigo = request.query_params.get('ppc_codigo')
-    periodo = request.query_params.get('periodo')
+# @api_view(['GET'])
+# def disciplinas_por_ppc_e_periodo(request):
+#     """
+#     Endpoint para listar disciplinas filtradas por PPC e Período.
+#     Ex: /api/disciplinas/?ppc_codigo=ads/101.2018&periodo=1º Semestre
+#     """
+#     ppc_codigo = request.query_params.get('ppc_codigo')
+#     periodo = request.query_params.get('periodo')
 
-    if not ppc_codigo or not periodo:
-        return Response(
-            {"error": "Os parâmetros 'ppc_codigo' e 'periodo' são obrigatórios."}, 
-            status=400
-        )
+#     if not ppc_codigo or not periodo:
+#         return Response(
+#             {"error": "Os parâmetros 'ppc_codigo' e 'periodo' são obrigatórios."}, 
+#             status=400
+#         )
 
-    try:
-        # Filtra as disciplinas pelo código do PPC E pelo período
-        disciplinas = Disciplina.objects.filter(
-            ppc__codigo=ppc_codigo, 
-            periodo=periodo # O 'periodo' no modelo Disciplina usa as choices de PeriodoDisciplina
-        ).distinct()
+#     try:
+#         # Filtra as disciplinas pelo código do PPC E pelo período
+#         disciplinas = Disciplina.objects.filter(
+#             ppc__codigo=ppc_codigo, 
+#             periodo=periodo # O 'periodo' no modelo Disciplina usa as choices de PeriodoDisciplina
+#         ).distinct()
 
-        # O retorno pode ser ajustado para incluir mais detalhes se necessário
-        return Response({
-            "disciplinas": [
-                {"codigo": d.codigo, "nome": d.nome, "periodo": d.periodo} for d in disciplinas
-            ]
-        }, status=200)
-    except Exception as e:
-        return Response({"error": str(e)}, status=500)
+#         # O retorno pode ser ajustado para incluir mais detalhes se necessário
+#         return Response({
+#             "disciplinas": [
+#                 {"codigo": d.codigo, "nome": d.nome, "periodo": d.periodo} for d in disciplinas
+#             ]
+#         }, status=200)
+#     except Exception as e:
+#         return Response({"error": str(e)}, status=500)

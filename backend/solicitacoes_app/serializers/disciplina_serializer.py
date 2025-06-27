@@ -14,3 +14,13 @@ class DisciplinaSerializer(serializers.ModelSerializer):
         if not data.get('ppc'):
             raise serializers.ValidationError({"ppc": "Um PPC deve ser selecionado."})   
         return data
+    
+class DisciplinaListSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Disciplina
+        fields = ['codigo', 'nome'] # Apenas os campos necessários para a lista
+
+class DisciplinaListComPeriodoSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Disciplina
+        fields = ['codigo', 'nome', 'periodo']

@@ -1,6 +1,6 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny
-from ..serializers.disciplina_serializer import DisciplinaSerializer
+from ..serializers.disciplina_serializer import *
 from ..models import Disciplina
 
 
@@ -27,3 +27,30 @@ class DisciplinaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView)
     serializer_class = DisciplinaSerializer
     permission_classes = [AllowAny]
     lookup_field = 'codigo'  # Se você usar o campo 'codigo' para recuperar a disciplina
+    
+    
+########## MUDANDO FUNCOES DE VIEW PARA CLASSES:
+class DisciplinasPorCursoView(generics.ListAPIView):
+    serializer_class = DisciplinaSerializer
+    def get_queryset(self):
+        curso_codigo = self.kwargs.get('curso_codigo')
+        
+        queryset = Disciplina.objects.filter(ppc__curso__codigo=curso_codigo).distinct()
+        return queryset
+
+class DisciplinasPorPpcPeriodoView(generics.ListAPIView):
+    serializer_class = DisciplinaListComPeriodoSerializer
+
+    def get_queryset(self):
+        ppc_codigo = self.request.query_params.get('ppc_codigo')
+        periodo = self.request.query_params.get('periodo')
+
+        if not ppc_codigo or not periodo:
+            return Disciplina.objects.none() # Retorna um queryset vazio
+
+        queryset = Disciplina.objects.filter(
+            ppc__codigo=ppc_codigo, 
+            periodo=periodo
+        ).distinct()
+        
+        return queryset
