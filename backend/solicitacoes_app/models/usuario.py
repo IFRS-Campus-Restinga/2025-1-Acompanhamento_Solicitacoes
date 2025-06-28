@@ -33,7 +33,6 @@ class Usuario(AbstractBaseUser, PermissionsMixin):
     )
     cpf = models.CharField(
         max_length=11,
-        unique=True,
         help_text="Escreva aqui o CPF",
         verbose_name="CPF:",
         validators=[validar_cpf],

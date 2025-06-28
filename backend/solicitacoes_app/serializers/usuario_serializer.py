@@ -46,9 +46,6 @@ class UsuarioSerializer(serializers.ModelSerializer):
             # Se estamos atualizando e o CPF não mudou, é válido
             return value
             
-        if Usuario.objects.filter(cpf=value).exists():
-            raise serializers.ValidationError("Este CPF já está em uso.")
-        return value
     
     def validate(self, data):
      # Executa as validações do model
