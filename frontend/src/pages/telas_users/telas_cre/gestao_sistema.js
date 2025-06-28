@@ -27,7 +27,7 @@ const GestaoSistema = () => {
             <h3>Contas</h3>
             <div className="grid-colunas">
               <Link
-                to="/usuarios/selecionargrupo"
+                to="/usuarios/selecionargrupogestaosistema"
                 className={`colunas-link ${hoveredCard === 'cadastro-grupo' ? 'hovered' : ''}`}
                 onMouseEnter={() => setHoveredCard('cadastro-grupo')}
                 onMouseLeave={() => setHoveredCard(null)}>

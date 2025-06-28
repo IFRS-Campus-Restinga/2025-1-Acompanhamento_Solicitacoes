@@ -58,6 +58,7 @@ import DetalhesUsuario from "../pages/usuarios/detalhes_usuario.js";
 import ListarUsuariosAtivos from "../pages/usuarios/listar_usuarios_ativos.js";
 import ListarUsuariosInativos from "../pages/usuarios/listar_usuarios_inativos.js";
 import SelecionarGrupoUsuario from "../pages/usuarios/selecionar_grupo.js";
+import SelecionarGrupoGestaoSistema from "../pages/usuarios/selecionar_grupo_gestao_sistema.js";
 
 //Grupos
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
@@ -96,6 +97,7 @@ import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
 
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
+
 
 const token = localStorage.getItem("token");
 
@@ -155,6 +157,7 @@ const routes = [
   <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
   <Route path="/usuarios/:id" element={<DetalhesUsuario />} key="detalhes-usuario" />,
   <Route path="/usuarios/selecionargrupo" element={<SelecionarGrupoUsuario />} key="selecionar-grupo-usuarios" />,
+  <Route path="/usuarios/selecionargrupogestaosistema" element={<SelecionarGrupoGestaoSistema />} key="selecionar-grupo-usuarios" />,
   <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
   <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
   <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} key="cadastrar-usuarios-grupo" />,

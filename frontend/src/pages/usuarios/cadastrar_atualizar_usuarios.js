@@ -3,6 +3,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import api from "../../services/api";
 import { getCookie } from "../../services/authUtils";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //CSS
 import "../../components/styles/formulario.css";
@@ -37,10 +38,9 @@ export default function CadastrarAtualizarUsuario() {
   const [nomeAlunoEncontrado, setNomeAlunoEncontrado] = useState("");
   const [alunoBuscaErro, setAlunoBuscaErro] = useState("");
   const [isAlunoBuscadoEValido, setIsAlunoBuscadoEValido] = useState(false);
-  const [isConcluirBtnDisabled, setIsConcluirBtnDisabled] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submissionSuccessful, setSubmissionSuccessful] = useState(false);
-  const [responsavelId, setResponsavelId] = useState(null); 
+  const [responsavelId, setResponsavelId] = useState(null);
 
   // Estado para controlar quais campos são somente leitura
   const [readOnlyFields, setReadOnlyFields] = useState({
@@ -50,7 +50,7 @@ export default function CadastrarAtualizarUsuario() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const { id: idFromUrl } = useParams(); 
+  const { id: idFromUrl } = useParams();
 
   const isEditing = !!idFromUrl;
   const title = isEditing ? "Editar Usuário" : "Cadastrar Usuário";
@@ -59,7 +59,7 @@ export default function CadastrarAtualizarUsuario() {
   // Efeito para carregar dados do Google do cookie
   useEffect(() => {
     try {
-      
+
       const googleUserCookie = getCookie('googleUser');
 
       if (googleUserCookie) {
@@ -145,9 +145,9 @@ export default function CadastrarAtualizarUsuario() {
       // Se falhou como usuário, tenta buscar como responsável diretamente
       try {
         const responsavelResponse = await api.get(`responsaveis/${id}/`);
-        dataToLoad = responsavelResponse.data; 
+        dataToLoad = responsavelResponse.data;
         isResponsavelUser = true;
-        currentResponsavelId = responsavelResponse.data.id; 
+        currentResponsavelId = responsavelResponse.data.id;
       } catch (responsavelError) {
         console.error(`Erro ao carregar usuário como 'responsaveis/${id}':`, responsavelError);
         setMensagem(`Erro ao carregar usuário. ID ${id} não encontrado como usuário ou responsável.`);
@@ -169,14 +169,14 @@ export default function CadastrarAtualizarUsuario() {
         }
 
         setFormData({
-          ...userData, 
+          ...userData,
           is_responsavel: true,
-          aluno_cpf: alunoData?.cpf || "", 
+          aluno_cpf: alunoData?.cpf || "",
         });
         setCpfBusca(alunoData?.cpf || "");
-        setResponsavelId(dataToLoad.id); 
+        setResponsavelId(dataToLoad.id);
 
-        
+
         if (alunoData?.cpf) {
           try {
             const alunoResponse = await api.get(`alunos/buscar_por_cpf/?cpf=${alunoData.cpf}`);
@@ -202,7 +202,7 @@ export default function CadastrarAtualizarUsuario() {
         }
 
         setFormData({
-          ...dataToLoad, 
+          ...dataToLoad,
           is_responsavel: false,
           aluno_cpf: "",
         });
@@ -360,8 +360,6 @@ export default function CadastrarAtualizarUsuario() {
     if (Object.values(errors).some(error => error !== null)) {
       formIsValid = false;
     }
-
-    setIsConcluirBtnDisabled(!formIsValid);
 
   }, [formData, isAlunoBuscadoEValido, errors]);
 
@@ -649,11 +647,13 @@ export default function CadastrarAtualizarUsuario() {
           <button
             type="submit"
             className="submit-button"
-            disabled={isConcluirBtnDisabled || isSubmitting}
+            disabled={isSubmitting}
           >
             {isSubmitting ? "Processando..." : submitButtonText}
           </button>
         </form>
+
+        <BotaoVoltar onClick={() => navigate(-1)} />
 
         <PopupFeedback
           show={showFeedback}
