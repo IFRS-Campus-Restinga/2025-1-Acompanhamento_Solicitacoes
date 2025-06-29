@@ -34,6 +34,9 @@ export default function FormularioTrancamentoMatricula() {
     const navigate = useNavigate();
 
     const handleUsuario = useCallback((data) => {
+        // --- ADICIONADO LOG 1 ---
+        // Este é o primeiro lugar para verificar. O que o BuscaUsuario está nos enviando?
+        console.log("DEBUG FRONTEND: Dados recebidos pelo componente BuscaUsuario:", data);
         setUserData(data);
         setCarregandoUsuario(false);
     }, []);
@@ -76,6 +79,10 @@ export default function FormularioTrancamentoMatricula() {
             setTimeout(() => navigate("/aluno/minhas-solicitacoes"), 2000);
 
         } catch (error) {
+            // --- ADICIONADO LOG 2 ---
+            // Se o POST falhar, o que o backend está respondendo?
+            console.error("DEBUG FRONTEND: Erro na submissão do formulário. Resposta do backend:", error.response?.data);
+
             const errorMessage = error.response?.data?.detail || 
                                  JSON.stringify(error.response?.data) ||
                                  error.message || 
@@ -102,14 +109,15 @@ export default function FormularioTrancamentoMatricula() {
         return null; 
     }
     
+    // --- ADICIONADO LOG 3 ---
+    // Antes de renderizar, vamos confirmar o conteúdo final de userData.
+    console.log("DEBUG FRONTEND: Renderizando formulário com userData:", userData);
+    
     return (
         <div className="page-container">
             <BuscaUsuario dadosUsuario={handleUsuario} />
             <main className="container">
                 <h2>Solicitação de Trancamento de Matrícula</h2>
-                <br></br>
-                
-                {/* ADICIONADO: Descrição do formulário de volta */}
                 <h6 className="descricao-formulario">
                   Este formulário destina-se à solicitação de <strong> trancamento total de matrícula</strong>.
                   É importante ressaltar que o trancamento total de matrícula não é permitido para estudantes ingressantes, 
@@ -124,57 +132,46 @@ export default function FormularioTrancamentoMatricula() {
                 <form onSubmit={handleSubmit(onSubmit)} className="formulario formulario-largura">
                 
                     <div className="dados-aluno-container">
-                        {/* Campos de exibição dos dados do aluno */}
                         <div className="form-group">
                             <label>E-mail:</label>
                             <input type="email" readOnly value={userData?.email || ""} />
                         </div>
                         <div className="form-group">
                             <label>Nome Completo:</label>
-                            <input type="text" readOnly value={userData?.name || ""}/>
+                            <input type="text" readOnly value={userData?.nome || ""}/>
                         </div>
 
-                        {/* ADICIONADO: Campo de Matrícula para exibição */}
-                        {userData.grupo_detalhes?.matricula && (
-                            <div className="form-group">
-                                <label>Matrícula:</label>
-                                <input type="text" readOnly value={userData.grupo_detalhes.matricula}/>
-                            </div>
-                        )}
-                        
-                        {/* ADICIONADO: Campo de Curso para exibição */}
-                        {userData.grupo_detalhes?.curso_nome && (
-                            <div className="form-group">
-                                <label>Curso:</label>
-                                <input type="text" readOnly value={userData.grupo_detalhes.curso_nome}/>
-                            </div>
+                        {/* A renderização agora é condicional para evitar erros se 'grupo_detalhes' for nulo */}
+                        {userData && userData.grupo_detalhes ? (
+                            <>
+                                <div className="form-group">
+                                    <label>Matrícula:</label>
+                                    <input type="text" readOnly value={userData.grupo_detalhes.matricula || ''}/>
+                                </div>
+                                <div className="form-group">
+                                    <label>Curso:</label>
+                                    <input type="text" readOnly value={userData.grupo_detalhes.curso_nome || ''}/>
+                                </div>
+                            </>
+                        ) : (
+                            <p>Carregando detalhes do aluno...</p>
                         )}
                     
-                        {/* Campos de entrada do usuário */}
                         <div className="form-group">
                             <label>Justificativa:</label>
                             <textarea
                                 {...register("motivo_solicitacao", { 
                                     required: "Justificativa é obrigatória",
-                                    minLength: {
-                                        value: 20,
-                                        message: "Mínimo 20 caracteres"
-                                    }
+                                    minLength: { value: 20, message: "Mínimo 20 caracteres" }
                                 })}
                                 rows="5"
                             />
-                            {errors.motivo_solicitacao && (
-                                <span className="error-text">{errors.motivo_solicitacao.message}</span>
-                            )}
+                            {errors.motivo_solicitacao && (<span className="error-text">{errors.motivo_solicitacao.message}</span>)}
                         </div>
 
                         <div className="form-group">
                             <label>Anexos (opcional):</label>
-                            <input
-                                type="file"
-                                {...register("arquivos")}
-                                multiple
-                            />
+                            <input type="file" {...register("arquivos")} multiple />
                         </div>    
                     </div>  
 

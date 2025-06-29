@@ -1,43 +1,61 @@
 import { useEffect, useState } from "react";
-import { getGoogleUser, removeCookie } from "../services/authUtils"; // Ajuste o caminho conforme necessário
+// Importe a sua instância do Axios e a função de pegar o cookie
+import api from "../services/api"; 
+import { getGoogleUser, getAuthToken } from "../services/authUtils";
 
 export default function BuscaUsuario({ dadosUsuario }) {
-    const [userData, setUserData] = useState(undefined);
-    const [isAuthenticating, setIsAuthenticating] = useState(true); // Novo estado para controlar o carregamento inicial
+    const [isAuthenticating, setIsAuthenticating] = useState(true);
 
     useEffect(() => {
-        const fetchUserFromCookies = () => {
-            setIsAuthenticating(true); // Inicia o carregamento
-            const userFromCookie = getGoogleUser(); // Usa a função do authUtils
+        const fetchFullUserProfile = async () => {
+            setIsAuthenticating(true);
             
-            if (userFromCookie) {
-                setUserData(userFromCookie);
-            } else {
-                // Se não houver usuário nos cookies, limpa qualquer resquício antigo
-                // (opcional, mas bom para garantir a consistência)
-                removeCookie('googleUser');
-                removeCookie('appToken');
-                setUserData(null);
+            // 1. Pega os dados básicos do cookie
+            const userFromCookie = getGoogleUser();
+
+            // Se não houver nem usuário no cookie, não há o que fazer.
+            if (!userFromCookie?.email) {
+                dadosUsuario(null);
+                setIsAuthenticating(false);
+                return;
             }
-            setIsAuthenticating(false); // Finaliza o carregamento
+
+            const token = getAuthToken();
+            if (!token) {
+                // Se não há token, não podemos buscar o perfil completo.
+                dadosUsuario(userFromCookie); // Retorna apenas os dados do cookie
+                setIsAuthenticating(false);
+                return;
+            }
+
+            try {
+                // 2. USA O EMAIL DO COOKIE PARA CHAMAR A SUA VIEW EXISTENTE
+                const email = userFromCookie.email;
+                const response = await api.get(
+                    // Monta a URL para a sua UsuarioDetailByEmail
+                    `/usuarios/buscar-por-email/${email}/`, 
+                    {
+                        headers: { Authorization: `Bearer ${token}` }
+                    }
+                );
+
+                // 3. PASSA OS DADOS COMPLETOS (COM 'grupo_detalhes') PARA O COMPONENTE PAI
+                console.log("DEBUG FRONTEND: Perfil completo recebido da API:", response.data);
+                dadosUsuario(response.data);
+
+            } catch (error) {
+                console.error("Erro ao buscar perfil completo do usuário:", error);
+                // Em caso de erro, retorna os dados básicos do cookie para não quebrar a tela
+                dadosUsuario(userFromCookie);
+            } finally {
+                setIsAuthenticating(false);
+            }
         };
 
-        fetchUserFromCookies(); // Chama a função na montagem do componente
+        fetchFullUserProfile();
+        
+    }, [dadosUsuario]);
 
-        // Não é mais necessário escutar o evento 'storage' se tudo estiver em cookies,
-       
-    }, []); 
-
-    // Notifica o componente pai após a leitura
-    useEffect(() => {
-        // Só chama dadosUsuario se userData for diferente de undefined (ou seja, já tentou buscar)
-        // e isAuthenticating for falso (garante que a busca inicial terminou).
-        if (!isAuthenticating && userData !== undefined) {
-            console.log("Dados do usuário lidos:", userData);
-            dadosUsuario(userData); // Passa os dados para o componente pai
-        }
-    }, [userData, dadosUsuario, isAuthenticating]);
-
-    // Este componente não renderiza nada diretamente, ele apenas lida com a lógica de busca de usuário.
+    // Este componente não renderiza nada diretamente.
     return null;
 }
