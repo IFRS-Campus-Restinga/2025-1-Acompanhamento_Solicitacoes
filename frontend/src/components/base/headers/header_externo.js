@@ -5,113 +5,83 @@ import "./../headers/header_nav.css"; // Reutiliza o CSS geral da navegação
 
 const HeaderExterno = () => {
   const [userData, setUserData] = useState(null);
-  const navigate = useNavigate();
+    const navigate = useNavigate();
 
-  // A lógica de autenticação pode ser simplificada para usuário externo,
-  // mas é bom manter a estrutura caso haja login simplificado ou logout para eles.
-  const loadUserData = useCallback(() => {
-    // Para usuário externo, talvez não haja userData real, ou seja apenas um identificador temporário.
-    // Ajuste 'getGoogleUser()' conforme a sua lógica de autenticação para usuários externos.
-    setUserData(getGoogleUser()); 
-  }, []);
+    // Função para carregar os dados do usuário do Google a partir dos cookies
+    const loadUserData = useCallback(() => {
+        setUserData(getGoogleUser());
+    }, []);
 
-  useEffect(() => {
-    loadUserData();
-    const handleAuthChange = () => {
-      console.log("Evento 'authChange' detectado para usuário externo. Recarregando dados.");
-      loadUserData();
+    useEffect(() => {
+        loadUserData();
+
+        const handleAuthChange = () => {
+            console.log("Evento 'authChange' detectado. Recarregando dados do usuário.");
+            loadUserData();
+        };
+
+        window.addEventListener("authChange", handleAuthChange);
+
+        return () => {
+            window.removeEventListener("authChange", handleAuthChange);
+        };
+    }, [loadUserData]);
+
+    // Função para lidar com o logout do usuário
+    const handleLogout = () => {
+        logout(); // Chama a função centralizada em authUtils.js para limpar os cookies
+        setUserData(null);
+        // Limpa a role temporária do localStorage para o próximo login ou acesso.
+        localStorage.removeItem('tempUserRole');
+        navigate("/"); // Redireciona o usuário para a página inicial/de login
     };
 
-    window.addEventListener("authChange", handleAuthChange);
-    return () => {
-      window.removeEventListener("authChange", handleAuthChange);
-    };
-  }, [loadUserData]);
+    return (
+        <header className="header">
+            <div className="header-container">
+                <div className="left">
+                    <img src="/img/logo-ifrs-branco.png" alt="logotipo do ifrs campus restinga" className="logo" />
+                </div>
 
-  // Função de logout, caso o usuário externo tenha alguma forma de sessão
-  const handleLogout = () => {
-    logout(); 
-    setUserData(null);
-    navigate("/"); 
-  };
+                <nav className="center">
+                    <ul className="nav-links">
+                        {/* Botão Formulários (redireciona para /aluno/nova-solicitacao) */}
+                        <li>
+                            <Link to="/aluno/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
+                        </li>
+                        {/* Botão Minhas Solicitações (mantido) */}
+                        <li>
+                            <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
+                        </li>
+                    </ul>
+                </nav>
 
-  return (
-    <header className="header">
-      <div className="header-container">
-        <div className="left">
-          {/* Logo permanece na extrema esquerda */}
-          <img
-            src="/img/logo-ifrs-branco.png"
-            alt="logotipo do ifrs campus restinga"
-            className="logo"
-          />
-        </div>
-
-        <nav className="center">
-          <ul className="nav-links">
-            <li>
-              {/* Botão único para o usuário externo */}
-              <Link to="/externo/desistencia-vaga">
-                Desistir da Vaga
-              </Link>
-            </li>
-          </ul>
-        </nav>
-
-        <div className="right user-info">
-          {/* A seção de informações do usuário (Bem-vindo, foto, logout)
-              pode ser removida ou adaptada, dependendo se usuários externos
-              terão algum tipo de autenticação ou perfil simplificado.
-              Por enquanto, mantive a estrutura com base no seu código,
-              assumindo que 'userData' pode ser nulo para este tipo de usuário. */}
-          {userData ? (
-            <>
-              <p className="mensagem-usuario">Bem-vindo, {userData.name}</p>
-              <img
-                src={userData.picture} 
-                alt={userData.name} 
-                className="profile-pic"
-              />
-              <button
-                onClick={handleLogout}
-                title="Sair"
-                style={{
-                  marginLeft: "10px",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <i
-                  className="bi bi-box-arrow-right icone"
-                  style={{ fontSize: "1.5rem", color: "white" }}
-                ></i>
-              </button>
-              <Link
-                to="/perfil"
-                className="perfil-link"
-                style={{
-                  marginLeft: "5px",
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                }}
-              >
-                <i
-                  className="bi bi-gear-fill icone"
-                  title="Meu Perfil"
-                  style={{ fontSize: "1.1rem", color: "white" }}
-                ></i>
-              </Link>
-            </>
-          ) : (
-            // Pode deixar vazio ou adicionar algo como "Faça Login" se aplicável
-            <p className="mensagem-usuario">Usuário Externo</p> 
-          )}
-        </div>
-      </div>
-    </header>
-  );
+                <div className="right user-info">
+                    {userData ? (
+                        <>
+                            <p className="mensagem-usuario">Bem-vindo, {userData.name}</p>
+                            <img
+                                src={userData.picture} // URL da foto do Google
+                                alt={userData.name} // Nome do usuário como alt text
+                                className="profile-pic"
+                            />
+                            {/* Botão de Logout */}
+                            <button onClick={handleLogout} title="Sair" style={{ marginLeft: "10px", background: "none", border: "none", cursor: "pointer" }}>
+                                <i className="bi bi-box-arrow-right icone" style={{ fontSize: "1.5rem", color: "white" }}></i>
+                            </button>
+                            <Link to="/perfil" className="perfil-link" style={{ marginLeft: "5px", background: "none", border: "none", cursor: "pointer" }}>
+                                <i className="bi bi-gear-fill icone" title="Meu Perfil" style={{ fontSize: "1.1rem", color: "white" }}></i>
+                            </Link>
+                        </>
+                    ) : (
+                        <>
+                            <p className="mensagem-usuario">Bem-vindo</p>
+                        </>
+                    )}
+                </div>
+            </div>
+        </header>
+    );
 };
 
 export default HeaderExterno;
