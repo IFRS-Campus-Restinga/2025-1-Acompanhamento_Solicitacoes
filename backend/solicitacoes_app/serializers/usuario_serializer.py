@@ -68,26 +68,18 @@ class UsuarioSerializerComGrupos(serializers.ModelSerializer):
         ]
     
     def get_grupo(self, obj):
-        print(f"DEBUG_SERIALIZER: get_grupo chamado para o usuário: {obj.email}")
         if hasattr(obj, 'coordenador') and obj.coordenador is not None:
-            print(f"DEBUG_SERIALIZER: {obj.email} é Coordenador.")
             return "Coordenador"
         if hasattr(obj, 'aluno') and obj.aluno is not None:
-            print(f"DEBUG_SERIALIZER: {obj.email} é Aluno.")
             return "Aluno"
         if hasattr(obj, 'cre') and obj.cre is not None:
-            print(f"DEBUG_SERIALIZER: {obj.email} é CRE.")
             return "CRE"
         if hasattr(obj, 'responsavel') and obj.responsavel is not None:
-            print(f"DEBUG_SERIALIZER: {obj.email} é Responsável.")
             return "Responsavel"
-        print(f"DEBUG_SERIALIZER: {obj.email} é Externo (nenhum papel específico encontrado).")
         return "Externo"
     
     def get_grupo_detalhes(self, obj):
-        print(f"DEBUG_SERIALIZER: get_grupo_detalhes chamado para o usuário: {obj.email}")
         if hasattr(obj, 'coordenador') and obj.coordenador is not None:
-            # ... (código existente para coordenador)
             return {
                 "id": obj.coordenador.id,
                 "siape": obj.coordenador.siape,
@@ -103,7 +95,6 @@ class UsuarioSerializerComGrupos(serializers.ModelSerializer):
         
         if hasattr(obj, 'aluno') and obj.aluno is not None:
             aluno = obj.aluno
-            print(f"DEBUG_SERIALIZER: Gerando detalhes para Aluno: {aluno.usuario.email}")
             return {
                 "id": aluno.id,
                 "matricula": aluno.matricula,
