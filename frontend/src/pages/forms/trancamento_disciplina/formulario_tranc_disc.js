@@ -279,7 +279,7 @@ export default function FormularioTrancamentoDisciplina() {
             console.log(`Buscando disciplinas para PPC: ${ppcCodigo} e Período: ${periodo}`);
             const token = getAuthToken();
             const res = await axios.get(
-                `http://localhost:8000/solicitacoes/disciplinas_por_ppc_e_periodo/?ppc_codigo=${ppcCodigo}&periodo=${periodo}`,
+                `http://localhost:8000/solicitacoes/disciplinas/por-ppc-periodo/?ppc_codigo=${ppcCodigo}&periodo=${periodo}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

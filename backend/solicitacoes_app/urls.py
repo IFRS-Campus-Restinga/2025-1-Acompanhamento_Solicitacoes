@@ -7,7 +7,12 @@ from .views.ppc_view import *
 from .views.coordenador_view import CoordenadorListCreateView, CoordenadorRetrieveUpdateDestroyView
 from .views.cre_view import CREListCreateView, CRERetrieveUpdateDestroyView
 from .views.aluno_view import *
-from .views.disciplina_view import *
+from .views.disciplina_view import (
+    DisciplinaListCreateView,
+    DisciplinaRetrieveUpdateDestroyView,
+    DisciplinasPorCursoView,
+    DisciplinasPorPpcPeriodoView, # <-- Garanta que essa está aqui
+)
 from .views.campos_solic_views.tipo_falta_view import *
 from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
@@ -115,6 +120,9 @@ urlpatterns = [
     path('saudacao/', saudacao, name="saudacao"),
     #path('solicitacoes/', include('solicitacoes_app.urls', namespace='solicitacoes_app')),
 
+    path('disciplinas/por-curso/<path:curso_codigo>/',DisciplinasPorCursoView.as_view(),name='disciplinas-por-curso'),
+    path('disciplinas/por-ppc-periodo/',DisciplinasPorPpcPeriodoView.as_view(),name='disciplinas-por-ppc-periodo'),
+
     path('cursos/', CursoListCreateView.as_view(), name='listar_cadastrar_cursos'),
     path('cursos/<str:codigo>/', CursoRetrieveUpdateDestroyView.as_view(), name='detalhar_atualizar_deletar_curso'),
 
@@ -186,8 +194,8 @@ urlpatterns = [
     # path("formulario_trancamento_disciplina/disciplinas/<str:curso_codigo>/", disciplinas_por_curso, name="disciplinas_por_curso"),
     # # NOVA URL para buscar disciplinas por PPC e período (a ser usada no seu formulário de exercícios)
     # path("disciplinas_por_ppc_e_periodo/", disciplinas_por_ppc_e_periodo, name="disciplinas_por_ppc_e_periodo"),
-    path('disciplinas/por-curso/<path:curso_codigo>/',DisciplinasPorCursoView.as_view(),name='disciplinas-por-curso'),
-    path('disciplinas/por-ppc-periodo/',DisciplinasPorPpcPeriodoView.as_view(),name='disciplinas-por-ppc-periodo'),
+    #path('disciplinas/por-curso/<path:curso_codigo>/',DisciplinasPorCursoView.as_view(),name='disciplinas-por-curso'),
+    #path('disciplinas/por-ppc-periodo/',DisciplinasPorPpcPeriodoView.as_view(),name='disciplinas-por-ppc-periodo'),
 
     path('nomes/', NomeListCreateView.as_view(), name='nome-list'),
     path('nomes/<str:pk>/', NomeRetrieveUpdateDestroyView.as_view(), name='nome-detail'),
