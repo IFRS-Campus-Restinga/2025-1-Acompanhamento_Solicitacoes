@@ -1,9 +1,10 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from ..serializers.mandato_serializer import MandatoSerializer, MandatoDetalhadoSerializer
 from solicitacoes_app.models import Mandato, Curso
 from django.db.models import Q, F, ExpressionWrapper, BooleanField
 from django.utils import timezone
+from ..permissoes import IsCREForManagement, IsCoordenador
 
 
 class MandatoListCreateView(generics.ListCreateAPIView):
@@ -13,8 +14,8 @@ class MandatoListCreateView(generics.ListCreateAPIView):
     """
     
     queryset = Mandato.objects.all()
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar mandatos
     serializer_class = MandatoSerializer
-    permission_classes = [AllowAny]
     
 
 class MandatoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -24,8 +25,8 @@ class MandatoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     
     queryset = Mandato.objects.all()
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode gerenciar mandatos
     serializer_class = MandatoSerializer
-    permission_classes = [AllowAny]
     
 
 
@@ -36,6 +37,7 @@ class MandatoOrdenadoListView(generics.ListAPIView):
     2. Mandatos encerrados (com data fim < hoje) depois, ordenados por nome do curso e depois por data de início (mais recente primeiro).
     """
     serializer_class = MandatoDetalhadoSerializer
+    permission_classes = [IsAuthenticated, IsCREForManagement | IsCoordenador] # CRE e Coordenador podem listar mandatos
 
     def get_queryset(self):
         """
@@ -58,4 +60,17 @@ class MandatoOrdenadoListView(generics.ListAPIView):
             "-inicio_mandato"   # Ordena os encerrados do mesmo curso por data de início DESC
                                 # (Também ordena os vigentes do mesmo curso)
         )
+        
+        # Se for coordenador, filtra apenas os mandatos do seu curso
+        if IsCoordenador().has_permission(self.request, self):
+            # Assumindo que o usuário coordenador tem um campo 'coordenador' que aponta para o objeto Coordenador
+            # e que o objeto Coordenador tem um campo 'mandato_atual' ou similar que liga ao curso
+            # Esta lógica pode precisar ser ajustada dependendo de como o Coordenador está ligado ao Curso/Mandato
+            # Por simplicidade, para este exemplo, vamos assumir que o coordenador só pode ver os mandatos do seu próprio curso
+            # if hasattr(self.request.user, 'coordenador') and self.request.user.coordenador.mandato_atual:
+            #     queryset = queryset.filter(curso=self.request.user.coordenador.mandato_atual.curso)
+            return Mandato.objects.none() # Temporário, precisa de lógica de filtro por coordenador
+
         return queryset
+
+

@@ -3,20 +3,38 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.utils import timezone
 from django.db import models
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ..serializers.disponibilidade_serializer import DisponibilidadeSerializer
 from ..models import Disponibilidade, PeriodoDisponibilidade
+from ..permissoes import IsCREForManagement, IsCoordenador # Importe as permissões necessárias
 
 class DisponibilidadeListCreateView(generics.ListCreateAPIView):
     queryset = Disponibilidade.objects.all()
     serializer_class = DisponibilidadeSerializer
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar disponibilidades
+
+    def get_queryset(self):
+        # CRE pode listar todas as disponibilidades
+        if IsCREForManagement().has_permission(self.request, self):
+            return Disponibilidade.objects.all()
+        # Coordenadores podem precisar listar disponibilidades de formulários de seus cursos
+        # Isso exigiria uma lógica mais complexa aqui, filtrando por formulários associados a cursos
+        # Por enquanto, outros usuários não podem listar
+        return Disponibilidade.objects.none()
 
 class DisponibilidadeRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Disponibilidade.objects.all()
     serializer_class = DisponibilidadeSerializer
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode gerenciar disponibilidades
     lookup_field = 'id'
 
 class VerificarDisponibilidadeView(APIView):
+    # Esta view é para verificar a disponibilidade de um formulário para o público/usuários.
+    # Pode ser AllowAny se o formulário puder ser acessado por não-autenticados (ex: Externo).
+    # Se apenas usuários logados puderem verificar, use IsAuthenticated.
+    permission_classes = [AllowAny] # Ou [IsAuthenticated] dependendo do requisito
+
     def get(self, request):
         formulario = request.query_params.get('formulario')
         if not formulario:
@@ -114,3 +132,5 @@ class VerificarDisponibilidadeView(APIView):
                 {"error": f"Ocorreu um erro inesperado na verificação: {str(e)}"},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
+
+

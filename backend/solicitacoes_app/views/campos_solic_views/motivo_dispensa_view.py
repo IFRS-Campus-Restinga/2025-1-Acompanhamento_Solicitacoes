@@ -1,8 +1,8 @@
 from rest_framework import generics
 from ...models.campos_solic_models.motivo_dispensa import MotivoDispensa
 from solicitacoes_app.serializers.campos_solic_serializers.motivo_dispensa_serializer import MotivoDispensaSerializer
-from rest_framework.permissions import AllowAny
-from ...permissoes import CanManageMotivos, IsCRE
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from ...permissoes import IsCREForManagement
 
 
 class MotivoDispensaListService(generics.ListCreateAPIView): 
@@ -11,8 +11,7 @@ class MotivoDispensaListService(generics.ListCreateAPIView):
     """
     serializer_class = MotivoDispensaSerializer
     queryset = MotivoDispensa.objects.all()
-    #permission_classes = [AllowAny]
-    permission_classes = [CanManageMotivos]
+    permission_classes = [IsAuthenticated, IsCREForManagement]
 
 
 
@@ -22,8 +21,8 @@ class MotivoDispensaService(generics.RetrieveUpdateDestroyAPIView):
     """
     serializer_class = MotivoDispensaSerializer
     queryset = MotivoDispensa.objects.all()
-    #permission_classes = [AllowAny]
-    permission_classes = [CanManageMotivos]
+    permission_classes = [IsAuthenticated, IsCREForManagement]
 
 
         
+

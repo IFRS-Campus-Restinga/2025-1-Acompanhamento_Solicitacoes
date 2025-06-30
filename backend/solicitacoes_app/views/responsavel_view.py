@@ -1,5 +1,5 @@
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.status import (
     HTTP_201_CREATED, HTTP_200_OK, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND
@@ -7,12 +7,13 @@ from rest_framework.status import (
 from django.db import transaction 
 from ..models import Responsavel
 from ..serializers.responsavel_serializer import ResponsavelReadSerializer, ResponsavelWriteSerializer
+from ..permissoes import IsCREForManagement
 
 
 class ResponsavelListCreateView(generics.ListCreateAPIView):
     
     queryset = Responsavel.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar responsáveis
 
     def get_serializer_class(self):
     
@@ -47,7 +48,7 @@ class ResponsavelListCreateView(generics.ListCreateAPIView):
 
 class ResponsavelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Responsavel.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode gerenciar responsáveis
 
     def get_serializer_class(self):
         
@@ -66,3 +67,5 @@ class ResponsavelRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
         self.perform_update(serializer)
         read_serializer = ResponsavelReadSerializer(instance)
         return Response(read_serializer.data, status=status.HTTP_200_OK)
+
+

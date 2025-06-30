@@ -1,10 +1,11 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from ..serializers.cre_serializer import CREReadSerializer, CREWriteSerializer
 from solicitacoes_app.models import Usuario, CRE
 from django.db import transaction
 from rest_framework import status
 from rest_framework.response import Response
+from ..permissoes import IsCREForManagement
 
 
 class CREListCreateView(generics.ListCreateAPIView):
@@ -14,7 +15,7 @@ class CREListCreateView(generics.ListCreateAPIView):
     """
     
     queryset = CRE.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE autenticado pode gerenciar CREs
     
     def get_serializer_class(self):
         """
@@ -67,7 +68,7 @@ class CRERetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     
     queryset = CRE.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE autenticado pode gerenciar CREs
     
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
@@ -87,3 +88,5 @@ class CRERetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
         # Usa o serializer de leitura para responder
         read_serializer = CREReadSerializer(instance)
         return Response(read_serializer.data, status=status.HTTP_200_OK)
+
+

@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from solicitacoes_app.models.campos_solic_models.tipo_falta import TipoFalta
 
 class TipoFaltaView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated] # Apenas usuários autenticados podem ver os tipos de falta
 
     def get(self, request):
         choices = [
@@ -12,3 +12,5 @@ class TipoFaltaView(APIView):
             for choice in TipoFalta
         ]
         return Response(choices)
+
+

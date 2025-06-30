@@ -1,5 +1,5 @@
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import generics, serializers 
 from ..serializers.usuario_serializer import UsuarioSerializer
@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 
 from ..serializers.usuario_serializer import UsuarioSerializerComGrupos #para view nova de solicitacoes
 from django.http import Http404
+from ..permissoes import IsCREForManagement, IsOwnerOrCRE
 
 class UsuarioListCreateView(generics.ListCreateAPIView):
 
@@ -18,7 +19,7 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
 
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar usuários
     
     
     def perform_create(self, serializer):
@@ -66,7 +67,7 @@ class UsuarioRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Usuario.objects.filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement | IsOwnerOrCRE] # CRE ou o próprio usuário pode gerenciar
 
     def update(self, request, *args, **kwargs): #para update de usuarios inativos e reativação
         instance = self.get_object()
@@ -87,7 +88,7 @@ class UsuariosInativosView(generics.ListAPIView):
     """
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar usuários inativos
     
     
 class UsuarioReativarView(generics.GenericAPIView):
@@ -97,7 +98,7 @@ class UsuarioReativarView(generics.GenericAPIView):
     """
     queryset = Usuario.objects.inativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode reativar usuários
     lookup_field = 'pk'
 
     def patch(self, request, *args, **kwargs):
@@ -122,7 +123,7 @@ class UsuarioAprovarCadastroView(generics.GenericAPIView):
     """
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode aprovar cadastros
     lookup_field = 'pk'
 
     def patch(self, request, *args, **kwargs):
@@ -175,7 +176,7 @@ class AlunoEmailListView(generics.ListAPIView):
     """
     queryset = Usuario.objects.filter(Q(aluno__isnull=False)).only('email')
     serializer_class = serializers.Serializer  # Serializer básico
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e-mails de alunos
 
     def list(self, request):
         emails = self.queryset.values_list('email', flat=True)
@@ -189,7 +190,7 @@ class UsuarioDetailByEmail(generics.RetrieveAPIView):
     """
     queryset = Usuario.objects.all()
     serializer_class = UsuarioSerializerComGrupos # Este é o serializer que contém a lógica de grupo_detalhes
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement | IsOwnerOrCRE] # CRE ou o próprio usuário pode ver detalhes por email
     lookup_field = 'email' # ESSENCIAL: define que a busca será pelo campo 'email'
 
     def get_object(self):
@@ -219,3 +220,4 @@ class UsuarioDetailByEmail(generics.RetrieveAPIView):
         except Exception as e:
             print(f"DEBUG: UsuarioDetailByEmail - Erro inesperado ao buscar usuário: {e}")
             raise # Re-levanta outras exceções
+

@@ -3,7 +3,7 @@
 from rest_framework import permissions
 from .models import Mandato # Assuming Mandato model is in the same app
 
-# --- Funções Auxiliares --- 
+# --- Funções Auxiliares ---
 def _is_in_group(user, group_name):
     """ Verifica se um usuário pertence a um grupo específico. """
     if user and user.is_authenticated:
@@ -20,7 +20,7 @@ def _get_aluno_from_solicitacao(obj):
     #         return obj.form_trancamento.aluno
     return None
 
-# --- Classes de Permissão por Grupo --- 
+# --- Classes de Permissão por Grupo ---
 class IsCRE(permissions.BasePermission):
     message = 'Apenas usuários do grupo CRE podem realizar esta ação.'
     def has_permission(self, request, view):
@@ -46,12 +46,20 @@ class IsExterno(permissions.BasePermission):
     def has_permission(self, request, view):
         return _is_in_group(request.user, 'externo')
 
-# --- Classes de Permissão Combinadas e por Objeto/Ação --- 
+# --- Classes de Permissão Combinadas e por Objeto/Ação ---
 
 class IsAuthenticated(permissions.BasePermission):
     """ Permite acesso apenas a usuários autenticados. """
     def has_permission(self, request, view):
         return request.user and request.user.is_authenticated
+
+class IsCREForManagement(permissions.BasePermission):
+    """
+    Permissão para ações de gerenciamento que apenas o CRE pode realizar.
+    """
+    message = 'Apenas usuários do grupo CRE podem realizar esta ação de gerenciamento.'
+    def has_permission(self, request, view):
+        return _is_in_group(request.user, 'cre')
 
 class IsOwnerOrCRE(permissions.BasePermission):
     """
@@ -107,9 +115,9 @@ class IsCoordenadorDoCursoOrCRE(permissions.BasePermission):
             curso_do_aluno = aluno_obj.curso
             # Verifica se existe um Mandato ativo para o usuário logado e o curso do aluno
             return Mandato.objects.filter(
-                usuario=request.user, 
+                coordenador__usuario=request.user, 
                 curso=curso_do_aluno, 
-                data_fim__isnull=True # Considera apenas mandatos ativos
+                fim_mandato__isnull=True # Considera apenas mandatos ativos
             ).exists()
         return False
 
@@ -131,53 +139,18 @@ class CanSubmitDesistenciaVaga(permissions.BasePermission):
             _is_in_group(request.user, 'responsavel')
         )
 
-# --- Permissões Compostas (Exemplos) --- 
-
-class CanViewSolicitacaoDetail(permissions.BasePermission):
+class CanSubmitAbonoFalta(permissions.BasePermission):
     """
-    Permite visualizar detalhes da solicitação se for:
-    - CRE
-    - Aluno dono
-    - Responsável do Aluno
-    - Coordenador do Curso do Aluno
+    Permite criar Abono de Falta se for Aluno ou Responsável.
     """
-    def has_object_permission(self, request, view, obj):
+    message = 'Apenas Alunos ou Responsáveis podem criar esta solicitação.'
+    def has_permission(self, request, view):
+        if not request.user or not request.user.is_authenticated:
+            return False 
         return (
-            IsCRE().has_permission(request, view) or
-            IsOwnerOrCRE().has_object_permission(request, view, obj) or 
-            IsResponsavelDoAlunoOrCRE().has_object_permission(request, view, obj) or
-            IsCoordenadorDoCursoOrCRE().has_object_permission(request, view, obj)
+            _is_in_group(request.user, 'aluno') or 
+            _is_in_group(request.user, 'responsavel')
         )
-
-class CanListOwnSolicitacoes(permissions.BasePermission):
-    """
-    Permite listar solicitações se for Aluno, Responsável ou Externo.
-    (A view precisará filtrar para mostrar apenas as próprias/do dependente).
-    """
-    message = 'Apenas Alunos, Responsáveis ou usuários Externos podem listar suas próprias solicitações.'
-    def has_permission(self, request, view):
-         if not request.user or not request.user.is_authenticated:
-            return False
-         # Adicionado 'externo' à verificação
-         return (
-             _is_in_group(request.user, 'aluno') or 
-             _is_in_group(request.user, 'responsavel') or 
-             _is_in_group(request.user, 'externo')
-         )
-
-class CanListCoordenadorSolicitacoes(permissions.BasePermission):
-    """
-    Permite listar solicitações se for Coordenador.
-    (A view precisará filtrar para mostrar apenas as do(s) seu(s) curso(s)).
-    """
-    def has_permission(self, request, view):
-         if not request.user or not request.user.is_authenticated:
-            return False
-         return _is_in_group(request.user, 'coordenador')
-
-# CRE pode listar todas (usar IsCRE na view)
-
-# --- Permissões para Formulários Específicos ---
 
 class CanSubmitDispensaEdFisica(permissions.BasePermission):
     """
@@ -257,4 +230,112 @@ class CanManageMotivos(permissions.BasePermission):
             _is_in_group(request.user, 'cre') or 
             _is_in_group(request.user, 'coordenador')
         )
+
+class CanViewSolicitacaoDetail(permissions.BasePermission):
+    """
+    Permite visualizar detalhes da solicitação se for:
+    - CRE
+    - Aluno dono
+    - Responsável do Aluno
+    - Coordenador do Curso do Aluno
+    """
+    def has_object_permission(self, request, view, obj):
+        return (
+            IsCRE().has_permission(request, view) or
+            IsOwnerOrCRE().has_object_permission(request, view, obj) or 
+            IsResponsavelDoAlunoOrCRE().has_object_permission(request, view, obj) or
+            IsCoordenadorDoCursoOrCRE().has_object_permission(request, view, obj)
+        )
+
+class CanListOwnSolicitacoes(permissions.BasePermission):
+    """
+    Permite listar solicitações se for Aluno, Responsável ou Externo.
+    (A view precisará filtrar para mostrar apenas as próprias/do dependente).
+    """
+    message = 'Apenas Alunos, Responsáveis ou usuários Externos podem listar suas próprias solicitações.'
+    def has_permission(self, request, view):
+         if not request.user or not request.user.is_authenticated:
+            return False
+         # Adicionado 'externo' à verificação
+         return (
+             _is_in_group(request.user, 'aluno') or 
+             _is_in_group(request.user, 'responsavel') or 
+             _is_in_group(request.user, 'externo')
+         )
+
+class CanListCoordenadorSolicitacoes(permissions.BasePermission):
+    """
+    Permite listar solicitações se for Coordenador.
+    (A view precisará filtrar para mostrar apenas as do(s) seu(s) curso(s)).
+    """
+    def has_permission(self, request, view):
+         if not request.user or not request.user.is_authenticated:
+            return False
+         return _is_in_group(request.user, 'coordenador')
+
+class CanEditOrDeleteSolicitacao(permissions.BasePermission):
+    """
+    Permite editar ou deletar uma solicitação se for CRE ou o Aluno dono.
+    """
+    message = 'Você não tem permissão para editar ou deletar esta solicitação.'
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if _is_in_group(request.user, 'cre'):
+            return True
+        
+        aluno_obj = _get_aluno_from_solicitacao(obj)
+        return aluno_obj and hasattr(aluno_obj, 'usuario') and aluno_obj.usuario == request.user
+
+class CanRespondSolicitacao(permissions.BasePermission):
+    """
+    Permite responder (atualizar status) uma solicitação se for CRE ou Coordenador do curso do aluno.
+    """
+    message = 'Você não tem permissão para responder a esta solicitação.'
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if _is_in_group(request.user, 'cre'):
+            return True
+        
+        # Lógica para Coordenador do Curso
+        if _is_in_group(request.user, 'coordenador'):
+            aluno_obj = _get_aluno_from_solicitacao(obj)
+            if not aluno_obj or not hasattr(aluno_obj, 'curso') or not aluno_obj.curso:
+                return False # Não é possível verificar o curso
+            
+            curso_do_aluno = aluno_obj.curso
+            # Verifica se o usuário coordenador tem um mandato ativo para o curso do aluno
+            return Mandato.objects.filter(
+                coordenador__usuario=request.user, 
+                curso=curso_do_aluno, 
+                fim_mandato__isnull=True # Considera apenas mandatos ativos
+            ).exists()
+        return False
+
+class CanViewHistoricoAfastamento(permissions.BasePermission):
+    """
+    Permite visualizar o histórico de afastamento se for CRE ou o Aluno dono.
+    """
+    message = 'Você não tem permissão para visualizar este histórico de afastamento.'
+    def has_object_permission(self, request, view, obj):
+        if not request.user or not request.user.is_authenticated:
+            return False
+        if _is_in_group(request.user, 'cre'):
+            return True
+        
+        # Supondo que o HistoricoAfastamento tem um campo 'aluno' ou 'usuario'
+        # Se o HistoricoAfastamento está ligado a um FormExercicioDomiciliar, e este ao aluno
+        if hasattr(obj, 'form_exercicio_domiciliar') and hasattr(obj.form_exercicio_domiciliar, 'aluno'):
+            return obj.form_exercicio_domiciliar.aluno.usuario == request.user
+        return False
+
+class CanListAllSolicitacoes(permissions.BasePermission):
+    """
+    Permite listar todas as solicitações se for CRE.
+    """
+    message = 'Apenas CRE pode listar todas as solicitações.'
+    def has_permission(self, request, view):
+        return _is_in_group(request.user, 'cre')
+
 

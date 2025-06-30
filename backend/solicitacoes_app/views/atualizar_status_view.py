@@ -15,7 +15,7 @@ from ..models import (
     FormDispensaEdFisica,
     FormEntregaAtivCompl
 )
-from ..permissoes import IsCRE # Supondo que apenas o CRE pode mudar o status
+from ..permissoes import IsCRE, CanRespondSolicitacao # Importa a permissão CanRespondSolicitacao
 
 # ADICIONADO: Um "mapa" para encontrar o modelo correto a partir da chave na URL
 MODEL_MAP = {
@@ -32,13 +32,17 @@ class AtualizarStatusSolicitacaoView(APIView):
     View para atualizar o status e a posse de qualquer tipo de solicitação.
     Recebe o tipo e o id do formulário pela URL.
     """
-    permission_classes = [IsAuthenticated, IsCRE]
+    permission_classes = [IsAuthenticated, CanRespondSolicitacao] # Permissão para responder solicitações
 
     def patch(self, request, form_type_key, pk, format=None):
         model_class = MODEL_MAP.get(form_type_key)
         if not model_class:
             return Response({"erro": "Tipo de formulário inválido."}, status=status.HTTP_404_NOT_FOUND)
         instance = get_object_or_404(model_class, pk=pk)
+
+        # Verifica a permissão a nível de objeto antes de prosseguir
+        self.check_object_permissions(request, instance)
+
         novo_status = request.data.get("status")
 
         status_keys = [choice[0] for choice in Status.choices]
@@ -56,3 +60,5 @@ class AtualizarStatusSolicitacaoView(APIView):
         return Response({
             "mensagem": f"Status da solicitação {instance.id} atualizado para '{instance.get_status_display()}'."
         }, status=status.HTTP_200_OK)
+
+

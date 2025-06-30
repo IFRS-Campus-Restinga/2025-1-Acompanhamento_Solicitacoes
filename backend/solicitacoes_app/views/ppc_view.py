@@ -1,8 +1,9 @@
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import Ppc
 from ..serializers.ppc_serializer import PpcSerializer
+from ..permissoes import IsCREForManagement
 
 
 class PpcListCreateView(generics.ListCreateAPIView):
@@ -12,7 +13,7 @@ class PpcListCreateView(generics.ListCreateAPIView):
     """
     queryset = Ppc.objects.all()
     serializer_class = PpcSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar PPCs
 
 
 class PpcRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -26,5 +27,7 @@ class PpcRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     queryset = Ppc.objects.all()
     serializer_class = PpcSerializer
-    permission_classes = [AllowAny]
-    lookup_field = 'codigo'  # Utiliza 'codigo' ao invés do ID padrão
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode gerenciar PPCs
+    lookup_field = "codigo"  # Utiliza \'codigo\' ao invés do ID padrão
+
+

@@ -1,5 +1,5 @@
 from rest_framework import status, generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 
 from ..models import FormAbonoFalta
 from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
@@ -12,15 +12,12 @@ from ..serializers.disciplina_serializer import DisciplinaSerializer
 from ..serializers.usuario_serializer import UsuarioSerializer
 from ..serializers.form_buscar_info_serializer import AlunoInfoSerializer
 
-from ..permissoes import IsAluno, IsResponsavel
-from rest_framework.permissions import IsAuthenticated
+from ..permissoes import CanSubmitAbonoFalta, CanViewSolicitacaoDetail, CanEditOrDeleteSolicitacao, IsCRE
 
 class FormAbonoFaltaListCreateView(generics.ListCreateAPIView):
     queryset = FormAbonoFalta.objects.all()
     serializer_class = FormAbonoFaltaSerializer
-    #permission_classes = [AllowAny]
-    permission_classes = [IsAuthenticated, (IsAluno | IsResponsavel)] 
-
+    permission_classes = [IsAuthenticated, CanSubmitAbonoFalta] 
 
     def perform_create(self, serializer): 
         print("✅ Serializer recebido:", serializer)
@@ -47,17 +44,19 @@ class FormAbonoFaltaListCreateView(generics.ListCreateAPIView):
 class FormAbonoFaltaRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     queryset = FormAbonoFalta.objects.all()
     serializer_class = FormAbonoFaltaSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, CanViewSolicitacaoDetail, CanEditOrDeleteSolicitacao]
 
 class UsuarioPorEmailView(generics.ListAPIView):
     """Endpoint para buscar usuário por email"""
     serializer_class = UsuarioSerializer
+    permission_classes = [IsAuthenticated, IsCRE] # Apenas CRE pode buscar usuários por email
 
     def get_queryset(self):
-        email = self.request.query_params.get('email')
+        email = self.request.query_params.get("email")
         return Usuario.objects.filter(email__iexact=email) if email else Usuario.objects.none()
     
 class DisciplinasPorCursoView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated] # Todos autenticados podem ver disciplinas por curso
     def get(self, request, curso_codigo):
         try:
             curso = Curso.objects.get(codigo=curso_codigo)
@@ -94,8 +93,9 @@ class DisciplinasPorCursoView(generics.ListAPIView):
     
 
 class AlunoInfoPorEmailView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated, IsCRE] # Apenas CRE pode buscar informações de aluno por email
     def get(self, request):
-        email = request.query_params.get('email')
+        email = request.query_params.get("email")
         if not email:
             return Response({"erro": "Email não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -104,7 +104,7 @@ class AlunoInfoPorEmailView(generics.ListAPIView):
             usuario = Usuario.objects.get(email__iexact=email)
             
             # Verifica se o usuário tem um aluno associado
-            if hasattr(usuario, 'aluno'):
+            if hasattr(usuario, "aluno"):
                 aluno = usuario.aluno
                 
                 # Serializa o aluno com informações completas
@@ -116,9 +116,9 @@ class AlunoInfoPorEmailView(generics.ListAPIView):
         except Usuario.DoesNotExist:
             return Response({"erro": "Usuário não encontrado"}, status=status.HTTP_404_NOT_FOUND)
 
-@api_view(['GET'])
+@api_view(["GET"])
 def disciplinas_por_ppc(request):
-    ppc_codigo = request.query_params.get('ppc_codigo')
+    ppc_codigo = request.query_params.get("ppc_codigo")
     if not ppc_codigo:
         return Response({"erro": "Código do PPC não fornecido"}, status=status.HTTP_400_BAD_REQUEST)
     
@@ -129,6 +129,7 @@ def disciplinas_por_ppc(request):
         return Response(serializer.data)
     except Ppc.DoesNotExist:
         return Response({"erro": "PPC não encontrado"}, status=status.HTTP_404_NOT_FOUND)
+
     
 #class AbonoFaltaCreateView(generics.CreateAPIView):
     #queryset = FormAbonoFalta.objects.all() # Use seu modelo correto

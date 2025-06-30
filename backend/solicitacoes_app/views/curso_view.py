@@ -1,8 +1,9 @@
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import Curso, Ppc
 from ..serializers.curso_serializer import CursoSerializer
+from ..permissoes import IsCREForManagement
 
 
 class CursoListCreateView(generics.ListCreateAPIView):
@@ -13,7 +14,7 @@ class CursoListCreateView(generics.ListCreateAPIView):
 
     queryset = Curso.objects.all()  # Define a queryset base
     serializer_class = CursoSerializer  # Define o serializer que será usado
-    permission_classes = [AllowAny]  # Permite acesso público (sem autenticação)
+    permission_classes = [IsAuthenticated, IsCREForManagement]  # Apenas CRE autenticado pode gerenciar cursos
 
     def create(self, request, *args, **kwargs):
         """
@@ -21,7 +22,7 @@ class CursoListCreateView(generics.ListCreateAPIView):
         de PPCs ao curso recém-criado.
         """
         data = request.data
-        ppcs = data.get('ppcs', [])  # Lista de códigos de PPCs passados no corpo da requisição
+        ppcs = data.get("ppcs", [])  # Lista de códigos de PPCs passados no corpo da requisição
 
         serializer = self.get_serializer(data=data)
 
@@ -41,11 +42,11 @@ class CursoListCreateView(generics.ListCreateAPIView):
             except Ppc.DoesNotExist:
                 # Se algum PPC não for encontrado, retorna erro
                 return Response(
-                    {'message': f'PPC {ppc_codigo} não encontrado'},
+                    {"message": f"PPC {ppc_codigo} não encontrado"},
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-        return Response({'message': 'Curso cadastrado com sucesso!'}, status=status.HTTP_201_CREATED)
+        return Response({"message": "Curso cadastrado com sucesso!"}, status=status.HTTP_201_CREATED)
 
 
 class CursoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -60,5 +61,7 @@ class CursoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
 
     queryset = Curso.objects.all()
     serializer_class = CursoSerializer
-    permission_classes = [AllowAny]
-    lookup_field = 'codigo'  # Define que a busca será feita pelo campo 'codigo' ao invés do ID padrão
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE autenticado pode gerenciar cursos
+    lookup_field = "codigo"  # Define que a busca será feita pelo campo 'codigo' ao invés do ID padrão
+
+

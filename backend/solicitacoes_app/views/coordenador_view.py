@@ -1,10 +1,11 @@
 from rest_framework import generics, status
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from ..serializers.coordenador_serializer import *
 from ..serializers.usuario_serializer import UsuarioSerializer
-from solicitacoes_app.models import Coordenador
+from solicitacoes_app.models import Coordenador, Mandato, Usuario # Import Mandato and Usuario
 from django.db import transaction
 from rest_framework.response import Response
+from ..permissoes import IsCREForManagement, IsCoordenador # Import IsCoordenador
 
 
     
@@ -15,7 +16,7 @@ class CoordenadorListCreateView(generics.ListCreateAPIView):
     """
     
     queryset = Coordenador.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar coordenadores
     
     def get_serializer_class(self):
         """
@@ -76,7 +77,7 @@ class CoordenadorRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
     """
     
     queryset = Coordenador.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode gerenciar coordenadores
     
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
@@ -96,3 +97,5 @@ class CoordenadorRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView
 
         read_serializer = CoordenadorReadSerializer(instance) # Usa a instância original que foi atualizada pelo perform_update
         return Response(read_serializer.data, status=status.HTTP_200_OK)
+
+

@@ -3,11 +3,6 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
-from rest_framework import generics
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
-
 from itertools import chain
 from ..models import (
     Aluno,
@@ -18,7 +13,7 @@ from ..models import (
     FormDispensaEdFisica,
     FormEntregaAtivCompl
 )
-from ..permissoes import IsCRE, CanViewSolicitacaoDetail, _is_in_group 
+from ..permissoes import IsCRE, CanViewSolicitacaoDetail, CanListOwnSolicitacoes, CanListCoordenadorSolicitacoes, CanListAllSolicitacoes, _is_in_group 
 
 
 
@@ -41,7 +36,6 @@ from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
 from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
 from ..serializers.form_disp_ed_fisica_serializer import FormDispEdFisicaSerializer
 from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
-from ..permissoes import IsCRE, CanViewSolicitacaoDetail
 
 # Lista central de todos os modelos de solicitação para facilitar a manutenção.
 ALL_SOLICITACAO_MODELS = [
@@ -67,7 +61,7 @@ def get_solicitacoes_por_aluno(aluno_obj):
 
 
 class SolicitacaoListAllView(APIView):
-    permission_classes = [IsAuthenticated, IsCRE]
+    permission_classes = [IsAuthenticated, IsCRE] # Apenas CRE pode listar todas as solicitações
 
     def get(self, request, *args, **kwargs):
         todas_as_solicitacoes = get_todas_solicitacoes()
@@ -79,9 +73,9 @@ class SolicitacaoListAllView(APIView):
 class MinhasSolicitacoesListView(APIView):
     """
     (Para Aluno/Responsável) Lista as solicitações relevantes para o usuário logado.
-    Esta view agora incorpora a lógica da sua antiga 'ListarMinhasSolicitacoesView'.
+    Esta view agora incorpora a lógica da sua antiga \'ListarMinhasSolicitacoesView\'.
     """
-    permission_classes = [IsAuthenticated] # A permissão decide quem pode acessar
+    permission_classes = [IsAuthenticated, CanListOwnSolicitacoes] # A permissão decide quem pode acessar
 
     def get(self, request, *args, **kwargs):
         user = self.request.user
@@ -101,7 +95,14 @@ class MinhasSolicitacoesListView(APIView):
             except AttributeError:
                 # Caso o responsável não esteja ligado a nenhum aluno
                 return Response({"detail": "Nenhum aluno dependente encontrado para este responsável."}, status=404)
-    
+        
+        if aluno_a_buscar:
+            solicitacoes = get_solicitacoes_por_aluno(aluno_a_buscar)
+            serializer = SolicitacaoListSerializer(solicitacoes, many=True)
+            return Response(serializer.data)
+        else:
+            return Response({"detail": "Você não tem permissão para listar solicitações ou seu perfil não está associado a um aluno."}, status=403)
+
 
 class FormTrancMatriculaDetailView(generics.RetrieveAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()
@@ -138,3 +139,5 @@ class FormEntregaAtivComplDetailView(generics.RetrieveAPIView):
     serializer_class = FormEntregaAtivComplSerializer
     permission_classes = [IsAuthenticated, CanViewSolicitacaoDetail]
     lookup_field = 'pk'
+
+

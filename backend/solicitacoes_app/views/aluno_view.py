@@ -1,25 +1,26 @@
 from rest_framework import generics
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from django.db import transaction
 from ..models import Aluno, Usuario
-from ..serializers.aluno_serializer import AlunoSerializer, AlunoWriteSerializer, AlunoSerializerAntigo, AlunoReadSerializer
+from ..serializers.aluno_serializer import AlunoSerializer, AlunoWriteSerializer, AlunoReadSerializer
+from ..permissoes import IsCREForManagement, IsOwnerOrCRE, IsAluno
 
-#podem mexer
+
 class AlunoListView(generics.ListAPIView):
     queryset = Aluno.objects.all()
-    serializer_class = AlunoSerializerAntigo
-    permission_classes = [AllowAny]
+    serializer_class = AlunoReadSerializer
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar todos os alunos
     
-#podem mexer
+
 class AlunoRetrieveView(generics.RetrieveAPIView):
     queryset = Aluno.objects.all()
-    serializer_class = AlunoSerializerAntigo
-    permission_classes = [AllowAny]
+    serializer_class = AlunoReadSerializer
+    permission_classes = [IsAuthenticated, IsCREForManagement | IsOwnerOrCRE] # CRE ou o próprio aluno pode ver
 
-#DO NOT TOUCH IT!
+
 class AlunoListCreateView(generics.ListCreateAPIView):
     """
     View para listar e criar Alunos.
@@ -27,7 +28,7 @@ class AlunoListCreateView(generics.ListCreateAPIView):
     POST: Cria um novo aluno (usa AlunoWriteSerializer)
     """
     queryset = Aluno.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode criar/listar todos os alunos
     
     def get_serializer_class(self):
         """
@@ -77,7 +78,7 @@ class AlunoListCreateView(generics.ListCreateAPIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-#DO NOT TOUCH IT!
+
 class AlunoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     """
     View para recuperar, atualizar e excluir Alunos.
@@ -85,7 +86,7 @@ class AlunoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     PUT/PATCH: Usa AlunoWriteSerializer
     """
     queryset = Aluno.objects.all()
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode gerenciar alunos
 
     def get_serializer_class(self):
         if self.request.method in ['PUT', 'PATCH']:
@@ -111,7 +112,7 @@ class AlunoBuscarPorCpfView(APIView):
     Endpoint para buscar um aluno pelo CPF do usuário associado.
     Retorna o nome do aluno se encontrado.
     """
-    permission_classes = [AllowAny] # Defina suas permissões aqui, se necessário
+    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode buscar alunos por CPF
 
     def get(self, request, *args, **kwargs):
         cpf = request.query_params.get('cpf', None) # Pega o CPF dos parâmetros da URL (ex: ?cpf=12345678900)
@@ -132,3 +133,4 @@ class AlunoBuscarPorCpfView(APIView):
         except Exception as e:
             # Para capturar outros erros inesperados (ex: problema de banco de dados)
             return Response({"detail": f"Erro interno do servidor: {e}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
