@@ -3,13 +3,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BuscaUsuario from "../../../components/busca_usuario";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
-//import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-
-// Serviços de autenticação
-import { getAuthToken } from "../../../services/authUtils";
 
 //CSS
 import "../../../components/styles/formulario.css";
+
+// Serviços de autenticação
+import { getAuthToken } from "../../../services/authUtils";
 
 export default function FormularioAtividadesComplementares() {
     // Estados para controle de usuário e aluno
@@ -22,15 +21,14 @@ export default function FormularioAtividadesComplementares() {
     const [curso, setCurso] = useState(null);
     const [ppc, setPpc] = useState(null);
     
-    // Estados para disciplinas
-    const [disciplinas, setDisciplinas] = useState([]);
-    const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
+    // Estados para atividades complementares
+    const [atividadesComplementares, setAtividadesComplementares] = useState([]);
+    const [isLoadingAtividades, setIsLoadingAtividades] = useState(true);
     
     // Estado para o formulário
     const [formData, setFormData] = useState({
-        disciplinas: [],
-        observacoes: "",
-        anexos: null
+        atividades: [{ nome: "", carga_horaria: "", anexo: null }],
+        observacoes: ""
     });
     
     // Estados para feedback e erros
@@ -156,56 +154,96 @@ export default function FormularioAtividadesComplementares() {
         }
     };
 
-    // Buscar disciplinas
+    // Buscar atividades complementares
     useEffect(() => {
-        const buscarDisciplinas = async () => {
-            if (!aluno) return;
-            
-            setIsLoadingDisciplinas(true);
-            
+        const buscarAtividadesComplementares = async () => {
             try {
                 const token = getAuthToken();
-                const res = await axios.get("http://localhost:8000/solicitacoes/disciplinas/", {
+                const res = await axios.get("http://localhost:8000/solicitacoes/atividades-complementares/", {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                console.log("Disciplinas:", res.data);
-                setDisciplinas(res.data);
+                console.log("Atividades complementares:", res.data);
+                setAtividadesComplementares(res.data);
+                setIsLoadingAtividades(false);
             } catch (error) {
-                console.error("Erro ao buscar disciplinas:", error);
-                setMsgErro("Erro ao buscar disciplinas.");
+                console.error("Erro ao buscar atividades complementares:", error);
+                setMsgErro("Erro ao buscar atividades complementares.");
                 setTipoPopup("erro");
                 setPopupIsOpen(true);
-            } finally {
-                setIsLoadingDisciplinas(false);
+                setIsLoadingAtividades(false);
             }
         };
         
-        buscarDisciplinas();
-    }, [aluno]);
+        buscarAtividadesComplementares();
+    }, []);
+
+    // Adicionar nova atividade
+    const adicionarAtividade = () => {
+        setFormData(prev => ({
+            ...prev,
+            atividades: [...prev.atividades, { nome: "", carga_horaria: "", anexo: null }]
+        }));
+    };
+
+    // Remover atividade
+    const removerAtividade = (index) => {
+        if (formData.atividades.length === 1) {
+            setMsgErro("É necessário pelo menos uma atividade.");
+            setTipoPopup("erro");
+            setPopupIsOpen(true);
+            return;
+        }
+        
+        setFormData(prev => ({
+            ...prev,
+            atividades: prev.atividades.filter((_, i) => i !== index)
+        }));
+    };
+
+    // Manipular mudanças nos campos de atividade
+    const handleAtividadeChange = (index, field, value) => {
+        const novasAtividades = [...formData.atividades];
+        novasAtividades[index][field] = value;
+        setFormData(prev => ({
+            ...prev,
+            atividades: novasAtividades
+        }));
+    };
 
     // Manipular mudanças nos campos do formulário
     const handleChange = (e) => {
-        const { name, value, type, files, selectedOptions } = e.target;
-        
-        if (type === "file") {
-            setFormData(prev => ({
-                ...prev,
-                anexos: files
-            }));
-        } else if (type === "select-multiple") {
-            const selectedValues = Array.from(selectedOptions).map(option => option.value);
-            setFormData(prev => ({
-                ...prev,
-                [name]: selectedValues
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    // Manipular mudanças nos arquivos anexos
+    const handleFileChange = (index, files) => {
+        const novasAtividades = [...formData.atividades];
+        novasAtividades[index].anexo = files[0];
+        setFormData(prev => ({
+            ...prev,
+            atividades: novasAtividades
+        }));
+    };
+
+    // Validar formulário
+    const validarFormulario = () => {
+        // Verificar se todas as atividades têm nome, carga horária e anexo
+        for (let i = 0; i < formData.atividades.length; i++) {
+            const atividade = formData.atividades[i];
+            if (!atividade.nome || !atividade.carga_horaria || !atividade.anexo) {
+                setMsgErro(`Preencha todos os campos da atividade ${i + 1} (nome, carga horária e anexo).`);
+                setTipoPopup("erro");
+                setPopupIsOpen(true);
+                return false;
+            }
         }
+        return true;
     };
 
     // Enviar formulário
@@ -219,17 +257,7 @@ export default function FormularioAtividadesComplementares() {
             return;
         }
         
-        if (!formData.disciplinas || formData.disciplinas.length === 0) {
-            setMsgErro("Selecione pelo menos uma disciplina.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-            return;
-        }
-        
-        if (!formData.anexos || formData.anexos.length === 0) {
-            setMsgErro("Anexe pelo menos um documento comprobatório.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
+        if (!validarFormulario()) {
             return;
         }
         
@@ -244,24 +272,19 @@ export default function FormularioAtividadesComplementares() {
                 dataToSubmit.append("curso", curso.id);
             }
             
-            // Adicionar disciplinas
-            if (Array.isArray(formData.disciplinas)) {
-                formData.disciplinas.forEach(disciplina => {
-                    dataToSubmit.append("disciplinas", disciplina);
-                });
-            }
-            
             // Adicionar observações se existirem
             if (formData.observacoes) {
                 dataToSubmit.append("observacoes", formData.observacoes);
             }
             
-            // Adicionar anexos
-            if (formData.anexos) {
-                for (let i = 0; i < formData.anexos.length; i++) {
-                    dataToSubmit.append("anexos", formData.anexos[i]);
+            // Adicionar atividades e anexos
+            formData.atividades.forEach((atividade, index) => {
+                dataToSubmit.append(`atividade_${index}_nome`, atividade.nome);
+                dataToSubmit.append(`atividade_${index}_carga_horaria`, atividade.carga_horaria);
+                if (atividade.anexo) {
+                    dataToSubmit.append(`atividade_${index}_anexo`, atividade.anexo);
                 }
-            }
+            });
             
             // Debug para ver o que está indo no FormData
             for (let pair of dataToSubmit.entries()) {
@@ -362,25 +385,70 @@ export default function FormularioAtividadesComplementares() {
                             <input type="text" value={curso?.nome || "Carregando..."} readOnly />
                         </div>
                     </div>
-                    <div className="form-group">
-                            <label>Atividades Complementares:</label>
-                            <input type="text" readOnly />
-                    </div>
-                        
-                    <div className="form-group">
-                        <label htmlFor="anexos">Anexos das atividades (certificado):</label>
-                        <input
-                            type="file"
-                            id="anexos"
-                            name="anexos"
-                            onChange={handleChange}
-                            multiple
-                            required
-                        />
-                        <small>Anexe os comprovantes das atividades complementares.</small>
-                    </div>
-                        
-                        <button type="submit" className="submit-button">Enviar</button>
+                    
+                    <h4>Atividades Complementares</h4>
+                    
+                    {formData.atividades.map((atividade, index) => (
+                        <div key={index} className="atividade-container">
+                            <h5>Atividade {index + 1}</h5>
+                            
+                            <div className="form-group">
+                                <label htmlFor={`atividade-nome-${index}`}>Nome da Atividade:</label>
+                                <input
+                                    type="text"
+                                    id={`atividade-nome-${index}`}
+                                    value={atividade.nome}
+                                    onChange={(e) => handleAtividadeChange(index, "nome", e.target.value)}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor={`atividade-carga-${index}`}>Carga Horária:</label>
+                                <input
+                                    type="text"
+                                    id={`atividade-carga-${index}`}
+                                    value={atividade.carga_horaria}
+                                    onChange={(e) => handleAtividadeChange(index, "carga_horaria", e.target.value)}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="form-group">
+                                <label htmlFor={`atividade-anexo-${index}`}>Anexo (Certificado):</label>
+                                <input
+                                    type="file"
+                                    id={`atividade-anexo-${index}`}
+                                    onChange={(e) => handleFileChange(index, e.target.files)}
+                                    required={!atividade.anexo}
+                                />
+                                {atividade.anexo && (
+                                    <p className="file-selected">
+                                        Arquivo selecionado: {atividade.anexo.name}
+                                    </p>
+                                )}
+                            </div>
+                            
+                            {formData.atividades.length > 1 && (
+                                <button
+                                    type="button"
+                                    className="remove-button"
+                                    onClick={() => removerAtividade(index)}
+                                >
+                                    Remover Atividade
+                                </button>
+                            )}
+                        </div>
+                    ))}
+                    
+                    <button
+                        type="button"
+                        className="add-button"
+                        onClick={adicionarAtividade}
+                    >
+                        Adicionar Nova Atividade
+                    </button>
+                    
                     </form>
                 </main>
                 {popupIsOpen && (
