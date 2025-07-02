@@ -221,7 +221,8 @@ urlpatterns = [
 
     path('form_exerc_dom/historico/<int:id>/', HistoricoAfastamentoViewList.as_view(), name="historico_afastamento"),
 
-    
+    path('notifications/', include('solicitacoes_app.notifications.urls')),
+  
 ]
 
 for key, ViewClass in FORM_LIST_CREATE_VIEWS.items():

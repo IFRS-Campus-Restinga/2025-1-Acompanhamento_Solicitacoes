@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ subject|default:"Nova Ação Pendente" }}</title>
+</head>
+<body>
+    <p>Prezado(a) Coordenador(a),</p>
+    <p>Uma nova ação requer sua atenção no sistema.</p>
+    <p><strong>Tipo:</strong> {{ action_type|default:"Ação não especificada" }}</p>
+    <p><strong>Entidade Relacionada:</strong> {{ entity_description|default:"Entidade desconhecida" }} (ID: {{ entity_id|default:"N/A" }})</p>
+    <p>Por favor, acesse o sistema para revisar.</p>
+    {% if link %}
+        <p><a href="{{ link }}">Acessar Detalhes</a></p>
+    {% endif %}
+    <p>Obrigado(a),</p>
+    <p>CRE</p> </body>
+</html>
