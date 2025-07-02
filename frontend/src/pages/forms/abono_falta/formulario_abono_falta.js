@@ -1,145 +1,109 @@
 import axios from "axios";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useForm } from 'react-hook-form';
 import { useNavigate } from "react-router-dom";
-import BuscaUsuario from "../../../components/busca_usuario";
-import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+
+// Components
+import BuscaUsuario from "../../../components/busca_usuario.js";
+import PopupFeedback from "../../../components/pop_ups/popup_feedback.js";
+import BotaoEnviarSolicitacao from '../../../components/UI/botoes/botao_enviar_solicitacao';
+
 //import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
-//<VerificadorDisponibilidade tipoFormulario="ABONOFALTAS">
+//COLOCAR DEPOIS DE RETURN{/*<VerificadorDisponibilidade tipoFormulario="ABONOFALTAS"> verifica se a solicitacao está disponivel*/}
 
 import "../../../components/styles/formulario.css";
 
 // Serviços de autenticação
-import { getAuthToken } from "../../../services/authUtils";
+import { getAuthToken } from "../../../services/authUtils.js"; //para puxar do Google Redirect Handler
 
 export default function FormularioAbonoFaltas() {
-    // Estados para controle de usuário e aluno
-    const [userData, setUserData] = useState(null);
-    const [carregandoUsuario, setCarregandoUsuario] = useState(true);
-    const [aluno, setAluno] = useState(null);
-    const [alunoNaoEncontrado, setAlunoNaoEncontrado] = useState(false);
-    
-    // Estados para curso e PPC
-    const [curso, setCurso] = useState(null);
-    const [ppc, setPpc] = useState(null);
-    
-    // Estados para disciplinas e motivos
-    const [disciplinas, setDisciplinas] = useState([]);
-    const [motivos, setMotivos] = useState([]);
-    const [filtroDisciplina, setFiltroDisciplina] = useState("");
-    const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
-    const [isLoadingMotivos, setIsLoadingMotivos] = useState(true);
-    
-    // Estado para o formulário
-    const [formData, setFormData] = useState({
-        matricula: "",
-        curso: "",
-        motivo_solicitacao_id: "",
-        data_inicio_afastamento: "",
-        data_fim_afastamento: "",
-        anexos: null,
-        acesso_moodle: false,
-        perdeu_atividades: false,
-        disciplinas_selecionadas: [],
-    });
-    
-    // Estados para feedback e erros
-    const [errors, setErrors] = useState({});
-    const [popupIsOpen, setPopupIsOpen] = useState(false);
-    const [tipoPopup, setTipoPopup] = useState("sucesso");
-    const [mensagemPopup, setMensagemPopup] = useState("");
-    const [mostrarSelecaoDisciplinas, setMostrarSelecaoDisciplinas] = useState(false);
-    const [isSubmitting, setIsSubmitting] = useState(false);
-    
-    // Referência para controlar busca única
-    const buscouAlunoRef = useRef(false);
+    // React Hook Form
+    const {
+        register,
+        handleSubmit,
+        control,
+        setValue,
+        watch,
+        formState: { errors },
+        setError,
+        clearErrors,
+        reset,
+        getValues
+    } = useForm();
+
     const navigate = useNavigate();
 
-    // Callback para o BuscaUsuario
-    const handleUsuario = useCallback((data) => {
-        console.log("BuscaUsuario retornou:", data);
-        setUserData(data);
-        setCarregandoUsuario(false);
-    }, []);
+    // Referência para controlar busca única do aluno
+    const buscouAlunoRef = useRef(false);
 
-    // Redireciona se não houver usuário
-    useEffect(() => {
-        if (!carregandoUsuario && !userData) {
-            navigate("/");
-        }
-    }, [carregandoUsuario, userData, navigate]);
+    // --- ESTADOS ---
+    const [userData, setUserData] = useState(null); // Dados do usuário do Google/localStorage
+    const [carregandoUsuario, setCarregandoUsuario] = useState(true);
+    const [aluno, setAluno] = useState(null); // Dados completos do aluno do backend
+    const [alunoNaoEncontrado, setAlunoNaoEncontrado] = useState(false);
 
-    // Busca aluno pelo e-mail quando userData estiver disponível
-    useEffect(() => {
-        const buscarAluno = async () => {
-            try {
-                console.log("Buscando aluno pelo e-mail:", userData.email);
-                const token = getAuthToken();
-                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
+    const [motivosAbono, setMotivosAbono] = useState([]);
+    const [isLoadingMotivos, setIsLoadingMotivos] = useState(true);
 
-                if (res.data) {
-                    const usuarioEncontrado = res.data;
-                    console.log("Usuário encontrado na API:", usuarioEncontrado);
+    // Estados para curso e PPC
+    const [curso, setCurso] = useState(null); // Dados do curso do aluno
+    const [ppc, setPpc] = useState(null); // Dados do PPC do aluno
 
-                    // Verifique se o usuário tem um objeto Aluno associado (grupo_detalhes)
-                    if (usuarioEncontrado?.grupo_detalhes) {
-                        const alunoReal = usuarioEncontrado.grupo_detalhes;
-                        console.log("Objeto Aluno encontrado (grupo_detalhes):", alunoReal);
+    // Estados para feedback e erros
+    const [msgErro, setMsgErro] = useState("");
+    const [tipoErro, setTipoErro] = useState("");
+    const [feedbackIsOpen, setFeedbackIsOpen] = useState(false);
 
-                        setAluno(alunoReal);
-                        setAlunoNaoEncontrado(false);
-                        
-                        // Atualizar o estado formData com os dados do aluno
-                        setFormData(prev => ({
-                            ...prev,
-                            matricula: alunoReal.matricula || "",
-                            curso: alunoReal.curso_codigo || ""
-                        }));
+    // Estados para disciplinas e períodos
+    const [periodoSelecionado, setPeriodoSelecionado] = useState(""); // Usado para o <select> de período
+    const [periodosDisponiveis, setPeriodosDisponiveis] = useState([]); // Opções para o <select> de período
 
-                        // Buscar dados do curso e PPC após obter aluno
-                        if (alunoReal?.curso_codigo) {
-                            buscarDadosCurso(alunoReal.curso_codigo);
-                        }
-                        
-                        if (alunoReal?.ppc_codigo) {
-                            buscarDadosPpc(alunoReal.ppc_codigo);
-                        }
-                    } else {
-                        console.error("Usuário encontrado, mas sem dados de Aluno (grupo_detalhes).");
-                        setAlunoNaoEncontrado(true);
-                        setMensagemPopup("Dados de aluno não encontrados para este usuário.");
-                        setTipoPopup("erro");
-                        setPopupIsOpen(true);
-                    }
-                } else {
-                    setAlunoNaoEncontrado(true);
-                    setMensagemPopup("Aluno não encontrado no sistema.");
-                    setTipoPopup("erro");
-                    setPopupIsOpen(true);
-                }
-            } catch (err) {
-                console.error("Erro ao buscar aluno:", err.response?.data || err.message);
-                setAlunoNaoEncontrado(true);
-                setMensagemPopup(err.response?.data?.message || "Erro ao buscar dados do aluno");
-                setTipoPopup("erro");
-                setPopupIsOpen(true);
+    // Estados para o novo sistema de busca e seleção de disciplinas
+    const [todasDisciplinas, setTodasDisciplinas] = useState([]); // Todas as disciplinas do período
+    const [disciplinasFiltradas, setDisciplinasFiltradas] = useState([]); // Disciplinas filtradas pela busca
+    const [disciplinasSelecionadas, setDisciplinasSelecionadas] = useState([]); // Disciplinas selecionadas pelo usuário
+    const [filtroDisciplina, setFiltroDisciplina] = useState(""); // Texto de busca para filtrar disciplinas
+    const [isLoadingDisciplinas, setIsLoadingDisciplinas] = useState(false);
+    const [erroBuscaDisciplinas, setErroBuscaDisciplinas] = useState("");
+
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    // Campos observados do formulário
+    const motivoSolicitacao = watch("motivo_solicitacao");
+    const dataFalta = watch("data_falta");
+    const perdeuAtividades = watch("perdeu_atividades");
+
+    // --- FUNÇÕES DE BUSCA E LÓGICA DO FORMULÁRIO ---
+
+    // Função para calcular o período atual do aluno (com base no ano de ingresso e tipo de período)
+    const calcularPeriodoAtualAluno = useCallback((anoIngresso, tipoPeriodo) => {
+        if (!anoIngresso || !tipoPeriodo) return '';
+
+        const anoAtual = new Date().getFullYear();
+        const mesAtual = new Date().getMonth() + 1; // Mês 1-12
+
+        let periodoNumerico;
+
+        if (tipoPeriodo.toUpperCase() === 'SEMESTRAL') {
+            const semestreAtual = (mesAtual >= 1 && mesAtual <= 6) ? 1 : 2;
+            if (anoAtual === anoIngresso) {
+                periodoNumerico = semestreAtual;
+            } else {
+                periodoNumerico = (anoAtual - anoIngresso) * 2 + semestreAtual;
             }
-        };
-
-        if (userData?.email && !buscouAlunoRef.current) {
-            buscouAlunoRef.current = true;
-            buscarAluno();
+            return `${periodoNumerico}º Semestre`;
+        } else if (tipoPeriodo.toUpperCase() === 'ANUAL') {
+            periodoNumerico = anoAtual - anoIngresso + 1;
+            return `${periodoNumerico}º Ano`;
         }
-    }, [userData]);
+        return '';
+    }, []); 
 
-    // Buscar dados do curso
-    const buscarDadosCurso = async (codigoCurso) => {
+    const buscarDadosCurso = useCallback(async (codigoCurso) => {
+        if (!codigoCurso) return;
         try {
             console.log("Buscando dados do curso:", codigoCurso);
-            const token = getAuthToken();
+            const token = getAuthToken(); //Alterado
             const res = await axios.get(`http://localhost:8000/solicitacoes/cursos/${codigoCurso}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -147,19 +111,32 @@ export default function FormularioAbonoFaltas() {
             });
             console.log("Dados do curso:", res.data);
             setCurso(res.data);
-        } catch (error) {
-            console.error("Erro ao buscar dados do curso:", error);
-            setMensagemPopup("Erro ao buscar dados do curso.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-        }
-    };
+            console.log("ID do curso retornado pela API:", res.data?.id);
+            setValue("curso", res.data?.nome || ''); // Preencher campo do form
+            setValue("curso_id", res.data?.id || ''); // Preencher ID do curso para o payload
 
-    // Buscar dados do PPC
-    const buscarDadosPpc = async (codigoPpc) => {
+            // Lógica para definir os períodos disponíveis baseada no tipo_periodo do curso
+            const tipoPeriodoModel = res.data.tipo_periodo; // Ex: 'SEMESTRAL' ou 'ANUAL'
+            const periodos = tipoPeriodoModel.toUpperCase() === 'SEMESTRAL'
+                ? Array.from({ length: 10 }, (_, i) => ({ value: `${i + 1}º Semestre`, label: `${i + 1}º Semestre` }))
+                : Array.from({ length: 5 }, (_, i) => ({ value: `${i + 1}º Ano`, label: `${i + 1}º Ano` }));
+            setPeriodosDisponiveis(periodos);
+
+        } catch (error) {
+            console.error("Erro ao buscar dados do curso:", error.response?.data || error.message);
+            setMsgErro("Erro ao buscar dados do curso.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
+            setCurso(null);
+            setPeriodosDisponiveis([]); // Limpar períodos se houver erro
+        }
+    }, [setValue]); 
+
+    const buscarDadosPpc = useCallback(async (codigoPpc) => {
+        if (!codigoPpc) return;
         try {
             console.log("Buscando dados do PPC:", codigoPpc);
-            const token = getAuthToken();
+            const token = getAuthToken(); //Alterado
             const res = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${codigoPpc}/`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -167,225 +144,366 @@ export default function FormularioAbonoFaltas() {
             });
             console.log("Dados do PPC:", res.data);
             setPpc(res.data);
-            
-            // Buscar disciplinas do PPC
-            buscarDisciplinas(codigoPpc);
-        } catch (error) {
-            console.error("Erro ao buscar dados do PPC:", error);
-            setMensagemPopup("Erro ao buscar dados do PPC.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-        }
-    };
 
-    // Buscar disciplinas do PPC
-    const buscarDisciplinas = async (ppcCodigo) => {
-        if (!ppcCodigo) return;
-        
-        setIsLoadingDisciplinas(true);
-        
-        try {
-            console.log(`Buscando disciplinas para o PPC ${ppcCodigo}`);
-            const token = getAuthToken();
-            const res = await axios.get(`http://localhost:8000/solicitacoes/disciplinas/?ppc_id=${encodeURIComponent(ppcCodigo)}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            
-            if (res.data && res.data.length > 0) {
-                console.log("Disciplinas encontradas:", res.data);
-                setDisciplinas(res.data);
-            } else {
-                console.log("Nenhuma disciplina encontrada para este PPC");
-                setDisciplinas([]);
+            // CORREÇÃO AQUI: aluno já é o grupo_detalhes, acessar direto ano_ingresso
+            if (aluno?.ano_ingresso && curso?.tipo_periodo) {
+                const periodoCalculadoInicial = calcularPeriodoAtualAluno(
+                    aluno.ano_ingresso, 
+                    curso.tipo_periodo 
+                );
+                setPeriodoSelecionado(periodoCalculadoInicial);
+                setValue("periodo", periodoCalculadoInicial); 
+            } else if (periodosDisponiveis.length > 0) { 
+                setPeriodoSelecionado(periodosDisponiveis[0].value);
+                setValue("periodo", periodosDisponiveis[0].value);
             }
-        } catch (error) {
-            console.error("Erro ao buscar disciplinas:", error.response?.data || error.message);
-            setDisciplinas([]);
-        } finally {
-            setIsLoadingDisciplinas(false);
-        }
-    };
 
-    // Carregar motivos de abono
+        } catch (error) {
+            console.error("Erro ao buscar dados do PPC:", error.response?.data || error.message);
+            setMsgErro("Erro ao buscar dados do PPC.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
+            setPpc(null);
+        }
+    }, [aluno, curso, setValue, calcularPeriodoAtualAluno, periodosDisponiveis]);
+
+    // Função para receber dados do usuário de BuscaUsuario (mantido)
+    const handleUsuario = useCallback((data) => {
+        console.log("BuscaUsuario retornou:", data);
+        setUserData(data);
+        setCarregandoUsuario(false);
+    }, []);
+
+    // Redireciona se não houver usuário (mantido)
     useEffect(() => {
-        const buscarMotivos = async () => {
+        if (!carregandoUsuario && !userData) {
+            navigate("/");
+        }
+    }, [carregandoUsuario, userData, navigate]);
+
+    useEffect(() => {
+        const buscarAluno = async () => {
+            if (!userData?.email) {
+                return;
+            }
             try {
-                const token = getAuthToken();
-                const res = await axios.get("http://localhost:8000/solicitacoes/motivo_abono/", {
+                console.log("Buscando aluno pelo e-mail:", userData.email);
+                const token = getAuthToken(); //Alterado
+                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setMotivos(res.data);
-                setIsLoadingMotivos(false);
+
+                if (res.data) {
+                    const usuarioEncontrado = res.data; 
+                    console.log("Usuário encontrado na API:", usuarioEncontrado);
+
+                    // Verifique se o usuário tem um objeto Aluno associado (grupo_detalhes)
+                    if (usuarioEncontrado?.grupo_detalhes) {
+                        const alunoReal = usuarioEncontrado.grupo_detalhes; 
+                        console.log("Objeto Aluno REAL encontrado (grupo_detalhes):", alunoReal);
+
+                        setAluno(alunoReal); 
+                        setAlunoNaoEncontrado(false);
+                        buscouAlunoRef.current = true; // Definir como true APENAS se o aluno REAL for encontrado
+
+                        setValue("nome_completo", usuarioEncontrado?.nome || userData?.name || ''); 
+                        setValue("matricula", alunoReal?.matricula || ''); 
+                        setValue("curso", alunoReal?.curso_nome || ''); 
+                        setValue("email", usuarioEncontrado?.email || userData?.email || ''); 
+
+                        // Preencher campos ocultos para IDs
+                        setValue("aluno_id", alunoReal?.id || ''); 
+                        setValue("curso_codigo", alunoReal?.curso_codigo || '');
+                        setValue("ppc_codigo", alunoReal?.ppc_codigo || '');
+
+                        if (alunoReal?.curso_codigo) {
+                            await buscarDadosCurso(alunoReal.curso_codigo);
+                        }
+                        if (alunoReal?.ppc_codigo) {
+                            await buscarDadosPpc(alunoReal.ppc_codigo);
+                        }
+                    } else {
+                        console.error("Usuário encontrado, mas sem dados de Aluno (grupo_detalhes).");
+                        setAlunoNaoEncontrado(true);
+                        setMsgErro("Dados de aluno não encontrados para este usuário.");
+                        setTipoErro("erro");
+                        setFeedbackIsOpen(true);
+                        buscouAlunoRef.current = false; // Permitir nova busca se não encontrar grupo_detalhes
+                    }
+                } else {
+                    setAlunoNaoEncontrado(true);
+                    setMsgErro("Aluno não encontrado no sistema.");
+                    setTipoErro("erro");
+                    setFeedbackIsOpen(true);
+                    buscouAlunoRef.current = false; // Permitir nova busca
+                }
             } catch (err) {
-                console.error("Erro ao buscar motivos:", err);
-                setMensagemPopup("Erro ao buscar motivos de abono.");
-                setTipoPopup("erro");
-                setPopupIsOpen(true);
-                setIsLoadingMotivos(false);
+                console.error("Erro ao buscar aluno:", err.response?.data || err.message);
+                setAlunoNaoEncontrado(true);
+                setMsgErro(err.response?.data?.message || "Erro ao buscar dados do aluno");
+                setTipoErro("erro");
+                setFeedbackIsOpen(true);
+                buscouAlunoRef.current = false; // Permitir nova busca em caso de erro
             }
         };
-        
-        buscarMotivos();
-    }, []);
 
-    // Validar formulário
-    const validateForm = () => {
-        const newErrors = {};
-        if (!formData.motivo_solicitacao_id) newErrors.motivo_solicitacao_id = "Motivo é obrigatório.";
-        if (!formData.data_inicio_afastamento) newErrors.data_inicio_afastamento = "Data inicial é obrigatória.";
-        if (!formData.data_fim_afastamento) newErrors.data_fim_afastamento = "Data final é obrigatória.";
-
-        if (formData.data_inicio_afastamento && formData.data_fim_afastamento && 
-            formData.data_inicio_afastamento > formData.data_fim_afastamento) {
-            newErrors.data_fim_afastamento = "Data final não pode ser anterior à data inicial.";
+        if (userData && !buscouAlunoRef.current) {
+            buscarAluno();
         }
-        
-        if (!formData.matricula) newErrors.matricula = "Matrícula é obrigatória."; 
-        if (!formData.curso) newErrors.curso = "Curso é obrigatório.";
-        
-        if (formData.perdeu_atividades && 
-            (!formData.disciplinas_selecionadas || formData.disciplinas_selecionadas.length === 0)) {
-            newErrors.disciplinas_selecionadas = "Selecione as disciplinas em que perdeu atividades.";
-        }
+    }, [userData, setValue, buscarDadosCurso, buscarDadosPpc]);
 
-        return newErrors;
-    };
-
-    // Manipular mudanças nos campos do formulário
-    const handleChange = (e) => {
-        const { name, value, type, checked, files } = e.target;
-
-        if (type === "checkbox") {
-            if (name === "disciplinas_selecionadas") {
-                setFormData(prev => ({
-                    ...prev,
-                    disciplinas_selecionadas: checked
-                        ? [...prev.disciplinas_selecionadas, value] 
-                        : prev.disciplinas_selecionadas.filter(id => id !== value)
-                }));
-            } else {
-                setFormData(prev => ({ ...prev, [name]: checked }));
-                if (name === "perdeu_atividades") {
-                    setMostrarSelecaoDisciplinas(checked);
-                    if (!checked) {
-                        setFormData(prev => ({ ...prev, disciplinas_selecionadas: [] }));
+    // Carregar motivos de abono de faltas
+    useEffect(() => {
+        const buscarMotivosAbono = async () => {
+            try {
+                const token = getAuthToken(); //Alterado
+                const res = await axios.get(
+                    "http://localhost:8000/solicitacoes/motivos-abono/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
                     }
+                );
+                setMotivosAbono(res.data);
+                setIsLoadingMotivos(false);
+            } catch (error) {
+                console.error("Erro ao buscar motivos de abono:", error);
+                setIsLoadingMotivos(false);
+                // Mostrar erro de autenticação para 403
+                if (error.response && error.response.status === 403) {
+                    setMsgErro("Você não tem permissão para acessar os motivos de abono. Verifique sua autenticação.");
+                    setTipoErro("erro");
+                    setFeedbackIsOpen(true);
+                } else {
+                    setMsgErro("Erro ao buscar motivos de abono.");
+                    setTipoErro("erro");
+                    setFeedbackIsOpen(true);
                 }
             }
-        } else if (type === "file") {
-            if (files.length > 5) {
-                setErrors(prev => ({ ...prev, anexos: "Você pode anexar no máximo 5 arquivos." }));
-                e.target.value = null; 
-                setFormData(prev => ({ ...prev, anexos: null }));
-            } else {
-                setFormData(prev => ({ ...prev, anexos: files }));
-                if (errors.anexos) setErrors(prev => ({ ...prev, anexos: null }));
-            }
-        } else if (type === "select-multiple") {
-            const selectedValues = Array.from(e.target.options)
-                .filter(option => option.selected)
-                .map(option => option.value);
-            setFormData(prev => ({ ...prev, [name]: selectedValues }));
-        } else {
-            setFormData(prev => ({ ...prev, [name]: value }));
-        }
+        };
+        buscarMotivosAbono();
+    }, []);
 
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
-        }
-    };
+    // Função para buscar disciplinas
+    const buscarDisciplinas = useCallback(async (ppcCodigo, periodo) => {
+        console.log("--- DEBUG DISCIPLINAS ---");
+        console.log("Estado 'aluno':", aluno);
+        console.log("PPC Código (aluno?.ppc_codigo):", aluno?.ppc_codigo);
+        console.log("Período Selecionado:", periodoSelecionado);
 
-    // Enviar formulário
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        
-        const validationErrors = validateForm();
-        if (Object.keys(validationErrors).length > 0) {
-            setErrors(validationErrors);
-            setMensagemPopup("Por favor, corrija os erros indicados no formulário.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
+        if (!ppcCodigo || !periodo) {
+            console.log("Não buscou disciplinas: PPC ou Período ausente/inválido para buscarDisciplinas.");
+            setTodasDisciplinas([]);
+            setDisciplinasFiltradas([]);
+            setErroBuscaDisciplinas("Selecione um período para carregar as disciplinas.");
             return;
         }
 
-        if (!aluno) {
-            setMensagemPopup("Por favor, aguarde o carregamento dos dados do aluno.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-            return;
-        }
-        
-        setIsSubmitting(true);
-        setErrors({});
-
-        const dataToSubmit = new FormData();
-
-        // Adicionar campos obrigatórios
-        dataToSubmit.append("aluno_email", userData.email);
-        dataToSubmit.append("aluno_nome", aluno.nome || userData.name);
-        dataToSubmit.append("curso_codigo", formData.curso);
-        dataToSubmit.append("matricula", formData.matricula);
-        dataToSubmit.append("motivo_solicitacao_id", formData.motivo_solicitacao_id);
-        dataToSubmit.append("data_inicio_afastamento", formData.data_inicio_afastamento);
-        dataToSubmit.append("data_fim_afastamento", formData.data_fim_afastamento);
-        dataToSubmit.append("acesso_moodle", formData.acesso_moodle);
-        dataToSubmit.append("perdeu_atividades", formData.perdeu_atividades);
-        dataToSubmit.append("data_solicitacao", new Date().toISOString().split('T')[0]);
-        dataToSubmit.append("nome_formulario", "ABONOFALTAS");
-
-        // Adicionar disciplinas selecionadas
-        if (formData.disciplinas_selecionadas && formData.disciplinas_selecionadas.length > 0) {
-            dataToSubmit.append("disciplinas_selecionadas", JSON.stringify(formData.disciplinas_selecionadas));
-        }
-
-        // Adicionar anexos se existirem
-        if (formData.anexos) {
-            for (let i = 0; i < formData.anexos.length; i++) {
-                dataToSubmit.append("anexos", formData.anexos[i]);
-            }
-        }
-
-        console.log("Dados que serão enviados:", Object.fromEntries(dataToSubmit.entries()));
+        setIsLoadingDisciplinas(true);
+        setErroBuscaDisciplinas("");
 
         try {
+            console.log(`Buscando disciplinas para PPC: ${ppcCodigo} e Período: ${periodo}`);
+            const token = getAuthToken();
+            const res = await axios.get(
+                `http://localhost:8000/solicitacoes/disciplinas_por_ppc_e_periodo/?ppc_codigo=${ppcCodigo}&periodo=${periodo}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            console.log("Disciplinas encontradas:", res.data.disciplinas);
+            
+            // Armazenar todas as disciplinas e inicializar as disciplinas filtradas
+            setTodasDisciplinas(res.data.disciplinas || []);
+            setDisciplinasFiltradas(res.data.disciplinas || []);
+            
+            // Limpar disciplinas selecionadas quando mudar o período
+            setDisciplinasSelecionadas([]);
+            
+        } catch (error) {
+            console.error("Erro ao buscar disciplinas:", error.response?.data || error.message);
+            setTodasDisciplinas([]);
+            setDisciplinasFiltradas([]);
+            setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
+        } finally {
+            setIsLoadingDisciplinas(false);
+        }
+    }, [aluno, periodoSelecionado]);
+
+    // Efeito para buscar disciplinas quando o período mudar
+    useEffect(() => {
+        if (periodoSelecionado && aluno?.ppc_codigo) {
+            buscarDisciplinas(aluno.ppc_codigo, periodoSelecionado);
+        }
+    }, [periodoSelecionado, aluno, buscarDisciplinas]);
+
+    // Função para filtrar disciplinas com base no texto de busca
+    useEffect(() => {
+        if (filtroDisciplina.trim() === "") {
+            setDisciplinasFiltradas(todasDisciplinas);
+        } else {
+            const filtradas = todasDisciplinas.filter(
+                (disciplina) =>
+                    disciplina.nome.toLowerCase().includes(filtroDisciplina.toLowerCase()) ||
+                    disciplina.codigo.toLowerCase().includes(filtroDisciplina.toLowerCase())
+            );
+            setDisciplinasFiltradas(filtradas);
+        }
+    }, [filtroDisciplina, todasDisciplinas]);
+
+    // Função para alternar a seleção de uma disciplina
+    const toggleDisciplinaSelecionada = (disciplina) => {
+        setDisciplinasSelecionadas((prev) => {
+            const jaSelecionada = prev.some((d) => d.id === disciplina.id);
+            if (jaSelecionada) {
+                return prev.filter((d) => d.id !== disciplina.id);
+            } else {
+                return [...prev, disciplina];
+            }
+        });
+    };
+
+    // Função para remover uma disciplina da seleção
+    const removerDisciplinaSelecionada = (id) => {
+        setDisciplinasSelecionadas((prev) => prev.filter((d) => d.id !== id));
+    };
+
+    // Função para verificar se uma disciplina está selecionada
+    const isDisciplinaSelecionada = (id) => {
+        return disciplinasSelecionadas.some((d) => d.id === id);
+    };
+
+    // Função para lidar com a mudança de período
+    const handlePeriodoChange = (e) => {
+        const novoPeriodo = e.target.value;
+        setPeriodoSelecionado(novoPeriodo);
+        setValue("periodo", novoPeriodo);
+    };
+
+    // Função para lidar com a mudança no campo de busca de disciplinas
+    const handleFiltroDisciplinaChange = (e) => {
+        setFiltroDisciplina(e.target.value);
+    };
+
+    // Função para validar o formulário antes de enviar
+    const validarFormulario = (data) => {
+        let temErro = false;
+
+        // Validar motivo de solicitação
+        if (!data.motivo_solicitacao) {
+            setError("motivo_solicitacao", {
+                type: "manual",
+                message: "Selecione o motivo da solicitação."
+            });
+            temErro = true;
+        }
+
+        // Validar data da falta
+        if (!data.data_falta) {
+            setError("data_falta", {
+                type: "manual",
+                message: "Informe a data da falta."
+            });
+            temErro = true;
+        }
+
+        // Validar se perdeu atividades
+        if (data.perdeu_atividades === undefined) {
+            setError("perdeu_atividades", {
+                type: "manual",
+                message: "Informe se perdeu atividades avaliativas."
+            });
+            temErro = true;
+        }
+
+        // Validar disciplinas selecionadas se perdeu atividades
+        if (data.perdeu_atividades === "sim" && disciplinasSelecionadas.length === 0) {
+            setErroBuscaDisciplinas("Selecione pelo menos uma disciplina em que perdeu atividades.");
+            temErro = true;
+        }
+
+        return !temErro;
+    };
+
+    // Função para enviar o formulário
+    const onSubmit = async (data) => {
+        if (!validarFormulario(data)) {
+            setMsgErro("Por favor, corrija os erros no formulário antes de enviar.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // Preparar os dados para envio
+            const formData = new FormData();
+
+            // Adicionar dados do aluno
+            formData.append("aluno", data.aluno_id);
+            formData.append("motivo_solicitacao", data.motivo_solicitacao);
+            formData.append("data_falta", data.data_falta);
+            formData.append("perdeu_atividades", data.perdeu_atividades);
+            
+            // Adicionar disciplinas selecionadas se perdeu atividades
+            if (data.perdeu_atividades === "sim") {
+                const disciplinasIds = disciplinasSelecionadas.map(d => d.id);
+                formData.append("disciplinas", JSON.stringify(disciplinasIds));
+            }
+            
+            // Adicionar observações se houver
+            if (data.observacoes) {
+                formData.append("observacoes", data.observacoes);
+            }
+
+            // Adicionar anexos se houver
+            if (data.anexos && data.anexos.length > 0) {
+                for (let i = 0; i < data.anexos.length; i++) {
+                    formData.append("anexos", data.anexos[i]);
+                }
+            }
+
+            // Enviar para a API
             const token = getAuthToken();
             const response = await axios.post(
-                "http://localhost:8000/solicitacoes/formulario_abono_falta/", 
-                dataToSubmit, 
+                "http://localhost:8000/solicitacoes/abono_faltas/",
+                formData,
                 {
                     headers: {
                         "Content-Type": "multipart/form-data",
                         "Authorization": `Bearer ${token}`
-                    },
+                    }
                 }
             );
 
             console.log("Resposta da API:", response.data);
-            setMensagemPopup("Solicitação de Abono de Faltas enviada com sucesso!");
-            setTipoPopup("sucesso");
-            setPopupIsOpen(true);
-            setTimeout(() => navigate("/aluno/minhas-solicitacoes"), 2000);
+            setMsgErro("Solicitação enviada com sucesso!");
+            setTipoErro("sucesso");
+            setFeedbackIsOpen(true);
+
+            // Redirecionar após 2 segundos
+            setTimeout(() => {
+                navigate("/todas-solicitacoes");
+            }, 2000);
         } catch (error) {
-            console.error("Erro ao enviar solicitação:", error.response?.data || error.message);
-            setMensagemPopup(error.response?.data?.message || "Erro ao enviar solicitação");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
+            console.error("Erro ao enviar formulário:", error.response?.data || error.message);
+            setMsgErro(error.response?.data?.message || "Erro ao enviar solicitação. Tente novamente.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Filtrar disciplinas com base na busca
-    const disciplinasFiltradas = disciplinas.filter(disciplina =>
-        disciplina.nome.toLowerCase().includes(filtroDisciplina.toLowerCase()) ||
-        disciplina.codigo.toLowerCase().includes(filtroDisciplina.toLowerCase())
-    );
+    // --- RENDERIZAÇÃO ---
 
-    // Renderização condicional durante carregamento
+    // Renderização durante carregamento do usuário
     if (carregandoUsuario) {
         return (
             <>
@@ -405,207 +523,235 @@ export default function FormularioAbonoFaltas() {
                     <h2>Aluno não encontrado no sistema.</h2>
                     <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
                 </main>
-                {popupIsOpen && (
+                {feedbackIsOpen && (
                     <PopupFeedback
-                        mensagem={mensagemPopup}
-                        tipo={tipoPopup}
-                        onClose={() => setPopupIsOpen(false)}
+                        mensagem={msgErro}
+                        tipo={tipoErro}
+                        onClose={() => setFeedbackIsOpen(false)}
                     />
                 )}
             </div>
         );
     }
 
-    // Renderização do formulário completo
-    if (userData && aluno) {
-        return (
-                <div className="page-container">
-                    <BuscaUsuario dadosUsuario={handleUsuario} />
-                    <main className="container">
-                        <h2>Solicitação de Abono de Faltas</h2>
-                        <br></br>
-                        <h6 className="descricao-formulario">
-                            Os procedimentos e regramentos das Justificativas/ Abono de faltas e de Avaliação substitutiva são regulamentos 
-                            pelos artigos 137 a 140 da Organização Didática do IFRS. <br></br>
-                            <hr></hr>
-                            <p>(disponível em: <a className="link-documento" href="https://ifrs.edu.br/wp-content/uploads/2024/01/ANEXO_RES_1-2024_OD_VERSAO_FINAL_JAN.2024.pdf">https://ifrs.edu.br/wp-content/uploads/2024/01/ANEXO_RES_1-2024_OD_VERSAO_FINAL_JAN.2024.pdf</a>)</p>
-                        </h6>
-                        
-                        <form className="formulario formulario-largura" onSubmit={handleSubmit}>
+    // Renderização principal do formulário
+    return (
+        <div className="page-container">
+            <BuscaUsuario dadosUsuario={handleUsuario} />
+            <main className="container">
+                <h2>Solicitação de Abono de Faltas</h2>
+                <br />
+                <h6 className="descricao-formulario">
+                    Ao preencher este formulário, declaro que os documentos apresentados <strong>são verdadeiros</strong>,
+                    e assumo a responsabilidade pelas informações aqui prestadas.
+                </h6>
 
-                        <div className="dados-aluno-container">
-                            <div className="form-group">
-                                <label>Nome:</label>
-                                <input type="text" value={aluno?.nome || userData?.name || ""} readOnly />
-                            </div>
-                            <div className="form-group">
-                                <label>E-mail:</label>
-                                <input type="email" value={userData?.email || ""} readOnly />
-                            </div>
-                            <div className="form-group">
-                                <label>Matrícula:</label>
-                                <input type="text" value={formData.matricula} readOnly />
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>Curso:</label>
-                                <input type="text" value={curso?.nome || "Carregando..."} readOnly />
-                            </div>
+                <form className="formulario formulario-largura" onSubmit={handleSubmit(onSubmit)}>
+                    {/* Campos ocultos para IDs */}
+                    <input type="hidden" {...register("aluno_id")} />
+                    <input type="hidden" {...register("curso_id")} />
+                    <input type="hidden" {...register("curso_codigo")} />
+                    <input type="hidden" {...register("ppc_codigo")} />
+
+                    {/* Dados do aluno */}
+                    <div className="dados-aluno-container">
+                        <div className="form-group">
+                            <label>E-mail:</label>
+                            <input type="email" {...register("email")} readOnly />
                         </div>
+                        <div className="form-group">
+                            <label>Nome Completo:</label>
+                            <input type="text" {...register("nome_completo")} readOnly />
+                        </div>
+                        <div className="form-group">
+                            <label>Matrícula:</label>
+                            <input type="text" {...register("matricula")} readOnly />
+                        </div>
+                        <div className="form-group">
+                            <label>Curso:</label>
+                            <input type="text" {...register("curso")} readOnly />
+                        </div>
+                    </div>
 
+                    {/* Motivo da solicitação */}
+                    <div className="form-group">
+                        <label htmlFor="motivo_solicitacao">Motivo da Solicitação:</label>
+                        <select
+                            id="motivo_solicitacao"
+                            {...register("motivo_solicitacao", { required: "Motivo é obrigatório" })}
+                            disabled={isLoadingMotivos}
+                        >
+                            <option value="">Selecione o motivo</option>
+                            {motivosAbono.map(motivo => (
+                                <option key={motivo.id} value={motivo.id}>
+                                    {motivo.descricao} ({motivo.tipo_falta})
+                                </option>
+                            ))}
+                        </select>
+                        {errors.motivo_solicitacao && (
+                            <span className="error-message">{errors.motivo_solicitacao.message}</span>
+                        )}
+                    </div>
+
+                    {/* Data da falta */}
+                    <div className="form-group">
+                        <label htmlFor="data_falta">Data da falta:</label>
+                        <input
+                            type="date"
+                            id="data_falta"
+                            {...register("data_falta", { required: "Data da falta é obrigatória" })}
+                        />
+                        {errors.data_falta && (
+                            <span className="error-message">{errors.data_falta.message}</span>
+                        )}
+                    </div>
+
+                    {/* Perdeu atividades avaliativas */}
+                    <div className="form-group">
+                        <label>Perdeu atividades avaliativas?</label>
+                        <div className="radio-group">
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="sim"
+                                    {...register("perdeu_atividades", { required: "Este campo é obrigatório" })}
+                                />
+                                Sim
+                            </label>
+                            <label>
+                                <input
+                                    type="radio"
+                                    value="nao"
+                                    {...register("perdeu_atividades", { required: "Este campo é obrigatório" })}
+                                />
+                                Não
+                            </label>
+                        </div>
+                        {errors.perdeu_atividades && (
+                            <span className="error-message">{errors.perdeu_atividades.message}</span>
+                        )}
+                    </div>
+
+                    {/* Seleção de disciplinas (apenas se perdeu atividades) */}
+                    {perdeuAtividades === "sim" && (
+                        <>
+                            {/* Seleção de período */}
                             <div className="form-group">
-                                <label htmlFor="motivo_solicitacao_id">Motivo da Solicitação:</label>
+                                <label htmlFor="periodo">Período atual:</label>
                                 <select
-                                    id="motivo_solicitacao_id"
-                                    name="motivo_solicitacao_id"
-                                    value={formData.motivo_solicitacao_id}
-                                    onChange={handleChange}
-                                    required
+                                    id="periodo"
+                                    value={periodoSelecionado}
+                                    onChange={handlePeriodoChange}
+                                    disabled={periodosDisponiveis.length === 0}
                                 >
-                                    <option value="">Selecione o motivo</option>
-                                    {motivos.map(motivo => (
-                                        <option key={motivo.id} value={motivo.id}>
-                                            {motivo.descricao}
+                                    <option value="">Selecione o período</option>
+                                    {periodosDisponiveis.map((periodo) => (
+                                        <option key={periodo.value} value={periodo.value}>
+                                            {periodo.label}
                                         </option>
                                     ))}
                                 </select>
-                                {errors.motivo_solicitacao_id && <div className="erro">{errors.motivo_solicitacao_id}</div>}
                             </div>
-                            
+
+                            {/* Novo sistema de busca e seleção de disciplinas */}
                             <div className="form-group">
-                                <label htmlFor="data_inicio_afastamento">Data Inicial do Afastamento:</label>
-                                <input
-                                    className="input-data "
-                                    type="date"
-                                    id="data_inicio_afastamento"
-                                    name="data_inicio_afastamento"
-                                    value={formData.data_inicio_afastamento}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                {errors.data_inicio_afastamento && <div className="erro">{errors.data_inicio_afastamento}</div>}
-                            </div>
-                            
-                            <div className="form-group">
-                                <label htmlFor="data_fim_afastamento">Data Final do Afastamento:</label>
-                                <input
-                                    className="input-data"
-                                    type="date"
-                                    id="data_fim_afastamento"
-                                    name="data_fim_afastamento"
-                                    value={formData.data_fim_afastamento}
-                                    onChange={handleChange}
-                                    required
-                                />
-                                {errors.data_fim_afastamento && <div className="erro">{errors.data_fim_afastamento}</div>}
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="acesso_moodle"
-                                        checked={formData.acesso_moodle}
-                                        onChange={handleChange}
-                                    />
-                                    <span> Tive acesso ao Moodle durante o período de afastamento</span>
-                                </label>
-                            </div>
-                            
-                            <div className="form-group">
-                                <label>
-                                    <input
-                                        type="checkbox"
-                                        name="perdeu_atividades"
-                                        checked={formData.perdeu_atividades}
-                                        onChange={handleChange}
-                                    />
-                                    <span> Perdi atividades avaliativas durante o período de afastamento</span>
-                                </label>
-                            </div>
-                            
-                            {mostrarSelecaoDisciplinas && (
-                                <div className="form-group">
-                                    <label>Disciplinas em que perdeu atividades:</label>
-                                    <div className="barra-pesquisa">
-                                        <i className="bi bi-search icone-pesquisa"></i>
+                                <label>Disciplinas em que perdeu atividades:</label>
+                                
+                                {isLoadingDisciplinas ? (
+                                    <p>Carregando disciplinas...</p>
+                                ) : (
+                                    <>
                                         <input
                                             type="text"
-                                            placeholder="Buscar disciplinas..."
+                                            placeholder="Buscar disciplina por nome ou código..."
                                             value={filtroDisciplina}
-                                            onChange={(e) => setFiltroDisciplina(e.target.value)}
-                                            className="input-pesquisa"
-                                            disabled={isLoadingDisciplinas || disciplinas.length === 0}
-                                            style={{ paddingLeft: '30px', height: '38px' }} 
+                                            onChange={handleFiltroDisciplinaChange}
+                                            className="search-input"
                                         />
-                                    </div>
-                                    
-                                    {isLoadingDisciplinas ? (
-                                        <p>Carregando disciplinas...</p>
-                                    ) : (
-                                        <>
-                                            <div className="disciplinas-checkbox-container">
-                                                {disciplinasFiltradas.length > 0 ? (
-                                                    disciplinasFiltradas.map((disciplina) => (
-                                                        <div key={disciplina.codigo} className="disciplina-checkbox">
-                                                            <input
-                                                                type="checkbox"
-                                                                id={`disciplina-${disciplina.codigo}`}
-                                                                name="disciplinas_selecionadas"
-                                                                value={disciplina.codigo}
-                                                                checked={formData.disciplinas_selecionadas.includes(disciplina.codigo)}
-                                                                onChange={handleChange}
-                                                            />
-                                                            <label htmlFor={`disciplina-${disciplina.codigo}`}>
-                                                                {disciplina.nome} ({disciplina.codigo})
-                                                            </label>
-                                                        </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="aviso">Nenhuma disciplina encontrada.</div>
-                                                )}
-                                            </div>
-                                            {errors.disciplinas_selecionadas && (
-                                                <div className="erro">{errors.disciplinas_selecionadas}</div>
+                                        
+                                        {erroBuscaDisciplinas && (
+                                            <span className="error-message">{erroBuscaDisciplinas}</span>
+                                        )}
+                                        
+                                        <div className="disciplina-selection-box">
+                                            {disciplinasFiltradas.length > 0 ? (
+                                                disciplinasFiltradas.map((disciplina) => (
+                                                    <div
+                                                        key={disciplina.id}
+                                                        className={`disciplina-option ${
+                                                            isDisciplinaSelecionada(disciplina.id) ? "selected" : ""
+                                                        }`}
+                                                        onClick={() => toggleDisciplinaSelecionada(disciplina)}
+                                                    >
+                                                        <strong>{disciplina.codigo}</strong> - {disciplina.nome}
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <p className="no-results">
+                                                    {filtroDisciplina
+                                                        ? "Nenhuma disciplina encontrada com esse filtro."
+                                                        : "Nenhuma disciplina disponível para este período."}
+                                                </p>
                                             )}
-                                        </>
-                                    )}
-                                </div>
-                            )}
-                            
-                            <div className="form-group">
-                                <label htmlFor="anexos">Anexos:</label>
-                                <input
-                                    type="file"
-                                    id="anexos"
-                                    name="anexos"
-                                    onChange={handleChange}
-                                    multiple
-                                    required
-                                />
-                                <small>Anexe documentos comprobatórios (atestados, declarações, etc.). Máximo 5 arquivos.</small>
-                                {errors.anexos && <div className="erro">{errors.anexos}</div>}
+                                        </div>
+                                        
+                                        <div className="selected-items-container">
+                                            <h4>Disciplinas selecionadas:</h4>
+                                            {disciplinasSelecionadas.length > 0 ? (
+                                                <div className="disciplinas-selecionadas-container">
+                                                    {disciplinasSelecionadas.map((disciplina) => (
+                                                        <div key={disciplina.id} className="selected-disciplina-box">
+                                                            <span>
+                                                                <strong>{disciplina.codigo}</strong> - {disciplina.nome}
+                                                            </span>
+                                                            <button
+                                                                type="button"
+                                                                className="remove-btn"
+                                                                onClick={() => removerDisciplinaSelecionada(disciplina.id)}
+                                                            >
+                                                                X
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : (
+                                                <p>Nenhuma disciplina selecionada.</p>
+                                            )}
+                                        </div>
+                                    </>
+                                )}
                             </div>
-                            
-                            <button 
-                                type="submit" 
-                                className="submit-button" 
-                                disabled={isSubmitting}
-                            >
-                                {isSubmitting ? "Enviando..." : "Enviar"}
-                            </button>
-                        </form>
-                    </main>
-                    {popupIsOpen && (
-                        <PopupFeedback
-                            mensagem={mensagemPopup}
-                            tipo={tipoPopup}
-                            onClose={() => setPopupIsOpen(false)}
-                        />
+                        </>
                     )}
-                </div>
-        );
-    }
 
-    return null;
+                    {/* Anexos */}
+                    <div className="form-group">
+                        <label htmlFor="anexos">Anexos:</label>
+                        <input
+                            type="file"
+                            id="anexos"
+                            multiple
+                            {...register("anexos", { required: "Anexo é obrigatório" })}
+                        />
+                        <small>Selecione os documentos comprobatórios.</small>
+                        {errors.anexos && (
+                            <span className="error-message">{errors.anexos.message}</span>
+                        )}
+                    </div>
+
+                    {/* Botão de envio */}
+                  <BotaoEnviarSolicitacao isSubmitting={isSubmitting}/>
+                </form>
+            </main>
+
+            {/* Popup de feedback */}
+            {feedbackIsOpen && (
+                <PopupFeedback
+                    mensagem={msgErro}
+                    tipo={tipoErro}
+                    onClose={() => setFeedbackIsOpen(false)}
+                />
+            )}
+        </div>
+    );
 }

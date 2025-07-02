@@ -224,6 +224,8 @@ urlpatterns = [
     path('coordenador/listar-solicitacoes/', SolicitacoesDoCoordenador.as_view(), name="listar_solicitacoes_coordenador")
 
     
+    path('notifications/', include('solicitacoes_app.notifications.urls')),
+  
 ]
 
 for key, ViewClass in FORM_LIST_CREATE_VIEWS.items():

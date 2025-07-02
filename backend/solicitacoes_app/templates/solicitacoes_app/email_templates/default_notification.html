@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ subject|default:"Notificação do Sistema" }}</title>
+</head>
+<body>
+    <p>Olá {{ user_name|default:"usuário" }},</p>
+    <p>Você recebeu uma notificação do sistema:</p>
+    <p><strong>Tipo de Evento:</strong> {{ event_type|default:"Evento Geral" }}</p>
+    <p><strong>Mensagem:</strong> {{ message_content|default:"Não há mensagem específica." }}</p>
+
+    {% if link %}
+        <p>Para mais detalhes, clique aqui: <a href="{{ link }}">{{ link_text|default:"Visualizar" }}</a></p>
+    {% endif %}
+
+    <p>Atenciosamente,</p>
+    <p>Sistema de Solicitações</p> </body>
+</html>
