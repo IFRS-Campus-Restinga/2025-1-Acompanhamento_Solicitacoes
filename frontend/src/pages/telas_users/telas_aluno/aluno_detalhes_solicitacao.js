@@ -28,7 +28,7 @@ export default function DetalhesSolicitacao() {
 
     const fetchSolicitacao = async () => {
         try {
-            const response = await axios.get(`http://localhost:8000/solicitacoes/todas-solicitacoes/${id}/`, {
+            const response = await axios.get(`http://localhost:8000/solicitacoes/detalhes-formulario/${id}/`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }

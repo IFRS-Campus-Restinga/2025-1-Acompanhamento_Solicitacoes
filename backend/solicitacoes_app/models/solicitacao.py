@@ -20,7 +20,8 @@ class Solicitacao(BaseModel):
         ('EXERCICIOSDOMICILIARES', 'Exercícios Domiciliares'),
         ('ABONOFALTAS', 'Abono de Faltas'),
         ('ENTREGACERTIFICADOS', 'Entrega de Certificados'),
-        ('ENTREGAATIVCOMPL', 'Entrega de Atividades Complementares'), # Adicionada para consistência
+        ('ENTREGAATIVCOMPL', 'Entrega de Atividades Complementares'), 
+        ('EXTPRAZOAFASTAMENTO', 'Extensão do Prazo de Afastamento')
     ]
     
     aluno = models.ForeignKey(

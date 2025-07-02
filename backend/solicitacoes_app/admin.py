@@ -31,6 +31,7 @@ admin.site.register(Disponibilidade)
 admin.site.register(PeriodoDisponibilidade)
 admin.site.register(FormEntregaAtivCompl)
 admin.site.register(HistoricoAfastamento)
+admin.site.register(Mandato)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)

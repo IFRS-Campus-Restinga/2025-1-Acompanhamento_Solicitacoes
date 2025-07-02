@@ -5,6 +5,9 @@ import { Link } from "react-router-dom";
 //CSS
 import "../../../components/styles/tabela.css";
 
+import { getAuthToken } from "../../../services/authUtils";
+import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
+
 const HomeCoordenador = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -15,14 +18,13 @@ const HomeCoordenador = () => {
       setLoading(true);
       setError(null);
       try {
-        const response = await axios.get("http://localhost:8000/solicitacoes/todas-solicitacoes/");
-        const todas = response.data || [];
+        const response = await axios.get("http://localhost:8000/solicitacoes/coordenador/listar-solicitacoes/", {
+          headers: {
+            'Authorization': `Bearer ${getAuthToken()}`
+          }
+        });
         
-        const solicitacoesCoord = todas.filter(
-          (s) => s.posse_solicitacao.toLowerCase() === "coordenação"
-        );
-        
-        setSolicitacoes(solicitacoesCoord);
+        setSolicitacoes(response.data);
       } catch (error) {
         console.error("Erro ao buscar solicitações", error);
         setError("Erro ao carregar solicitações.");
@@ -86,9 +88,7 @@ const HomeCoordenador = () => {
                   <td>{s.posse_solicitacao}</td>
                   <td>
                     <div className="botao-olho">
-                      <Link to={`/detalhe-solicitacao/${s.id}`} title="Ver detalhes">
-                        <i className="bi bi-eye-fill icone-olho"></i>
-                      </Link>
+                      <BotaoDetalhar to={`/coordenador/detalhes-solicitacao/${s.id}`} />
                     </div>
                     <button
                       style={{ backgroundColor: "green", color: "white", marginRight: "5px", padding: "5px", border: "none", borderRadius: "4px", cursor: "pointer" }}

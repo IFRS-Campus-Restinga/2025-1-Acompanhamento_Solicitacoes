@@ -21,7 +21,7 @@ class HistoricoAfastamento(Solicitacao):
     justificativa = models.CharField(verbose_name="Justificativa/Observações",
                                      max_length=500)
 
-    anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos", null=True)
+    anexos = MultiFileField(verbose_name="Anexo(s)", help_text="Selecione seus arquivos", null=True, blank=True)
 
     def save(self, *args, **kwargs):
         self.nome_formulario = "Extensão do prazo de afastamento"

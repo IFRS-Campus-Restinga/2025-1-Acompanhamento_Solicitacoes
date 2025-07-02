@@ -86,6 +86,7 @@ import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes
 
 //Tela Coordenador
 import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
+import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
 
 //Telas Aluno
 import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
@@ -97,6 +98,7 @@ import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
 
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
+
 
 
 const token = localStorage.getItem("token");
@@ -226,6 +228,8 @@ const routes = [
 
   //Tela gerenciamento Exerciícios Domiciliares
   <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
+
+  <Route path="/coordenador/detalhes-solicitacao/:id" element={<DetalhesSolicitacaoCoordenador />} key="detalhes-solicitacao-coordenador" />,
  ];
 
 export default routes;

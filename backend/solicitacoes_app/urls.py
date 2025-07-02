@@ -34,7 +34,7 @@ from .views.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
 
 from .views.atualizar_status_view import AtualizarStatusSolicitacaoView
-from .views.INATIVO_listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView
+# from .views.INATIVO_listas_minhas_solicitacoes_view import ListarMinhasSolicitacoesView
 
 #Motivos / Campos de SOlicitações
 from .views.campos_solic_views.motivo_abono_view import *
@@ -215,11 +215,13 @@ urlpatterns = [
     
     path('solicitacoes/permissoes/', PermissaoListView.as_view()),
 
-    path('minhas-solicitacoes/', ListarMinhasSolicitacoesView.as_view(), name='listar_minhas_solicitacoes'),
+    path('minhas-solicitacoes/', MinhasSolicitacoesListView.as_view(), name='listar_minhas_solicitacoes'),
     
     path('formularios/<str:form_type_key>/<int:pk>/status/', atualizar_status_view.AtualizarStatusSolicitacaoView.as_view(), name='atualizar-status-solicitacao'),
 
     path('form_exerc_dom/historico/<int:id>/', HistoricoAfastamentoViewList.as_view(), name="historico_afastamento"),
+
+    path('coordenador/listar-solicitacoes/', SolicitacoesDoCoordenador.as_view(), name="listar_solicitacoes_coordenador")
 
     
 ]

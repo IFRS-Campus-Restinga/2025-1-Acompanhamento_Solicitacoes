@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 from ..models.forms.historico_afastamento import HistoricoAfastamento
 from ..serializers.historico_afastamento_serializer import HistoricoAfastamentoSerializer
 from ..permissoes import IsCREForManagement, CanViewHistoricoAfastamento
+from ..models.status import Status
 
 class HistoricoAfastamentoViewList(generics.ListCreateAPIView):
     
@@ -26,4 +27,12 @@ class HistoricoAfastamentoViewList(generics.ListCreateAPIView):
 
         return queryset
 
-
+    def perform_create(self, serializer):
+        user = self.request.user
+        historico = HistoricoAfastamento.objects.filter(aluno__usuario=user,
+                                                        ).order_by('-data_solicitacao').first()
+        if historico is not None:
+            if historico.status == Status.EM_ANALISE:
+                historico.status = Status.INATIVO
+                historico.save()
+        

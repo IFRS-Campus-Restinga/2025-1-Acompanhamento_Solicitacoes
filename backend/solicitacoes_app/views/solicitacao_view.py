@@ -1,9 +1,12 @@
+from datetime import date
 from rest_framework import generics
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 
 from itertools import chain
+
+from ..models.mandato import Mandato
 from ..models import (
     Aluno,
     FormularioTrancamentoMatricula,
@@ -36,6 +39,7 @@ from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
 from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
 from ..serializers.form_disp_ed_fisica_serializer import FormDispEdFisicaSerializer
 from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
+from ..models.coordenador import Coordenador
 
 # Lista central de todos os modelos de solicitação para facilitar a manutenção.
 ALL_SOLICITACAO_MODELS = [
@@ -55,6 +59,12 @@ def get_todas_solicitacoes():
 
 def get_solicitacoes_por_aluno(aluno_obj):
     querysets = [model.objects.filter(aluno=aluno_obj) for model in ALL_SOLICITACAO_MODELS]
+    lista_unificada = list(chain.from_iterable(querysets))
+    lista_ordenada = sorted(lista_unificada, key=lambda s: s.data_solicitacao, reverse=True)
+    return lista_ordenada
+
+def get_solicitacoes_por_curso(curso):
+    querysets = [model.objects.filter(aluno__ppc__curso=curso) for model in ALL_SOLICITACAO_MODELS]
     lista_unificada = list(chain.from_iterable(querysets))
     lista_ordenada = sorted(lista_unificada, key=lambda s: s.data_solicitacao, reverse=True)
     return lista_ordenada
@@ -80,6 +90,7 @@ class MinhasSolicitacoesListView(APIView):
     def get(self, request, *args, **kwargs):
         user = self.request.user
         aluno_a_buscar = None
+        coordenador_a_buscar = None
 
         # Lógica para determinar de qual aluno devemos buscar as solicitações
         if _is_in_group(user, 'aluno'):
@@ -95,6 +106,8 @@ class MinhasSolicitacoesListView(APIView):
             except AttributeError:
                 # Caso o responsável não esteja ligado a nenhum aluno
                 return Response({"detail": "Nenhum aluno dependente encontrado para este responsável."}, status=404)
+            
+        
         
         if aluno_a_buscar:
             solicitacoes = get_solicitacoes_por_aluno(aluno_a_buscar)
@@ -103,6 +116,35 @@ class MinhasSolicitacoesListView(APIView):
         else:
             return Response({"detail": "Você não tem permissão para listar solicitações ou seu perfil não está associado a um aluno."}, status=403)
 
+class SolicitacoesDoCoordenador(APIView):
+    """
+    Endpoint para coordenadores verem solicitações de alunos do seu curso.
+    """
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+
+        if not _is_in_group(user, 'coordenador'):
+            return Response({"detail": "Apenas coordenadores têm acesso a esta visualização."}, status=403)
+
+        try:
+            coordenador_obj = Coordenador.objects.get(usuario=user)
+            coordenador_mandato = Mandato.objects.get(coordenador=coordenador_obj)
+        except Coordenador.DoesNotExist:
+            return Response({"detail": "Perfil de coordenador não encontrado."}, status=404)
+        except Mandato.DoesNotExist:
+            return Response({"detail": "Mandato não encontrado para este coordenador."}, status=404)
+
+        hoje = date.today()
+        if not (coordenador_mandato.inicio_mandato <= hoje <= coordenador_mandato.fim_mandato):
+            return Response({"detail": "O mandato do coordenador não está ativo no momento."}, status=403)
+
+        # Recupera as solicitações dos alunos do curso associado ao mandato
+        curso = coordenador_mandato.curso
+        solicitacoes = get_solicitacoes_por_curso(curso)
+        serializer = SolicitacaoListSerializer(solicitacoes, many=True)
+        return Response(serializer.data)
 
 class FormTrancMatriculaDetailView(generics.RetrieveAPIView):
     queryset = FormularioTrancamentoMatricula.objects.all()

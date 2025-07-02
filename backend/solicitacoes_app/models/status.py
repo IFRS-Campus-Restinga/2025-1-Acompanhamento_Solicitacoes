@@ -7,3 +7,4 @@ class Status(models.TextChoices):
     REPROVADO = "Reprovado"
     REGISTRADO = "Registrado"
     CANCELADO = "Cancelado"
+    INATIVO = "Inativo"

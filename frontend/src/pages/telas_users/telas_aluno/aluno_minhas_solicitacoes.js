@@ -11,6 +11,7 @@ import Paginacao from "../../../components/UI/paginacao";
 
 //CSS
 import "../../../components/styles/tabela.css";
+import { getAuthToken } from "../../../services/authUtils";
 
 
 const MinhasSolicitacoesAluno = () => {
@@ -30,7 +31,11 @@ const MinhasSolicitacoesAluno = () => {
   const carregarSolicitacoes = () => {
     console.log("➡️ Requisitando todas-solicitacoes...");
     api
-      .get("todas-solicitacoes")
+      .get("minhas-solicitacoes", {
+        headers: {
+          'Authorization': `Bearer ${getAuthToken()}`
+        }
+      })
       .then((res) => {
         console.log("✅ Resposta recebida:", res.data);
         setSolicitacoes(res.data);
@@ -139,7 +144,7 @@ const MinhasSolicitacoesAluno = () => {
                 {solicitacoesPaginadas.map((solicitacao, index) => (
                   <tr key={solicitacao.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
 
-                    <td>{solicitacao.tipo}</td>
+                    <td>{solicitacao.tipo_formulario}</td>
                     <td>
                       <span className={`status-badge ${solicitacao.status.toLowerCase().replace(' ', '-')}`}>
                         {solicitacao.status}
