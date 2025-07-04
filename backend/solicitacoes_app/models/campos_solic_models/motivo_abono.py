@@ -26,6 +26,11 @@ class MotivoAbono(BaseModel):
         verbose_name="Tipo de Falta"
     )
 
+    
+    class Meta:
+        verbose_name = "Motivo Abono"
+        verbose_name_plural = "Motivos Abono"
+
     def clean(self):
         if MotivoAbono.objects.filter(descricao__iexact=self.descricao).exclude(pk=self.pk).exists():
             raise ValidationError({'descricao': 'Já existe um motivo com esta descrição.'})

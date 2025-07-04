@@ -12,6 +12,10 @@ class MotivoExercicios(BaseModel):
         unique=True
     )
 
+    class Meta:
+        verbose_name = "Motivo Exercicio"
+        verbose_name_plural = "Motivos Exercicio"
+
     def clean(self):
             super().clean() # Chame o clean do pai se existir
             if MotivoExercicios.objects.filter(descricao__iexact=self.descricao).exclude(pk=self.pk).exists():

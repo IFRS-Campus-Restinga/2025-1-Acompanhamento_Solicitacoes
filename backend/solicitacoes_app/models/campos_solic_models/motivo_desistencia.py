@@ -14,6 +14,10 @@ class MotivoDesistencia(BaseModel):
         verbose_name="Descrição"
     )
 
+    class Meta:
+        verbose_name = "Motivo Desistencia"
+        verbose_name_plural = "Motivos Desistencia"
+
     def clean(self):
         super().clean()
         if MotivoDesistencia.objects.filter(descricao__iexact=self.descricao).exclude(pk=self.pk).exists():
