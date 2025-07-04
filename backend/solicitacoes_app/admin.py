@@ -9,6 +9,12 @@ from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
 from .models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 from .models.forms.historico_afastamento import HistoricoAfastamento
 
+from .models.campos_solic_models.motivo_abono import MotivoAbono
+from .models.campos_solic_models.motivo_dispensa import MotivoDispensa
+from .models.campos_solic_models.atividade_complementar import AtividadeComplementar
+from .models.campos_solic_models.motivo_desistencia import MotivoDesistencia
+from .models.campos_solic_models.motivo_exercicios import MotivoExercicios
+
 # Registro padrão dos outros modelos
 admin.site.register(Curso)
 admin.site.register(Ppc)
@@ -32,6 +38,14 @@ admin.site.register(PeriodoDisponibilidade)
 admin.site.register(FormEntregaAtivCompl)
 admin.site.register(HistoricoAfastamento)
 admin.site.register(Mandato)
+
+#campos de solicitações models
+
+admin.site.register(AtividadeComplementar)
+admin.site.register(MotivoAbono)
+admin.site.register(MotivoDesistencia)
+admin.site.register(MotivoDispensa)
+admin.site.register(MotivoExercicios)
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)
