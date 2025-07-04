@@ -221,7 +221,7 @@ urlpatterns = [
 
     path('form_exerc_dom/historico/<int:id>/', HistoricoAfastamentoViewList.as_view(), name="historico_afastamento"),
 
-    path('coordenador/listar-solicitacoes/', SolicitacoesDoCoordenador.as_view(), name="listar_solicitacoes_coordenador")
+    path('coordenador/listar-solicitacoes/', SolicitacoesDoCoordenador.as_view(), name="listar_solicitacoes_coordenador"),
 
     
     path('notifications/', include('solicitacoes_app.notifications.urls')),
