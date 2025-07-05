@@ -1,48 +1,45 @@
 from rest_framework import generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from rest_framework.response import Response
-from rest_framework.status import HTTP_201_CREATED, HTTP_400_BAD_REQUEST, HTTP_404_NOT_FOUND, HTTP_200_OK
-
-from ...models.campos_solic_models.motivo_exercicios import MotivoExercicios
+from ...models.campos_solic_models.motivo_exercicios import MotivoExercicios   
 from ...serializers.campos_solic_serializers.motivo_exercicios_serializer import MotivoExerciciosSerializer
-from ...permissoes import IsCREForManagement
+from ...permissoes import CanManageMotivos
 
 
 class MotivoExerciciosListCreateView(generics.ListCreateAPIView):
+    """
+    Para listar e criar motivo de exercícios domiciliares.
+    GET: Permite acesso público para listar motivos
+    POST: Requer permissão CanManageMotivos para criar motivos
+    """
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
-    permission_classes = [IsAuthenticated, IsCREForManagement]
+    
+    def get_permissions(self):
+        """
+        Define permissões diferentes para diferentes métodos:
+        - GET: AllowAny (permite acesso público)
+        - POST: CanManageMotivos (requer permissão específica)
+        """
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [CanManageMotivos()]
 
-
-    def create(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
-            self.perform_create(serializer)
-            return Response({"message": "Motivo de exercicios domiciliares cadastrado com sucesso!"}, status=HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
 
 class MotivoExerciciosRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    """
+    Para recuperar, atualizar e deletar um motivo de exercícios domiciliares.
+    GET: Permite acesso público para visualizar motivo específico
+    PUT/PATCH/DELETE: Requer permissão CanManageMotivos
+    """
     queryset = MotivoExercicios.objects.all()
     serializer_class = MotivoExerciciosSerializer
-    permission_classes = [IsAuthenticated, IsCREForManagement]
-    lookup_field = "pk"
-
-    def update(self, request, *args, **kwargs):
-        instance = self.get_object()
-        serializer= self.get_serializer(instance, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response({"message":"Motivo de exercicios domiciliares atualizado com sucesso!"}, status= HTTP_200_OK)
-        else:
-            return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-
-    def destroy(self, request, *args, **kwargs):
-        instance = self.get_object()
-        self.perform_destroy(instance)
-        return Response ({"message": "Motivo de exercícios domiciliares excluído com sucesso!"}, status=HTTP_200_OK)
-
-
-
-
+    
+    def get_permissions(self):
+        """
+        Define permissões diferentes para diferentes métodos:
+        - GET: AllowAny (permite acesso público)
+        - PUT/PATCH/DELETE: CanManageMotivos (requer permissão específica)
+        """
+        if self.request.method == 'GET':
+            return [AllowAny()]
+        return [CanManageMotivos()]
