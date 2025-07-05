@@ -19,7 +19,7 @@ class UsuarioListCreateView(generics.ListCreateAPIView):
 
     queryset = Usuario.objects.ativos().filter(is_superuser=False)
     serializer_class = UsuarioSerializerComGrupos
-    permission_classes = [IsAuthenticated, IsCREForManagement] # Apenas CRE pode listar e criar usuários
+    permission_classes = [] # Apenas CRE pode listar e criar usuários
     
     
     def perform_create(self, serializer):
