@@ -81,10 +81,10 @@ export default function ListarMotivoDispensa() {
     return (
         <div>
             <main className='container'>
-                <h2>Motivos de dispensa de educação física</h2>
+                <h2>Motivos de Dispensa de Educação Física</h2>
 
                 {/* Botão de cadastrar */}
-                <BotaoCadastrar to="/motivo_dispensa/cadastrar" title="Criar Novo Motivo" />
+                <BotaoCadastrar to="/motivo_dispensa/cadastrar" title="Criar Motivo" />
 
                 <BarraPesquisa
                     value={filtro}

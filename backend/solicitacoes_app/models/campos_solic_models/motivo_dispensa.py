@@ -12,6 +12,10 @@ class MotivoDispensa(BaseModel):
         unique=True # Adicionado para garantir unicidade, pois é um "motivo"
     )
 
+    class Meta:
+        verbose_name = "Motivo Dispensa"
+        verbose_name_plural = "Motivos Dispensa"
+
     def clean(self):
         super().clean() # Chame o clean do pai se existir
         # Validação de unicidade caso unique=True não seja suficiente ou queira mensagem customizada

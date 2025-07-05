@@ -22,16 +22,16 @@ import Home from "./../pages/home";
 
 // Motivos de Abono
 import CadastrarAtualizarAbono from "../pages/motivos/abono/cadastrar_atualizar_abono";
-import ListarMotivosAbono from "../pages/motivos/abono/lista_abono";
+import ListarMotivosAbono from "../pages/motivos/abono/listar_motivo_abono";
 
 // Motivos de Exercícios
 import CadastrarAtualizarExercicios from "../pages/motivos/exercicios/cadastrar_atualizar_exercicios";
-import ListarMotivosExercicios from "../pages/motivos/exercicios/lista_motivo_exercicios";
+import ListarMotivosExercicios from "../pages/motivos/exercicios/listar_motivo_exercicios";
 
 // Motivos de Dispensa de Educação Física
 
 import CadastrarAtualizarMotivoDispensa from "../pages/motivos/dispensa_ed_fisica/cadastrar_atualizar_motivo.js";
-import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/lista_motivo.js";
+import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/listar_motivo_dispensa.js";
 
 // Disciplinas
 
@@ -85,8 +85,8 @@ import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
 import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes_finalizadas.js";
 
 //Tela Coordenador
-import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
+import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 
 //Telas Aluno
 import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
