@@ -1,8 +1,8 @@
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-//POP-UPS IMPORTAÇÃO
+// POPUPS
 import PopupConfirmacao from "../../../components/pop_ups/popup_confirmacao";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 
@@ -20,7 +20,8 @@ import BotaoVoltar from "../../../components/UI/botoes/botao_voltar";
 //CSS
 import "../../../components/styles/tabela.css";
 
-export default function ListarMotivosAbono() {
+
+export default function ListarMotivosExercicios() {
   const navigate = useNavigate();
   const [motivos, setMotivos] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
@@ -28,49 +29,42 @@ export default function ListarMotivosAbono() {
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [filtro, setFiltro] = useState("");
 
+  const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
   const itensPorPagina = 5;
 
   useEffect(() => {
-    axios.get("http://localhost:8000/solicitacoes/motivo_abono/")
+    axios
+      .get("http://localhost:8000/solicitacoes/motivo_exercicios/")
       .then((res) => setMotivos(res.data))
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar motivos."}`);
+        setMensagemPopup(
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao carregar motivos."
+          }`
+        );
         setTipoMensagem("erro");
         setMostrarFeedback(true);
       });
   }, []);
 
-  // Resetar página quando filtro muda
-  useEffect(() => {
-    setPaginaAtual(1);
-  }, [filtro]);
-
-  // Filtrar motivos com useMemo
-  const motivosFiltrados = useMemo(() =>
-    motivos.filter((motivo) =>
-      motivo.descricao.toLowerCase().includes(filtro.toLowerCase()) ||
-      motivo.tipo_falta.toLowerCase().includes(filtro.toLowerCase())
-    ), [motivos, filtro]);
-
-  // Dados da página atual com useMemo
-  const dadosPaginados = useMemo(() =>
-    motivosFiltrados.slice(
-      (paginaAtual - 1) * itensPorPagina,
-      paginaAtual * itensPorPagina
-    ), [motivosFiltrados, paginaAtual, itensPorPagina]);
-
   const confirmarExclusao = () => {
-    axios.delete(`http://localhost:8000/solicitacoes/motivo_abono/${motivoSelecionado}/`)
+    axios
+      .delete(
+        `http://localhost:8000/solicitacoes/motivo_exercicios/${motivoSelecionado}/`
+      )
       .then(() => {
         setMensagemPopup("Motivo excluído com sucesso.");
         setTipoMensagem("sucesso");
         setMotivos(motivos.filter((m) => m.id !== motivoSelecionado));
       })
       .catch((err) => {
-        setMensagemPopup(`Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir motivo."}`);
+        setMensagemPopup(
+          `Erro ${err.response?.status || ""}: ${
+            err.response?.data?.detail || "Erro ao excluir motivo."
+          }`
+        );
         setTipoMensagem("erro");
       })
       .finally(() => {
@@ -80,13 +74,22 @@ export default function ListarMotivosAbono() {
       });
   };
 
+  const motivosFiltrados = motivos.filter((motivo) =>
+    motivo.descricao.toLowerCase().includes(filtro.toLowerCase())
+  );
+
+  const motivosPaginados = motivosFiltrados.slice(
+    (paginaAtual - 1) * itensPorPagina,
+    paginaAtual * itensPorPagina
+  );
+
   return (
     <div>
       <main className="container">
-        <h2>Motivos de Abono</h2>
+        <h2>Motivos de Exercícios</h2>
 
         {/* Botão de cadastrar */}
-        <BotaoCadastrar to="/motivo_abono/cadastrar" title="Criar Novo Motivo" />
+        <BotaoCadastrar to="/motivo_exercicios/cadastrar" title="Criar Motivo" />
 
         {/* Barra de pesquisa */}
         <BarraPesquisa
@@ -98,31 +101,28 @@ export default function ListarMotivosAbono() {
         />
 
         {motivosFiltrados.length === 0 ? (
-          <p className="mt-4">Nenhum motivo encontrado.</p>
+          <p><br />Nenhum motivo encontrado!</p>
         ) : (
           <table className="tabela-geral">
             <thead>
               <tr>
                 <th>Descrição</th>
-                <th>Tipo de Falta</th>
                 <th>Ações</th>
               </tr>
             </thead>
             <tbody>
-              {dadosPaginados.map((motivo, index) => (
+              {motivosPaginados.map((motivo, index) => (
                 <tr key={motivo.id} className={index % 2 === 0 ? "linha-par" : "linha-impar"}>
-                  <td className="descricao">{motivo.descricao}</td>
-                  <td>{motivo.tipo_falta}</td>
+                  <td>{motivo.descricao}</td>
                   <td>
                     <div className="botoes-acoes">
 
-                      <BotaoEditar to={`/motivo_abono/${motivo.id}`} />
-                      
+                      <BotaoEditar to={`/motivo_exercicios/${motivo.id}`} />
+
                       <BotaoExcluir onClick={() => {
                         setMotivoSelecionado(motivo.id);
                         setMostrarPopup(true);
                       }} />
-
                     </div>
                   </td>
                 </tr>
@@ -131,15 +131,13 @@ export default function ListarMotivosAbono() {
           </table>
         )}
 
-        {motivosFiltrados.length > itensPorPagina && (
-          <Paginacao
-            dados={motivosFiltrados}
-            paginaAtual={paginaAtual}
-            setPaginaAtual={setPaginaAtual}
-            itensPorPagina={itensPorPagina}
-            onDadosPaginados={() => {}}
-          />
-        )}
+        <Paginacao
+          dados={motivosFiltrados}
+          paginaAtual={paginaAtual}
+          setPaginaAtual={setPaginaAtual}
+          itensPorPagina={itensPorPagina}
+          onDadosPaginados={() => {}}
+        />
 
         <PopupConfirmacao
           show={mostrarPopup}
@@ -155,7 +153,7 @@ export default function ListarMotivosAbono() {
         />
 
         <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
-          
+        
       </main>
     </div>
   );
