@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import "./popup.css";
 
 export default function PopupConfirmacao({ 
@@ -8,7 +8,7 @@ export default function PopupConfirmacao({
   onReject, 
   onCancel,
   showRejectOption = false,
-  confirmLabel = "Confirmar",
+  confirmLabel = "Deletar",
   usuarioDetalhes = null // Nova prop para receber os detalhes do usuário
 }) {
   const [justificativa, setJustificativa] = useState("");

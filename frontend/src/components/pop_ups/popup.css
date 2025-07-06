@@ -48,10 +48,12 @@
   border-radius: 8px;
   min-width: 300px;
   max-width: 500px;
+  max-height: 150px;
   text-align: center;
   animation: fadeIn 0.3s ease-in-out;
 }
-
+/*DESCOMENTAR SE FOR PRECISO JUSTIFICATIVA*/
+/*
 .popup-box-detalhes {
   background: white;
   padding: 20px;
@@ -61,7 +63,7 @@
   text-align: left;
   animation: fadeIn 0.3s ease-in-out;
 }
-
+*/
 .popup-box button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
@@ -79,9 +81,11 @@
   gap: 10px;
   gap: 1rem;
   margin-top: 1rem;
+
 }
 
 .btn {
+  min-height: 5px;
   padding: 8px 16px;
   border: none;
   border-radius: 6px;
@@ -91,7 +95,7 @@
 }
 
 .btn.btn-confirm {
-  background-color: var(--verde-escuro, #148229);
+  background-color: var(--botao-deletar);
   color: #ffffff;
 }
 
@@ -101,7 +105,7 @@
 }
 
 .btn.btn-cancel {
-  background-color: var(--botao-cancelar, #6c757d);
+  background-color: var(--botao-cancelar);
   color: #ffffff;
 }
 
