@@ -48,7 +48,7 @@
   border-radius: 8px;
   min-width: 300px;
   max-width: 500px;
-  max-height: 150px;
+  /*max-height: 150px;*/
   text-align: center;
   animation: fadeIn 0.3s ease-in-out;
 }
@@ -95,12 +95,12 @@
 }
 
 .btn.btn-confirm {
-  background-color: var(--botao-deletar);
+  background-color: var(--verde-oficial);
   color: #ffffff;
 }
 
 .btn.btn-reject {
-  background-color: var(--botao-deletar, #c01627);
+  background-color: var(--botao-deletar);
   color: #ffffff;
 }
 
