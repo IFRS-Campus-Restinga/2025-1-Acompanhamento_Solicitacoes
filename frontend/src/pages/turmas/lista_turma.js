@@ -13,7 +13,6 @@ import BarraPesquisa from "../../components/UI/barra_pesquisa";
 import BotaoCadastrar from "../../components/UI/botoes/botao_cadastrar";
 import BotaoEditar from "../../components/UI/botoes/botao_editar";
 import BotaoExcluir from "../../components/UI/botoes/botao_excluir";
-import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //CSS
 import "../../components/styles/tabela.css";
@@ -136,8 +135,6 @@ export default function ListarTurmas() {
           tipo={tipoMensagem}
           onClose={() => setMostrarFeedback(false)}
         />
-
-        <BotaoVoltar onClick={() => navigate("/configuracoes")} />
 
         <Paginacao
           dados={turmasFiltradas}

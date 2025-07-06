@@ -15,7 +15,6 @@ import Perfil from "../pages/perfil/editar_perfil.js";
 import GestaoSistema from "../pages/telas_users/telas_cre/gestao_sistema";
 //import PosLogin from "../pages/pos_login";
 
-//import Cruds from "../pages/configuracoes/cruds.js";
 import ListarSolicitacoes from "../listar_solicitacoes.js";
 
 import Home from "./../pages/home";

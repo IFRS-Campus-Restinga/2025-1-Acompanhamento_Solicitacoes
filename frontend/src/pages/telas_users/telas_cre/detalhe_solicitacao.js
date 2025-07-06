@@ -134,7 +134,7 @@ const DetalheSolicitacaoCRE = () => {
                 <main className="container">
                     <div className="error-message">
                         <p>{error}</p>
-                        <button onClick={() => navigate("/cre/home")} className="btn-voltar">
+                        <button onClick={() => navigate("/cre/todas-solicitacoes")} className="btn-voltar">
                             Voltar
                         </button>
                     </div>
@@ -213,7 +213,7 @@ const DetalheSolicitacaoCRE = () => {
                 
                 {/* Seção de botões */}
                 <div className="botoes-acoes-detalhes">
-                    <BotaoVoltar onClick={() => navigate("/cre/home")} />
+                    <BotaoVoltar onClick={() => navigate("/cre/todas-solicitacoes")} />
                     
                     <button 
                         onClick={handleResponderClick}
