@@ -77,8 +77,8 @@ const GoogleRedirectHandler = () => {
           navigate('/cre/gestao-sistema');
         } else if (groups.includes('coordenador')) {
           userRoleToSet = 'coordenador';
-          console.log("GoogleRedirectHandler: Usuário é Coordenador. Redirecionando para /coordenador/coordenador_home");
-          navigate('/coordenador/coordenador_home');
+          console.log("GoogleRedirectHandler: Usuário é Coordenador. Redirecionando para /coordenador/solicitacoes");
+          navigate('/coordenador/solicitacoes');
         } else if (groups.includes('aluno') || groups.includes('externo') || groups.includes('responsavel')) {
           // Priorize 'aluno' se for o caso, ou 'responsavel', 'externo'
           if (groups.includes('aluno')) {
