@@ -155,7 +155,7 @@ export default function CadastrarAtualizarTurma() {
             </ul>
           </div>
 
-          <button type="submit" className="submit-button">
+          <button type="submit" className="botao-generico">
             {id ? "Atualizar" : "Cadastrar"}
           </button>
         </form>

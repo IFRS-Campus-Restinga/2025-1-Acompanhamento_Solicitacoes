@@ -424,7 +424,7 @@ export default function CadastrarAtualizarGrupo() {
             </div>
           </div>
           
-          <button type="submit" className="submit-button reduced">
+          <button type="submit" className="botao-generico reduced">
             {id ? "Atualizar" : "Cadastrar"}
           </button>
         </form>

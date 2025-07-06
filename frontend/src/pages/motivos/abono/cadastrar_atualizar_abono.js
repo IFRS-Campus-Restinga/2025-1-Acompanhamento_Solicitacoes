@@ -113,7 +113,7 @@ export default function CadastrarAtualizarAbono() {
               ))}
             </select>
           </div>
-          <button type="submit" className="submit-button">
+          <button type="submit" className="botao-generico">
             {id ? "Atualizar" : "Cadastrar"}
           </button>
         </form>

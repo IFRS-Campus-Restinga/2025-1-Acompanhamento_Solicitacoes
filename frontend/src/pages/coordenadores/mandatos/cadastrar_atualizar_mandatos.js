@@ -27,7 +27,7 @@ export default function CadastrarAtualizarMandato() {
 
   const isEditing = !!id;
   const title = isEditing ? "Editar Mandato" : "Cadastrar Novo Mandato";
-  const submitButtonText = isEditing ? "Atualizar Mandato" : "Cadastrar Mandato";
+  const submitButtonText = isEditing ? "Atualizar" : "Cadastrar";
 
   useEffect(() => {
     async function loadCoordenadores() {
@@ -194,7 +194,7 @@ export default function CadastrarAtualizarMandato() {
             {errors.fim_mandato && <div className="error-text">{errors.fim_mandato}</div>}
           </div>
 
-          <button type="submit" className="submit-button">{submitButtonText}</button>
+          <button type="submit" className="botao-generico">{submitButtonText}</button>
         </form>
 
         <PopupFeedback

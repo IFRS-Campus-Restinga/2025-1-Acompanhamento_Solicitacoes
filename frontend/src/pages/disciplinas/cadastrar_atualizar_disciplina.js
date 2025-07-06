@@ -185,7 +185,7 @@ export default function CadastrarAtualizarDisciplina() {
             )}
           </div>
 
-          <button type="submit" className="submit-button">
+          <button type="submit" className="botao-generico">
             {codigoParam ? "Atualizar" : "Cadastrar"}
           </button>
         </form>

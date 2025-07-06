@@ -509,7 +509,7 @@ export default function CadastrarAtualizarUsuarioGrupo() {
 
           <button 
             type="submit" 
-            className="submit-button"
+            className="botao-generico"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Processando..." : submitButtonText}

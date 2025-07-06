@@ -117,7 +117,7 @@ export default function CadastrarAtualizarPpc() {
               />
             </div>
           </div>
-          <button type="submit" className="submit-button">
+          <button type="submit" className="botao-generico">
             {codigo ? "Atualizar" : "Cadastrar"}
           </button>
         </form>

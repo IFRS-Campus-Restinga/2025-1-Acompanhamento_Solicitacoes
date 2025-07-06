@@ -20,7 +20,7 @@
     margin-bottom: 20px;
 }
 
-/*BOTÃO Genérico da Cor Padrão*/
+/*BOTÃO Genérico da Cor Padrão = usado em páginas de cadastrar e atualizar*/
 
   .botao-generico{
     background-color: var(--botao-enviar);
@@ -30,7 +30,7 @@
     font-size: 1rem;
     cursor: pointer;
     transition: background-color 0.3s ease;
-    padding: 12px 20px;
+    padding: 8px 20px;
     margin-top: 20px;
     width: 100%;
 }

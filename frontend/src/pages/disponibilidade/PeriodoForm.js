@@ -126,7 +126,7 @@ export default function PeriodoForm({ periodo, onSave, onCancel, existingPeriods
             {errors.dataFim && <span className="error-message">{errors.dataFim}</span>}
           </div>
           <div className="form-actions">
-            <button type="submit" className="button submit-button">
+            <button type="submit" className="button botao-generico">
               {periodo ? 'Atualizar Período' : 'Adicionar Período'}
             </button>
             <button type="button" onClick={onCancel} style={{

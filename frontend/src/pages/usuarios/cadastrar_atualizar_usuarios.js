@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import PopupFeedback from "../../components/pop_ups/popup_feedback";
+import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 import api from "../../services/api";
 import { getCookie } from "../../services/authUtils";
-import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //CSS
 import "../../components/styles/formulario.css";
@@ -646,7 +646,7 @@ export default function CadastrarAtualizarUsuario() {
 
           <button
             type="submit"
-            className="submit-button"
+            className="botao-generico"
             disabled={isSubmitting}
           >
             {isSubmitting ? "Processando..." : submitButtonText}

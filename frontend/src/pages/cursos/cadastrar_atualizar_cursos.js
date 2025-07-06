@@ -140,7 +140,7 @@ export default function CadastrarAtualizarCursos() {
             </select>
           </div>
 
-          <button type="submit" className="submit-button">
+          <button type="submit" className="botao-generico">
             {codigo ? "Atualizar" : "Cadastrar"}
           </button>
         </form>
