@@ -86,3 +86,68 @@
         margin-bottom: 1rem;
     }
 }
+
+/*FORMULARIO INDISPONIVEL CSS*/
+
+/* FormularioIndisponivel.css */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.indisponivel-container {
+  background-color: #f8f9fa;
+}
+
+.card-indisponivel {
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 2.5rem;
+  max-width: 600px;
+  width: 100%;
+  text-align: center;
+}
+
+.icon-container {
+  font-size: 3rem;
+  color: var(--mensagem-erro);
+  margin-bottom: 1.5rem;
+}
+
+.card-indisponivel h2 {
+  color: var(--mensagem-erro);
+  margin-bottom: 1.5rem;
+}
+
+.message-container {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.message-container p {
+  margin-bottom: 0.5rem;
+}
+
+.periodo-info {
+  color: #6c757d;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.error-message {
+  color: var(--mensagem-erro);
+  font-weight: 500;
+}

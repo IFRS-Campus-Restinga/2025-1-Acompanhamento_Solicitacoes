@@ -5,7 +5,7 @@ import PopupFeedback from "../../components/pop_ups/popup_feedback";
 import BotaoVoltar from "../../components/UI/botoes/botao_voltar";
 
 //CSS
-import './FormularioIndisponivel.css';
+import '../../components/styles/formulario.css';
 // Remova as importações de date-fns, elas não serão mais necessárias
 // import { format, parseISO, isValid } from 'date-fns'; 
 
