@@ -81,8 +81,8 @@ import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 
 //Tela CRE
 import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
-import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
 import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes_finalizadas.js";
+import TodasSolicitacoes from "../pages/telas_users/telas_cre/todas_solicitacoes.js";
 
 //Tela Coordenador
 import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
@@ -211,12 +211,12 @@ const routes = [
   //TELAS USERS
   
   //Tela CRE
-  <Route path="/cre/home" element={<HomeCRE />} key="home_cre" />,
-  <Route path="/detalhe-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-  <Route path="/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="solicitacoes_finalizadas" />,
+  <Route path="/cre/todas-solicitacoes" element={<TodasSolicitacoes />} key="home_cre" />,
+  <Route path="/cre/detalhes-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
+  <Route path="/cre/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="solicitacoes_finalizadas" />,
 
   //Tela Coordenador
-  <Route path="/coordenador/coordenador_home" element={<HomeCoordenador />} key="home_coordenador" />,
+  <Route path="/coordenador/solicitacoes" element={<HomeCoordenador />} key="home_coordenador" />,
 
   //Tela Externo
   <Route path="/externo/desistencia-vaga" element={<ExternoHome />} key="home_externo" />,

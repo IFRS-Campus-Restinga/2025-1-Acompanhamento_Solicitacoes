@@ -4,12 +4,12 @@ import { Link } from "react-router-dom";
 
 import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
 import Paginacao from "../../../components/UI/paginacao";
-import "./cre.css";
+import "./../../../components/styles/telas_users.css";
 
 //CSS
 import "../../../components/styles/tabela.css";
 
-const HomeCRE = () => {
+const TodasSolicitacoes = () => {
     const [solicitacoes, setSolicitacoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -64,7 +64,7 @@ const HomeCRE = () => {
                 <h2>Solicitações</h2>
 
                 <div>
-                    <Link to="/solicitacoes-finalizadas" className="btn-finalizadas">
+                    <Link to="/cre/solicitacoes-finalizadas" className="btn-finalizadas">
                         Ver Solicitações Finalizadas
                     </Link>
                 </div>
@@ -96,7 +96,7 @@ const HomeCRE = () => {
                                     <td>
                                         <div className="botao-olho">
 
-                                            <BotaoDetalhar to={`/detalhe-solicitacao/${solicitacao.id}`} />
+                                            <BotaoDetalhar to={`/cre/detalhes-solicitacao/${solicitacao.id}`} />
                                             
                                         </div>
                                     </td>
@@ -120,5 +120,5 @@ const HomeCRE = () => {
     );
 };
 
-export default HomeCRE;
+export default TodasSolicitacoes;
 
