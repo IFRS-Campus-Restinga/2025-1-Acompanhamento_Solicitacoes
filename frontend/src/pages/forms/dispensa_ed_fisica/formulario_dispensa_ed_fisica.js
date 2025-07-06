@@ -32,6 +32,7 @@ export default function FormularioDispensaEdFisica() {
 
     const navigate = useNavigate();
 
+   
     // Referência para controlar busca única do aluno
     const buscouAlunoRef = useRef(false);
 
@@ -354,24 +355,25 @@ export default function FormularioDispensaEdFisica() {
         );
     }
 
+     // Renderização principal do formulário
     return (
         <div className="page-container">
+            <BuscaUsuario dadosUsuario={handleUsuario} />
             <main className="container">
-                <BuscaUsuario dadosUsuario={handleUsuario} />
-                <h2>Formulário de Dispensa de Educação Física</h2>
-                <br></br>
+                <h2>Solicitação de Dispensa de Educação Física</h2>
+                <br />
                 <h6 className="descricao-formulario">
                     Ao preencher este formulário, declaro que os documentos apresentados <strong>são verdadeiros</strong>,
                     e assumo a responsabilidade pelas informações aqui prestadas.
                 </h6>
 
-                 <form className="formulario formulario-largura" onSubmit={handleSubmit(onSubmit)}>
+                <form className="formulario formulario-largura" onSubmit={handleSubmit(onSubmit)}>
                     {/* Campos ocultos para IDs */}
                     <input type="hidden" {...register("aluno_id")} />
                     <input type="hidden" {...register("curso_id")} />
                     <input type="hidden" {...register("curso_codigo")} />
                     <input type="hidden" {...register("ppc_codigo")} />
-                    
+
                     {/* Dados do aluno */}
                     <div className="dados-aluno-container">
                         <div className="form-group">
@@ -412,7 +414,7 @@ export default function FormularioDispensaEdFisica() {
                         )}
                     </div>
 
-                      {/* Anexos */}
+                    {/* Anexos */}
                     <div className="form-group">
                         <label htmlFor="anexos">Anexos:</label>
                         <input
@@ -423,6 +425,7 @@ export default function FormularioDispensaEdFisica() {
                         />
                         <small>Selecione os documentos comprobatórios (opcional).</small>
                     </div>
+
 
                    <BotaoEnviarSolicitacao isSubmitting={isSubmitting}/>
                 </form>

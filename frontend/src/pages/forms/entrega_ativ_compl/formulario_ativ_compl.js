@@ -11,7 +11,7 @@ import "../../../components/styles/formulario.css";
 import { getAuthToken } from "../../../services/authUtils";
 
 export default function FormularioAtividadesComplementares() {
-    // Estados para controle de usuário e aluno
+     // Estados para controle de usuário e aluno
     const [userData, setUserData] = useState(null);
     const [carregandoUsuario, setCarregandoUsuario] = useState(true);
     const [aluno, setAluno] = useState(null);
@@ -347,8 +347,7 @@ export default function FormularioAtividadesComplementares() {
             </div>
         );
     }
-
-    // Renderização do formulário completo
+ // Renderização do formulário completo
     if (userData && aluno) {
         return (
             <div className="page-container">
@@ -440,14 +439,13 @@ export default function FormularioAtividadesComplementares() {
                             )}
                         </div>
                     ))}
-                    
-                    <button
-                        type="button"
-                        className="add-button"
-                        onClick={adicionarAtividade}
-                    >
-                        Adicionar Nova Atividade
+
+
+                    <button title="Adicionar Nova Atividade" className="botao-cadastrar" onClick={adicionarAtividade}>
+                        <i className="bi bi-plus-circle-fill"></i>
                     </button>
+                        
+                    <button type="submit" className="botao-generico">Enviar</button>
                     
                     </form>
                 </main>

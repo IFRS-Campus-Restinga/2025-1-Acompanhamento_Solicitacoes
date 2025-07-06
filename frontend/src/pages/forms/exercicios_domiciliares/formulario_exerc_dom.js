@@ -34,7 +34,7 @@ export default function FormularioExercicioDomiciliar() {
 
     const navigate = useNavigate();
 
-    // Referência para controlar busca única do aluno
+// Referência para controlar busca única do aluno
     const buscouAlunoRef = useRef(false);
 
      // --- ESTADOS ---
@@ -257,7 +257,7 @@ export default function FormularioExercicioDomiciliar() {
         }
     }, [userData, setValue, buscarDadosCurso, buscarDadosPpc]);
 
-    // Carregar motivos de exercício domiciliar (mantido)
+    // Carregar motivos de exercício domiciliar
     useEffect(() => {
         const buscarMotivos = async () => {
             try {
@@ -352,23 +352,20 @@ export default function FormularioExercicioDomiciliar() {
             setTodasDisciplinas(res.data.disciplinas || []);
             setDisciplinasFiltradas(res.data.disciplinas || []);
             
-            // Limpar o filtro de busca
-            setFiltroDisciplina("");
-            
             // Limpar disciplinas selecionadas quando mudar o período
             setDisciplinasSelecionadas([]);
-            setValue("disciplinas", []);
+            
         } catch (error) {
             console.error("Erro ao buscar disciplinas:", error.response?.data || error.message);
-            setErroBuscaDisciplinas("Erro ao buscar disciplinas. Verifique o período selecionado ou a conexão.");
             setTodasDisciplinas([]);
             setDisciplinasFiltradas([]);
+            setErroBuscaDisciplinas("Erro ao buscar disciplinas. Tente novamente.");
         } finally {
             setIsLoadingDisciplinas(false);
         }
-    }, [aluno, periodoSelecionado, setValue]);
+    }, [aluno, periodoSelecionado]);
 
-    // useEffect para carregar disciplinas automaticamente quando o período mudar
+    // Efeito para buscar disciplinas quando o período mudar
     useEffect(() => {
         if (periodoSelecionado && aluno?.ppc_codigo) {
             buscarDisciplinas(aluno.ppc_codigo, periodoSelecionado);
@@ -378,12 +375,10 @@ export default function FormularioExercicioDomiciliar() {
     // Função para filtrar disciplinas com base no texto de busca
     useEffect(() => {
         if (filtroDisciplina.trim() === "") {
-            // Se o filtro estiver vazio, mostrar todas as disciplinas
             setDisciplinasFiltradas(todasDisciplinas);
         } else {
-            // Filtrar disciplinas pelo nome ou código
             const filtradas = todasDisciplinas.filter(
-                disciplina => 
+                (disciplina) =>
                     disciplina.nome.toLowerCase().includes(filtroDisciplina.toLowerCase()) ||
                     disciplina.codigo.toLowerCase().includes(filtroDisciplina.toLowerCase())
             );
@@ -391,152 +386,163 @@ export default function FormularioExercicioDomiciliar() {
         }
     }, [filtroDisciplina, todasDisciplinas]);
 
-    // Função para selecionar uma disciplina
-    const selecionarDisciplina = (disciplina) => {
-        // Verificar se a disciplina já está selecionada
-        const jaSelecionada = disciplinasSelecionadas.some(d => d.codigo === disciplina.codigo);
-        
-        if (!jaSelecionada) {
-            // Adicionar à lista de selecionadas
-            const novasSelecionadas = [...disciplinasSelecionadas, disciplina];
-            setDisciplinasSelecionadas(novasSelecionadas);
-            
-            // Atualizar o campo do formulário com os códigos das disciplinas
-            const codigosDisciplinas = novasSelecionadas.map(d => d.codigo);
-            setValue("disciplinas", codigosDisciplinas);
-        }
+    // Função para alternar a seleção de uma disciplina
+    const toggleDisciplinaSelecionada = (disciplina) => {
+        setDisciplinasSelecionadas((prev) => {
+            const jaSelecionada = prev.some((d) => d.id === disciplina.id);
+            if (jaSelecionada) {
+                return prev.filter((d) => d.id !== disciplina.id);
+            } else {
+                return [...prev, disciplina];
+            }
+        });
     };
 
-    // Função para remover uma disciplina selecionada
-    const removerDisciplina = (codigo) => {
-        const novasSelecionadas = disciplinasSelecionadas.filter(d => d.codigo !== codigo);
-        setDisciplinasSelecionadas(novasSelecionadas);
-        
-        // Atualizar o campo do formulário com os códigos das disciplinas
-        const codigosDisciplinas = novasSelecionadas.map(d => d.codigo);
-        setValue("disciplinas", codigosDisciplinas);
+    // Função para remover uma disciplina da seleção
+    const removerDisciplinaSelecionada = (id) => {
+        setDisciplinasSelecionadas((prev) => prev.filter((d) => d.id !== id));
     };
 
-    // Função para lidar com a mudança no select de período
+    // Função para verificar se uma disciplina está selecionada
+    const isDisciplinaSelecionada = (id) => {
+        return disciplinasSelecionadas.some((d) => d.id === id);
+    };
+
+    // Função para lidar com a mudança de período
     const handlePeriodoChange = (e) => {
         const novoPeriodo = e.target.value;
         setPeriodoSelecionado(novoPeriodo);
         setValue("periodo", novoPeriodo);
     };
 
-    // Função para enviar o formulário (PADRONIZADA)
-    const onSubmit = async (data) => {
-        setIsSubmitting(true);
-        
-        try {
-            // Validação inicial dos dados obrigatórios
-            if (!aluno?.id) {
-                throw new Error("Dados incompletos do aluno. Recarregue a página e tente novamente.");
-            }
-            
-            if (!data.disciplinas || data.disciplinas.length === 0) {
-                setMsgErro("Selecione pelo menos uma disciplina.");
-                setTipoErro("erro");
-                setFeedbackIsOpen(true);
-                setIsSubmitting(false);
-                return;
-            }
-            
-            if (!data.motivo_solicitacao || !data.documento_apresentado) {
-                setMsgErro("Preencha todos os campos obrigatórios.");
-                setTipoErro("erro");
-                setFeedbackIsOpen(true);
-                setIsSubmitting(false);
-                return;
-            }
-            
-            if (!data.data_inicio_afastamento || !data.data_fim_afastamento) {
-                setMsgErro("Informe as datas de início e fim do afastamento.");
-                setTipoErro("erro");
-                setFeedbackIsOpen(true);
-                setIsSubmitting(false);
-                return;
-            }
-            
-            const formData = new FormData();
-            
-            // Dados básicos do formulário
-            formData.append('motivo_solicitacao', data.motivo_solicitacao);
-            formData.append('documento_apresentado', data.documento_apresentado);
-            formData.append('data_inicio_afastamento', data.data_inicio_afastamento);
-            formData.append('data_fim_afastamento', data.data_fim_afastamento);
-            
-            // Dados do aluno
-            formData.append('aluno_id', aluno.id);
-            formData.append('matricula', aluno.matricula);
-            formData.append('curso_id', curso?.id || '');
-            formData.append('curso_codigo', curso?.codigo || '');
-            formData.append('ppc_codigo', ppc?.codigo || '');
-            
-            // Disciplinas selecionadas
-            data.disciplinas.forEach(disciplina => {
-                formData.append('disciplinas', disciplina);
+    // Função para lidar com a mudança no campo de busca de disciplinas
+    const handleFiltroDisciplinaChange = (e) => {
+        setFiltroDisciplina(e.target.value);
+    };
+
+    // Função para validar o formulário antes de enviar
+    const validarFormulario = (data) => {
+        let temErro = false;
+
+        // Validar motivo de solicitação
+        if (!data.motivo_solicitacao) {
+            setError("motivo_solicitacao", {
+                type: "manual",
+                message: "Selecione o motivo da solicitação."
             });
-            
-            // Metadados automáticos
-            formData.append('data_solicitacao', new Date().toISOString().split('T')[0]);
-            formData.append('status', 'pendente');
-            formData.append('tipo_solicitacao', 'EXERCICIOS_DOMICILIARES');
-            
-            // Arquivos anexos (opcional)
-            if (data.anexos && data.anexos.length > 0) {
-                Array.from(data.anexos).forEach((file, index) => {
-                    formData.append(`arquivo_${index}`, file);
-                });
-            }
-            
-            const token = getAuthToken();
-            const response = await axios.post(
-                "http://localhost:8000/solicitacoes/formularios-exercicios-domiciliares/",
-                formData,
-                {
-                    headers: { 
-                        "Content-Type": "multipart/form-data",
-                        "Authorization": `Bearer ${token}`
-                    },
-                    timeout: 10000 // Timeout de 10 segundos
-                }
-            );
-            
-            // Feedback de sucesso
-            setMsgErro("Solicitação de exercícios domiciliares enviada com sucesso!");
-            setTipoErro("sucesso");
-            setFeedbackIsOpen(true);
-            
-            // Redirecionamento com delay
-            setTimeout(() => navigate("/aluno/minhas-solicitacoes"), 2000);
-            
-        } catch (error) {
-            console.error("Erro detalhado:", error);
-            
-            // Tratamento refinado de erros
-            const errorMessage = error.response?.data?.detail || 
-                                error.response?.data?.message || 
-                                error.message || 
-                                "Erro desconhecido ao enviar solicitação";
-            
-            setMsgErro(errorMessage);
+            temErro = true;
+        }
+
+        // Validar documento apresentado
+        if (!data.documento_apresentado) {
+            setError("documento_apresentado", {
+                type: "manual",
+                message: "Selecione o documento que será apresentado."
+            });
+            temErro = true;
+        }
+
+        // Validar datas
+        if (!data.data_inicio_afastamento) {
+            setError("data_inicio_afastamento", {
+                type: "manual",
+                message: "Informe a data de início do afastamento."
+            });
+            temErro = true;
+        }
+
+        if (!data.data_fim_afastamento) {
+            setError("data_fim_afastamento", {
+                type: "manual",
+                message: "Informe a data de fim do afastamento."
+            });
+            temErro = true;
+        }
+
+        // Validar disciplinas selecionadas
+        if (disciplinasSelecionadas.length === 0) {
+            setErroBuscaDisciplinas("Selecione pelo menos uma disciplina.");
+            temErro = true;
+        }
+
+        return !temErro;
+    };
+
+    // Função para enviar o formulário
+    const onSubmit = async (data) => {
+        if (!validarFormulario(data)) {
+            setMsgErro("Por favor, corrija os erros no formulário antes de enviar.");
             setTipoErro("erro");
             setFeedbackIsOpen(true);
-            
-            // Log adicional para desenvolvimento
-            if (process.env.NODE_ENV === 'development') {
-                console.error("Detalhes do erro:", {
-                    config: error.config,
-                    response: error.response
-                });
+            return;
+        }
+
+        setIsSubmitting(true);
+
+        try {
+            // Preparar os dados para envio
+            const formData = new FormData();
+
+            // Adicionar dados do aluno
+            formData.append("aluno_id", data.aluno_id);
+            formData.append("aluno_nome", data.nome_completo);
+            formData.append("aluno_email", data.email);
+            formData.append("matricula", data.matricula);
+            formData.append("curso_id", data.curso_id);
+
+            // Adicionar dados da solicitação
+            formData.append("motivo_solicitacao", data.motivo_solicitacao);
+            formData.append("documento_apresentado", data.documento_apresentado);
+            formData.append("data_inicio_afastamento", data.data_inicio_afastamento);
+            formData.append("data_fim_afastamento", data.data_fim_afastamento);
+            formData.append("periodo", data.periodo);
+
+            // Adicionar disciplinas selecionadas
+            const disciplinasIds = disciplinasSelecionadas.map(d => d.id);
+            formData.append("disciplinas", JSON.stringify(disciplinasIds));
+
+            // Adicionar anexos se houver
+            if (data.anexos && data.anexos.length > 0) {
+                for (let i = 0; i < data.anexos.length; i++) {
+                    formData.append("anexos", data.anexos[i]);
+                }
             }
+
+            // Enviar para a API
+            const token = getAuthToken();
+            const response = await axios.post(
+                "http://localhost:8000/solicitacoes/exercicios_domiciliares/",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        "Authorization": `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log("Resposta da API:", response.data);
+            setMsgErro("Solicitação enviada com sucesso!");
+            setTipoErro("sucesso");
+            setFeedbackIsOpen(true);
+
+            // Redirecionar após 2 segundos
+            setTimeout(() => {
+                navigate("/todas-solicitacoes");
+            }, 2000);
+        } catch (error) {
+            console.error("Erro ao enviar formulário:", error.response?.data || error.message);
+            setMsgErro(error.response?.data?.message || "Erro ao enviar solicitação. Tente novamente.");
+            setTipoErro("erro");
+            setFeedbackIsOpen(true);
         } finally {
             setIsSubmitting(false);
         }
     };
 
-    // Renderização condicional durante carregamento
+    // --- RENDERIZAÇÃO ---
+
+    // Renderização durante carregamento do usuário
     if (carregandoUsuario) {
         return (
             <>
@@ -566,42 +572,39 @@ export default function FormularioExercicioDomiciliar() {
             </div>
         );
     }
-
     
-    // Renderiza o formulário principal
+    // Renderização principal do formulário
     return (
         <div className="page-container">
+            <BuscaUsuario dadosUsuario={handleUsuario} />
             <main className="container">
                 <h2>Solicitação de Exercícios Domiciliares</h2>
-                <br></br>
-                <h6>
-                    Conforme o Art. 141. da Organização Didática do IFRS, os Exercícios
-                    Domiciliares possibilitam ao estudante realizar atividades em seu
-                    domicílio, quando houver impedimento de frequência às aulas por um
-                    período superior a 15 (quinze) dias, de acordo com o Decreto 1.044/69
-                    e com a Lei 6.202/75, tendo suas faltas abonadas durante o período de
-                    afastamento. O atendimento através de Exercício Domiciliar é um
-                    processo em que a família e a Instituição devem atuar de forma
-                    colaborativa, para que o estudante possa realizar suas atividades sem
-                    prejuízo na sua vida acadêmica. A solicitação deverá ser protocolada
-                    em até 05 (cinco) dias úteis subsequentes ao início da ausência às
-                    atividades letivas.
+                <br />
+                <h6 className="descricao-formulario">
+                    Ao preencher este formulário, declaro que os documentos apresentados <strong>são verdadeiros</strong>,
+                    e assumo a responsabilidade pelas informações aqui prestadas.
                 </h6>
 
-                    <form onSubmit={handleSubmit(onSubmit)} className="formulario formulario-largura">
+                <form className="formulario formulario-largura" onSubmit={handleSubmit(onSubmit)}>
+                    {/* Campos ocultos para IDs */}
+                    <input type="hidden" {...register("aluno_id")} />
+                    <input type="hidden" {...register("curso_id")} />
+                    <input type="hidden" {...register("curso_codigo")} />
+                    <input type="hidden" {...register("ppc_codigo")} />
 
+                    {/* Dados do aluno */}
                     <div className="dados-aluno-container">
                         <div className="form-group">
-                            <label htmlFor="email">E-mail:</label>
-                            <input type="email" readOnly {...register("email")} />
+                            <label>E-mail:</label>
+                            <input type="email" {...register("email")} readOnly />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="nome_completo">Nome Completo:</label>
-                            <input type="text"  readOnly {...register("nome_completo")} />
+                            <label>Nome Completo:</label>
+                            <input type="text" {...register("nome_completo")} readOnly />
                         </div>
                         <div className="form-group">
-                            <label htmlFor="matricula">Matrícula:</label>
-                            <input type="text"  readOnly {...register("matricula")} />
+                            <label>Matrícula:</label>
+                            <input type="text" {...register("matricula")} readOnly />
                         </div>
                         <div className="form-group">
                             <label>Curso:</label>
@@ -609,227 +612,174 @@ export default function FormularioExercicioDomiciliar() {
                         </div>
                     </div>
 
-                    {/* Campos ocultos para IDs */}
-                    <input type="hidden" {...register("aluno_id")} />
-                    <input type="hidden" {...register("curso_id")} />
-                    <input type="hidden" {...register("curso_codigo")} />
-                    <input type="hidden" {...register("ppc_codigo")} />
-
+                    {/* Motivo da solicitação */}
                     <div className="form-group">
                         <label htmlFor="motivo_solicitacao">Motivo da Solicitação:</label>
                         <select
                             id="motivo_solicitacao"
-                            {...register("motivo_solicitacao", { required: "Selecione um motivo" })}
+                            {...register("motivo_solicitacao", { required: "Motivo é obrigatório" })}
+                            disabled={isLoadingMotivos}
                         >
-                            <option value="">Selecione um motivo</option>
-                            {motivos.map((motivo) => (
+                            <option value="">Selecione o motivo</option>
+                            {motivos.map(motivo => (
                                 <option key={motivo.id} value={motivo.id}>
                                     {motivo.descricao}
                                 </option>
                             ))}
                         </select>
                         {errors.motivo_solicitacao && (
-                            <span className="erro">{errors.motivo_solicitacao.message}</span>
+                            <span className="error-message">{errors.motivo_solicitacao.message}</span>
                         )}
                     </div>
 
                     {/* Documento apresentado */}
-                        <div className="form-group">
-                          <label htmlFor="documento_apresentado">
-                            Escolha o tipo de documento para justificar a sua solicitação:
-                          </label>
-                          <select
+                    <div className="form-group">
+                        <label htmlFor="documento_apresentado">Documento que será apresentado:</label>
+                        <select
                             id="documento_apresentado"
-                            {...register("documento_apresentado", {
-                              required: "Escolher o tipo de documento é obrigatório",
-                            })}
-                          >
+                            {...register("documento_apresentado", { required: "Documento é obrigatório" })}
+                        >
                             <option value="">Selecione o documento</option>
-                            <option value="atestado">Atestado médico</option>
-                            <option value="certidao_nascimento">Certidão de nascimento</option>
-                            <option value="termo_guarda">Termo judicial de guarda</option>
-                            <option value="certidao_obito">Certidão de óbito</option>
-                            <option value="justificativa_propria">
-                              Justificativa de próprio punho
-                            </option>
-                            <option value="outro">Outro</option>
-                          </select>
-                          {errors.documento_apresentado && (
-                            <span className="erro">{errors.documento_apresentado.message}</span>
-                          )}
-                        </div>
-
-                         {/* Outro documento (condicional) */}
-                        {documentoApresentado === "outro" && (
-                        <div className="form-group">
-                          <label htmlFor="outro_documento">Descreva o outro documento:</label>
-                          <input
-                            type="text"
-                            id="outro_documento"
-                            {...register("outro_documento", {
-                              required: documentoApresentado === "outro" ? "Descreva o outro documento" : false,
-                            })}
-                          />
-                          {errors.outro_documento && (
-                            <span className="erro">{errors.outro_documento.message}</span>
-                          )}
-                        </div>
+                            <option value="Atestado médico">Atestado médico</option>
+                            <option value="Certidão de nascimento">Certidão de nascimento</option>
+                            <option value="Termo judicial de guarda">Termo judicial de guarda</option>
+                            <option value="Certidão de óbito">Certidão de óbito</option>
+                            <option value="Justificativa de próprio punho">Justificativa de próprio punho</option>
+                            <option value="Outro">Outro</option>
+                        </select>
+                        {errors.documento_apresentado && (
+                            <span className="error-message">{errors.documento_apresentado.message}</span>
                         )}
-                            {/* Período de Afastamento */}
-                    <div className="form-section">
-                        <div className="form-group">
-                            <label htmlFor="periodo_afastamento_dias">Dias de Afastamento:</label>
-                            <input
-                                type="text"
-                                id="periodo_afastamento_dias"
-                                value={periodoCalculado}
-                                readOnly
-                            />
-                        </div>
+                    </div>
 
-                        <div className="form-group">
-                            <div className="date-inputs">
-                                <div>
-                                    <label htmlFor="data_inicio_afastamento">Data Inicial:</label>
-                                    <input
-                                        className="input-data"
-                                        type="date"
-                                        id="data_inicio_afastamento"
-                                        {...register("data_inicio_afastamento", { required: "Data inicial é obrigatória." })}
-                                    />
-                                    {errors.data_inicio_afastamento && <span className="error-text">{errors.data_inicio_afastamento.message}</span>}
-                                </div>
-                                <div>
-                                    <label htmlFor="data_fim_afastamento">Data Final:</label>
-                                    <input
-                                        className="input-data"
-                                        type="date"
-                                        id="data_fim_afastamento"
-                                        {...register("data_fim_afastamento", { required: "Data final é obrigatória." })}
-                                    />
-                                    {errors.data_fim_afastamento && <span className="error-text">{errors.data_fim_afastamento.message}</span>}
-                                </div>
-                            </div>
-                        </div>
+                    {/* Período de afastamento */}
+                    <div className="form-group">
+                        <label htmlFor="data_inicio_afastamento">Data de início do afastamento:</label>
+                        <input
+                            type="date"
+                            id="data_inicio_afastamento"
+                            {...register("data_inicio_afastamento", { required: "Data inicial é obrigatória" })}
+                        />
+                        {errors.data_inicio_afastamento && (
+                            <span className="error-message">{errors.data_inicio_afastamento.message}</span>
+                        )}
+                    </div>
 
-                        {/* Seleção de Período */}
-                        <div className="form-group">
-                            <label htmlFor="periodo">Período:</label>
-                            <select
-                                id="periodo"
-                                value={periodoSelecionado}
-                                onChange={handlePeriodoChange}
-                                required
-                            >
-                                <option value="">Selecione o período</option>
-                                {periodosDisponiveis.map(periodo => (
-                                    <option key={periodo.value} value={periodo.value}>
-                                        {periodo.label}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
+                    <div className="form-group">
+                        <label htmlFor="data_fim_afastamento">Data de fim do afastamento:</label>
+                        <input
+                            type="date"
+                            id="data_fim_afastamento"
+                            {...register("data_fim_afastamento", { required: "Data final é obrigatória" })}
+                        />
+                        {errors.data_fim_afastamento && (
+                            <span className="error-message">{errors.data_fim_afastamento.message}</span>
+                        )}
+                    </div>
 
-                    {/* Seleção de Disciplinas */}
+                    {periodoCalculado && (
+                        <div className="info-box">
+                            <p>Período de afastamento: <strong>{periodoCalculado}</strong></p>
+                        </div>
+                    )}
+
+                    {/* Seleção de período */}
+                    <div className="form-group">
+                        <label htmlFor="periodo">Período:</label>
+                        <select
+                            id="periodo"
+                            value={periodoSelecionado}
+                            onChange={handlePeriodoChange}
+                            disabled={periodosDisponiveis.length === 0}
+                        >
+                            <option value="">Selecione o período</option>
+                            {periodosDisponiveis.map((periodo) => (
+                                <option key={periodo.value} value={periodo.value}>
+                                    {periodo.label}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    {/* Novo sistema de busca e seleção de disciplinas */}
                     <div className="form-group">
                         <label>Disciplinas:</label>
-                        <div className="barra-pesquisa">
-                            <i className="bi bi-search icone-pesquisa"></i>
-                            <input
-                                type="text"
-                                placeholder="Buscar disciplinas..."
-                                value={filtroDisciplina}
-                                onChange={(e) => setFiltroDisciplina(e.target.value)}
-                                className="input-pesquisa"
-                                disabled={isLoadingDisciplinas || todasDisciplinas.length === 0}
-                                style={{ paddingLeft: '30px', height: '38px' }} 
-                            />
-                        </div>
                         
                         {isLoadingDisciplinas ? (
                             <p>Carregando disciplinas...</p>
                         ) : (
                             <>
-                                {erroBuscaDisciplinas ? (
-                                    <div className="erro">{erroBuscaDisciplinas}</div>
-                                ) : (
-                                    <>
-                                        {disciplinasFiltradas.length > 0 ? (
-                                            <div className="disciplina-selection-box">
-                                                {disciplinasFiltradas.map((disciplina) => (
-                                                    <div 
-                                                        key={disciplina.codigo}
-                                                        className={`disciplina-option ${disciplinasSelecionadas.some(d => d.codigo === disciplina.codigo) ? 'selected' : ''}`}
-                                                        onClick={() => selecionarDisciplina(disciplina)}
-                                                    >
-                                                        {disciplina.nome} ({disciplina.codigo})
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        ) : (
-                                            <div className="aviso">
-                                                {todasDisciplinas.length === 0 
-                                                    ? "Selecione um período para ver as disciplinas disponíveis." 
-                                                    : "Nenhuma disciplina encontrada com o filtro aplicado."}
-                                            </div>
-                                        )}
-                                    </>
+                                <input
+                                    type="text"
+                                    placeholder="Buscar disciplina por nome ou código..."
+                                    value={filtroDisciplina}
+                                    onChange={handleFiltroDisciplinaChange}
+                                    className="search-input"
+                                />
+                                
+                                {erroBuscaDisciplinas && (
+                                    <span className="error-message">{erroBuscaDisciplinas}</span>
                                 )}
+                                
+                                <div className="disciplina-selection-box">
+                                    {disciplinasFiltradas.length > 0 ? (
+                                        disciplinasFiltradas.map((disciplina) => (
+                                            <div
+                                                key={disciplina.id}
+                                                className={`disciplina-option ${
+                                                    isDisciplinaSelecionada(disciplina.id) ? "selected" : ""
+                                                }`}
+                                                onClick={() => toggleDisciplinaSelecionada(disciplina)}
+                                            >
+                                                <strong>{disciplina.codigo}</strong> - {disciplina.nome}
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="no-results">
+                                            {filtroDisciplina
+                                                ? "Nenhuma disciplina encontrada com esse filtro."
+                                                : "Nenhuma disciplina disponível para este período."}
+                                        </p>
+                                    )}
+                                </div>
+                                
+                                <div className="selected-items-container">
+                                    <h4>Disciplinas selecionadas:</h4>
+                                    {disciplinasSelecionadas.length > 0 ? (
+                                        <div className="disciplinas-selecionadas-container">
+                                            {disciplinasSelecionadas.map((disciplina) => (
+                                                <div key={disciplina.id} className="selected-disciplina-box">
+                                                    <span>
+                                                        <strong>{disciplina.codigo}</strong> - {disciplina.nome}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        className="remove-btn"
+                                                        onClick={() => removerDisciplinaSelecionada(disciplina.id)}
+                                                    >
+                                                        X
+                                                    </button>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <p>Nenhuma disciplina selecionada.</p>
+                                    )}
+                                </div>
                             </>
                         )}
                     </div>
 
-                    {/* ÁREA DE DISCIPLINAS SELECIONADAS */}
+                    {/* Anexos */}
                     <div className="form-group">
-                        <label>Disciplinas Selecionadas:</label>
-                        {disciplinasSelecionadas.length > 0 ? (
-                            <div className="disciplinas-selecionadas-container">
-                                {disciplinasSelecionadas.map((disciplina) => (
-                                    <div key={disciplina.codigo} className="selected-disciplina-box">
-                                        {disciplina.nome} ({disciplina.codigo})
-                                        <button
-                                            type="button"
-                                            onClick={() => removerDisciplina(disciplina.codigo)}
-                                            className="remove-btn"
-                                        >
-                                            X
-                                        </button>
-                                    </div>
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="aviso">Nenhuma disciplina selecionada.</div>
-                        )}
-                    </div>
-
-                
-                        <div className="form-group">
-                            <label htmlFor="anexos">Anexos (obrigatório):</label>
-                            <input
-                                type="file"
-                                id="anexos"
-                                {...register("anexos", { required: "Anexo é obrigatório" })}
-                                multiple
-                            />
-                            {errors.anexos && (
-                                <span className="erro">{errors.anexos.message}</span>
-                            )}
-                        </div>
-                        
-                        {/* Campo para consegue_realizar_atividades */}
-                        <div className="form-group">
-                            <label htmlFor="consegue_realizar_atividades">Declaro que possuo condições de realizar as atividades remotamente durante o período de afastamento.</label>
-                            <select
-                                id="consegue_realizar_atividades"
-                                {...register("consegue_realizar_atividades", { required: "Este campo é obrigatório." })}
-                            >
-                                <option value="">Selecione</option>
-                                <option value={true}>Sim</option>
-                                <option value={false}>Não</option>
-                            </select>
-                            {errors.consegue_realizar_atividades && <span className="error-text">{errors.consegue_realizar_atividades.message}</span>}
-                        </div>
-
+                        <label htmlFor="anexos">Anexos:</label>
+                        <input
+                            type="file"
+                            id="anexos"
+                            multiple
+                            {...register("anexos")}
+                        />
+                        <small>Selecione os documentos comprobatórios (opcional).</small>
                     </div>
 
                     <BotaoEnviarSolicitacao isSubmitting={isSubmitting}/>
