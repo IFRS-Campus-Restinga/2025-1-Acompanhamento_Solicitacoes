@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getGoogleUser, logout } from "../../../services/authUtils"; // Mantém para consistência, embora usuário externo possa não ter login completo
 import "./../headers/header_nav.css"; // Reutiliza o CSS geral da navegação
@@ -45,13 +45,8 @@ const HeaderExterno = () => {
 
                 <nav className="center">
                     <ul className="nav-links">
-                        {/* Botão Formulários (redireciona para /aluno/nova-solicitacao) */}
                         <li>
-                            <Link to="/aluno/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
-                        </li>
-                        {/* Botão Minhas Solicitações (mantido) */}
-                        <li>
-                            <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
+                            <Link to="/externo/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
                         </li>
                     </ul>
                 </nav>
@@ -75,7 +70,7 @@ const HeaderExterno = () => {
                         </>
                     ) : (
                         <>
-                            <p className="mensagem-usuario">Bem-vindo</p>
+                            {/* Conteúdo opcional para usuário não logado, se necessário */}
                         </>
                     )}
                 </div>

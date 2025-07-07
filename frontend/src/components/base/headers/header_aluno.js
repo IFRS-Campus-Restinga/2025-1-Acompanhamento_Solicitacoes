@@ -45,11 +45,9 @@ const HeaderAluno = () => {
 
                 <nav className="center">
                     <ul className="nav-links">
-                        {/* Botão Formulários (redireciona para /aluno/nova-solicitacao) */}
                         <li>
                             <Link to="/aluno/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
                         </li>
-                        {/* Botão Minhas Solicitações (mantido) */}
                         <li>
                             <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
                         </li>
@@ -75,7 +73,10 @@ const HeaderAluno = () => {
                         </>
                     ) : (
                         <>
-                            <p className="mensagem-usuario">Bem-vindo</p>
+                            {/* Conteúdo opcional para usuário não logado, se necessário */}
+                            {/* 
+                            <p className="mensagem-usuario">Bem-vindo</p> 
+                            */}
                         </>
                     )}
                 </div>
