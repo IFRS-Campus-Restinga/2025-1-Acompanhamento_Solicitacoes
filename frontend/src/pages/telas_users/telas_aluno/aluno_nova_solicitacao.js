@@ -17,7 +17,7 @@ const AlunoNovaSolicitacao = () => {
   return (
     <div className="colunas-container">
       <main className="container">
-        <h2 className="tela-opcoes-titulo ">Formulários</h2>
+        <h2 className="tela-opcoes-titulo ">Solicitações</h2>
         <div className="colunas-section-container">
           {/* PRIMEIRA FILEIRA: 4 Formulários */}
           <section className="colunas-section">

@@ -10,10 +10,9 @@ import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/form
 import { default as FormTrancDisciplina, default as Formulario } from "../pages/forms/trancamento_disciplina/formulario_tranc_disc.js";
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula.js";
 
-// Páginas
+
 import Perfil from "../pages/perfil/editar_perfil.js";
-import GestaoSistema from "../pages/telas_users/telas_cre/gestao_sistema";
-//import PosLogin from "../pages/pos_login";
+
 
 import ListarSolicitacoes from "../listar_solicitacoes.js";
 
@@ -79,6 +78,7 @@ import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js
 import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 
 //Tela CRE
+import Configuracoes from "../pages/telas_users/telas_cre/configuracoes.js";
 import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
 import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes_finalizadas.js";
 import TodasSolicitacoes from "../pages/telas_users/telas_cre/todas_solicitacoes.js";
@@ -93,7 +93,7 @@ import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minh
 import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
 
 //Tela Externo
-import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
+import ExternoNovaSolicitacao from "../pages/telas_users/tela_externo/externo_nova_solicitacao.js";
 
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
@@ -206,7 +206,7 @@ const routes = [
   //TELAS USERS
   
   //Tela CRE
-  <Route path="/cre/gestao-sistema" element={<GestaoSistema />} key="cre-gestao-sistema" />,
+  <Route path="/cre/configuracoes" element={<Configuracoes />} key="cre-configuracoes" />,
   <Route path="/cre/solicitacoes" element={<TodasSolicitacoes />} key="cre-solicitacoes" />,
   <Route path="/cre/detalhes-solicitacao/:id" element={<DetalheSolicitacao />} key="cre-detalhes-solicitacao" />,
   <Route path="/cre/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="cre-solicitacoes-finalizadas" />,
@@ -216,7 +216,7 @@ const routes = [
   <Route path="/coordenador/detalhes-solicitacao/:id" element={<DetalhesSolicitacaoCoordenador />} key="coordenador-detalhes-solicitacao" />,
 
   //Tela Externo
-  <Route path="/externo/desistencia-vaga" element={<ExternoHome />} key="externo-home" />,
+  <Route path="/externo/nova-solicitacao" element={<ExternoNovaSolicitacao />} key="externo-nova-solicitacao" />,
 
   //Tela Aluno
   <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="aluno-nova-solicitacao"/>,
