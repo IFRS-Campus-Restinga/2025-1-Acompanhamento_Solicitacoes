@@ -84,8 +84,8 @@ import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes
 import TodasSolicitacoes from "../pages/telas_users/telas_cre/todas_solicitacoes.js";
 
 //Tela Coordenador
+import ListarSolicitacoesCoordenador from "../pages/telas_users/tela_coordenador/coordenador_listar_solicitacoes.js";
 import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
-import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 
 //Telas Aluno
 import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
@@ -112,11 +112,7 @@ const routes = [
   
   //página inicial
   <Route path="/" element={<Home />} key="home" />,
-
-  <Route path="/cre/gestao-sistema" element={<GestaoSistema />} key="configuracoes" />,
-
   <Route path="/perfil" element={<Perfil />} key="perfil" />,
-  //<Route path="/pos-login" element={<PosLogin />} />,
 
   // Motivo Abono
   <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
@@ -210,25 +206,26 @@ const routes = [
   //TELAS USERS
   
   //Tela CRE
-  <Route path="/cre/todas-solicitacoes" element={<TodasSolicitacoes />} key="home_cre" />,
-  <Route path="/cre/detalhes-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-  <Route path="/cre/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="solicitacoes_finalizadas" />,
+  <Route path="/cre/gestao-sistema" element={<GestaoSistema />} key="cre-gestao-sistema" />,
+  <Route path="/cre/solicitacoes" element={<TodasSolicitacoes />} key="cre-solicitacoes" />,
+  <Route path="/cre/detalhes-solicitacao/:id" element={<DetalheSolicitacao />} key="cre-detalhes-solicitacao" />,
+  <Route path="/cre/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="cre-solicitacoes-finalizadas" />,
 
   //Tela Coordenador
-  <Route path="/coordenador/solicitacoes" element={<HomeCoordenador />} key="home_coordenador" />,
+  <Route path="/coordenador/solicitacoes" element={<ListarSolicitacoesCoordenador />} key="coordenador-solicitacoes" />,
+  <Route path="/coordenador/detalhes-solicitacao/:id" element={<DetalhesSolicitacaoCoordenador />} key="coordenador-detalhes-solicitacao" />,
 
   //Tela Externo
-  <Route path="/externo/desistencia-vaga" element={<ExternoHome />} key="home_externo" />,
+  <Route path="/externo/desistencia-vaga" element={<ExternoHome />} key="externo-home" />,
 
   //Tela Aluno
-  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
-  <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
-  <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
+  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="aluno-nova-solicitacao"/>,
+  <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="aluno-minhas-solicitacoes" />,
+  <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="aluno-detalhes-solicitacao" />,
 
   //Tela gerenciamento Exerciícios Domiciliares
-  <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
+  <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar-exercicios-domiciliares" />,
 
-  <Route path="/coordenador/detalhes-solicitacao/:id" element={<DetalhesSolicitacaoCoordenador />} key="detalhes-solicitacao-coordenador" />,
  ];
 
 export default routes;
