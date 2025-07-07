@@ -340,7 +340,7 @@ export default function ListarUsuariosAtivos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
       </main>
     </div>
   );

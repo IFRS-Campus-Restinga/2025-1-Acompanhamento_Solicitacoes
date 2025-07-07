@@ -155,7 +155,7 @@ export default function ListarMotivoDispensa() {
                     onClose={() => setFeedbackIsOpen(false)}
                 />
 
-                <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+                <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
 
             </main>
         </div>

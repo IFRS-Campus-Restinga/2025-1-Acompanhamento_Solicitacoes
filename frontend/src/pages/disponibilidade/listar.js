@@ -247,7 +247,7 @@ export default function ListarDisponibilidades() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
 
         {dadosParaTabela.length > 0 && (
           <Paginacao

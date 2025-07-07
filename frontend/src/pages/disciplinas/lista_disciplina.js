@@ -149,7 +149,7 @@ export default function ListarDisciplinas() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
 
         <Paginacao
           dados={disciplinasFiltradas}
