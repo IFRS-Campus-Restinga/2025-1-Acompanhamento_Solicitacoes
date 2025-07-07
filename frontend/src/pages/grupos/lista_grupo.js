@@ -191,6 +191,8 @@ export default function ListarGrupos() {
           mensagem="Tem certeza que deseja excluir este grupo?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopupConfirmacao(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback

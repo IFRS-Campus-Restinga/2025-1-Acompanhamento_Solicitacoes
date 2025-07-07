@@ -233,9 +233,11 @@ export default function ListarDisponibilidades() {
 
         <PopupConfirmacao
           show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
-          mensagem="Tem certeza que deseja excluir?" // Mensagem genérica, pode ser mais específica
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback

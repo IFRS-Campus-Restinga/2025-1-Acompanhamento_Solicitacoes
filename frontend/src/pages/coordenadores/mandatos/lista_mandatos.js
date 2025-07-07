@@ -201,10 +201,13 @@ export default function HistoricoMandatos() {
 
                 <PopupConfirmacao
                     show={mostrarPopupExcluir}
+                    mensagem="Tem certeza que deseja excluir este mandato?"
                     onConfirm={excluirMandato}
                     onCancel={() => setMostrarPopupExcluir(false)}
-                    mensagem="Tem certeza que deseja excluir este mandato?"
-                />
+                    confirmLabel="Deletar"
+                    actionType="delete" // Botão vermelho
+                    />
+                    
                 <PopupFeedback
                     show={mostrarFeedback}
                     mensagem={mensagemFeedback}

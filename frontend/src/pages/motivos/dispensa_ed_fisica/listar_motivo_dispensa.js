@@ -141,8 +141,11 @@ export default function ListarMotivoDispensa() {
 
                 <PopupConfirmacao
                     show={popupIsOpen}
+                    mensagem="Tem certeza que deseja excluir este motivo?"
                     onConfirm={confirmarExclusao}
                     onCancel={() => setPopupIsOpen(false)}
+                    confirmLabel="Deletar"
+                    actionType="delete" // Botão vermelho
                 />
 
                 <PopupFeedback
