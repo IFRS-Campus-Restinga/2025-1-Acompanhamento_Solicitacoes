@@ -26,18 +26,16 @@ import "../../components/styles/tabela.css";
 export default function ListarUsuariosAtivos() { 
   const [usuarios, setUsuarios] = useState([]);
   const [mostrarPopup, setMostrarPopup] = useState(false);
-  const [usuarioId, setUsuarioId] = useState(null); 
-  const [usuarioDetalhes, setUsuarioDetalhes] = useState(null); 
+  const [usuarioSelecionado, setUsuarioSelecionado] = useState(null); 
   const [mostrarFeedback, setMostrarFeedback] = useState(false);
   const [mensagemPopup, setMensagemPopup] = useState("");
-  const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+  const [tipoMensagem, setTipoMensagem] = useState("success");
   const [filtro, setFiltro] = useState("");
   const [paginaAtual, setPaginaAtual] = useState(1);
-  const [tipoAcao, setTipoAcao] = useState(""); // Para diferenciar entre exclusão e aprovação
+  const [tipoAcao, setTipoAcao] = useState(""); // "excluir", "aprovar", "rejeitar"
   const [carregandoDetalhes, setCarregandoDetalhes] = useState(false);
   const navigate = useNavigate();
   const itensPorPagina = 10;
-
 
   // Função para buscar usuários
   const fetchUsuariosAtivos = () => {
@@ -51,7 +49,7 @@ export default function ListarUsuariosAtivos() {
         setMensagemPopup(
           `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar usuários."}`
         );
-        setTipoMensagem("erro");
+        setTipoMensagem("error");
         setMostrarFeedback(true);
       });
   };
@@ -61,11 +59,11 @@ export default function ListarUsuariosAtivos() {
   }, []);
 
   // Função para buscar detalhes do usuário
-  const fetchDetalhesUsuario = (id) => {
+  const fetchDetalhesUsuario = (usuario) => {
     setCarregandoDetalhes(true);
-    api.get(`/usuarios/${id}/`)
+    api.get(`/usuarios/${usuario.id}/`)
       .then((res) => {
-        setUsuarioDetalhes(res.data);
+        setUsuarioSelecionado(res.data);
         setMostrarPopup(true);
       })
       .catch((err) => {
@@ -73,7 +71,7 @@ export default function ListarUsuariosAtivos() {
         setMensagemPopup(
           `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao carregar detalhes do usuário."}`
         );
-        setTipoMensagem("erro");
+        setTipoMensagem("error");
         setMostrarFeedback(true);
       })
       .finally(() => {
@@ -101,77 +99,153 @@ export default function ListarUsuariosAtivos() {
     paginaAtual * itensPorPagina
   );
 
-  // Função para confirmar exclusão
-  const confirmarExclusao = (justificativa = null) => {
-    if (!usuarioId) return;
+  // Função unificada para lidar com confirmações
+  const handleConfirmacao = (justificativa = null) => {
+    if (!usuarioSelecionado) return;
 
-    // Se tiver justificativa, envia como parâmetro na requisição
-    const config = justificativa ? { data: { justificativa } } : {};
+    const usuarioId = usuarioSelecionado.id;
 
-    api.delete(`/usuarios/${usuarioId}/`, config)
-      .then(() => {
-        setMensagemPopup(justificativa 
-          ? "Cadastro rejeitado com sucesso." 
-          : "Usuário excluído com sucesso."); 
-        setTipoMensagem("sucesso");
-        setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioId));
-      })
-      .catch((err) => {
-        console.error("Erro ao excluir usuário:", err);
-        setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`
-        );
-        setTipoMensagem("erro");
-      })
-      .finally(() => {
-        setMostrarPopup(false);
-        setMostrarFeedback(true);
-        setUsuarioId(null);
-        setUsuarioDetalhes(null);
-        setTipoAcao("");
-      });
-  };
+    switch (tipoAcao) {
+      case "excluir":
+        // Exclusão simples
+        api.delete(`/usuarios/${usuarioId}/`)
+          .then(() => {
+            setMensagemPopup("Usuário excluído com sucesso.");
+            setTipoMensagem("success");
+            setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioId));
+          })
+          .catch((err) => {
+            console.error("Erro ao excluir usuário:", err);
+            setMensagemPopup(
+              `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao excluir usuário."}`
+            );
+            setTipoMensagem("error");
+          })
+          .finally(() => {
+            fecharPopup();
+          });
+        break;
 
-  // Função para aprovar cadastro de usuário
-  const confirmarAprovacao = () => {
-    if (!usuarioId) return;
-    api.patch(`/usuarios/aprovar/${usuarioId}/`) 
-      .then(() => {
-        setMensagemPopup("Cadastro aprovado com sucesso!"); 
-        setTipoMensagem("sucesso");
-        fetchUsuariosAtivos(); 
-      })
-      .catch((err) => {
-        console.error("Erro ao aprovar cadastro:", err);
-        setMensagemPopup(
-          `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao aprovar cadastro."}`
-        );
-        setTipoMensagem("erro");
-      })
-      .finally(() => {
-        setMostrarPopup(false);
-        setMostrarFeedback(true);
-        setUsuarioId(null);
-        setUsuarioDetalhes(null);
-        setTipoAcao("");
-      });
-  };
+      case "aprovar":
+        // Aprovação de cadastro
+        api.patch(`/usuarios/aprovar/${usuarioId}/`) 
+          .then(() => {
+            setMensagemPopup("Cadastro aprovado com sucesso!"); 
+            setTipoMensagem("success");
+            fetchUsuariosAtivos(); 
+          })
+          .catch((err) => {
+            console.error("Erro ao aprovar cadastro:", err);
+            setMensagemPopup(
+              `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao aprovar cadastro."}`
+            );
+            setTipoMensagem("error");
+          })
+          .finally(() => {
+            fecharPopup();
+          });
+        break;
 
-  // Função para rejeitar cadastro (usando a mesma lógica de exclusão, mas com justificativa)
-  const rejeitarCadastro = (justificativa) => {
-    confirmarExclusao(justificativa);
-  };
+      case "rejeitar":
+        // Rejeição com justificativa
+        const config = justificativa ? { data: { justificativa } } : {};
+        api.delete(`/usuarios/${usuarioId}/`, config)
+          .then(() => {
+            setMensagemPopup("Cadastro rejeitado com sucesso."); 
+            setTipoMensagem("success");
+            setUsuarios(prevUsuarios => prevUsuarios.filter((u) => u.id !== usuarioId));
+          })
+          .catch((err) => {
+            console.error("Erro ao rejeitar cadastro:", err);
+            setMensagemPopup(
+              `Erro ${err.response?.status || ""}: ${err.response?.data?.detail || "Erro ao rejeitar cadastro."}`
+            );
+            setTipoMensagem("error");
+          })
+          .finally(() => {
+            fecharPopup();
+          });
+        break;
 
-  // Função para lidar com a confirmação baseada no tipo de ação
-  const handleConfirmacao = () => {
-    if (tipoAcao === "excluir") {
-      confirmarExclusao();
-    } else if (tipoAcao === "aprovar") {
-      confirmarAprovacao();
+      default:
+        console.error("Tipo de ação não reconhecido:", tipoAcao);
+        fecharPopup();
     }
   };
 
-    return (
+  // Função para fechar popup e limpar estados
+  const fecharPopup = () => {
+    setMostrarPopup(false);
+    setMostrarFeedback(true);
+    setUsuarioSelecionado(null);
+    setTipoAcao("");
+  };
+
+  // Função para cancelar popup
+  const cancelarPopup = () => {
+    setMostrarPopup(false);
+    setUsuarioSelecionado(null);
+    setTipoAcao("");
+  };
+
+  // Função para abrir popup de exclusão
+  const abrirPopupExclusao = (usuario) => {
+    setUsuarioSelecionado(usuario);
+    setTipoAcao("excluir");
+    setMostrarPopup(true);
+  };
+
+  // Função para abrir popup de análise (aprovar/rejeitar)
+  const abrirPopupAnalise = (usuario) => {
+    setUsuarioSelecionado(usuario);
+    setTipoAcao("aprovar");
+    fetchDetalhesUsuario(usuario);
+  };
+
+  // Função para rejeitar cadastro
+  const rejeitarCadastro = (justificativa) => {
+    setTipoAcao("rejeitar");
+    handleConfirmacao(justificativa);
+  };
+
+  // Determina as props do popup baseado no tipo de ação
+  const getPopupProps = () => {
+    switch (tipoAcao) {
+      case "excluir":
+        return {
+          mensagem: "Tem certeza que deseja excluir este usuário?",
+          confirmLabel: "Deletar",
+          actionType: "delete",
+          showRejectOption: false,
+          showJustificativa: false,
+          usuarioDetalhes: null
+        };
+      
+      case "aprovar":
+        return {
+          mensagem: "Deseja aprovar ou rejeitar o cadastro?",
+          confirmLabel: "Aprovar",
+          actionType: "approve",
+          showRejectOption: true,
+          showJustificativa: false,
+          usuarioDetalhes: usuarioSelecionado
+        };
+      
+      default:
+        return {
+          mensagem: "Tem certeza que deseja continuar?",
+          confirmLabel: "Confirmar",
+          actionType: "default",
+          showRejectOption: false,
+          showJustificativa: false,
+          usuarioDetalhes: null
+        };
+    }
+  };
+
+  const popupProps = getPopupProps();
+
+  return (
     <div>
       <main className="container">
         <h2>Usuários</h2>
@@ -224,21 +298,10 @@ export default function ListarUsuariosAtivos() {
 
                       <BotaoEditar to={`/usuarios/editar/${usuario.grupo?.toLowerCase()}/${usuario.grupo_detalhes?.id || usuario.id}`} />
                       
-                      <BotaoExcluir onClick={() => {
-                        setUsuarioId(usuario.id);
-                        setTipoAcao("excluir");
-                        setMostrarPopup(true);
-                      }} />
+                      <BotaoExcluir onClick={() => abrirPopupExclusao(usuario)} />
                 
                       {usuario.status_usuario === "Em Analise" && (
-                        <BotaoAnalisar 
-                            onClick={() => {
-                              setUsuarioId(usuario.id);
-                              setTipoAcao("aprovar");
-                              setMostrarPopup(true);
-                              fetchDetalhesUsuario(usuario.id);
-                            }}
-                        />
+                        <BotaoAnalisar onClick={() => abrirPopupAnalise(usuario)} />
                       )}
                     </div>
                   </td>
@@ -256,26 +319,18 @@ export default function ListarUsuariosAtivos() {
           onDadosPaginados={() => {}}
         />
 
+        {/* Popup Simplificado */}
         <PopupConfirmacao
           show={mostrarPopup}
-          // Define a mensagem com base no tipo de ação
-          mensagem={tipoAcao === "excluir" 
-            ? "Tem certeza que deseja excluir este usuário?" 
-            : "Deseja aprovar ou rejeitar o cadastro?"}
-          onConfirm={handleConfirmacao} // Chama a função que decide qual ação executar
-          onReject={rejeitarCadastro} // Nova função para rejeitar cadastro
-          onCancel={() => {
-            setMostrarPopup(false);
-            setUsuarioId(null);
-            setTipoAcao("");
-            setUsuarioDetalhes(null);
-          }}
-          // Exibe opção de rejeição apenas quando estamos analisando um cadastro
-          showRejectOption={tipoAcao === "aprovar"}
-          // Define o texto do botão de confirmação com base no tipo de ação
-          confirmLabel={tipoAcao === "aprovar" ? "Aprovar" : "Confirmar"}
-          // Passa os detalhes do usuário quando disponíveis
-          usuarioDetalhes={usuarioDetalhes}
+          mensagem={popupProps.mensagem}
+          onConfirm={handleConfirmacao}
+          onReject={rejeitarCadastro}
+          onCancel={cancelarPopup}
+          showRejectOption={popupProps.showRejectOption}
+          confirmLabel={popupProps.confirmLabel}
+          actionType={popupProps.actionType}
+          usuarioDetalhes={popupProps.usuarioDetalhes}
+          showJustificativa={popupProps.showJustificativa}
         />
 
         <PopupFeedback
@@ -285,8 +340,9 @@ export default function ListarUsuariosAtivos() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
       </main>
     </div>
   );
 }
+

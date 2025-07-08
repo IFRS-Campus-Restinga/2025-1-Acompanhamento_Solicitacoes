@@ -133,6 +133,15 @@ export default function ListarDisciplinas() {
           onCancel={() => setMostrarPopup(false)}
         />
 
+        <PopupConfirmacao
+          show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir esta disciplina?"
+          onConfirm={confirmarExclusao}
+          onCancel={() => setMostrarPopup(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
+        />
+
         <PopupFeedback
           show={mostrarFeedback}
           mensagem={mensagemPopup}
@@ -140,7 +149,7 @@ export default function ListarDisciplinas() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
 
         <Paginacao
           dados={disciplinasFiltradas}

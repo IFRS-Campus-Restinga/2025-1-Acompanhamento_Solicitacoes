@@ -7,7 +7,7 @@ import BotaoEditar from "./components/UI/botoes/botao_editar";
 import BotaoExcluir from "./components/UI/botoes/botao_excluir";
 import Paginacao from "./components/UI/paginacao";
 
-import api from "./services/api"; // Seu arquivo de configuração da API
+import api from "./services/api";
 
 //CSS
 import "./components/styles/tabela.css";
@@ -25,13 +25,13 @@ export default function ListarSolicitacoes() {
   const [paginaAtual, setPaginaAtual] = useState(1);
   const [solicitacoesPaginadas, setSolicitacoesPaginadas] = useState([]);
   const [filtro, setFiltro] = useState("");
-  const [loading, setLoading] = useState(true); // Estado para feedback de carregamento
+  const [loading, setLoading] = useState(true);
 
   const carregarSolicitacoes = () => {
     console.log("[ListarSolicitacoes] ➡️ Iniciando requisição para 'todas-solicitacoes'...");
     setLoading(true);
     api
-      .get("todas-solicitacoes") // Ex: http://localhost:8000/solicitacoes/todas-solicitacoes/
+      .get("todas-solicitacoes")
       .then((res) => {
         console.log("[ListarSolicitacoes] ✅ Resposta da API recebida:", res);
         if (res.data && Array.isArray(res.data)) {
@@ -39,12 +39,12 @@ export default function ListarSolicitacoes() {
           setSolicitacoes(res.data);
         } else {
           console.warn("[ListarSolicitacoes] ⚠️ Resposta da API não é um array ou não contém 'data'. Resposta:", res.data);
-          setSolicitacoes([]); // Garante que seja um array
+          setSolicitacoes([]);
         }
       })
       .catch((error) => {
         console.error("[ListarSolicitacoes] ❌ Erro ao buscar solicitações:", error.response || error.message || error);
-        setSolicitacoes([]); // Garante que seja um array em caso de erro
+        setSolicitacoes([]);
       })
       .finally(() => {
         setLoading(false);
@@ -56,7 +56,6 @@ export default function ListarSolicitacoes() {
     carregarSolicitacoes();
 
     if (sessionStorage.getItem("voltarDoCadastro")) {
-      // carregarSolicitacoes(); // Já é chamado acima, pode ser redundante se não houver lógica condicional
       sessionStorage.removeItem("voltarDoCadastro");
     }
   }, []);
@@ -67,7 +66,7 @@ export default function ListarSolicitacoes() {
       .delete(`todas-solicitacoes/${idSelecionado}/`)
       .then(() => {
         setMensagemPopup("Solicitação excluída com sucesso.");
-        setTipoMensagem("sucesso");
+        setTipoMensagem("success"); // Corrigido: usar "success" em vez de "sucesso"
       })
       .catch((err) => {
         setMensagemPopup(
@@ -75,7 +74,7 @@ export default function ListarSolicitacoes() {
             err.response?.data?.detail || "Erro ao excluir solicitação."
           }`
         );
-        setTipoMensagem("erro");
+        setTipoMensagem("error"); // Corrigido: usar "error" em vez de "erro"
       })
       .finally(() => {
         setMostrarPopup(false);
@@ -89,21 +88,18 @@ export default function ListarSolicitacoes() {
     console.log("[ListarSolicitacoes] 🔍 Recalculando 'solicitacoesFiltradas'. Filtro:", filtro, "Total de solicitações:", solicitacoes.length);
     const resultadoFiltro = solicitacoes.filter(
       (s) =>
-        // Adicionando verificações para evitar erros se os campos forem null/undefined
         (s.tipo && s.tipo.toLowerCase().includes(filtro.toLowerCase())) ||
         (s.status && s.status.toLowerCase().includes(filtro.toLowerCase())) ||
-        (s.nome_aluno && s.nome_aluno.toLowerCase().includes(filtro.toLowerCase())) || // Adicionado filtro por nome do aluno
-        (s.posse_solicitacao && s.posse_solicitacao.toLowerCase().includes(filtro.toLowerCase())) // Adicionado filtro por posse
+        (s.nome_aluno && s.nome_aluno.toLowerCase().includes(filtro.toLowerCase())) ||
+        (s.posse_solicitacao && s.posse_solicitacao.toLowerCase().includes(filtro.toLowerCase()))
     );
     console.log("[ListarSolicitacoes] 📝 'solicitacoesFiltradas' resultado:", resultadoFiltro);
     return resultadoFiltro;
   }, [solicitacoes, filtro]);
 
-  // Log para quando solicitacoesPaginadas mudar
   useEffect(() => {
     console.log("[ListarSolicitacoes] 📄 'solicitacoesPaginadas' atualizado:", solicitacoesPaginadas);
   }, [solicitacoesPaginadas]);
-
 
   if (loading) {
     return (
@@ -117,7 +113,6 @@ export default function ListarSolicitacoes() {
 
   return (
     <div>
-
       <main className="container">
         <h2>Solicitações</h2>
 
@@ -130,7 +125,7 @@ export default function ListarSolicitacoes() {
             onChange={(e) => {
               console.log("[ListarSolicitacoes] ⌨️ Filtro alterado para:", e.target.value);
               setFiltro(e.target.value);
-              setPaginaAtual(1); // Reseta para a primeira página ao filtrar
+              setPaginaAtual(1);
             }}
             className="input-pesquisa"
           />
@@ -169,17 +164,13 @@ export default function ListarSolicitacoes() {
                   <td>{solicitacao.posse_solicitacao || "N/D"}</td>
                   <td>
                     <div className="botoes-acoes">
-
                       <BotaoDetalhar to={`/detalhe-solicitacao/${solicitacao.id}`} />
                       <BotaoDetalhar to={`/aluno/detalhes-solicitacao/${solicitacao.id}`} />
-
-                      <BotaoEditar to={`/solicitacoes/${solicitacao.id}`} /> {/*Ajuste se a rota de detalhe/edição for diferente*/} 
-
+                      <BotaoEditar to={`/solicitacoes/${solicitacao.id}`} />
                       <BotaoExcluir onClick={() => {
                         setIdSelecionado(solicitacao.id);
                         setMostrarPopup(true);
                       }} />
-
                     </div>
                   </td>
                 </tr>
@@ -192,15 +183,18 @@ export default function ListarSolicitacoes() {
           dados={solicitacoesFiltradas}
           paginaAtual={paginaAtual}
           setPaginaAtual={setPaginaAtual}
-          itensPorPagina={5} // Você pode ajustar este número
+          itensPorPagina={5}
           onDadosPaginados={setSolicitacoesPaginadas}
         />
 
+        {/* EXEMPLO CORRIGIDO: Usando actionType="delete" para botão vermelho */}
         <PopupConfirmacao
           show={mostrarPopup}
           mensagem="Tem certeza que deseja excluir esta solicitação?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Esta prop faz o botão ficar vermelho
         />
 
         <PopupFeedback
@@ -214,3 +208,62 @@ export default function ListarSolicitacoes() {
     </div>
   );
 }
+
+/*
+EXEMPLOS DE USO DO POPUP CONFIRMAÇÃO CORRIGIDO:
+
+1. Para deletar algo (botão vermelho):
+<PopupConfirmacao
+  show={mostrarPopup}
+  mensagem="Tem certeza que deseja excluir este item?"
+  onConfirm={confirmarExclusao}
+  onCancel={() => setMostrarPopup(false)}
+  confirmLabel="Deletar"
+  actionType="delete" // Botão vermelho
+/>
+
+2. Para aprovar algo (botão verde):
+<PopupConfirmacao
+  show={mostrarPopup}
+  mensagem="Tem certeza que deseja aprovar este cadastro?"
+  onConfirm={confirmarAprovacao}
+  onCancel={() => setMostrarPopup(false)}
+  confirmLabel="Aprovar"
+  actionType="approve" // Botão verde
+/>
+
+3. Para rejeitar com justificativa (botão vermelho + campo de texto):
+<PopupConfirmacao
+  show={mostrarPopup}
+  mensagem="Deseja rejeitar este cadastro?"
+  onConfirm={confirmarRejeicao}
+  onReject={confirmarRejeicao}
+  onCancel={() => setMostrarPopup(false)}
+  showRejectOption={true}
+  confirmLabel="Rejeitar"
+  actionType="reject" // Botão vermelho
+/>
+
+4. Para ação que precisa de justificativa (qualquer cor):
+<PopupConfirmacao
+  show={mostrarPopup}
+  mensagem="Esta ação requer justificativa"
+  onConfirm={confirmarAcao}
+  onCancel={() => setMostrarPopup(false)}
+  showJustificativa={true}
+  confirmLabel="Confirmar"
+  actionType="default" // Botão verde padrão
+/>
+
+5. Com detalhes do usuário:
+<PopupConfirmacao
+  show={mostrarPopup}
+  mensagem="Confirmar aprovação do usuário?"
+  onConfirm={confirmarAprovacao}
+  onCancel={() => setMostrarPopup(false)}
+  usuarioDetalhes={dadosUsuario}
+  confirmLabel="Aprovar"
+  actionType="approve"
+/>
+*/
+

@@ -12,7 +12,6 @@ import PopupFeedback from "../../../components/pop_ups/popup_feedback";
 //CSS - Use o mesmo CSS do aluno ou um específico para CRE
 import "../../../components/styles/detalhes.css";
 
-
 // Mapeamento dos tipos de formulário
 const FORM_DETAIL_ENDPOINTS = {
     ABONOFALTAS: "/formulario_abono_falta/",
@@ -26,17 +25,18 @@ const FORM_DETAIL_ENDPOINTS = {
 
 const DetalheSolicitacaoCRE = () => {
     const { id } = useParams();
-    const navigate = useNavigate(); // Correção: useNavigate dentro do componente
+    const navigate = useNavigate();
     const [solicitacaoBase, setSolicitacaoBase] = useState(null);
     const [detalhesFormulario, setDetalhesFormulario] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
     // Estados para o popup de resposta
-    const [mostrarPopupResponder, setMostrarPopupResponder] = useState(false);
+    const [mostrarPopup, setMostrarPopup] = useState(false);
     const [mostrarFeedback, setMostrarFeedback] = useState(false);
     const [mensagemPopup, setMensagemPopup] = useState("");
-    const [tipoMensagem, setTipoMensagem] = useState("sucesso");
+    const [tipoMensagem, setTipoMensagem] = useState("success");
+    const [tipoAcao, setTipoAcao] = useState(""); // "aprovar", "rejeitar"
 
     // Função de formatação de data corrigida
     const formatarData = (dataString) => {
@@ -58,28 +58,66 @@ const DetalheSolicitacaoCRE = () => {
     };
 
     // Função para abrir o popup de resposta
-    const handleResponderClick = () => {
-        setMostrarPopupResponder(true);
+    const abrirPopupResposta = () => {
+        setTipoAcao("aprovar");
+        setMostrarPopup(true);
     };
 
-    // Função para confirmar resposta
-    const confirmarResposta = (resposta) => {
-        
-        console.log("Resposta enviada:", resposta);
-        
-        
-        try {
-            //Colocar o que será feito apos enviar resposta
+    // Função unificada para lidar com confirmações
+    const handleConfirmacao = (justificativa = null) => {
+        if (!solicitacaoBase) return;
 
-            setMensagemPopup("Resposta enviada com sucesso!");
-            setTipoMensagem("sucesso");
-        } catch (err) {
-            setMensagemPopup("Erro ao enviar resposta.");
-            setTipoMensagem("erro");
-        } finally {
-            setMostrarPopupResponder(false);
-            setMostrarFeedback(true);
+        switch (tipoAcao) {
+            case "aprovar":
+                // Lógica para aprovar solicitação
+                console.log("Aprovando solicitação:", id);
+                try {
+                    // Aqui você colocaria a chamada da API para aprovar
+                    // Exemplo: await api.patch(`/solicitacoes/aprovar/${id}/`);
+                    
+                    setMensagemPopup("Solicitação aprovada com sucesso!");
+                    setTipoMensagem("success");
+                } catch (err) {
+                    setMensagemPopup("Erro ao aprovar solicitação.");
+                    setTipoMensagem("error");
+                }
+                break;
+
+            case "rejeitar":
+                // Lógica para rejeitar solicitação com justificativa
+                console.log("Rejeitando solicitação:", id, "Justificativa:", justificativa);
+                try {
+                    // Aqui você colocaria a chamada da API para rejeitar
+                    // Exemplo: await api.patch(`/solicitacoes/rejeitar/${id}/`, { justificativa });
+                    
+                    setMensagemPopup("Solicitação rejeitada com sucesso!");
+                    setTipoMensagem("success");
+                } catch (err) {
+                    setMensagemPopup("Erro ao rejeitar solicitação.");
+                    setTipoMensagem("error");
+                }
+                break;
+
+            default:
+                console.error("Tipo de ação não reconhecido:", tipoAcao);
         }
+
+        // Fechar popup e mostrar feedback
+        setMostrarPopup(false);
+        setMostrarFeedback(true);
+        setTipoAcao("");
+    };
+
+    // Função para rejeitar solicitação
+    const rejeitarSolicitacao = (justificativa) => {
+        setTipoAcao("rejeitar");
+        handleConfirmacao(justificativa);
+    };
+
+    // Função para cancelar popup
+    const cancelarPopup = () => {
+        setMostrarPopup(false);
+        setTipoAcao("");
     };
 
     useEffect(() => {
@@ -116,6 +154,29 @@ const DetalheSolicitacaoCRE = () => {
         if (id) fetchDetalhes();
     }, [id]);
 
+    // Determina as props do popup baseado no tipo de ação
+    const getPopupProps = () => {
+        switch (tipoAcao) {
+            case "aprovar":
+                return {
+                    mensagem: "Deseja aprovar ou rejeitar esta solicitação?",
+                    confirmLabel: "Aprovar",
+                    actionType: "approve",
+                    showRejectOption: true,
+                    showJustificativa: false
+                };
+            
+            default:
+                return {
+                    mensagem: "Tem certeza que deseja continuar?",
+                    confirmLabel: "Confirmar",
+                    actionType: "default",
+                    showRejectOption: false,
+                    showJustificativa: false
+                };
+        }
+    };
+
     if (loading) {
         return (
             <div className="page-container">
@@ -134,7 +195,7 @@ const DetalheSolicitacaoCRE = () => {
                 <main className="container">
                     <div className="error-message">
                         <p>{error}</p>
-                        <button onClick={() => navigate("/cre/todas-solicitacoes")} className="btn-voltar">
+                        <button onClick={() => navigate("/cre/solicitacoes")} className="btn-voltar">
                             Voltar
                         </button>
                     </div>
@@ -142,6 +203,8 @@ const DetalheSolicitacaoCRE = () => {
             </div>
         );
     }
+
+    const popupProps = getPopupProps();
 
     return (
         <div className="page-container">
@@ -213,10 +276,10 @@ const DetalheSolicitacaoCRE = () => {
                 
                 {/* Seção de botões */}
                 <div className="botoes-acoes-detalhes">
-                    <BotaoVoltar onClick={() => navigate("/cre/todas-solicitacoes")} />
+                    <BotaoVoltar onClick={() => navigate("/cre/solicitacoes")} />
                     
                     <button 
-                        onClick={handleResponderClick}
+                        onClick={abrirPopupResposta}
                         className="btn btn-responder"
                         title="Responder Solicitação"
                     >
@@ -224,15 +287,17 @@ const DetalheSolicitacaoCRE = () => {
                     </button>
                 </div>
 
-                {/* Popup de Confirmação para Resposta */}
+                {/* Popup Simplificado */}
                 <PopupConfirmacao
-                    show={mostrarPopupResponder}
-                    mensagem="Deseja aprovar ou rejeitar esta solicitação?"
-                    onConfirm={() => confirmarResposta("aprovado")}
-                    onReject={(justificativa) => confirmarResposta(`rejeitado: ${justificativa}`)}
-                    onCancel={() => setMostrarPopupResponder(false)}
-                    showRejectOption={true}
-                    confirmLabel="Aprovar"
+                    show={mostrarPopup}
+                    mensagem={popupProps.mensagem}
+                    onConfirm={handleConfirmacao}
+                    onReject={rejeitarSolicitacao}
+                    onCancel={cancelarPopup}
+                    showRejectOption={popupProps.showRejectOption}
+                    confirmLabel={popupProps.confirmLabel}
+                    actionType={popupProps.actionType}
+                    showJustificativa={popupProps.showJustificativa}
                 />
 
                 {/* Popup de Feedback */}

@@ -45,11 +45,9 @@ const HeaderAluno = () => {
 
                 <nav className="center">
                     <ul className="nav-links">
-                        {/* Botão Formulários (redireciona para /aluno/nova-solicitacao) */}
                         <li>
                             <Link to="/aluno/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
                         </li>
-                        {/* Botão Minhas Solicitações (mantido) */}
                         <li>
                             <Link to="/solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
                         </li>
@@ -69,13 +67,18 @@ const HeaderAluno = () => {
                             <button onClick={handleLogout} title="Sair" style={{ marginLeft: "10px", background: "none", border: "none", cursor: "pointer" }}>
                                 <i className="bi bi-box-arrow-right icone" style={{ fontSize: "1.5rem", color: "white" }}></i>
                             </button>
+                            {/*
                             <Link to="/perfil" className="perfil-link" style={{ marginLeft: "5px", background: "none", border: "none", cursor: "pointer" }}>
                                 <i className="bi bi-gear-fill icone" title="Meu Perfil" style={{ fontSize: "1.1rem", color: "white" }}></i>
                             </Link>
+                            */}
                         </>
                     ) : (
                         <>
-                            <p className="mensagem-usuario">Bem-vindo</p>
+                            {/* Conteúdo opcional para usuário não logado, se necessário */}
+                            {/* 
+                            <p className="mensagem-usuario">Bem-vindo</p> 
+                            */}
                         </>
                     )}
                 </div>

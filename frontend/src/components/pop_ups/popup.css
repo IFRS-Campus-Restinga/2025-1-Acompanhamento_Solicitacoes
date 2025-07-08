@@ -24,7 +24,7 @@
 .popup-feedback-top.error {
   border-top: 6px solid #c01627;
 }
-/* ================= POPUP: Confirmação de Exclusão ================= */
+/* ================= POPUP: Confirmação ================= */
 .popup-backdrop {
   position: fixed;
   top: 0;
@@ -48,12 +48,10 @@
   border-radius: 8px;
   min-width: 300px;
   max-width: 500px;
-  /*max-height: 150px;*/
   text-align: center;
   animation: fadeIn 0.3s ease-in-out;
 }
-/*DESCOMENTAR SE FOR PRECISO JUSTIFICATIVA*/
-/*
+
 .popup-box-detalhes {
   background: white;
   padding: 20px;
@@ -62,8 +60,9 @@
   max-width: 500px;
   text-align: left;
   animation: fadeIn 0.3s ease-in-out;
+  margin-top: 15px;
 }
-*/
+
 .popup-box button {
   margin-top: 1rem;
   padding: 0.5rem 1rem;
@@ -81,7 +80,6 @@
   gap: 10px;
   gap: 1rem;
   margin-top: 1rem;
-
 }
 
 .btn {
@@ -92,21 +90,121 @@
   cursor: pointer;
   font-weight: bold;
   min-width: 100px;
+  transition: background-color 0.2s ease;
 }
 
+/* Botão de confirmação padrão (verde) */
 .btn.btn-confirm {
   background-color: var(--verde-oficial);
   color: #ffffff;
 }
 
+.btn.btn-confirm:hover {
+  background-color: #0f6b1f;
+}
+
+/* Botão de ação destrutiva (vermelho) */
+.btn.btn-delete {
+  background-color: var(--botao-deletar);
+  color: #ffffff;
+}
+
+.btn.btn-delete:hover {
+  background-color: #a01424;
+}
+
+/* Botão de rejeição */
 .btn.btn-reject {
   background-color: var(--botao-deletar);
   color: #ffffff;
 }
 
+.btn.btn-reject:hover {
+  background-color: #a01424;
+}
+
+/* Botão de cancelamento */
 .btn.btn-cancel {
   background-color: var(--botao-cancelar);
   color: #ffffff;
+}
+
+.btn.btn-cancel:hover {
+  background-color: #5a6268;
+}
+
+/* ================= DETALHES DO USUÁRIO ================= */
+.detalhes-usuario-popup {
+  margin: 15px 0;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  border-left: 4px solid var(--verde-oficial);
+}
+
+.detalhes-usuario-popup h5 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-weight: bold;
+}
+
+.detalhes-usuario-conteudo p {
+  margin: 5px 0;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.detalhes-usuario-conteudo strong {
+  color: #555;
+}
+
+.mandato-item {
+  margin: 10px 0;
+  padding: 10px;
+  background-color: #ffffff;
+  border-radius: 4px;
+  border: 1px solid #e9ecef;
+}
+
+/* ================= JUSTIFICATIVA ================= */
+.justificativa-container {
+  margin: 15px 0;
+  text-align: left;
+}
+
+.justificativa-container label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #333;
+}
+
+.campo-justificativa {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  min-height: 80px;
+  transition: border-color 0.2s ease;
+}
+
+.campo-justificativa:focus {
+  outline: none;
+  border-color: var(--verde-oficial);
+}
+
+.campo-justificativa.campo-erro {
+  border-color: #c01627;
+}
+
+.erro-mensagem {
+  color: var(--mensagem-erro, #c01627);
+  margin-top: 8px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* ================= ANIMAÇÕES ================= */
@@ -139,18 +237,20 @@
   }
 }
 
+/* ================= UTILITÁRIOS ================= */
 .input-error {
-    border: 2px solid red;
-    outline: none;
-  }
-
-  .error-text {
-    color: red;
-    font-weight: bold;
-    margin-top: 4px;
-  }
-  .erro-mensagem {
-    color: var(--mensagem-erro);
-    margin-top: 10px;
+  border: 2px solid red;
+  outline: none;
 }
 
+.error-text {
+  color: red;
+  font-weight: bold;
+  margin-top: 4px;
+}
+
+.popup-mensagem {
+  margin-bottom: 10px;
+  color: #333;
+  line-height: 1.5;
+}

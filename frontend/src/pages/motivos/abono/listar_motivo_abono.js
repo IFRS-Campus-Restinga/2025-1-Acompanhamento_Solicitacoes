@@ -143,8 +143,11 @@ export default function ListarMotivosAbono() {
 
         <PopupConfirmacao
           show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir este motivo?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback
@@ -154,7 +157,7 @@ export default function ListarMotivosAbono() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
           
       </main>
     </div>

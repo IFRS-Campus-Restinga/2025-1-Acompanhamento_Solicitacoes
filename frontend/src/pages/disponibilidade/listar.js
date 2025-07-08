@@ -233,9 +233,11 @@ export default function ListarDisponibilidades() {
 
         <PopupConfirmacao
           show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
-          mensagem="Tem certeza que deseja excluir?" // Mensagem genérica, pode ser mais específica
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback
@@ -245,7 +247,7 @@ export default function ListarDisponibilidades() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
 
         {dadosParaTabela.length > 0 && (
           <Paginacao
