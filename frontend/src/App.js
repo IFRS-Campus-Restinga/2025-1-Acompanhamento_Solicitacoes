@@ -1,68 +1,87 @@
-import axios from "axios";
-//import api from "./services/api";
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import React from "react";
-import "react-datepicker/dist/react-datepicker.css";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import 'react-toastify/dist/ReactToastify.css';
-
-import routes from "./routes/routes";
-
-// Importe MainContent do novo caminho/nome
-import MainContent from "./components/base/main_content"; // <--- Caminho e nome atualizados
-
-import Home from "./pages/home";
-
-import Footer from "./components/base/footer";
+import { useEffect, useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import { verificarGrupo } from "./services/authUtils";
 import HeaderSwitcher from "./components/base/headers/header_switcher";
+import MainContent from "./components/base/main_content";
+import Footer from "./components/base/footer";
+import GoogleRedirectHandler from "./components/GoogleRedirectHandler";
+import Home from "./pages/home";
+import RotasPorGrupoConfig from "./routes/routes";
+import Erro403 from "./pages/erro403";
+import RotaPrivadaPorGrupo from "./components/rotaPrivadaPorGrupo";
 
-//CSS
-import "./App.css";
-import "./components/base/main.css"; // <--- Importante para as regras CSS do <main>
-import "./var.css";
+function App() {
+  const [grupo, setGrupo] = useState(null);
+  const [carregando, setCarregando] = useState(true);
 
-//import GoogleRedirectHandler from './components/GoogleRedirectHandler';
+  useEffect(() => {
+    const carregarGrupo = async () => {
+      try {
+        const grupoDetectado = await verificarGrupo();
+        setGrupo(grupoDetectado);
+        console.log(grupo);
+      } catch (error) {
+        console.error("Erro ao verificar grupo:", error);
+        setGrupo(null); // Assume no group if there's an error
+      } finally {
+        setCarregando(false);
+      }
+    };
 
-class App extends React.Component {
-  state = {
-    isConnected: false,
-  };
+    carregarGrupo();
+  }, [grupo]);
 
-  componentDidMount() {
-    axios.get("http://localhost:8000/solicitacoes/")
-      .then(() => this.setState({ isConnected: true }))
-      .catch(err => {
-        console.error("Erro na conexão:", err);
-        this.setState({ isConnected: false });
-      });
+  if (carregando) {
+    return <p>Carregando...</p>;
   }
 
-  render() {
-    return (
-      <Router>
-        {this.state.isConnected ? (
-          <div id="root">
-            {/* HeaderSwitcher aqui */}
-             <HeaderSwitcher /> {/* <-- AGORA USAMOS O SWITCHER AQUI */}
-              <MainContent> {/* <--- Agora, MainContent envolve suas rotas */}
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  {routes}
-                </Routes>
-              </MainContent>
-              <Footer/>
-          </div>
-        ) : (
-          <div className="error-container">
-            <h2>Erro de Conexão</h2>
-            <p>Não foi possível conectar ao servidor. Verifique sua conexão com o backend.</p>
-          </div>
-        )}
-      </Router>
-    );
-  }
+  // Get the route configurations based on the detected group.
+  // This function returns an array of route objects: { path, element, gruposPermitidos, key }.
+  const rotasDoGrupo = RotasPorGrupoConfig(grupo);
+
+  return (
+    <Router>
+      <div id="root">
+        <HeaderSwitcher />
+        <MainContent>
+          <Routes>
+            {/* Rotas públicas acessíveis por qualquer usuário, mesmo não autenticado */}
+            <Route path="/auth/google/redirect-handler" element={<GoogleRedirectHandler />} />
+            <Route path="/" element={<Home />} />
+            <Route path="/erro403" element={<Erro403 />} /> {/* Rota específica para acesso negado */}
+
+            {/* Renderiza as rotas protegidas pelo grupo.
+                Cada rota é envolvida por RotaPrivadaPorGrupo, que gerencia a permissão
+                e redireciona para /erro403 ou / (se não autenticado) conforme necessário. */}
+            {rotasDoGrupo.map((route) => (
+              <Route
+                key={route.key}
+                path={route.path}
+                element={
+                  <RotaPrivadaPorGrupo
+                    grupoUsuario={grupo}
+                    // 'gruposPermitidos' é um array de grupos que podem acessar esta rota específica.
+                    gruposPermitidos={route.gruposPermitidos}
+                  >
+                    {route.element}
+                  </RotaPrivadaPorGrupo>
+                }
+              />
+            ))}
+
+            {/* Rota fallback (catch-all) para qualquer path não correspondente.
+                Esta deve ser a ÚLTIMA rota definida para garantir que todas as rotas específicas
+                acima sejam verificadas primeiro. */}
+            <Route
+              path="*"
+              element={grupo ? <Navigate to="/erro403" replace /> : <Navigate to="/" replace />}
+            />
+          </Routes>
+        </MainContent>
+        <Footer />
+      </div>
+    </Router>
+  );
 }
 
 export default App;

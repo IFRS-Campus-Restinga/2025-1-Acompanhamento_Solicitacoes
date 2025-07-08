@@ -51,7 +51,7 @@ const HeaderAluno = () => {
                         </li>
                         {/* Botão Minhas Solicitações (mantido) */}
                         <li>
-                            <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
+                            <Link to="/solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
                         </li>
                     </ul>
                 </nav>
