@@ -151,3 +151,7 @@
   color: var(--mensagem-erro);
   font-weight: 500;
 }
+
+.obrigatorio {
+  color: red;
+}
