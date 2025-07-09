@@ -32,7 +32,7 @@ class AtualizarStatusSolicitacaoView(APIView):
     View para atualizar o status e a posse de qualquer tipo de solicitação.
     Recebe o tipo e o id do formulário pela URL.
     """
-    permission_classes = [IsAuthenticated, CanRespondSolicitacao] # Permissão para responder solicitações
+    permission_classes = [IsAuthenticated] # Permissão para responder solicitações
 
     def patch(self, request, form_type_key, pk, format=None):
         model_class = MODEL_MAP.get(form_type_key)
@@ -49,7 +49,7 @@ class AtualizarStatusSolicitacaoView(APIView):
         if novo_status not in status_keys:
             return Response({"erro": "Status inválido fornecido."}, status=status.HTTP_400_BAD_REQUEST)
 
-        if novo_status == Status.DEFERIDO or novo_status == Status.INDEFERIDO:
+        if novo_status == Status.APROVADO or novo_status == Status.REPROVADO:
             instance.posse_solicitacao = PosseSolicitacao.ALUNO
         elif novo_status == Status.EM_ANALISE:
             instance.posse_solicitacao = PosseSolicitacao.COORDENACAO

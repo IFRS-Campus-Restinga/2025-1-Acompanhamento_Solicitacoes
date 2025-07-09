@@ -57,7 +57,7 @@ const HeaderCoordenador = () => {
           <ul className="nav-links">
             <li>
               {/* Novo botão: Para Avaliar - leva para a home do coordenador com as avaliações */}
-              <Link to="/coordenador/solicitacoes">
+              <Link to="/solicitacoes">
                 Minhas Solicitações
               </Link>
             </li>

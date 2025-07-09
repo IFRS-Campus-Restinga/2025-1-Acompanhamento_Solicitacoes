@@ -9,6 +9,8 @@ import Home from "./pages/home";
 import RotasPorGrupoConfig from "./routes/routes";
 import Erro403 from "./pages/erro403";
 import RotaPrivadaPorGrupo from "./components/rotaPrivadaPorGrupo";
+import CadastrarAtualizarUsuario from "./pages/usuarios/cadastrar_atualizar_usuarios";
+import CadastrarAtualizarUsuarioGrupo from "./pages/usuarios/cadastrar_atualizar_usuarios_grupos";
 
 function App() {
   const [grupo, setGrupo] = useState(null);
@@ -49,6 +51,8 @@ function App() {
             <Route path="/auth/google/redirect-handler" element={<GoogleRedirectHandler />} />
             <Route path="/" element={<Home />} />
             <Route path="/erro403" element={<Erro403 />} /> {/* Rota específica para acesso negado */}
+            <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} />
+            <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} />
 
             {/* Renderiza as rotas protegidas pelo grupo.
                 Cada rota é envolvida por RotaPrivadaPorGrupo, que gerencia a permissão

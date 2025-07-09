@@ -11,14 +11,10 @@ import { default as FormTrancDisciplina } from "../pages/forms/trancamento_disci
 import Formulario from "../pages/forms/trancamento_disciplina/formulario_tranc_disc.js"; // Importado separadamente se for usado como Formulário
 import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula.js";
 
-// Páginas
+// Páginas Comuns/Gerais
 import Perfil from "../pages/perfil/editar_perfil.js";
-import GestaoSistema from "../pages/telas_users/telas_cre/gestao_sistema";
-//import PosLogin from "../pages/pos_login";
-
-import ListarSolicitacoes from "../listar_solicitacoes.js";
-
-import Home from "./../pages/home";
+import ListarSolicitacoes from "../listar_solicitacoes.js"; // Verifique se esta é usada, ou se é substituída por Solicitacoes
+import Home from "./../pages/home"; // Geralmente, a Home não é uma rota protegida por grupo
 
 // Motivos de Abono
 import CadastrarAtualizarAbono from "../pages/motivos/abono/cadastrar_atualizar_abono";
@@ -71,131 +67,147 @@ import VerificadorDisponibilidade from '../pages/disponibilidade/VerificadorDisp
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
 
-// Importe o GoogleRedirectHandler
-import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
-
-//Tela CRE
-import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
+// Telas de Usuários Específicos (CRE, Coordenador, Aluno, Externo)
+import GestaoSistema from "../pages/telas_users/telas_cre/configuracoes.js"; // CRE
+import DetalheSolicitacaoCRE from "../pages/telas_users/telas_cre/detalhe_solicitacao.js"; // Renomeado para evitar conflito
 import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes_finalizadas.js";
-import TodasSolicitacoes from "../pages/telas_users/telas_cre/todas_solicitacoes.js";
 
-//Tela Coordenador
-import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
-import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
+// import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js"; // Coordenador
+// import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 
 import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
 
-//Tela Externo
-import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
+import ExternoNovaSolicitacao from "../pages/telas_users/tela_externo/externo_nova_solicitacao.js";
 
 // Gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
 
+// Componente Genérico de Tabela de Solicitações
+import Solicitacoes from "../pages/solicitacoes/tabelaSolicitacoes.js";
+import DetalhesSolicitacao from "../pages/solicitacoes/detalheSolicitacao.js";
 
+// Não precisa importar Route aqui, pois este arquivo apenas exporta configurações de rota.
+// import { Route } from "react-router-dom"; // Não é necessário aqui
 
-const token = localStorage.getItem("token");
+export default function RotasPorGrupo(grupo) {
+  if (!grupo) {
+    // Se o grupo não for definido, retorna um array vazio.
+    // A lógica de redirecionamento para não-autenticados está no App.js
+    return [];
+  }
 
-const routes = [
-  // Rota para o GoogleRedirectHandler - Coloque esta rota antes de rotas genéricas ou de fallback
-  <Route 
-    path="/auth/google/redirect-handler" 
-    element={<GoogleRedirectHandler />}
-    key="google-redirect-handler"
-  />,
-  
-  //página inicial
-  <Route path="/" element={<Home />} key="home" />,
+  let rotas = [];
 
-  <Route path="/cre/gestao-sistema" element={<GestaoSistema />} key="configuracoes" />,
+  // Rotas da CRE
+  if (grupo === "cre") {
+    rotas = [
+      { path: "/cre/configuracoes", element: <GestaoSistema />, gruposPermitidos: ["cre"], key: "cre-configuracoes" },
+      { path: "/motivo_abono", element: <ListarMotivosAbono />, gruposPermitidos: ["cre"], key: "cre-listar-abono" },
+      { path: "/motivo_abono/cadastrar", element: <CadastrarAtualizarAbono />, gruposPermitidos: ["cre"], key: "cre-cadastrar-abono" },
+      { path: "/motivo_abono/:id", element: <CadastrarAtualizarAbono />, gruposPermitidos: ["cre"], key: "cre-editar-abono" },
+      { path: "/motivo_exercicios", element: <ListarMotivosExercicios />, gruposPermitidos: ["cre"], key: "cre-listar-exercicios" },
+      { path: "/motivo_exercicios/cadastrar", element: <CadastrarAtualizarExercicios />, gruposPermitidos: ["cre"], key: "cre-cadastrar-exercicios" },
+      { path: "/motivo_exercicios/:id", element: <CadastrarAtualizarExercicios />, gruposPermitidos: ["cre"], key: "cre-editar-exercicios" },
+      { path: "/motivo_dispensa", element: <ListaMotivosDispensa />, gruposPermitidos: ["cre"], key: "cre-listar-dispensa" },
+      { path: "/motivo_dispensa/cadastrar", element: <CadastrarAtualizarMotivoDispensa />, gruposPermitidos: ["cre"], key: "cre-cadastrar-motivos-dispensa" },
+      { path: "/motivo_dispensa/:id", element: <CadastrarAtualizarMotivoDispensa />, gruposPermitidos: ["cre"], key: "cre-atualizar-motivos-dispensa" },
+      { path: "/disciplinas", element: <ListarDisciplinas />, gruposPermitidos: ["cre"], key: "cre-listar-disciplinas" },
+      { path: "/disciplinas/cadastrar", element: <CadastrarAtualizarDisciplina />, gruposPermitidos: ["cre"], key: "cre-cadastrar-disciplinas" },
+      { path: "/disciplinas/:codigo", element: <CadastrarAtualizarDisciplina />, gruposPermitidos: ["cre"], key: "cre-editar-disciplinas" },
+      { path: "/turmas", element: <ListarTurmas />, gruposPermitidos: ["cre"], key: "cre-listar-turmas" },
+      { path: "/turmas/cadastrar", element: <CadastrarAtualizarTurma />, gruposPermitidos: ["cre"], key: "cre-cadastrar-turmas" },
+      { path: "/turmas/:id", element: <CadastrarAtualizarTurma />, gruposPermitidos: ["cre"], key: "cre-editar-turmas" },
+      { path: "/cursos", element: <ListarCursos />, gruposPermitidos: ["cre"], key: "cre-listar-cursos" },
+      { path: "/cursos/cadastrar", element: <CadastrarAtualizarCursos />, gruposPermitidos: ["cre"], key: "cre-cadastrar-cursos" },
+      { path: "/cursos/:codigo", element: <CadastrarAtualizarCursos />, gruposPermitidos: ["cre"], key: "cre-editar-cursos" },
+      { path: "/ppcs", element: <ListarPpc />, gruposPermitidos: ["cre"], key: "cre-listar-ppc" },
+      { path: "/ppcs/cadastrar", element: <CadastrarAtualizarPpc />, gruposPermitidos: ["cre"], key: "cre-cadastrar-ppc" },
+      { path: "/ppcs/:codigo", element: <CadastrarAtualizarPpc />, gruposPermitidos: ["cre"], key: "cre-editar-ppc" },
+      { path: "/usuarios", element: <ListarUsuariosAtivos />, gruposPermitidos: ["cre"], key: "cre-listar-usuarios-ativos" },
+      { path: "/usuarios/inativos", element: <ListarUsuariosInativos />, gruposPermitidos: ["cre"], key: "cre-listar-usuarios-inativos" },
+      { path: "/usuarios/:id", element: <DetalhesUsuario />, gruposPermitidos: ["cre"], key: "cre-detalhes-usuario" },
+      { path: "/usuarios/selecionargrupo", element: <SelecionarGrupoUsuario />, gruposPermitidos: ["cre"], key: "cre-selecionar-grupo-usuarios" },
+      { path: "/usuarios/selecionargrupogestaosistema", element: <SelecionarGrupoGestaoSistema />, gruposPermitidos: ["cre"], key: "cre-selecionar-grupo-gestao-sistema" },
+      { path: "/usuarios/cadastro", element: <CadastrarAtualizarUsuario />, gruposPermitidos: ["cre"], key: "cre-cadastrar-usuarios" },
+      { path: "/usuarios/editar/:id", element: <CadastrarAtualizarUsuario />, gruposPermitidos: ["cre"], key: "cre-editar-usuarios" },
+      { path: "/usuarios/cadastro/:grupo", element: <CadastrarAtualizarUsuarioGrupo />, gruposPermitidos: ["cre"], key: "cre-cadastrar-usuarios-grupo" },
+      { path: "/usuarios/editar/:grupo/:id", element: <CadastrarAtualizarUsuarioGrupo />, gruposPermitidos: ["cre"], key: "cre-atualizar-usuarios-grupo" },
+      { path: "/usuarios/editar/externo/:id", element: <CadastrarAtualizarUsuario />, gruposPermitidos: ["cre"], key: "cre-atualizar-usuarios-externo" },
+      { path: "/usuarios/editar/responsavel/:id", element: <CadastrarAtualizarUsuario />, gruposPermitidos: ["cre"], key: "cre-atualizar-usuarios-responsavel" },
+      { path: "/mandatos/cadastrar", element: <CadastrarAtualizarMandato />, gruposPermitidos: ["cre"], key: "cre-cadastrar-mandatos" },
+      { path: "/mandatos/editar/:id", element: <CadastrarAtualizarMandato />, gruposPermitidos: ["cre"], key: "cre-editar-mandatos" },
+      { path: "/mandatos", element: <HistoricoMandatos />, gruposPermitidos: ["cre"], key: "cre-listar-historico-mandatos" },
+      { path: "/grupos", element: <ListarGrupos />, gruposPermitidos: ["cre"], key: "cre-listar-grupos" },
+      { path: "/grupos/cadastrar", element: <CadastrarAtualizarGrupo />, gruposPermitidos: ["cre"], key: "cre-cadastrar-grupos" },
+      { path: "/grupos/:id", element: <CadastrarAtualizarGrupo />, gruposPermitidos: ["cre"], key: "cre-editar-grupos" },
+      { path: "/disponibilidades", element: <ListarDisponibilidades />, gruposPermitidos: ["cre"], key: "cre-disponibilidade-listar" },
+      { path: "/disponibilidades/cadastrar", element: <CadastrarAtualizarDisponibilidade />, gruposPermitidos: ["cre"], key: "cre-disponibilidade-cadastrar" },
+      { path: "/disponibilidades/:id", element: <CadastrarAtualizarDisponibilidade />, gruposPermitidos: ["cre"], key: "cre-disponibilidade-editar" },
+      { path: "/solicitacoes", element: <Solicitacoes  />, gruposPermitidos: ["cre"], key: "cre-listar-solicitacoes" },
+      { path: "/cre/detalhes-solicitacao/:id", element: <DetalheSolicitacaoCRE />, gruposPermitidos: ["cre"], key: "cre-detalhe-solicitacao" },
+      { path: "/cre/solicitacoes-finalizadas", element: <SolicitacoesFinalizadas />, gruposPermitidos: ["cre"], key: "cre-solicitacoes-finalizadas" },
+    ];
+  }
 
-  <Route path="/perfil" element={<Perfil />} key="perfil" />,
-  //<Route path="/pos-login" element={<PosLogin />} />,
+  // Rotas do Coordenador
+  if (grupo === "coordenador") {
+    rotas = rotas.concat([
+      { path: "/solicitacoes", element: <Solicitacoes />, gruposPermitidos: ["coordenador"], key: "coord-listar-solicitacoes" },
+      { path: "/detalhes-solicitacao/:id", element: <DetalhesSolicitacao />, gruposPermitidos: ["coordenador"], key: "coord-detalhes-solicitacao" },
+    ]);
+  }
 
-  // Motivo Abono
-  <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
-  <Route path="/motivo_abono/cadastrar" element={<CadastrarAtualizarAbono />} key="cadastrar-abono" />,
-  <Route path="/motivo_abono/:id" element={<CadastrarAtualizarAbono />} key="editar-abono" />,
+  // Rotas do Aluno
+  if (grupo === "aluno") {
+    rotas = rotas.concat([
+      { path: "/form_ativ_compl", element: <EntregaAtivCompl />, gruposPermitidos: ["aluno"], key: "aluno-form-ativ-compl" },
+      { path: "/desistencia_vaga", element: <FormularioDesistenciaVaga />, gruposPermitidos: ["aluno"], key: "aluno-desistencia-vaga" },
+      { path: "/abono_falta", element: <AbonoFalta />, gruposPermitidos: ["aluno"], key: "aluno-abono-falta" },
+      { path: "/exercicio_domiciliar", element: <FormExercicioDomiciliar />, gruposPermitidos: ["aluno"], key: "aluno-exercicio-domiciliar" },
+      { path: "/trancamento_matricula", element: <FormularioTrancamentoMatricula />, gruposPermitidos: ["aluno"], key: "aluno-trancamento-matricula" },
+      { path: "/dispensa_ed_fisica", element: <DispensaEdFisica />, gruposPermitidos: ["aluno"], key: "aluno-dispensa-ed-fisica" },
+      { path: "/trancamento_disciplina", element: <FormTrancDisciplina />, gruposPermitidos: ["aluno"], key: "aluno-trancamento-disciplina" },
+      { path: "/formulario_trancamento_disciplina/disciplinas/:curso_codigo/", element: <Formulario />, gruposPermitidos: ["aluno"], key: "aluno-formulario-disciplina-curso" },
+      { path: "/indisponivel", element: <FormularioIndisponivel />, gruposPermitidos: ["aluno"], key: "aluno-indisponivel" },
+      { path: "/formularios/:tipoFormulario", element: <VerificadorDisponibilidade><FormularioTrancamentoMatricula /></VerificadorDisponibilidade>, gruposPermitidos: ["aluno"], key: "aluno-verificador-formulario" },
+      { path: "/exercicios_domiciliares/gerenciar", element: <GerenciarExercDomicilares />, gruposPermitidos: ["aluno"], key: "aluno-gerenciar-exerc-domiciliares" },
+      { path: "/solicitacoes", element: <Solicitacoes/>, gruposPermitidos: ["aluno"], key: "aluno-listar-solicitacoes" },
+      { path: "/aluno/nova-solicitacao", element: <AlunoNovaSolicitacao />, gruposPermitidos: ["aluno"], key: "aluno-nova-solicitacao" },
+      { path: "/detalhes-solicitacao/:id", element: <DetalhesSolicitacao />, gruposPermitidos: ["aluno"], key: "detalhes-solicitacao"}
+    ]);
+  }
 
-  // Motivo Exercícios
-  <Route path="/motivo_exercicios" element={<ListarMotivosExercicios />} key="listar-exercicios" />,
-  <Route path="/motivo_exercicios/cadastrar" element={<CadastrarAtualizarExercicios />} key="cadastrar-exercicios" />,
-  <Route path="/motivo_exercicios/:id" element={<CadastrarAtualizarExercicios />} key="editar-exercicios" />,
+  // Rotas do Responsável
+  if (grupo === "responsavel") {
+    rotas = rotas.concat([
+      { path: "/desistencia_vaga", element: <FormularioDesistenciaVaga />, gruposPermitidos: ["responsavel"], key: "resp-desistencia-vaga" },
+      { path: "/solicitacoes", element: <Solicitacoes />, gruposPermitidos: ["responsavel"], key: "resp-listar-solicitacoes" }
+    ]);
+  }
 
-  // Motivo Dispensa de Educação Física
-  <Route path="/motivo_dispensa" element={<ListaMotivosDispensa />} key="listar-dispensa" />,
-  <Route path="/motivo_dispensa/cadastrar" element={<CadastrarAtualizarMotivoDispensa />} key="cadastrar-motivos-dispensa" />,
-  <Route path="/motivo_dispensa/:id" element={<CadastrarAtualizarMotivoDispensa />} key="atualizar-motivos-dispensa" />,
+  // Rotas do Usuário Externo
+  if (grupo === "externo") {
+    rotas = rotas.concat([
+      { path: "/externo/nova-solicitacao", element: <ExternoNovaSolicitacao />, gruposPermitidos: ["externo"], key: "externo-home" },
+      { path: "/desistencia_vaga", element: <FormularioDesistenciaVaga />, gruposPermitidos: ["externo"], key: "externo-desistencia-vaga" },
+      
+    ]);
+  }
 
-  // Disciplinas
-  <Route path="/disciplinas" element={<ListarDisciplinas />} key="listar-disciplinas" />,
-  <Route path="/disciplinas/cadastrar" element={<CadastrarAtualizarDisciplina />} key="cadastrar-disciplinas" />,
-  <Route path="/disciplinas/:codigo" element={<CadastrarAtualizarDisciplina />} key="editar-disciplinas" />,
+  // Rotas Comuns a Múltiplos Grupos Autenticados
+  // Se Perfil é comum para CRE, Coordenador, Aluno, Responsável, Externo
+  if (grupo) {
+    rotas = rotas.concat([
+      { path: "/perfil", element: <Perfil />, gruposPermitidos: ["cre", "coordenador", "aluno", "responsavel", "externo"], key: "perfil-comum" },
+      { path: "/usuarios/cadastro", element: <CadastrarAtualizarUsuario />, gruposPermitidos: ["cre", "coordenador", "aluno", "responsavel", "externo"], key: "cadastrar-usuario"},
+      { path: "/usuarios/cadastro/:grupo", element: <CadastrarAtualizarUsuarioGrupo />, gruposPermitidos: ["cre", "coordenador", "aluno", "responsavel", "externo"], key: "cre-cadastrar-usuarios-grupo" }
+    ]);
+  }
 
-  // Turmas
-  <Route path="/turmas" element={<ListarTurmas />} key="listar-turmas" />,
-  <Route path="/turmas/cadastrar" element={<CadastrarAtualizarTurma />} key="cadastrar-turmas" />,
-  <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />,
+  return rotas;
+}
 
-  // Cursos
-  <Route path="/cursos" element={<ListarCursos />} key="listar-cursos" />,
-  <Route path="/cursos/cadastrar" element={<CadastrarAtualizarCursos />} key="cadastrar-cursos" />,
-  <Route path="/cursos/:codigo" element={<CadastrarAtualizarCursos />} key="editar-cursos" />,
-
-  // // PPC
-  <Route path="/ppcs" element={<ListarPpc />} key="listar-ppc" />,
-  <Route path="/ppcs/cadastrar" element={<CadastrarAtualizarPpc />} key="cadastrar-ppc" />,
-  <Route path="/ppcs/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />,
-
-  // Usuarios
-  <Route path="/usuarios" element={<ListarUsuariosAtivos />} key="listar-usuarios-ativos" />,
-  <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
-  <Route path="/usuarios/:id" element={<DetalhesUsuario />} key="detalhes-usuario" />,
-  <Route path="/usuarios/selecionargrupo" element={<SelecionarGrupoUsuario />} key="selecionar-grupo-usuarios" />,
-  <Route path="/usuarios/selecionargrupogestaosistema" element={<SelecionarGrupoGestaoSistema />} key="selecionar-grupo-usuarios" />,
-  <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
-  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
-  <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} key="cadastrar-usuarios-grupo" />,
-  <Route path="/usuarios/editar/:grupo/:id" element={<CadastrarAtualizarUsuarioGrupo />} key="atualizar-usuarios-grupo" />,
-  <Route path="/usuarios/editar/externo/:id" element={<CadastrarAtualizarUsuario />} key="atualizar-usuarios-externo" />,
-  <Route path="/usuarios/editar/responsavel/:id" element={<CadastrarAtualizarUsuario />} key="atualizar-usuarios-responsavel" />,
-  
-  
-  //Mandatos
-
-  <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
-  <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
-  <Route path="/mandatos" element={<HistoricoMandatos/>} key="listar-historico-mandatos" />,
-
-
-  // Grupos
-  <Route path="/grupos" element={<ListarGrupos />} key="listar-grupos" />,
-  <Route path="/grupos/cadastrar" element={<CadastrarAtualizarGrupo />} key="cadastrar-grupos" />,
-  <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
-
-  //Forms
-  <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
-  <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
-  <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
-  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />,
-  <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatricula />} key="trancamento_matricula" />,
-  <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> ,
-  <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
-  <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />}  key="formulario-disciplina-curso"/>,
-
-
-  <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
-  <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
-  <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
-  <Route path="/indisponivel" element={<FormularioIndisponivel />} key="indisponivel" />,
-  <Route 
-    path="formularios/:tipoFormulario"
-    element={
-      <VerificadorDisponibilidade>
-        <FormularioTrancamentoMatricula />
-      </VerificadorDisponibilidade>
-    }
-    key="verificador-formulario"
-  />,
+/*
 
   //Solicitacoes
   <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create" />,
@@ -216,15 +228,17 @@ const routes = [
   <Route path="/externo/nova-solicitacao" element={<ExternoNovaSolicitacao />} key="externo-nova-solicitacao" />,
 
   //Tela Aluno
-  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
+  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao />} key="nova-solicitacao-aluno" />,
   <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
   <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
 
   //Tela gerenciamento Exerciícios Domiciliares
-  <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
+  
 
   <Route path="/coordenador/detalhes-solicitacao/:id" element={<DetalhesSolicitacaoCoordenador />} key="detalhes-solicitacao-coordenador" />,
- ];
 
-export default routes;
-
+  <Route path="/solicitacoes" element={grupo == "coordenador" ? <Solicitacoes url="http://localhost:8000/solicitacoes/coordenador/listar-solicitacoes/" />
+    : grupo == "aluno/responsavel" ? <Solicitacoes url="http://localhost:8000/solicitacoes/minhas-solicitacoes/" />
+      : grupo == "cre" ? <Solicitacoes url="http://localhost:8000/solicitacoes/cre/listar-solicitacoes" /> : NaN
+  } key={"solicitacoes"} />
+];*/

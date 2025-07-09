@@ -213,7 +213,7 @@ urlpatterns = [
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 
-    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
+    path("atualizar-status/<str:form_type_key>/<int:pk>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
     
     path('solicitacoes/permissoes/', PermissaoListView.as_view()),
 
