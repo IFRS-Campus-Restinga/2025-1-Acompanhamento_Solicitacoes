@@ -7,6 +7,13 @@ class Curso(BaseModel):
     class TipoPeriodo(models.TextChoices):
         ANUAL = "Anual", "Anual"
         SEMESTRAL = "Semestral", "Semestral"
+
+    class TipoCurso(models.TextChoices):
+        EMI = "Ensino Médio Integral", "Ensino Médio Integral"
+        SUBS = "Subsequente", "Subsequente"    
+        CONC = "Concomitante", "Concomitante"
+        SUCON = "Subsequente/Concomitante", "Subsequente/Concomitante"
+        SUP = "Superior", "Superior"  
         
     nome = models.CharField(
         max_length=255,
@@ -23,6 +30,12 @@ class Curso(BaseModel):
         max_length=10,
         choices=TipoPeriodo.choices,
         default=TipoPeriodo.SEMESTRAL,
+    )
+
+    tipo_curso = models.CharField(
+        max_length=24,
+        choices=TipoCurso.choices,
+        default=TipoCurso.SUP,
     )
     
     def __str__(self):

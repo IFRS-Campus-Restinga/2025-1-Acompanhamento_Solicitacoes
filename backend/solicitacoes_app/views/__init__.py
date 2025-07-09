@@ -5,12 +5,13 @@ from .coordenador_view import *
 from .aluno_view import *
 from .cre_view import *
 from .usuario_view import *
-from .form_tranc_matricula_view import *
-from .form_tranc_disciplina_view import FormTrancDisciplinaListCreateView, FormTrancDisciplinaRetrieveUpdateDestroyView
+from .forms.form_abono_falta_view import *
+from .forms.form_tranc_matricula_view import *
+from .forms.form_tranc_disciplina_view import FormTrancDisciplinaListCreateView, FormTrancDisciplinaRetrieveUpdateDestroyView
 from .anexo_view import *
 from .mandato_view import *
-from .form_exercicios_domiciliares_view import *
-from .form_entrega_ativ_compl_view import *
+from .forms.form_exercicios_domiciliares_view import *
+from .forms.form_entrega_ativ_compl_view import *
 from .solicitacao_view import *
 from .turma_view import *
 from .detalhe_formularios_view import *

@@ -1,18 +1,18 @@
 from rest_framework import status, generics
 from rest_framework.permissions import AllowAny, IsAuthenticated
 
-from ..models import FormAbonoFalta
-from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
+from ...models import FormAbonoFalta
+from ...serializers.forms.form_abono_falta_serializer import FormAbonoFaltaSerializer
 from rest_framework.decorators import api_view
 import json
 
 from rest_framework.response import Response
-from ..models import Disciplina, Usuario,  PeriodoDisciplina, Curso, Ppc
-from ..serializers.disciplina_serializer import DisciplinaSerializer 
-from ..serializers.usuario_serializer import UsuarioSerializer
-from ..serializers.form_buscar_info_serializer import AlunoInfoSerializer
+from ...models import Disciplina, Usuario,  PeriodoDisciplina, Curso, Ppc
+from ...serializers.disciplina_serializer import DisciplinaSerializer 
+from ...serializers.usuario_serializer import UsuarioSerializer
+from ...serializers.forms.form_buscar_info_serializer import AlunoInfoSerializer
 
-from ..permissoes import CanSubmitAbonoFalta, CanViewSolicitacaoDetail, CanEditOrDeleteSolicitacao, IsCRE
+from ...permissoes import CanSubmitAbonoFalta, CanViewSolicitacaoDetail, CanEditOrDeleteSolicitacao, IsCRE
 
 class FormAbonoFaltaListCreateView(generics.ListCreateAPIView):
     queryset = FormAbonoFalta.objects.all()

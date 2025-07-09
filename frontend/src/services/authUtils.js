@@ -84,6 +84,7 @@ export const getGoogleUser = () => {
  */
 export const isAuthenticated = () => {
   return !!getAuthToken();
+  
 };
 
 /**

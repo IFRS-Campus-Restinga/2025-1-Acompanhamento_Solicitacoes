@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from ..models import Curso, Aluno, Ppc
-from ..serializers.usuario_serializer import UsuarioSerializer
+from ...models import Curso, Aluno, Ppc
+from ...serializers.usuario_serializer import UsuarioSerializer
 
 
 class CursoSerializer(serializers.ModelSerializer):

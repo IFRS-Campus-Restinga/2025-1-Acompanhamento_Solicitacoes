@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 //CSS
 import "../../../components/styles/telas_opcoes.css";
 
-const GestaoSistema = () => {
+const ConfiguracoesCRE = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [hoveredCard, setHoveredCard] = useState(null);
 
@@ -19,7 +19,7 @@ const GestaoSistema = () => {
   return (
     <div className="colunas-container">
       <main className="container">
-        <h2 className="tela-opcoes-titulo ">Gestão do Sistema</h2>
+        <h2 className="tela-opcoes-titulo ">Configurações do Sistema</h2>
         
         <div className="colunas-section-container">
           {/* Seção 1: Usuários e Grupos */}
@@ -135,4 +135,4 @@ const GestaoSistema = () => {
   );
 };
 
-export default GestaoSistema;
+export default ConfiguracoesCRE;

@@ -2,11 +2,11 @@ from rest_framework import generics, serializers
 from rest_framework.permissions import IsAuthenticated
 
 # Importamos os modelos e serializers necessários
-from ..models import FormExercicioDomiciliar, Aluno
-from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
+from ...models import FormExercicioDomiciliar, Aluno
+from ...serializers.forms.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
 
 # Importamos as permissões específicas
-from ..permissoes import CanSubmitExercicioDomiciliar, CanViewSolicitacaoDetail
+from ...permissoes import CanSubmitExercicioDomiciliar, CanViewSolicitacaoDetail
 
 # =================================================================================
 # VIEW PARA LISTAR E CRIAR FORMULÁRIOS

@@ -3,9 +3,9 @@ from rest_framework.permissions import AllowAny
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from django.utils import timezone
-from ..models import FormTrancDisciplina, Disciplina
-from ..serializers.form_tranc_disciplina_serializer import FormTrancDisciplinaSerializer
-from ..permissoes import CanSubmitTrancDisciplina, CanViewSolicitacaoDetail
+from ...models import FormTrancDisciplina, Disciplina
+from ...serializers.forms.form_tranc_disciplina_serializer import FormTrancDisciplinaSerializer
+from ...permissoes import CanSubmitTrancDisciplina, CanViewSolicitacaoDetail
 
 
 class FormTrancDisciplinaListCreateView(generics.ListCreateAPIView):

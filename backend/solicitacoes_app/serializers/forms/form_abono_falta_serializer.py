@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from ..models import MotivoAbono, FormAbonoFalta, Disciplina
-from ..serializers.campos_solic_serializers.motivo_abono_serializer import MotivoAbonoSerializer
+from ...models import MotivoAbono, FormAbonoFalta, Disciplina
+from ...serializers.campos_solic_serializers.motivo_abono_serializer import MotivoAbonoSerializer
 # Importamos nosso molde base
-from .solicitacao_serializer import BaseSolicitacaoModelSerializer
+from ..solicitacao_serializer import BaseSolicitacaoModelSerializer
 
 class FormAbonoFaltaSerializer(BaseSolicitacaoModelSerializer):
     motivo_solicitacao = serializers.PrimaryKeyRelatedField(

@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from ..models import FormTrancDisciplina, Disciplina
-from .solicitacao_serializer import BaseSolicitacaoModelSerializer
+from ...models import FormTrancDisciplina, Disciplina
+from ..solicitacao_serializer import BaseSolicitacaoModelSerializer
 from django.core.exceptions import ValidationError as DjangoValidationError
 
 class FormTrancDisciplinaSerializer(BaseSolicitacaoModelSerializer):
