@@ -2,7 +2,7 @@ from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from ..models import Curso, Ppc
-from ..serializers.curso_serializer import CursoSerializer
+from ..serializers.curso_serializer import CursoSerializer,  CursoListSerializer
 from ..permissoes import IsCREForManagement
 
 
@@ -13,8 +13,13 @@ class CursoListCreateView(generics.ListCreateAPIView):
     """
 
     queryset = Curso.objects.all()  # Define a queryset base
-    serializer_class = CursoSerializer  # Define o serializer que será usado
     permission_classes = [IsAuthenticated, IsCREForManagement]  # Apenas CRE autenticado pode gerenciar cursos
+
+    def get_serializer_class(self):
+        """Retorna o serializer apropriado baseado na ação"""
+        if self.request.method == 'GET':
+            return CursoListSerializer  # Serializer simplificado para listagem
+        return CursoSerializer  # Serializer completo para criação
 
     def create(self, request, *args, **kwargs):
         """
@@ -46,7 +51,10 @@ class CursoListCreateView(generics.ListCreateAPIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-        return Response({"message": "Curso cadastrado com sucesso!"}, status=status.HTTP_201_CREATED)
+        return Response({
+            "message": "Curso cadastrado com sucesso!",
+            "curso": CursoSerializer(curso).data
+        }, status=status.HTTP_201_CREATED)
 
 
 class CursoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
@@ -65,3 +73,21 @@ class CursoRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
     lookup_field = "codigo"  # Define que a busca será feita pelo campo 'codigo' ao invés do ID padrão
 
 
+class CursoListPublicView(generics.ListAPIView):
+    """
+    View pública para listar cursos (sem autenticação).
+    Útil para formulários públicos como desistência de vaga.
+    """
+    queryset = Curso.objects.all()
+    serializer_class = CursoListSerializer
+    permission_classes = [AllowAny]  # Permite acesso sem autenticação
+    
+    def get_queryset(self):
+        """Permite filtrar por tipo de curso se necessário"""
+        queryset = Curso.objects.all()
+        tipo_curso = self.request.query_params.get('tipo_curso', None)
+        
+        if tipo_curso is not None:
+            queryset = queryset.filter(tipo_curso=tipo_curso)
+            
+        return queryset.order_by('nome')
