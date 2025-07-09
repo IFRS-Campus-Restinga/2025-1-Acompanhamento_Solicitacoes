@@ -13,7 +13,7 @@ class CursoListCreateView(generics.ListCreateAPIView):
     """
 
     queryset = Curso.objects.all()  # Define a queryset base
-    permission_classes = [IsAuthenticated, IsCREForManagement]  # Apenas CRE autenticado pode gerenciar cursos
+    permission_classes = [ IsCREForManagement]  # Apenas CRE autenticado pode gerenciar cursos
 
     def get_serializer_class(self):
         """Retorna o serializer apropriado baseado na ação"""

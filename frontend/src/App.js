@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
-import { verificarGrupo } from "./services/authUtils";
+import { verificarGrupo, getAuthToken, isAuthenticated, logout } from "./services/authUtils";
 import HeaderSwitcher from "./components/base/headers/header_switcher";
 import MainContent from "./components/base/main_content";
 import Footer from "./components/base/footer";
@@ -15,67 +15,72 @@ import CadastrarAtualizarUsuarioGrupo from "./pages/usuarios/cadastrar_atualizar
 function App() {
   const [grupo, setGrupo] = useState(null);
   const [carregando, setCarregando] = useState(true);
+  const [currentAuthToken, setCurrentAuthToken] = useState(getAuthToken());
 
   useEffect(() => {
-    const carregarGrupo = async () => {
+    const carregarGrupoDoUsuario = async () => {
+      setCarregando(true);
       try {
-        const grupoDetectado = await verificarGrupo();
-        setGrupo(grupoDetectado);
-        console.log(grupo);
+        if (currentAuthToken) {
+          const grupoDetectado = await verificarGrupo();
+          setGrupo(grupoDetectado);
+          console.log("App.js: Grupo detectado pelo verificarGrupo:", grupoDetectado);
+        } else {
+          setGrupo(null);
+          console.log("App.js: Nenhum token, grupo definido como null.");
+        }
       } catch (error) {
-        console.error("Erro ao verificar grupo:", error);
-        setGrupo(null); // Assume no group if there's an error
+        console.error("App.js: Erro ao verificar grupo:", error);
+        setGrupo(null);
+        if (error.response && error.response.status === 401) {
+          logout();
+        }
       } finally {
         setCarregando(false);
+        console.log("App.js: Carregamento finalizado.");
       }
     };
 
-    carregarGrupo();
-  }, [grupo]);
+    carregarGrupoDoUsuario();
+  }, [currentAuthToken]);
 
   if (carregando) {
     return <p>Carregando...</p>;
   }
 
-  // Get the route configurations based on the detected group.
-  // This function returns an array of route objects: { path, element, gruposPermitidos, key }.
   const rotasDoGrupo = RotasPorGrupoConfig(grupo);
+  console.log("App.js: Rotas configuradas para o grupo:", rotasDoGrupo); // Para depuração
 
   return (
     <Router>
       <div id="root">
-        <HeaderSwitcher />
+        <HeaderSwitcher grupo={grupo} isAuthenticated={isAuthenticated()} />
         <MainContent>
           <Routes>
             {/* Rotas públicas acessíveis por qualquer usuário, mesmo não autenticado */}
             <Route path="/auth/google/redirect-handler" element={<GoogleRedirectHandler />} />
-            <Route path="/" element={<Home />} />
-            <Route path="/erro403" element={<Erro403 />} /> {/* Rota específica para acesso negado */}
+            <Route path="/" element={<Home />} /> 
+            <Route path="/erro403" element={<Erro403 />} />
             <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} />
             <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} />
 
-            {/* Renderiza as rotas protegidas pelo grupo.
-                Cada rota é envolvida por RotaPrivadaPorGrupo, que gerencia a permissão
-                e redireciona para /erro403 ou / (se não autenticado) conforme necessário. */}
+            {/* Renderiza as rotas protegidas pelo grupo. */}
             {rotasDoGrupo.map((route) => (
               <Route
-                key={route.key}
-                path={route.path}
+                key={route.props.key}
+                path={route.props.path} 
                 element={
                   <RotaPrivadaPorGrupo
                     grupoUsuario={grupo}
-                    // 'gruposPermitidos' é um array de grupos que podem acessar esta rota específica.
-                    gruposPermitidos={route.gruposPermitidos}
+                    gruposPermitidos={route.props.gruposPermitidos} 
                   >
-                    {route.element}
+                    {route.props.element} 
                   </RotaPrivadaPorGrupo>
                 }
               />
             ))}
 
-            {/* Rota fallback (catch-all) para qualquer path não correspondente.
-                Esta deve ser a ÚLTIMA rota definida para garantir que todas as rotas específicas
-                acima sejam verificadas primeiro. */}
+            {/* Rota fallback (catch-all) */}
             <Route
               path="*"
               element={grupo ? <Navigate to="/erro403" replace /> : <Navigate to="/" replace />}
