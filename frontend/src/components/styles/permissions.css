@@ -1,0 +1,226 @@
+/* Estilos para controle de permissões */
+
+/* Formulários desabilitados */
+.disabled-form {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+    background-color: #f8f9fa !important;
+    border: 2px dashed #dee2e6 !important;
+    position: relative;
+}
+
+.disabled-form::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 1;
+}
+
+.disabled-form .form-icon {
+    opacity: 0.3 !important;
+}
+
+/* Overlay para elementos desabilitados */
+.permission-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    z-index: 10;
+    cursor: not-allowed;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.permission-overlay-message {
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    text-align: center;
+    max-width: 200px;
+}
+
+/* Cards de formulário com permissões */
+.form-card {
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.form-card.allowed {
+    border-color: #28a745;
+}
+
+.form-card.denied {
+    border-color: #dc3545;
+    background-color: #f8d7da;
+}
+
+.form-card.denied:hover {
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* Indicadores de permissão */
+.permission-indicator {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.permission-indicator.allowed {
+    background-color: #28a745;
+    color: white;
+}
+
+.permission-indicator.denied {
+    background-color: #dc3545;
+    color: white;
+}
+
+/* Alertas de permissão */
+.permission-alert {
+    border-left: 4px solid #ffc107;
+    background-color: #fff3cd;
+    border-color: #ffeaa7;
+}
+
+.permission-alert.denied {
+    border-left-color: #dc3545;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.permission-alert.allowed {
+    border-left-color: #28a745;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+/* Debug de permissões */
+.permission-debug {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 12px;
+    z-index: 1000;
+    max-width: 200px;
+}
+
+.permission-debug.hidden {
+    display: none;
+}
+
+/* Botões desabilitados por permissão */
+.btn-permission-disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Links desabilitados por permissão */
+.link-permission-disabled {
+    color: #6c757d !important;
+    text-decoration: line-through !important;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* Seções restritas */
+.restricted-section {
+    position: relative;
+    overflow: hidden;
+}
+
+.restricted-section::after {
+    content: 'Acesso Restrito';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    background-color: rgba(220, 53, 69, 0.9);
+    color: white;
+    padding: 5px 20px;
+    font-weight: bold;
+    font-size: 14px;
+    white-space: nowrap;
+    z-index: 5;
+}
+
+/* Animações para feedback de permissão */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+.permission-denied-shake {
+    animation: shake 0.5s ease-in-out;
+}
+
+/* Tooltips de permissão */
+.permission-tooltip {
+    position: relative;
+    cursor: help;
+}
+
+.permission-tooltip::after {
+    content: attr(data-permission-message);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 5px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+    z-index: 1000;
+}
+
+.permission-tooltip:hover::after {
+    opacity: 1;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .permission-debug {
+        bottom: 10px;
+        right: 10px;
+        font-size: 10px;
+        padding: 8px;
+        max-width: 150px;
+    }
+    
+    .permission-overlay-message {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+        max-width: 150px;
+    }
+}
+

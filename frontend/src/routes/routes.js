@@ -1,20 +1,23 @@
 import { Route } from "react-router-dom";
 
-//Formulários
-
-import AbonoFalta from "../pages/forms/abono_falta/formulario_abono_falta.js";
+//Formulários com wrappers de permissão
+import FormularioAbonoFaltaWrapper from "../pages/forms/abono_falta/formulario_abono_falta_wrapper.js";
 import FormularioDesistenciaVaga from "../pages/forms/desistencia_vaga/formulario_desistencia_vaga.js";
-import DispensaEdFisica from "../pages/forms/dispensa_ed_fisica/formulario_dispensa_ed_fisica.js";
-import EntregaAtivCompl from "../pages/forms/entrega_ativ_compl/formulario_ativ_compl.js";
-import FormExercicioDomiciliar from '../pages/forms/exercicios_domiciliares/formulario_exerc_dom.js';
-import { default as FormTrancDisciplina, default as Formulario } from "../pages/forms/trancamento_disciplina/formulario_tranc_disc.js";
-import FormularioTrancamentoMatricula from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula.js";
+import FormularioDispensaEdFisicaWrapper from "../pages/forms/dispensa_ed_fisica/formulario_dispensa_ed_fisica_wrapper.js";
+import FormularioAtivComplWrapper from "../pages/forms/entrega_ativ_compl/formulario_ativ_compl_wrapper.js";
+import FormularioExercDomWrapper from '../pages/forms/exercicios_domiciliares/formulario_exerc_dom_wrapper.js';
+import FormularioTrancDisciplinaWrapper from "../pages/forms/trancamento_disciplina/formulario_tranc_disc_wrapper.js";
+import FormularioTrancamentoMatriculaWrapper from "../pages/forms/trancamento_matricula/formulario_trancamento_matricula_wrapper.js";
+
+// Formulário original para disciplinas por curso (sem wrapper pois é específico)
+import { default as Formulario } from "../pages/forms/trancamento_disciplina/formulario_tranc_disc.js";
 
 // Páginas
 import Perfil from "../pages/perfil/editar_perfil.js";
 import GestaoSistema from "../pages/telas_users/telas_cre/gestao_sistema";
 //import PosLogin from "../pages/pos_login";
 
+//import Cruds from "../pages/configuracoes/cruds.js";
 import ListarSolicitacoes from "../listar_solicitacoes.js";
 
 import Home from "./../pages/home";
@@ -80,8 +83,8 @@ import GoogleRedirectHandler from "../components/GoogleRedirectHandler.js";
 
 //Tela CRE
 import DetalheSolicitacao from "../pages/telas_users/telas_cre/detalhe_solicitacao.js";
+import HomeCRE from "../pages/telas_users/telas_cre/home_cre.js";
 import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes_finalizadas.js";
-import TodasSolicitacoes from "../pages/telas_users/telas_cre/todas_solicitacoes.js";
 
 //Tela Coordenador
 import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
@@ -98,7 +101,8 @@ import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
 
-
+// Componentes de permissão
+import { RolePermissionWrapper, CRERoute, AlunoRoute, ManagementRoute } from "../components/PermissionWrapper";
 
 const token = localStorage.getItem("token");
 
@@ -113,122 +117,543 @@ const routes = [
   //página inicial
   <Route path="/" element={<Home />} key="home" />,
 
-  <Route path="/cre/gestao-sistema" element={<GestaoSistema />} key="configuracoes" />,
+  // Gestão do sistema - apenas CRE
+  <Route 
+    path="/cre/gestao-sistema" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <GestaoSistema />
+      </RolePermissionWrapper>
+    } 
+    key="configuracoes" 
+  />,
 
   <Route path="/perfil" element={<Perfil />} key="perfil" />,
-  //<Route path="/pos-login" element={<PosLogin />} />,
 
-  // Motivo Abono
-  <Route path="/motivo_abono" element={<ListarMotivosAbono />} key="listar-abono" />,
-  <Route path="/motivo_abono/cadastrar" element={<CadastrarAtualizarAbono />} key="cadastrar-abono" />,
-  <Route path="/motivo_abono/:id" element={<CadastrarAtualizarAbono />} key="editar-abono" />,
+  // Motivo Abono - apenas CRE e Coordenador podem gerenciar
+  <Route 
+    path="/motivo_abono" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <ListarMotivosAbono />
+      </RolePermissionWrapper>
+    } 
+    key="listar-abono" 
+  />,
+  <Route 
+    path="/motivo_abono/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <CadastrarAtualizarAbono />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-abono" 
+  />,
+  <Route 
+    path="/motivo_abono/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <CadastrarAtualizarAbono />
+      </RolePermissionWrapper>
+    } 
+    key="editar-abono" 
+  />,
 
-  // Motivo Exercícios
-  <Route path="/motivo_exercicios" element={<ListarMotivosExercicios />} key="listar-exercicios" />,
-  <Route path="/motivo_exercicios/cadastrar" element={<CadastrarAtualizarExercicios />} key="cadastrar-exercicios" />,
-  <Route path="/motivo_exercicios/:id" element={<CadastrarAtualizarExercicios />} key="editar-exercicios" />,
+  // Motivo Exercícios - apenas CRE e Coordenador podem gerenciar
+  <Route 
+    path="/motivo_exercicios" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <ListarMotivosExercicios />
+      </RolePermissionWrapper>
+    } 
+    key="listar-exercicios" 
+  />,
+  <Route 
+    path="/motivo_exercicios/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <CadastrarAtualizarExercicios />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-exercicios" 
+  />,
+  <Route 
+    path="/motivo_exercicios/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <CadastrarAtualizarExercicios />
+      </RolePermissionWrapper>
+    } 
+    key="editar-exercicios" 
+  />,
 
-  // Motivo Dispensa de Educação Física
-  <Route path="/motivo_dispensa" element={<ListaMotivosDispensa />} key="listar-dispensa" />,
-  <Route path="/motivo_dispensa/cadastrar" element={<CadastrarAtualizarMotivoDispensa />} key="cadastrar-motivos-dispensa" />,
-  <Route path="/motivo_dispensa/:id" element={<CadastrarAtualizarMotivoDispensa />} key="atualizar-motivos-dispensa" />,
+  // Motivo Dispensa de Educação Física - apenas CRE e Coordenador podem gerenciar
+  <Route 
+    path="/motivo_dispensa" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <ListaMotivosDispensa />
+      </RolePermissionWrapper>
+    } 
+    key="listar-dispensa" 
+  />,
+  <Route 
+    path="/motivo_dispensa/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <CadastrarAtualizarMotivoDispensa />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-motivos-dispensa" 
+  />,
+  <Route 
+    path="/motivo_dispensa/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <CadastrarAtualizarMotivoDispensa />
+      </RolePermissionWrapper>
+    } 
+    key="atualizar-motivos-dispensa" 
+  />,
 
-  // Disciplinas
-  <Route path="/disciplinas" element={<ListarDisciplinas />} key="listar-disciplinas" />,
-  <Route path="/disciplinas/cadastrar" element={<CadastrarAtualizarDisciplina />} key="cadastrar-disciplinas" />,
-  <Route path="/disciplinas/:codigo" element={<CadastrarAtualizarDisciplina />} key="editar-disciplinas" />,
+  // Disciplinas - apenas CRE pode gerenciar
+  <Route 
+    path="/disciplinas" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarDisciplinas />
+      </RolePermissionWrapper>
+    } 
+    key="listar-disciplinas" 
+  />,
+  <Route 
+    path="/disciplinas/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarDisciplina />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-disciplinas" 
+  />,
+  <Route 
+    path="/disciplinas/:codigo" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarDisciplina />
+      </RolePermissionWrapper>
+    } 
+    key="editar-disciplinas" 
+  />,
 
-  // Turmas
-  <Route path="/turmas" element={<ListarTurmas />} key="listar-turmas" />,
-  <Route path="/turmas/cadastrar" element={<CadastrarAtualizarTurma />} key="cadastrar-turmas" />,
-  <Route path="/turmas/:id" element={<CadastrarAtualizarTurma />} key="editar-turmas" />,
+  // Turmas - apenas CRE pode gerenciar
+  <Route 
+    path="/turmas" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarTurmas />
+      </RolePermissionWrapper>
+    } 
+    key="listar-turmas" 
+  />,
+  <Route 
+    path="/turmas/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarTurma />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-turmas" 
+  />,
+  <Route 
+    path="/turmas/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarTurma />
+      </RolePermissionWrapper>
+    } 
+    key="editar-turmas" 
+  />,
 
-  // Cursos
-  <Route path="/cursos" element={<ListarCursos />} key="listar-cursos" />,
-  <Route path="/cursos/cadastrar" element={<CadastrarAtualizarCursos />} key="cadastrar-cursos" />,
-  <Route path="/cursos/:codigo" element={<CadastrarAtualizarCursos />} key="editar-cursos" />,
+  // Cursos - apenas CRE pode gerenciar
+  <Route 
+    path="/cursos" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarCursos />
+      </RolePermissionWrapper>
+    } 
+    key="listar-cursos" 
+  />,
+  <Route 
+    path="/cursos/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarCursos />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-cursos" 
+  />,
+  <Route 
+    path="/cursos/:codigo" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarCursos />
+      </RolePermissionWrapper>
+    } 
+    key="editar-cursos" 
+  />,
 
-  // // PPC
-  <Route path="/ppcs" element={<ListarPpc />} key="listar-ppc" />,
-  <Route path="/ppcs/cadastrar" element={<CadastrarAtualizarPpc />} key="cadastrar-ppc" />,
-  <Route path="/ppcs/:codigo" element={<CadastrarAtualizarPpc />} key="editar-ppc" />,
+  // PPC - apenas CRE pode gerenciar
+  <Route 
+    path="/ppcs" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarPpc />
+      </RolePermissionWrapper>
+    } 
+    key="listar-ppc" 
+  />,
+  <Route 
+    path="/ppcs/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarPpc />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-ppc" 
+  />,
+  <Route 
+    path="/ppcs/:codigo" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarPpc />
+      </RolePermissionWrapper>
+    } 
+    key="editar-ppc" 
+  />,
 
-  // Usuarios
-  <Route path="/usuarios" element={<ListarUsuariosAtivos />} key="listar-usuarios-ativos" />,
-  <Route path="/usuarios/inativos" element={<ListarUsuariosInativos />} key="listar-usuarios-inativos" />,
-  <Route path="/usuarios/:id" element={<DetalhesUsuario />} key="detalhes-usuario" />,
-  <Route path="/usuarios/selecionargrupo" element={<SelecionarGrupoUsuario />} key="selecionar-grupo-usuarios" />,
-  <Route path="/usuarios/selecionargrupogestaosistema" element={<SelecionarGrupoGestaoSistema />} key="selecionar-grupo-usuarios" />,
-  <Route path="/usuarios/cadastro" element={<CadastrarAtualizarUsuario />} key="cadastrar-usuarios" />,
-  <Route path="/usuarios/editar/:id" element={<CadastrarAtualizarUsuario />} key="editar-usuarios" />,
-  <Route path="/usuarios/cadastro/:grupo" element={<CadastrarAtualizarUsuarioGrupo />} key="cadastrar-usuarios-grupo" />,
-  <Route path="/usuarios/editar/:grupo/:id" element={<CadastrarAtualizarUsuarioGrupo />} key="atualizar-usuarios-grupo" />,
-  <Route path="/usuarios/editar/externo/:id" element={<CadastrarAtualizarUsuario />} key="atualizar-usuarios-externo" />,
-  <Route path="/usuarios/editar/responsavel/:id" element={<CadastrarAtualizarUsuario />} key="atualizar-usuarios-responsavel" />,
+  // Usuarios - apenas CRE pode gerenciar
+  <Route 
+    path="/usuarios" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarUsuariosAtivos />
+      </RolePermissionWrapper>
+    } 
+    key="listar-usuarios-ativos" 
+  />,
+  <Route 
+    path="/usuarios/inativos" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarUsuariosInativos />
+      </RolePermissionWrapper>
+    } 
+    key="listar-usuarios-inativos" 
+  />,
+  <Route 
+    path="/usuarios/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <DetalhesUsuario />
+      </RolePermissionWrapper>
+    } 
+    key="detalhes-usuario" 
+  />,
+  <Route 
+    path="/usuarios/selecionargrupo" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <SelecionarGrupoUsuario />
+      </RolePermissionWrapper>
+    } 
+    key="selecionar-grupo-usuarios" 
+  />,
+  <Route 
+    path="/usuarios/selecionargrupogestaosistema" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <SelecionarGrupoGestaoSistema />
+      </RolePermissionWrapper>
+    } 
+    key="selecionar-grupo-usuarios-gestao" 
+  />,
+  <Route 
+    path="/usuarios/cadastro" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarUsuario />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-usuarios" 
+  />,
+  <Route 
+    path="/usuarios/editar/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarUsuario />
+      </RolePermissionWrapper>
+    } 
+    key="editar-usuarios" 
+  />,
+  <Route 
+    path="/usuarios/cadastro/:grupo" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarUsuarioGrupo />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-usuarios-grupo" 
+  />,
+  <Route 
+    path="/usuarios/editar/:grupo/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarUsuarioGrupo />
+      </RolePermissionWrapper>
+    } 
+    key="atualizar-usuarios-grupo" 
+  />,
+  <Route 
+    path="/usuarios/editar/externo/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarUsuario />
+      </RolePermissionWrapper>
+    } 
+    key="atualizar-usuarios-externo" 
+  />,
+  <Route 
+    path="/usuarios/editar/responsavel/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarUsuario />
+      </RolePermissionWrapper>
+    } 
+    key="atualizar-usuarios-responsavel" 
+  />,
   
-  
-  //Mandatos
+  //Mandatos - apenas CRE pode gerenciar
+  <Route 
+    path="/mandatos/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarMandato />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-mandatos" 
+  />,
+  <Route 
+    path="/mandatos/editar/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarMandato />
+      </RolePermissionWrapper>
+    } 
+    key="editar-mandatos" 
+  />,
+  <Route 
+    path="/mandatos" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <HistoricoMandatos/>
+      </RolePermissionWrapper>
+    } 
+    key="listar-historico-mandatos" 
+  />,
 
-  <Route path="/mandatos/cadastrar" element={<CadastrarAtualizarMandato />} key="cadastrar-mandatos" />,
-  <Route path="/mandatos/editar/:id" element={<CadastrarAtualizarMandato />} key="editar-mandatos" />,
-  <Route path="/mandatos" element={<HistoricoMandatos/>} key="listar-historico-mandatos" />,
+  // Grupos - apenas CRE pode gerenciar
+  <Route 
+    path="/grupos" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarGrupos />
+      </RolePermissionWrapper>
+    } 
+    key="listar-grupos" 
+  />,
+  <Route 
+    path="/grupos/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarGrupo />
+      </RolePermissionWrapper>
+    } 
+    key="cadastrar-grupos" 
+  />,
+  <Route 
+    path="/grupos/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarGrupo />
+      </RolePermissionWrapper>
+    } 
+    key="editar-grupos" 
+  />,
 
-
-  // Grupos
-  <Route path="/grupos" element={<ListarGrupos />} key="listar-grupos" />,
-  <Route path="/grupos/cadastrar" element={<CadastrarAtualizarGrupo />} key="cadastrar-grupos" />,
-  <Route path="/grupos/:id" element={<CadastrarAtualizarGrupo />} key="editar-grupos" />,
-
-  //Forms
-  <Route path="/form_ativ_compl" element={<EntregaAtivCompl />} key="form_ativ_compl" />,
+  //Forms - COM CONTROLE DE PERMISSÕES
+  <Route path="/form_ativ_compl" element={<FormularioAtivComplWrapper />} key="form_ativ_compl" />,
   <Route path="/desistencia_vaga" element={<FormularioDesistenciaVaga />} key="desistencia_vaga" />,
-  <Route path="/abono_falta" element={<AbonoFalta />} key="abono_falta" />,
-  <Route path="/exercicio_domiciliar" element={<FormExercicioDomiciliar />} key="exercicio_domiciliar" />,
-  <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatricula />} key="trancamento_matricula" />,
-  <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> ,
-  <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
+  <Route path="/abono_falta" element={<FormularioAbonoFaltaWrapper />} key="abono_falta" />,
+  <Route path="/exercicio_domiciliar" element={<FormularioExercDomWrapper />} key="exercicio_domiciliar" />,
+  <Route path="/trancamento_matricula" element={<FormularioTrancamentoMatriculaWrapper />} key="trancamento_matricula" />,
+  <Route path="/dispensa_ed_fisica" element={<FormularioDispensaEdFisicaWrapper />} key="dispensa_ed_fisica" /> ,
+  <Route path="/trancamento_disciplina" element={<FormularioTrancDisciplinaWrapper />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />}  key="formulario-disciplina-curso"/>,
 
-
-  <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
-  <Route path="/disponibilidades/cadastrar" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-cadastrar" />,
-  <Route path="/disponibilidades/:id" element={<CadastrarAtualizarDisponibilidade />} key="disponibilidade-editar" />,
+  // Disponibilidades - apenas CRE pode gerenciar
+  <Route 
+    path="/disponibilidades" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarDisponibilidades />
+      </RolePermissionWrapper>
+    } 
+    key="disponibilidade-listar" 
+  />,
+  <Route 
+    path="/disponibilidades/cadastrar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarDisponibilidade />
+      </RolePermissionWrapper>
+    } 
+    key="disponibilidade-cadastrar" 
+  />,
+  <Route 
+    path="/disponibilidades/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <CadastrarAtualizarDisponibilidade />
+      </RolePermissionWrapper>
+    } 
+    key="disponibilidade-editar" 
+  />,
   <Route path="/indisponivel" element={<FormularioIndisponivel />} key="indisponivel" />,
   <Route 
     path="formularios/:tipoFormulario"
     element={
       <VerificadorDisponibilidade>
-        <FormularioTrancamentoMatricula />
+        <FormularioTrancamentoMatriculaWrapper />
       </VerificadorDisponibilidade>
     }
     key="verificador-formulario"
   />,
 
-  //Solicitacoes
-  <Route path="/todas-solicitacoes" element={<ListarSolicitacoes />} key="solicitacao-list-create"/>,
+  //Solicitacoes - apenas CRE pode ver todas
+  <Route 
+    path="/todas-solicitacoes" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <ListarSolicitacoes />
+      </RolePermissionWrapper>
+    } 
+    key="solicitacao-list-create"
+  />,
 
   //TELAS USERS
   
   //Tela CRE
-  <Route path="/cre/todas-solicitacoes" element={<TodasSolicitacoes />} key="home_cre" />,
-  <Route path="/cre/detalhes-solicitacao/:id" element={<DetalheSolicitacao />} key="detalhe_solicitacao" />,
-  <Route path="/cre/solicitacoes-finalizadas" element={<SolicitacoesFinalizadas />} key="solicitacoes_finalizadas" />,
+  <Route 
+    path="/cre/home" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <HomeCRE />
+      </RolePermissionWrapper>
+    } 
+    key="home_cre" 
+  />,
+  <Route 
+    path="/detalhe-solicitacao/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre', 'coordenador']} showMessage={true}>
+        <DetalheSolicitacao />
+      </RolePermissionWrapper>
+    } 
+    key="detalhe_solicitacao" 
+  />,
+  <Route 
+    path="/solicitacoes-finalizadas" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <SolicitacoesFinalizadas />
+      </RolePermissionWrapper>
+    } 
+    key="solicitacoes_finalizadas" 
+  />,
 
   //Tela Coordenador
-  <Route path="/coordenador/solicitacoes" element={<HomeCoordenador />} key="home_coordenador" />,
+  <Route 
+    path="/coordenador/coordenador_home" 
+    element={
+      <RolePermissionWrapper allowedRoles={['coordenador']} showMessage={true}>
+        <HomeCoordenador />
+      </RolePermissionWrapper>
+    } 
+    key="home_coordenador" 
+  />,
 
   //Tela Externo
-  <Route path="/externo/desistencia-vaga" element={<ExternoHome />} key="home_externo" />,
+  <Route 
+    path="/externo/desistencia-vaga" 
+    element={
+      <RolePermissionWrapper allowedRoles={['externo']} showMessage={true}>
+        <ExternoHome />
+      </RolePermissionWrapper>
+    } 
+    key="home_externo" 
+  />,
 
   //Tela Aluno
-  <Route path="/aluno/nova-solicitacao" element={<AlunoNovaSolicitacao/>} key="nova-solicitacao-aluno"/>,
-  <Route path="/aluno/minhas-solicitacoes" element={<MinhasSolicitacoesAluno />} key="minhas-solicitacoes-aluno" />,
-  <Route path="/aluno/detalhes-solicitacao/:id" element={<DetalhesSolicitacao />} key="detalhes-solicitacao-aluno" />,
+  <Route 
+    path="/aluno/nova-solicitacao" 
+    element={
+      <RolePermissionWrapper allowedRoles={['aluno', 'responsavel']} showMessage={true}>
+        <AlunoNovaSolicitacao/>
+      </RolePermissionWrapper>
+    } 
+    key="nova-solicitacao-aluno"
+  />,
+  <Route 
+    path="/aluno/minhas-solicitacoes" 
+    element={
+      <RolePermissionWrapper allowedRoles={['aluno', 'responsavel', 'externo']} showMessage={true}>
+        <MinhasSolicitacoesAluno />
+      </RolePermissionWrapper>
+    } 
+    key="minhas-solicitacoes-aluno" 
+  />,
+  <Route 
+    path="/aluno/detalhes-solicitacao/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['aluno', 'responsavel', 'externo']} showMessage={true}>
+        <DetalhesSolicitacao />
+      </RolePermissionWrapper>
+    } 
+    key="detalhes-solicitacao-aluno" 
+  />,
 
-  //Tela gerenciamento Exerciícios Domiciliares
-  <Route path="/exercicios_domiciliares/gerenciar" element={<GerenciarExercDomicilares />} key="gerenciar_exerc_domiciliares" />,
+  //Tela gerenciamento Exerciícios Domiciliares - apenas CRE
+  <Route 
+    path="/exercicios_domiciliares/gerenciar" 
+    element={
+      <RolePermissionWrapper allowedRoles={['cre']} showMessage={true}>
+        <GerenciarExercDomicilares />
+      </RolePermissionWrapper>
+    } 
+    key="gerenciar_exerc_domiciliares" 
+  />,
 
-  <Route path="/coordenador/detalhes-solicitacao/:id" element={<DetalhesSolicitacaoCoordenador />} key="detalhes-solicitacao-coordenador" />,
+  <Route 
+    path="/coordenador/detalhes-solicitacao/:id" 
+    element={
+      <RolePermissionWrapper allowedRoles={['coordenador']} showMessage={true}>
+        <DetalhesSolicitacaoCoordenador />
+      </RolePermissionWrapper>
+    } 
+    key="detalhes-solicitacao-coordenador" 
+  />,
  ];
 
 export default routes;

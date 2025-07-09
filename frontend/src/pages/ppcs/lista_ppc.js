@@ -132,11 +132,14 @@ export default function ListarPpc() {
           itensPorPagina={5}
           onDadosPaginados={setPpcsPaginados}
         />
-
+        
         <PopupConfirmacao
           show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir este ppc?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback
@@ -146,7 +149,7 @@ export default function ListarPpc() {
           onClose={() => setMostrarFeedback(false)}
         />
 
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} />
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} />
       </main>
     </div>
   );

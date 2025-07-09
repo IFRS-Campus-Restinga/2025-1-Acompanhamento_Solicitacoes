@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BuscaUsuario from "../../../components/busca_usuario";
 import PopupFeedback from "../../../components/pop_ups/popup_feedback";
+import { FormPermissionWrapper } from "../../../components/PermissionWrapper";
 //import VerificadorDisponibilidade from "../../../pages/disponibilidade/VerificadorDisponibilidade";
 
 //CSS
@@ -51,368 +52,303 @@ export default function FormularioDesistenciaVaga() {
         setCarregandoUsuario(false);
     }, []);
 
-    // Redireciona se não houver usuário
+    // Buscar aluno quando userData mudar
     useEffect(() => {
-        if (!carregandoUsuario && !userData) {
-            navigate("/");
-        }
-    }, [carregandoUsuario, userData, navigate]);
-
-    // Busca aluno pelo e-mail quando userData estiver disponível
-    useEffect(() => {
-        const buscarAluno = async () => {
-            try {
-                console.log("Buscando aluno pelo e-mail:", userData.email);
-                const token = getAuthToken();
-                const res = await axios.get(`http://localhost:8000/solicitacoes/usuarios/buscar-por-email/${userData.email}/`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-
-                if (res.data) {
-                    const usuarioEncontrado = res.data;
-                    console.log("Usuário encontrado na API:", usuarioEncontrado);
-
-                    // Verifique se o usuário tem um objeto Aluno associado (grupo_detalhes)
-                    if (usuarioEncontrado?.grupo_detalhes) {
-                        const alunoReal = usuarioEncontrado.grupo_detalhes;
-                        console.log("Objeto Aluno encontrado (grupo_detalhes):", alunoReal);
-
-                        setAluno(alunoReal);
-                        setAlunoNaoEncontrado(false);
-
-                        // Buscar dados do curso e PPC após obter aluno
-                        if (alunoReal?.curso_codigo) {
-                            buscarDadosCurso(alunoReal.curso_codigo);
-                        }
-                        
-                        if (alunoReal?.ppc_codigo) {
-                            buscarDadosPpc(alunoReal.ppc_codigo);
-                        }
-                        
-                        // Preencher o ano/semestre de ingresso se disponível
-                        if (alunoReal?.ano_ingresso) {
-                            setFormData(prev => ({
-                                ...prev,
-                                ano_semestre_ingresso: alunoReal.ano_ingresso
-                            }));
-                        }
-                        
-                        // Preencher a turma se disponível
-                        if (alunoReal?.turma) {
-                            setFormData(prev => ({
-                                ...prev,
-                                turma: alunoReal.turma
-                            }));
-                        }
-                    } else {
-                        console.error("Usuário encontrado, mas sem dados de Aluno (grupo_detalhes).");
-                        setAlunoNaoEncontrado(true);
-                        setMsgErro("Dados de aluno não encontrados para este usuário.");
-                        setTipoPopup("erro");
-                        setPopupIsOpen(true);
-                    }
-                } else {
-                    setAlunoNaoEncontrado(true);
-                    setMsgErro("Aluno não encontrado no sistema.");
-                    setTipoPopup("erro");
-                    setPopupIsOpen(true);
-                }
-            } catch (err) {
-                console.error("Erro ao buscar aluno:", err.response?.data || err.message);
-                setAlunoNaoEncontrado(true);
-                setMsgErro(err.response?.data?.message || "Erro ao buscar dados do aluno");
-                setTipoPopup("erro");
-                setPopupIsOpen(true);
-            }
-        };
-
-        if (userData?.email && !buscouAlunoRef.current) {
+        if (userData && userData.email && !buscouAlunoRef.current) {
             buscouAlunoRef.current = true;
-            buscarAluno();
+            buscarAluno(userData.email);
         }
     }, [userData]);
 
-    // Buscar dados do curso
-    const buscarDadosCurso = async (codigoCurso) => {
-        try {
-            console.log("Buscando dados do curso:", codigoCurso);
-            const token = getAuthToken();
-            const res = await axios.get(`http://localhost:8000/solicitacoes/cursos/${codigoCurso}/`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log("Dados do curso:", res.data);
-            setCurso(res.data);
-        } catch (error) {
-            console.error("Erro ao buscar dados do curso:", error);
-            setMsgErro("Erro ao buscar dados do curso.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-        }
-    };
-
-    // Buscar dados do PPC
-    const buscarDadosPpc = async (codigoPpc) => {
-        try {
-            console.log("Buscando dados do PPC:", codigoPpc);
-            const token = getAuthToken();
-            const res = await axios.get(`http://localhost:8000/solicitacoes/ppcs/${codigoPpc}/`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            console.log("Dados do PPC:", res.data);
-            setPpc(res.data);
-        } catch (error) {
-            console.error("Erro ao buscar dados do PPC:", error);
-            setMsgErro("Erro ao buscar dados do PPC.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-        }
-    };
-
-
-    // Para buscar motivos de desistência (ajustado o nome da função e a URL)
+    // Buscar motivos de desistência
     useEffect(() => {
-        const buscarMotivosDesistencia = async () => { // <--- Renomeado a função
+        const buscarMotivos = async () => {
             try {
                 const token = getAuthToken();
-                // A URL já está correta para motivos de desistência
-                const res = await axios.get("http://localhost:8000/solicitacoes/motivos-desistencia/", {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                });
-                setMotivosDesistencia(res.data); // <--- Populando a variável correta
-                setIsLoadingMotivos(false);
-            } catch (err) {
-                console.error("Erro ao buscar motivos de desistência:", err); // <--- Mensagem de erro ajustada
-                setMsgErro("Erro ao buscar motivos de desistência.");
+                const response = await axios.get(
+                    "http://127.0.0.1:8000/motivos_desistencia/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+                setMotivosDesistencia(response.data);
+            } catch (error) {
+                console.error("Erro ao buscar motivos de desistência:", error);
+                setMsgErro("Erro ao carregar motivos de desistência");
                 setTipoPopup("erro");
                 setPopupIsOpen(true);
+            } finally {
                 setIsLoadingMotivos(false);
             }
         };
 
-        buscarMotivosDesistencia();
+        buscarMotivos();
     }, []);
 
+    const buscarAluno = async (email) => {
+        try {
+            const token = getAuthToken();
+            const response = await axios.get(
+                `http://127.0.0.1:8000/aluno-info/?email=${email}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
 
-    // Manipular mudanças nos campos do formulário
-    const handleChange = (e) => {
-        const { name, value, type, files } = e.target;
-        
-        if (type === "file") {
-            setFormData(prev => ({
-                ...prev,
-                anexos: files
-            }));
-        } else {
-            setFormData(prev => ({
-                ...prev,
-                [name]: value
-            }));
+            if (response.data) {
+                setAluno(response.data);
+                setCurso(response.data.curso);
+                setPpc(response.data.ppc);
+                setAlunoNaoEncontrado(false);
+            }
+        } catch (error) {
+            console.error("Erro ao buscar aluno:", error);
+            setAlunoNaoEncontrado(true);
+            setAluno(null);
+            setCurso(null);
+            setPpc(null);
         }
     };
 
-    // Enviar formulário
+    const handleInputChange = (e) => {
+        const { name, value, files } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: files ? files[0] : value
+        }));
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         
         if (!aluno) {
-            setMsgErro("Por favor, aguarde o carregamento dos dados do aluno.");
+            setMsgErro("Dados do aluno não encontrados");
             setTipoPopup("erro");
             setPopupIsOpen(true);
             return;
         }
-        
-        if (!formData.motivo_solicitacao) {
-            setMsgErro("O motivo da solicitação é obrigatório.");
-            setTipoPopup("erro");
-            setPopupIsOpen(true);
-            return;
-        }
-        
+
         try {
-            const dataToSubmit = new FormData();
-            
-            // Adicionar ID do aluno
-            dataToSubmit.append("aluno", aluno.id);
-            
-            // Adicionar campos do formulário
-            dataToSubmit.append("turma", formData.turma);
-            dataToSubmit.append("ano_semestre_ingresso", formData.ano_semestre_ingresso);
-            dataToSubmit.append("motivo_solicitacao", formData.motivo_solicitacao);
-            
-            if (formData.observacoes) {
-                dataToSubmit.append("observacoes", formData.observacoes);
-            }
-            
-            // Adicionar anexos se existirem
-            if (formData.anexos) {
-                for (let i = 0; i < formData.anexos.length; i++) {
-                    dataToSubmit.append("anexos", formData.anexos[i]);
-                }
-            }
-            
-            // Debug para ver o que está indo no FormData
-            for (let pair of dataToSubmit.entries()) {
-                console.log(pair[0], pair[1]);
-            }
-            
             const token = getAuthToken();
-            await axios.post(
-                "http://localhost:8000/solicitacoes/desistencia_vaga/",
-                dataToSubmit,
+            const formDataToSend = new FormData();
+            
+            // Adicionar dados do formulário
+            formDataToSend.append('aluno', aluno.id);
+            formDataToSend.append('turma', formData.turma);
+            formDataToSend.append('ano_semestre_ingresso', formData.ano_semestre_ingresso);
+            formDataToSend.append('motivo_solicitacao', formData.motivo_solicitacao);
+            formDataToSend.append('observacoes', formData.observacoes);
+            
+            if (formData.anexos) {
+                formDataToSend.append('anexos', formData.anexos);
+            }
+
+            const response = await axios.post(
+                "http://127.0.0.1:8000/form_desistencia_vaga/",
+                formDataToSend,
                 {
                     headers: {
-                        "Content-Type": "multipart/form-data",
-                        "Authorization": `Bearer ${token}`
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
                     },
                 }
             );
-            
-            setMsgErro("Solicitação enviada com sucesso!");
+
+            setMsgErro("Solicitação de desistência enviada com sucesso!");
             setTipoPopup("sucesso");
             setPopupIsOpen(true);
             
-            // Redirecionar após 2 segundos
-            setTimeout(() => navigate("/todas-solicitacoes"), 2000);
+            // Limpar formulário
+            setFormData({
+                turma: "",
+                ano_semestre_ingresso: "",
+                motivo_solicitacao: "",
+                observacoes: "",
+                anexos: null
+            });
+
         } catch (error) {
-            console.error("Erro no envio:", error.response?.data || error.message);
-            setMsgErro(error.response?.data || error.message);
+            console.error("Erro ao enviar formulário:", error);
+            setMsgErro("Erro ao enviar solicitação. Tente novamente.");
             setTipoPopup("erro");
             setPopupIsOpen(true);
         }
     };
 
-    // Renderização condicional durante carregamento
-    if (carregandoUsuario) {
-        return (
-            <>
-                <BuscaUsuario dadosUsuario={handleUsuario} />
+    return (
+        <FormPermissionWrapper formType="desistencia_vaga">
+            <div className="formulario-container">
                 <main className="container">
-                    <p>Carregando usuário...</p>
-                </main>
-            </>
-        );
-    }
-
-    // Renderização quando aluno não é encontrado
-    if (userData && alunoNaoEncontrado) {
-        return (
-            <div className="page-container">
-                <main className="container">
-                    <h2>Aluno não encontrado no sistema.</h2>
-                    <p>Verifique se o e-mail está corretamente vinculado a um aluno.</p>
-                </main>
-                {popupIsOpen && (
-                    <PopupFeedback
-                        mensagem={msgErro}
-                        tipo={tipoPopup}
-                        onClose={() => setPopupIsOpen(false)}
-                    />
-                )}
-            </div>
-        );
-    }
-
-    // Renderização do formulário completo
-    if (userData && aluno) {
-        return (
-            <div className="page-container">
-                <BuscaUsuario dadosUsuario={handleUsuario} />
-                <main className="container">
-                    <h2>Formulário de Desistência de Vaga</h2>
-                    <br></br>
-                    <h6 className="descricao-formulario">
-                        Ao preencher este formulário,<strong> desisto</strong> formalmente da minha vaga no IFRS Campus Restinga, <br></br>
-                        conforme informações abaixo prestadas.
-                    </h6>
-
-                    <form className="formulario formulario-largura" onSubmit={handleSubmit}>
-
-                    <div className="dados-aluno-container">
-                        <div className="form-group">
-                            <label>E-mail:</label>
-                            <input type="email" value={userData?.email || ""} readOnly />
-                        </div>
-                        <div className="form-group">
-                            <label>Nome Completo:</label>
-                            <input type="text" value={aluno?.nome || userData?.name || ""} readOnly />
-                        </div>
-                        <div className="form-group">
-                            <label>Matrícula:</label>
-                            <input type="text" value={aluno?.matricula || ""} readOnly />
-                        </div>
-                        
-                        <div className="form-group">
-                            <label>Curso:</label>
-                            <input type="text" value={curso?.nome || "Carregando..."} readOnly />
-                        </div>
-                    </div>
+                    <h2 className="formulario-titulo">Termo de Desistência de Vaga</h2>
                     
-                        <div className="form-group">
-                            <label htmlFor="motivo_solicitacao">Motivo da Solicitação:</label>
+                    <div className="alert alert-info" role="alert">
+                        <i className="bi bi-info-circle me-2"></i>
+                        <strong>Importante:</strong> Este formulário é para solicitar a desistência de sua vaga no curso.
+                        Esta ação é irreversível e resultará no cancelamento de sua matrícula.
+                    </div>
+
+                    <BuscaUsuario onUsuario={handleUsuario} />
+
+                    {carregandoUsuario && (
+                        <div className="text-center my-4">
+                            <div className="spinner-border" role="status">
+                                <span className="visually-hidden">Carregando...</span>
+                            </div>
+                        </div>
+                    )}
+
+                    {alunoNaoEncontrado && (
+                        <div className="alert alert-warning" role="alert">
+                            <i className="bi bi-exclamation-triangle me-2"></i>
+                            Aluno não encontrado. Verifique o email informado.
+                        </div>
+                    )}
+
+                    {aluno && (
+                        <div className="card mb-4">
+                            <div className="card-header">
+                                <h5 className="mb-0">Dados do Aluno</h5>
+                            </div>
+                            <div className="card-body">
+                                <div className="row">
+                                    <div className="col-md-6">
+                                        <p><strong>Nome:</strong> {aluno.nome}</p>
+                                        <p><strong>Matrícula:</strong> {aluno.matricula}</p>
+                                    </div>
+                                    <div className="col-md-6">
+                                        <p><strong>Curso:</strong> {curso?.nome}</p>
+                                        <p><strong>PPC:</strong> {ppc?.codigo}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="formulario-form">
+                        <div className="row">
+                            <div className="col-md-6 mb-3">
+                                <label htmlFor="turma" className="form-label">
+                                    Turma <span className="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="turma"
+                                    name="turma"
+                                    value={formData.turma}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                            </div>
+                            
+                            <div className="col-md-6 mb-3">
+                                <label htmlFor="ano_semestre_ingresso" className="form-label">
+                                    Ano/Semestre de Ingresso <span className="text-danger">*</span>
+                                </label>
+                                <input
+                                    type="text"
+                                    className="form-control"
+                                    id="ano_semestre_ingresso"
+                                    name="ano_semestre_ingresso"
+                                    value={formData.ano_semestre_ingresso}
+                                    onChange={handleInputChange}
+                                    placeholder="Ex: 2023.1"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div className="mb-3">
+                            <label htmlFor="motivo_solicitacao" className="form-label">
+                                Motivo da Solicitação <span className="text-danger">*</span>
+                            </label>
                             <select
+                                className="form-select"
                                 id="motivo_solicitacao"
                                 name="motivo_solicitacao"
                                 value={formData.motivo_solicitacao}
-                                onChange={handleChange}
+                                onChange={handleInputChange}
                                 required
                             >
-                                <option value="">Selecione o motivo</option>
-                                {motivosDesistencia.map(motivo => (
-                                    <option key={motivo.id} value={motivo.id}>
-                                        {motivo.descricao}
-                                    </option>
-                                ))}
+                                <option value="">Selecione um motivo</option>
+                                {isLoadingMotivos ? (
+                                    <option disabled>Carregando motivos...</option>
+                                ) : (
+                                    motivosDesistencia.map((motivo) => (
+                                        <option key={motivo.id} value={motivo.id}>
+                                            {motivo.descricao}
+                                        </option>
+                                    ))
+                                )}
                             </select>
                         </div>
-                        
-                        <div className="form-group">
-                            <label htmlFor="anexos">Anexos:</label>
+
+                        <div className="mb-3">
+                            <label htmlFor="observacoes" className="form-label">
+                                Observações
+                            </label>
+                            <textarea
+                                className="form-control"
+                                id="observacoes"
+                                name="observacoes"
+                                rows="4"
+                                value={formData.observacoes}
+                                onChange={handleInputChange}
+                                placeholder="Informações adicionais sobre a solicitação..."
+                            />
+                        </div>
+
+                        <div className="mb-3">
+                            <label htmlFor="anexos" className="form-label">
+                                Anexos (opcional)
+                            </label>
                             <input
                                 type="file"
+                                className="form-control"
                                 id="anexos"
                                 name="anexos"
-                                onChange={handleChange}
-                                multiple
+                                onChange={handleInputChange}
+                                accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
                             />
-                            <small>Selecione os documentos comprobatórios para a dispensa.</small>
+                            <div className="form-text">
+                                Formatos aceitos: PDF, DOC, DOCX, JPG, JPEG, PNG (máx. 10MB)
+                            </div>
                         </div>
 
-                        {/* Campo para ver se o aluno recebe auxilio 
-                        <div className="form-group">
-                            <label htmlFor="consegue_realizar_atividades">Recebe auxílio estudantil?</label>
-                            <select
-                                id="consegue_realizar_atividades"
-                                {...register("consegue_realizar_atividades", { required: "Este campo é obrigatório." })}
+                        <div className="d-flex justify-content-between">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onClick={() => navigate(-1)}
                             >
-                                <option value="">Selecione</option>
-                                <option value={true}>Sim</option>
-                                <option value={false}>Não</option>
-                            </select>
-                            {errors.consegue_realizar_atividades && <span className="error-text">{errors.consegue_realizar_atividades.message}</span>}
+                                <i className="bi bi-arrow-left me-2"></i>
+                                Voltar
+                            </button>
+                            
+                            <button
+                                type="submit"
+                                className="btn btn-danger"
+                                disabled={!aluno}
+                            >
+                                <i className="bi bi-send me-2"></i>
+                                Enviar Solicitação
+                            </button>
                         </div>
-                        */}
-                        
-                        <button type="submit" className="submit-button">Enviar</button>
                     </form>
-                </main>
-                {popupIsOpen && (
-                    <PopupFeedback
-                        mensagem={msgErro}
-                        tipo={tipoPopup}
-                        onClose={() => setPopupIsOpen(false)}
-                    />
-                )}
-            </div>
-        );
-    }
 
-    return null;
+                    <PopupFeedback
+                        isOpen={popupIsOpen}
+                        onClose={() => setPopupIsOpen(false)}
+                        message={msgErro}
+                        tipo={tipoPopup}
+                    />
+                </main>
+            </div>
+        </FormPermissionWrapper>
+    );
 }
+
