@@ -73,8 +73,8 @@ const GoogleRedirectHandler = () => {
 
         if (groups.includes('cre')) {
           userRoleToSet = 'cre';
-          console.log("GoogleRedirectHandler: Usuário é CRE. Redirecionando para /cre/gestao-sistema");
-          navigate('/cre/gestao-sistema');
+          console.log("GoogleRedirectHandler: Usuário é CRE. Redirecionando para /cre/configuracoes");
+          navigate('/cre/configuracoes');
         } else if (groups.includes('coordenador')) {
           userRoleToSet = 'coordenador';
           console.log("GoogleRedirectHandler: Usuário é Coordenador. Redirecionando para /coordenador/solicitacoes");
@@ -83,13 +83,14 @@ const GoogleRedirectHandler = () => {
           // Priorize 'aluno' se for o caso, ou 'responsavel', 'externo'
           if (groups.includes('aluno')) {
             userRoleToSet = 'aluno';
+            navigate('/aluno/nova-solicitacao');
           } else if (groups.includes('responsavel')) {
             userRoleToSet = 'responsavel';
+            navigate('/aluno/nova-solicitacao');
           } else if (groups.includes('externo')) {
             userRoleToSet = 'externo';
+            navigate('/externo/nova-solicitacao');
           }
-          console.log(`GoogleRedirectHandler: Usuário é ${userRoleToSet}. Redirecionando para /aluno/nova-solicitacao`);
-          navigate('/aluno/nova-solicitacao');
         } else {
           console.log("GoogleRedirectHandler: Usuário não tem grupo específico. Redirecionando para página padrão.");
           navigate('/usuarios/selecionargrupo');

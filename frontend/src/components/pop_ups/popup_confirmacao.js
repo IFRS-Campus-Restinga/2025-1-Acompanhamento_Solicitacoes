@@ -8,13 +8,49 @@ export default function PopupConfirmacao({
   onReject, 
   onCancel,
   showRejectOption = false,
-  confirmLabel = "Deletar",
-  usuarioDetalhes = null // Nova prop para receber os detalhes do usuário
+  confirmLabel = "Confirmar",
+  actionType = "default", // "default", "delete", "approve", "reject"
+  usuarioDetalhes = null,
+  showJustificativa = false // Nova prop para controlar a exibição da justificativa
 }) {
   const [justificativa, setJustificativa] = useState("");
   const [mostrarErro, setMostrarErro] = useState(false);
 
   if (!show) return null;
+
+  // Determina a classe do botão baseada no tipo de ação
+  const getButtonClass = () => {
+    switch (actionType) {
+      case "delete":
+        return "btn btn-delete";
+      case "reject":
+        return "btn btn-reject";
+      case "approve":
+      case "default":
+      default:
+        return "btn btn-confirm";
+    }
+  };
+
+  // Função para lidar com a confirmação
+  const handleConfirmar = () => {
+    // Se é uma ação que requer justificativa e ela não foi preenchida
+    if (showJustificativa && !justificativa.trim()) {
+      setMostrarErro(true);
+      return;
+    }
+    
+    setMostrarErro(false);
+    
+    // Se há justificativa, passa ela junto
+    if (showJustificativa && justificativa.trim()) {
+      onConfirm(justificativa);
+    } else {
+      onConfirm();
+    }
+    
+    setJustificativa(""); // Limpa o campo após enviar
+  };
 
   // Função para lidar com a rejeição
   const handleRejeitar = () => {
@@ -88,13 +124,21 @@ export default function PopupConfirmacao({
         <p className="popup-mensagem"><strong>{mensagem || "Tem certeza que deseja continuar?"}</strong></p>
         
         {/* Detalhes do usuário - exibido apenas quando usuarioDetalhes é fornecido */}
-        <div className="popup-box-detalhes">
-        {usuarioDetalhes && renderizarDetalhesUsuario()}
-        </div>
-        {/* Campo de justificativa para rejeição - exibido apenas quando showRejectOption é true */}
-        {showRejectOption && (
+        {usuarioDetalhes && (
+          <div className="popup-box-detalhes">
+            {renderizarDetalhesUsuario()}
+          </div>
+        )}
+
+        {/* Campo de justificativa - exibido quando showJustificativa é true ou showRejectOption é true */}
+        {(showJustificativa || showRejectOption) && (
           <div className="justificativa-container">
-            <label htmlFor="justificativa">Justificativa, para o caso de rejeição de cadastro:</label>
+            <label htmlFor="justificativa">
+              {showRejectOption 
+                ? "Justificativa para rejeição de cadastro:" 
+                : "Justificativa:"
+              }
+            </label>
             <textarea
               id="justificativa"
               className={`campo-justificativa ${mostrarErro ? 'campo-erro' : ''}`}
@@ -103,26 +147,39 @@ export default function PopupConfirmacao({
                 setJustificativa(e.target.value);
                 if (e.target.value.trim()) setMostrarErro(false);
               }}
-              placeholder="Informe o motivo da rejeição do cadastro."
+              placeholder={
+                showRejectOption 
+                  ? "Informe o motivo da rejeição do cadastro."
+                  : "Informe a justificativa para esta ação."
+              }
               rows={3}
             />
             {mostrarErro && (
-              <p className="erro-mensagem">A justificativa é obrigatória para rejeitar o cadastro.</p>
+              <p className="erro-mensagem">
+                A justificativa é obrigatória para esta ação.
+              </p>
             )}
           </div>
         )}
         
         <div className="popup-actions">
-          <button className="btn btn-confirm" onClick={onConfirm}>{confirmLabel}</button>
+          <button className={getButtonClass()} onClick={handleConfirmar}>
+            {confirmLabel}
+          </button>
           
           {/* Botão Rejeitar - exibido apenas quando showRejectOption é true */}
           {showRejectOption && onReject && (
-            <button className="btn btn-reject" onClick={handleRejeitar}>Rejeitar</button>
+            <button className="btn btn-reject" onClick={handleRejeitar}>
+              Rejeitar
+            </button>
           )}
           
-          <button className="btn btn-cancel" onClick={handleCancelar}>Cancelar</button>
+          <button className="btn btn-cancel" onClick={handleCancelar}>
+            Cancelar
+          </button>
         </div>
       </div>
     </div>
   );
 }
+

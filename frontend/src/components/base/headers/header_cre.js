@@ -50,14 +50,19 @@ const HeaderCRE = () => {
 
         <nav className="center">
           <ul className="nav-links">
+
             <li>
-              <Link to="/cre/todas-solicitacoes">Todas Solicitações</Link>
-            </li>
-            <li>
-              <Link to="/cre/gestao-sistema" className="configuracoes-link">
+              <Link to="/cre/configuracoes" className="configuracoes-link">
                 Configurações
               </Link>
             </li>
+
+            <li>
+              <Link to="/cre/solicitacoes">
+              Todas Solicitações
+              </Link>
+            </li>
+
           </ul>
         </nav>
 
@@ -74,9 +79,11 @@ const HeaderCRE = () => {
               <button onClick={handleLogout} title="Sair" style={{ marginLeft: "10px", background: "none", border: "none", cursor: "pointer" }}>
                   <i className="bi bi-box-arrow-right icone" style={{ fontSize: "1.5rem", color: "white" }}></i>
               </button>
+               {/*
               <Link to="/perfil" className="perfil-link" style={{ marginLeft: "5px", background: "none", border: "none", cursor: "pointer" }}>
                   <i className="bi bi-gear-fill icone" title="Meu Perfil" style={{ fontSize: "1.1rem", color: "white" }}></i>
               </Link>
+              */}
             </>
           ) : (
             // Se não houver dados do usuário, pode mostrar um link de login

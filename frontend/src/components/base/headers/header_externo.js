@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getGoogleUser, logout } from "../../../services/authUtils"; // Mantém para consistência, embora usuário externo possa não ter login completo
 import "./../headers/header_nav.css"; // Reutiliza o CSS geral da navegação
@@ -45,13 +45,8 @@ const HeaderExterno = () => {
 
                 <nav className="center">
                     <ul className="nav-links">
-                        {/* Botão Formulários (redireciona para /aluno/nova-solicitacao) */}
                         <li>
-                            <Link to="/aluno/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
-                        </li>
-                        {/* Botão Minhas Solicitações (mantido) */}
-                        <li>
-                            <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
+                            <Link to="/externo/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
                         </li>
                     </ul>
                 </nav>
@@ -69,13 +64,10 @@ const HeaderExterno = () => {
                             <button onClick={handleLogout} title="Sair" style={{ marginLeft: "10px", background: "none", border: "none", cursor: "pointer" }}>
                                 <i className="bi bi-box-arrow-right icone" style={{ fontSize: "1.5rem", color: "white" }}></i>
                             </button>
-                            <Link to="/perfil" className="perfil-link" style={{ marginLeft: "5px", background: "none", border: "none", cursor: "pointer" }}>
-                                <i className="bi bi-gear-fill icone" title="Meu Perfil" style={{ fontSize: "1.1rem", color: "white" }}></i>
-                            </Link>
                         </>
                     ) : (
                         <>
-                            <p className="mensagem-usuario">Bem-vindo</p>
+                            {/* Conteúdo opcional para usuário não logado, se necessário */}
                         </>
                     )}
                 </div>

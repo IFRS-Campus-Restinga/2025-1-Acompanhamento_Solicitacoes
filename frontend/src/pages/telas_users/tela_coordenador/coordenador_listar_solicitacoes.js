@@ -1,14 +1,13 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 
 //CSS
 import "../../../components/styles/tabela.css";
 
-import { getAuthToken } from "../../../services/authUtils";
 import BotaoDetalhar from "../../../components/UI/botoes/botao_detalhar";
+import { getAuthToken } from "../../../services/authUtils";
 
-const HomeCoordenador = () => {
+const ListarSolicitacoesCoordenador = () => {
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -115,4 +114,4 @@ const HomeCoordenador = () => {
   );
 };
 
-export default HomeCoordenador;
+export default ListarSolicitacoesCoordenador;

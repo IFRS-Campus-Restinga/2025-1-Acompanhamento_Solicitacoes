@@ -129,18 +129,7 @@ const AlunoNovaSolicitacao = () => {
   return (
     <div className="colunas-container">
       <main className="container">
-        <h2 className="tela-opcoes-titulo">Formulários</h2>
-        
-        {/* Informação sobre o usuário atual */}
-        <div className="alert alert-info mb-4" role="alert">
-          <i className="bi bi-person-circle me-2"></i>
-          <strong>Usuário:</strong> {userRole.charAt(0).toUpperCase() + userRole.slice(1)}
-          <br />
-          <small>
-            Você tem acesso a {availableForms.length} de {allForms.length} formulários disponíveis.
-          </small>
-        </div>
-
+        <h2 className="tela-opcoes-titulo ">Solicitações</h2>
         <div className="colunas-section-container">
           {/* PRIMEIRA FILEIRA: 4 Formulários */}
           <section className="colunas-section">

@@ -97,7 +97,7 @@ const SolicitacoesFinalizadas = () => {
                 )}
 
                 {/* Botão para voltar para a HomeCRE (opcional, mas útil) */}
-                <BotaoVoltar onClick={() => navigate("/cre/todas-solicitacoes")} />
+                <BotaoVoltar onClick={() => navigate("/cre/solicitacoes")} />
             </main>
         </div>
     );

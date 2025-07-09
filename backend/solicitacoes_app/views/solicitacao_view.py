@@ -116,7 +116,7 @@ class MinhasSolicitacoesListView(APIView):
         else:
             return Response({"detail": "Você não tem permissão para listar solicitações ou seu perfil não está associado a um aluno."}, status=403)
 
-class SolicitacoesDoCoordenador(APIView):
+class SolicitacoesDoCoordenador(generics.ListAPIView):
     """
     Endpoint para coordenadores verem solicitações de alunos do seu curso.
     """

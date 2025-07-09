@@ -191,6 +191,8 @@ export default function ListarGrupos() {
           mensagem="Tem certeza que deseja excluir este grupo?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopupConfirmacao(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback
@@ -208,7 +210,7 @@ export default function ListarGrupos() {
         />
 
         {/* Usando a navegação do último arquivo do usuário */}
-        <BotaoVoltar onClick={() => navigate("/cre/gestao-sistema")} /> 
+        <BotaoVoltar onClick={() => navigate("/cre/configuracoes")} /> 
       </main>
     </div>
   );

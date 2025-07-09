@@ -1,5 +1,8 @@
 // AuthUtils.js - Funções utilitárias para autenticação
 
+import { jwtDecode } from "jwt-decode";
+import api from "./api";
+
 /**
  * Define um cookie com opções de segurança
  * @param {string} name - Nome do cookie
@@ -90,4 +93,45 @@ export const isAuthenticated = () => {
 export const logout = () => {
   removeCookie('appToken');
   removeCookie('googleUser');
+};
+
+export const verificarGrupo = async () => {
+  const token = getCookie('appToken');
+
+  if (!token) {
+    return null;
+  }
+
+  const decodedToken = jwtDecode(token);
+  const { email } = decodedToken;
+
+  // IMPORTANT: Return the promise chain here!
+  return api.get(`http://localhost:8000/auth/verificar-usuario/?email=${encodeURIComponent(email)}`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  }).then((res) => {
+    const { exists, groups } = res.data;
+    if (exists) {
+      if (groups.includes('cre')) {
+        return "cre";
+      } else if (groups.includes('coordenador')) {
+        return "coordenador";
+      } else if (groups.includes('aluno')) {
+        console.log("cheguei aqui")
+        return "aluno";
+      } else if (groups.includes('responsavel')) {
+        return "responsavel";
+      } else if (groups.includes('externo')) {
+        return "externo";
+      }
+    }
+    // If exists is false or no group matches, explicitly return a fallback or null
+    // This value will then be the resolved value of the promise returned by verificarGrupo
+    console.warn("Usuário autenticado sem grupo de rota reconhecido:", groups);
+    return "default_authenticated_group"; // Or null
+  }).catch((error) => {
+    console.error("Erro ao verificar grupo no backend (via catch):", error);
+    return null; // Return null on error
+  });
 };

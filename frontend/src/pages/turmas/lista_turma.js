@@ -125,8 +125,11 @@ export default function ListarTurmas() {
 
         <PopupConfirmacao
           show={mostrarPopup}
+          mensagem="Tem certeza que deseja excluir esta turma?"
           onConfirm={confirmarExclusao}
           onCancel={() => setMostrarPopup(false)}
+          confirmLabel="Deletar"
+          actionType="delete" // Botão vermelho
         />
 
         <PopupFeedback

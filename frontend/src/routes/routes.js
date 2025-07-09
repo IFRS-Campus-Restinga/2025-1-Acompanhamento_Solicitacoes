@@ -1,4 +1,5 @@
-import { Route } from "react-router-dom";
+// Este arquivo define as configurações de rotas para cada grupo de usuário.
+// Ele retorna um array de objetos de rota, não componentes <Route> diretamente.
 
 //Formulários com wrappers de permissão
 import FormularioAbonoFaltaWrapper from "../pages/forms/abono_falta/formulario_abono_falta_wrapper.js";
@@ -31,27 +32,24 @@ import CadastrarAtualizarExercicios from "../pages/motivos/exercicios/cadastrar_
 import ListarMotivosExercicios from "../pages/motivos/exercicios/listar_motivo_exercicios";
 
 // Motivos de Dispensa de Educação Física
-
 import CadastrarAtualizarMotivoDispensa from "../pages/motivos/dispensa_ed_fisica/cadastrar_atualizar_motivo.js";
 import ListaMotivosDispensa from "../pages/motivos/dispensa_ed_fisica/listar_motivo_dispensa.js";
 
 // Disciplinas
-
 import CadastrarAtualizarDisciplina from "../pages/disciplinas/cadastrar_atualizar_disciplina.js";
 import ListarDisciplinas from "../pages/disciplinas/lista_disciplina.js";
 
 // Turmas
-
 import CadastrarAtualizarTurma from "../pages/turmas/cadastrar_atualizar_turma.js";
 import ListarTurmas from "../pages/turmas/lista_turma.js";
 
 // Cursos
-import CadastrarAtualizarCursos from "../pages/cursos/cadastrar_atualizar_cursos"; // página para cadastrar/atualizar cursos
-import ListarCursos from "../pages/cursos/lista_cursos"; // página para listar cursos
+import CadastrarAtualizarCursos from "../pages/cursos/cadastrar_atualizar_cursos";
+import ListarCursos from "../pages/cursos/lista_cursos";
 
-// // PPC
-import CadastrarAtualizarPpc from "../pages/ppcs/cadastrar_atualizar_ppc"; // página para cadastrar/atualizar PPCs
-import ListarPpc from "../pages/ppcs/lista_ppc"; // página para listar PPCs
+// PPC
+import CadastrarAtualizarPpc from "../pages/ppcs/cadastrar_atualizar_ppc";
+import ListarPpc from "../pages/ppcs/lista_ppc";
 
 // Usuarios
 import CadastrarAtualizarUsuario from "../pages/usuarios/cadastrar_atualizar_usuarios.js";
@@ -62,7 +60,7 @@ import ListarUsuariosInativos from "../pages/usuarios/listar_usuarios_inativos.j
 import SelecionarGrupoUsuario from "../pages/usuarios/selecionar_grupo.js";
 import SelecionarGrupoGestaoSistema from "../pages/usuarios/selecionar_grupo_gestao_sistema.js";
 
-//Grupos
+// Grupos
 import CadastrarAtualizarGrupo from "../pages/grupos/cadastrar_atualizar_grupo.js";
 import ListarGrupos from "../pages/grupos/lista_grupo.js";
 
@@ -72,9 +70,7 @@ import FormularioIndisponivel from '../pages/disponibilidade/FormularioIndisponi
 import ListarDisponibilidades from "../pages/disponibilidade/listar.js";
 import VerificadorDisponibilidade from '../pages/disponibilidade/VerificadorDisponibilidade.js';
 
-
-//Coordenadores
-//Mandatos
+// Coordenadores - Mandatos
 import CadastrarAtualizarMandato from "../pages/coordenadores/mandatos/cadastrar_atualizar_mandatos.js";
 import HistoricoMandatos from "../pages/coordenadores/mandatos/lista_mandatos.js";
 
@@ -90,15 +86,12 @@ import SolicitacoesFinalizadas from "../pages/telas_users/telas_cre/solicitacoes
 import DetalhesSolicitacaoCoordenador from "../pages/telas_users/tela_coordenador/detalhe_solicitacao.js";
 import HomeCoordenador from "../pages/telas_users/tela_coordenador/homecoordenador.js";
 
-//Telas Aluno
-import DetalhesSolicitacao from "../pages/telas_users/telas_aluno/aluno_detalhes_solicitacao";
-import MinhasSolicitacoesAluno from "../pages/telas_users/telas_aluno/aluno_minhas_solicitacoes";
 import AlunoNovaSolicitacao from "../pages/telas_users/telas_aluno/aluno_nova_solicitacao";
 
 //Tela Externo
 import ExternoHome from "../pages/telas_users/tela_externo/externo_home.js";
 
-//Tela de gerenciamento de Exercícios Domiciliares
+// Gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
 
 // Componentes de permissão
@@ -553,7 +546,7 @@ const routes = [
   />,
 
   //TELAS USERS
-  
+
   //Tela CRE
   <Route 
     path="/cre/home" 
