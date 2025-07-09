@@ -1,11 +1,11 @@
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
 from rest_framework.permissions import AllowAny
-from ..models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
-from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
-from ..models.solicitacao import Solicitacao
+from ...models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
+from ...serializers.forms.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
+from ...models.solicitacao import Solicitacao
 from django.contrib.contenttypes.models import ContentType
 from datetime import datetime
-from ..permissoes import CanSubmitEntregaAtivCompl, CanViewSolicitacaoDetail
+from ...permissoes import CanSubmitEntregaAtivCompl, CanViewSolicitacaoDetail
 
 
 class FormEntregaAtivComplListCreateView(ListCreateAPIView):

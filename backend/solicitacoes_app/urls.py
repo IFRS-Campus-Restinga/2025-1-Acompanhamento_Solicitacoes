@@ -18,19 +18,20 @@ from .views.grupo_view import *
 from solicitacoes_app.views.turma_view import *
 from .views.usuario_view import UsuarioListCreateView, UsuarioRetrieveUpdateDestroyView, UsuariosInativosView, AlunoEmailListView, UsuarioReativarView, UsuarioAprovarCadastroView,  UsuarioDetailByEmail
 from .views.responsavel_view import *
-from .views.form_tranc_matricula_view import *
-from .views.form_disp_ed_fisica_view import *
 from .views.anexo_view import *
-from .views.form_abono_falta_view import *
 from .views.mandato_view import MandatoOrdenadoListView, MandatoListCreateView, MandatoRetrieveUpdateDestroyView
-from .views.form_tranc_disciplina_view import *
 
+##FORMS
+from .views.forms.form_abono_falta_view import *
+from .views.forms.form_tranc_matricula_view import *
+from .views.forms.form_disp_ed_fisica_view import *
+from .views.forms.form_tranc_disciplina_view import *
+from .views.forms.form_desistencia_vaga_view import *
+from .views.forms.form_exercicios_domiciliares_view import *
 
-
-from .views.form_desistencia_vaga_view import *
 from .views.nome_view import *
 from .views.perfil_usuario_view import *
-from .views.form_entrega_ativ_compl_view import *
+from .views.forms.form_entrega_ativ_compl_view import *
 from .views.solicitacao_view import *
 
 from .views.atualizar_status_view import AtualizarStatusSolicitacaoView
@@ -68,20 +69,12 @@ from .views.solicitacao_view import MinhasSolicitacoesListView
 
 from .views.historico_afastamento_view import HistoricoAfastamentoViewList
 
-from .views.solicitacao_view import SolicitacaoListAllView
-
 
 ## URLS IMPORTCOES NOVAS:
 from .views import (
     solicitacao_view,
     atualizar_status_view,
-    form_abono_falta_view,
-    form_desistencia_vaga_view, # Deixaremos aqui, mesmo que em stand-by
-    form_disp_ed_fisica_view,
-    form_entrega_ativ_compl_view,
-    form_exercicios_domiciliares_view, # Corrigido para o nome do arquivo da imagem
-    form_tranc_disciplina_view,
-    form_tranc_matricula_view
+    # REMOVIDO: form_abono_falta_view, pois já é importado via from .forms.form_abono_falta_view import *
 )
 
 # =================================================================================
@@ -91,24 +84,24 @@ from .views import (
 
 # Supondo que em cada arquivo você tenha uma classe ...ListCreateView
 FORM_LIST_CREATE_VIEWS = {
-    'trancamento-matricula': form_tranc_matricula_view.FormTrancamentoListCreateView,
-    'trancamento-disciplina': form_tranc_disciplina_view.FormTrancDisciplinaListCreateView,
-    'abono-falta': form_abono_falta_view.FormAbonoFaltaListCreateView,
-    'exercicios-domiciliares': form_exercicios_domiciliares_view.FormExercicioDomiciliarListCreateView,
-    'dispensa-ed-fisica': form_disp_ed_fisica_view.FormDispEdFisicaListCreateView,
-    'entrega-ativ-compl': form_entrega_ativ_compl_view.FormEntregaAtivComplListCreateView,
-    'desistencia-vaga': form_desistencia_vaga_view.FormDesistenciaVagaListCreateView,
+    'trancamento-matricula': FormTrancamentoListCreateView,
+    'trancamento-disciplina': FormTrancDisciplinaListCreateView,
+    'abono-falta': FormAbonoFaltaListCreateView, # Usando a classe diretamente, já que o módulo foi importado com *
+    'exercicios-domiciliares': FormExercicioDomiciliarListCreateView,
+    'dispensa-ed-fisica': FormDispEdFisicaListCreateView,
+    'entrega-ativ-compl': FormEntregaAtivComplListCreateView,
+    'desistencia-vaga': FormDesistenciaVagaListCreateView,
 }
 
 # Supondo que em cada arquivo você tenha uma classe ...RetrieveUpdateDestroyView
 FORM_DETAIL_VIEWS = {
-    'trancamento-matricula': form_tranc_matricula_view.FormTrancamentoRetrieveUpdateDestroyView,
-    'trancamento-disciplina': form_tranc_disciplina_view.FormTrancDisciplinaRetrieveUpdateDestroyView,
-    'abono-falta': form_abono_falta_view.FormAbonoFaltaRetrieveUpdateDestroyView,
-    'exercicios-domiciliares': form_exercicios_domiciliares_view.FormExercicioDomiciliarRetrieveUpdateDestroyView,
-    'dispensa-ed-fisica': form_disp_ed_fisica_view.FormDispEdFisicaRetrieveUpdateDestroyView,
-    'entrega-ativ-compl': form_entrega_ativ_compl_view.FormEntregaAtivComplRetrieveUpdateDestroyView,
-    'desistencia-vaga': form_desistencia_vaga_view.FormDesistenciaVagaRetrieveUpdateDestroyView,
+    'trancamento-matricula': FormTrancamentoRetrieveUpdateDestroyView,
+    'trancamento-disciplina': FormTrancDisciplinaRetrieveUpdateDestroyView,
+    'abono-falta': FormAbonoFaltaRetrieveUpdateDestroyView, # Usando a classe diretamente, já que o módulo foi importado com *
+    'exercicios-domiciliares': FormExercicioDomiciliarRetrieveUpdateDestroyView,
+    'dispensa-ed-fisica': FormDispEdFisicaRetrieveUpdateDestroyView,
+    'entrega-ativ-compl': FormEntregaAtivComplRetrieveUpdateDestroyView,
+    'desistencia-vaga': FormDesistenciaVagaRetrieveUpdateDestroyView,
 }
 
 
@@ -225,7 +218,6 @@ urlpatterns = [
 
     path('coordenador/listar-solicitacoes/', SolicitacoesDoCoordenador.as_view(), name="listar_solicitacoes_coordenador"),
 
-    path('cre/listar-solicitacoes/', SolicitacaoListAllView.as_view(), name="cre-listar-solicitacoes"),
     
     path('notifications/', include('solicitacoes_app.notifications.urls')),
   
@@ -240,3 +232,4 @@ for key, ViewClass in FORM_DETAIL_VIEWS.items():
     urlpatterns.append(
         path(f'formularios/{key}/<int:pk>/', ViewClass.as_view(), name=f'form-{key}-detail')
     )
+

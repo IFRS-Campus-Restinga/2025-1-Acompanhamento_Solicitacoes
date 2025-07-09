@@ -1,10 +1,10 @@
 from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 from rest_framework import serializers
-from ..models.disciplina import Disciplina
-from ..models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
-from .solicitacao_serializer import BaseSolicitacaoModelSerializer
-from ..models.campos_solic_models.atividade_complementar import AtividadeComplementar
+from ...models.disciplina import Disciplina
+from ...models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
+from ..solicitacao_serializer import BaseSolicitacaoModelSerializer
+from ...models.campos_solic_models.atividade_complementar import AtividadeComplementar
 
 # Serializer para o model AtividadeComplementar novo
 class AtividadeComplementarNestedSerializer(serializers.ModelSerializer):

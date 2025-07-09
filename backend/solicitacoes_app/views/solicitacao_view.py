@@ -33,12 +33,12 @@ from ..models.forms.form_dispensa_ed_fisica import FormDispensaEdFisica
 from ..models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 
 from ..serializers.solicitacao_serializer import SolicitacaoListSerializer
-from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
-from ..serializers.form_tranc_disciplina_serializer import FormTrancDisciplinaSerializer
-from ..serializers.form_abono_falta_serializer import FormAbonoFaltaSerializer
-from ..serializers.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
-from ..serializers.form_disp_ed_fisica_serializer import FormDispEdFisicaSerializer
-from ..serializers.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
+from ..serializers.forms.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
+from ..serializers.forms.form_tranc_disciplina_serializer import FormTrancDisciplinaSerializer
+from ..serializers.forms.form_abono_falta_serializer import FormAbonoFaltaSerializer
+from ..serializers.forms.form_exercicios_domiciliares import FormExercicioDomiciliarSerializer
+from ..serializers.forms.form_disp_ed_fisica_serializer import FormDispEdFisicaSerializer
+from ..serializers.forms.form_entrega_ativ_compl_serializer import FormEntregaAtivComplSerializer
 from ..models.coordenador import Coordenador
 
 # Lista central de todos os modelos de solicitação para facilitar a manutenção.
@@ -116,7 +116,7 @@ class MinhasSolicitacoesListView(APIView):
         else:
             return Response({"detail": "Você não tem permissão para listar solicitações ou seu perfil não está associado a um aluno."}, status=403)
 
-class SolicitacoesDoCoordenador(generics.ListAPIView):
+class SolicitacoesDoCoordenador(APIView):
     """
     Endpoint para coordenadores verem solicitações de alunos do seu curso.
     """

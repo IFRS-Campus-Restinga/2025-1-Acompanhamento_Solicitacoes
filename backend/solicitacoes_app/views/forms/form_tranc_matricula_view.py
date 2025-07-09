@@ -1,10 +1,10 @@
 from rest_framework import generics, status, serializers
 from rest_framework.permissions import AllowAny
-from ..models import FormularioTrancamentoMatricula, Aluno
-from ..serializers.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
+from ...models import FormularioTrancamentoMatricula, Aluno
+from ...serializers.forms.form_tranc_matricula_serializer import FormularioTrancamentoMatriculaSerializer
 from datetime import datetime
 from rest_framework.response import Response
-from ..permissoes import CanSubmitTrancMatricula, CanViewSolicitacaoDetail
+from ...permissoes import CanSubmitTrancMatricula, CanViewSolicitacaoDetail
 
 
 class FormTrancamentoListCreateView(generics.ListCreateAPIView):

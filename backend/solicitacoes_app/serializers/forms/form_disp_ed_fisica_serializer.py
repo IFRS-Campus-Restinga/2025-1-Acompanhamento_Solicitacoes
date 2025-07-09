@@ -1,8 +1,8 @@
 from rest_framework import serializers
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
-from ..models.forms.form_dispensa_ed_fisica import FormDispensaEdFisica
-from .solicitacao_serializer import BaseSolicitacaoModelSerializer
+from ...models.forms.form_dispensa_ed_fisica import FormDispensaEdFisica
+from ..solicitacao_serializer import BaseSolicitacaoModelSerializer
 
 class FormDispEdFisicaSerializer(BaseSolicitacaoModelSerializer):
     anexos = serializers.ListField(
