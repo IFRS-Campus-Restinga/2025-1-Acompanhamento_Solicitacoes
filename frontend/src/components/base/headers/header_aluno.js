@@ -49,7 +49,7 @@ const HeaderAluno = () => {
                             <Link to="/aluno/nova-solicitacao" className="nav-link-item">Nova Solicitação</Link>
                         </li>
                         <li>
-                            <Link to="/solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
+                            <Link to="/aluno/minhas-solicitacoes" className="nav-link-item">Minhas Solicitações</Link>
                         </li>
                     </ul>
                 </nav>
