@@ -144,7 +144,7 @@ export default function FormularioDesistenciaVaga() {
     useEffect(() => {
         const buscarCursos = async () => {
             try {
-                const res = await axios.get("http://localhost:8000/solicitacoes/cursos-publicos/");
+                const res = await axios.get("http://localhost:8000/solicitacoes/cursos");
                 setCursos(res.data);
                 setIsLoadingCursos(false);
             } catch (err) {
@@ -447,7 +447,7 @@ export default function FormularioDesistenciaVaga() {
                         </div>
                     
                         <div className="form-group">
-                            <label htmlFor="motivo_solicitacao">Motivo da Solicitação:</label>
+                            <label htmlFor="motivo_solicitacao">Motivo da Solicitação: <span className="obrigatorio">*</span></label>
                             <select
                                 id="motivo_solicitacao"
                                 name="motivo_solicitacao"
@@ -477,7 +477,7 @@ export default function FormularioDesistenciaVaga() {
                         </div>
 
                         <div className="form-group checkbox-group">
-                                <label htmlFor="recebe_auxilio_estudantil">Recebe auxílio estudantil?</label>
+                                <label htmlFor="recebe_auxilio_estudantil">Recebe auxílio estudantil? <span className="obrigatorio">*</span></label>
                                 <div className="radio-group">
                                     <label className="radio-option">
                                         <input
@@ -503,7 +503,7 @@ export default function FormularioDesistenciaVaga() {
                             </div>
 
                             <div className="form-group checkbox-group">
-                                <label htmlFor="menor_idade">Você é menor de idade (menor de 18 anos)?</label>
+                                <label htmlFor="menor_idade">Você é menor de idade (menor de 18 anos)? <span className="obrigatorio">*</span></label>
                                 <div className="radio-group">
                                     <label className="radio-option">
                                         <input
