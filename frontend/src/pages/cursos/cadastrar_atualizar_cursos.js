@@ -16,7 +16,23 @@ export default function CadastrarAtualizarCursos() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("sucesso");
-  const [tipoPeriodo, setTipoPeriodo] = useState("Semestral"); 
+  const [tipoPeriodo, setTipoPeriodo] = useState(""); 
+  const [tipoCurso, setTipoCurso] = useState("");
+
+  // Definindo as opções de Tipo de Período e Tipo de Curso diretamente no frontend
+  // Espelham as TextChoices do seu modelo Django
+  const tipoPeriodoOptions = [
+    { value: "Anual", label: "Anual" },
+    { value: "Semestral", label: "Semestral" },
+  ];
+
+  const tipoCursoOptions = [
+    { value: "EMI", label: "Ensino Médio Integral" },
+    { value: "SUBS", label: "Subsequente" },
+    { value: "CONC", label: "Concomitante" },
+    { value: "SUCON", label: "Subsequente/Concomitante" },
+    { value: "SUP", label: "Superior" },
+  ];
 
   const navigate = useNavigate();
   const { codigo } = useParams();
@@ -37,7 +53,9 @@ export default function CadastrarAtualizarCursos() {
           setCodigoInput(res.data.codigo);
           setNome(res.data.nome);
           setSelectedPpcs(res.data.ppcs || []);
-          setTipoPeriodo(res.data.tipo_periodo || "Semestral");
+          // Define os valores do backend para os campos de seleção
+          setTipoPeriodo(res.data.tipo_periodo || "");
+          setTipoCurso(res.data.tipo_curso || "");
         })
         .catch((err) => {
           setMensagem(
@@ -58,6 +76,7 @@ export default function CadastrarAtualizarCursos() {
       nome,
       ppcs: selectedPpcs,
       tipo_periodo: tipoPeriodo,
+      tipo_curso: tipoCurso,
     };
 
     const requisicao = codigo
@@ -134,11 +153,53 @@ export default function CadastrarAtualizarCursos() {
               className="input-text"
               value={tipoPeriodo}
               onChange={(e) => setTipoPeriodo(e.target.value)}
-              required>
-              <option value="Semestral">Semestral</option>
-              <option value="Anual">Anual</option>
+              required
+            >
+              <option value="">Selecione o tipo de período</option>
+              {tipoPeriodoOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
             </select>
           </div>
+
+          {/* Campo de seleção para Tipo de Curso */}
+          <div className="form-group">
+            <label>Tipo de Curso:</label>
+            <select
+              className="input-text"
+              value={tipoCurso}
+              onChange={(e) => setTipoCurso(e.target.value)}
+              required
+            >
+              <option value="">Selecione o tipo de curso</option>
+              {tipoCursoOptions.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Adicionei o campo de seleção de PPCs aqui, já que está na sua lógica, mas não no JSX anterior */}
+          {/*
+          <div className="form-group">
+            <label>PPCs Associados (segure Ctrl/Cmd para múltiplas seleções):</label>
+            <select
+              className="input-text"
+              multiple
+              value={selectedPpcs}
+              onChange={handlePpcSelection}
+            >
+              {availablePpcs.map((ppc) => (
+                <option key={ppc.codigo} value={ppc.codigo}>
+                  {ppc.nome} ({ppc.codigo})
+                </option>
+              ))}
+            </select>
+          </div>
+          */}
 
           <button type="submit" className="botao-generico">
             {codigo ? "Atualizar" : "Cadastrar"}
