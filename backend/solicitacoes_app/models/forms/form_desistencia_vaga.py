@@ -77,7 +77,7 @@ class FormDesistenciaVaga(Solicitacao):
     # Descrição detalhada do motivo
     descricao_motivo = models.TextField(
         verbose_name="Descrição do Motivo",
-        help_text="Descreva detalhadamente o motivo da sua desistência"
+        help_text="Descreva detalhadamente o motivo da sua desistência",
     ) 
 
     # Informações adicionais
