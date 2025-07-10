@@ -6,7 +6,8 @@ import api from "../../services/api";
 import Paginacao from "../../components/UI/paginacao";
 import { getAuthToken, verificarGrupo } from "../../services/authUtils";
 import BotaoDetalhar from "../../components/UI/botoes/botao_detalhar";
-import axios from "axios";
+import "../../components/styles/tabela.css"
+import "../../components/styles/telas_users.css"
 
 
 export default function TabelaSolicitacoes() {
@@ -47,7 +48,7 @@ export default function TabelaSolicitacoes() {
   };
 
 useEffect(() => {
-  async function carregarSeAluno() {
+  async function carregarSeGrupoDetectado() {
     const grupoDetectado = await verificarGrupo();
     console.log("🔍 Grupo detectado:", grupoDetectado);
 
@@ -56,12 +57,8 @@ useEffect(() => {
     }
   }
 
-  carregarSeAluno();
+  carregarSeGrupoDetectado();
 }, []);
-
-
-
-
 
     const solicitacoesFiltradas = useMemo(
         () =>
@@ -69,7 +66,7 @@ useEffect(() => {
             .filter((s) => s.tipo !== "Extensão do prazo de afastamento") // <--- ignora esse tipo
             .filter(
               (s) =>
-                s.tipo?.toLowerCase().includes(filtro.toLowerCase()) ||
+                s.tipo_formulario?.toLowerCase().includes(filtro.toLowerCase()) ||
                 s.status?.toLowerCase().includes(filtro.toLowerCase())
             ),
         [solicitacoes, filtro]

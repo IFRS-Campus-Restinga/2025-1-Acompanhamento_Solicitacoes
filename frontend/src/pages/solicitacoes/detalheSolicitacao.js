@@ -10,12 +10,16 @@ import Stepper from "../../components/UI/stepper";
 import { getAuthToken } from "../../services/authUtils";
 import api from "../../services/api";
 
+import { verificarGrupo } from "../../services/authUtils";
+
+
 export default function DetalhesSolicitacao() {
     const { id } = useParams();
     const navigate = useNavigate();
     const [solicitacao, setSolicitacao] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [grupo, setGrupo] = useState(null);
 
     const token = getAuthToken();
 
@@ -24,6 +28,18 @@ export default function DetalhesSolicitacao() {
             fetchSolicitacao();
         }
     }, [id, token])
+
+    useEffect(() => {
+        async function detectarGrupo() {
+            const grupoDetectado = await verificarGrupo();
+
+            if (grupoDetectado) {
+                setGrupo(grupoDetectado);
+            }
+        }
+
+        detectarGrupo()
+    }, [])
 
     const fetchSolicitacao = async () => {
         try {
@@ -51,10 +67,9 @@ export default function DetalhesSolicitacao() {
         try {
             const [data, hora] = dataString.split('T');
             const [ano, mes, dia] = data.split('-');
-            const [horas, minutos] = hora?.split('.')[0]?.split(':') || [];
-            return `${dia}/${mes}/${ano} ${horas || '--'}:${minutos || '--'}`;
+            return `${dia}/${mes}/${ano}`;
         } catch {
-            return '--/--/---- --:--';
+            return '--/--/----';
         }
     };
 
@@ -124,6 +139,69 @@ export default function DetalhesSolicitacao() {
         return periodos[valor] || valor || "Não informado";
     };
 
+    const formatarCurso = (valor) => {
+        if (valor === "ads") {
+            return "Análise e Desenvolvimento de Sistemas"
+        } else if (valor === "tur") {
+            return "Turismo"
+        } else if (valor === "gdl") {
+            return "Gestão Desportiva e Lazer"
+        } else {
+            return "Não informado"
+        }
+    }
+
+    const formatarTipoFormulario = (valor) => {
+        const tipoFormulario = {
+            TRANCAMENTODISCIPLINA: "Trancamento de Disciplina",
+            ABONOFALTAS: "Abono de Faltas",
+            DESISTENCIAVAGA: "Desistência de Vaga",
+            DISPENSAEDFISICA: "Dispensa de Educação Física",
+            ENTREGAATIVCOMPL: "Entrega de Atividades Complementares",
+            EXERCICIOSDOMICILIARES: "Exercícios Domiciliares",
+            TRANCAMENTOMATRICULA: "Trancamento de Matrícula"
+        };
+        return tipoFormulario[valor] || valor || "Não informado"
+    }
+
+    const MAPA_TIPO_FORMULARIO = {
+  TRANCAMENTOMATRICULA: 'trancamento-matricula',
+  TRANCAMENTODISCIPLINA: 'trancamento-disciplina',
+  ABONOFALTAS: 'abono-falta',
+  EXERCICIOSDOMICILIARES: 'exercicios-domiciliares',
+  DISPENSAEDFISICA: 'dispensa-ed-fisica',
+  ENTREGAATIVCOMPL: 'entrega-ativ-compl'
+};
+
+
+    const alterarStatus = async (id, tipoFormularioKey, novoStatus) => {
+  const confirmacao = window.confirm(`Tem certeza que deseja ${novoStatus.toLowerCase()} esta solicitação?`);
+  if (!confirmacao) return;
+
+  try {
+    const response = await api.patch(`/atualizar-status/${tipoFormularioKey}/${id}/`, {
+      status: novoStatus
+    }, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    console.log("PATCH response:", response.data);
+    setSolicitacao((prev) =>
+      prev.map((s) =>
+        s.id === id ? { ...s, status: novoStatus } : s
+      )
+    );
+    alert(`Solicitação ${novoStatus.toLowerCase()} com sucesso!`);
+    navigate('/solicitacoes');
+  } catch (error) {
+    console.error("Erro ao alterar status:", error.response || error);
+    alert("Erro ao alterar status. Verifique o console.");
+  }
+};
+
+
 
 
     const renderizarCamposPorTipo = () => {
@@ -150,33 +228,36 @@ export default function DetalhesSolicitacao() {
             case 'ABONOFALTAS':
                 return (
                     <div className="card mb-4">
-                        <h5>Informações do Abono de Faltas</h5>
+                        <div className="card-body row">
+                            <h5>Informações do Abono de Faltas</h5>
 
-                        <div className="col-md-6 mb-3">
-                            <h6><i className="bi bi-exclamation-circle me-2"></i>Motivo da Solicitação:</h6>
-                            <p>{solicitacao.motivo_solicitacao?.nome || 'Não informado'}</p>
-                        </div>
+                            <div className="col-md-6 mb-3">
+                                <h6><i className="bi bi-exclamation-circle me-2"></i>Motivo da Solicitação:</h6>
+                                <p>{solicitacao.motivo_solicitacao?.nome || 'Não informado'}</p>
+                            </div>
 
-                        <div className="col-md-6 mb-3">
-                            <h6><i className="bi bi-calendar-event me-2"></i>Início do Afastamento:</h6>
-                            <p>{formatarData(solicitacao.data_inicio_afastamento)}</p>
-                        </div>
+                            <div className="col-md-6 mb-3">
+                                <h6><i className="bi bi-calendar-event me-2"></i>Início do Afastamento:</h6>
+                                <p>{formatarData(solicitacao.data_inicio_afastamento)}</p>
+                            </div>
 
-                        <div className="col-md-6 mb-3">
-                            <h6><i className="bi bi-calendar-event me-2"></i>Fim do Afastamento:</h6>
-                            <p>{formatarData(solicitacao.data_fim_afastamento)}</p>
-                        </div>
+                            <div className="col-md-6 mb-3">
+                                <h6><i className="bi bi-calendar-event me-2"></i>Fim do Afastamento:</h6>
+                                <p>{formatarData(solicitacao.data_fim_afastamento)}</p>
+                            </div>
 
-                        <div className="col-md-6 mb-3">
-                            <h6><i className="bi bi-laptop me-2"></i>Teve acesso ao Moodle durante o afastamento?</h6>
-                            <p>{solicitacao.acesso_moodle ? 'Sim' : 'Não'}</p>
-                        </div>
+                            <div className="col-md-6 mb-3">
+                                <h6><i className="bi bi-laptop me-2"></i>Teve acesso ao Moodle durante o afastamento?</h6>
+                                <p>{solicitacao.acesso_moodle ? 'Sim' : 'Não'}</p>
+                            </div>
 
-                        <div className="col-md-6 mb-3">
-                            <h6><i className="bi bi-journal-x me-2"></i>Perdeu atividades no período?</h6>
-                            <p>{solicitacao.perdeu_atividades ? 'Sim' : 'Não'}</p>
+                            <div className="col-md-6 mb-3">
+                                <h6><i className="bi bi-journal-x me-2"></i>Perdeu atividades no período?</h6>
+                                <p>{solicitacao.perdeu_atividades ? 'Sim' : 'Não'}</p>
+                            </div>
                         </div>
                     </div>
+
                 );
             case 'DESISTENCIAVAGA':
                 return (
@@ -194,7 +275,7 @@ export default function DetalhesSolicitacao() {
                             </div>
                             <div className="col-md-6 mb-3">
                                 <h6>Curso:</h6>
-                                <p>{solicitacao.curso?.nome}</p>
+                                <p>{formatarCurso(solicitacao.curso)}</p>
                             </div>
                             <div className="col-md-6 mb-3">
                                 <h6>Tipo de Curso:</h6>
@@ -329,83 +410,86 @@ export default function DetalhesSolicitacao() {
             case 'EXERCICIOSDOMICILIARES':
                 return (
                     <div className="card mb-4">
-                        <h5>Informações do Exercício Domiciliar</h5>
+                        <div className="card-body row">
+                            <h5>Informações do Exercício Domiciliar</h5>
 
-                        <div className="col-md-6 mb-3">
-                            <h6>Curso:</h6>
-                            <p>{solicitacao.curso?.nome}</p>
-                        </div>
-
-                        <div className="col-md-6 mb-3">
-                            <h6>Período:</h6>
-                            <p>{formatarPeriodo(solicitacao.periodo)}</p>
-                        </div>
-
-                        <div className="col-md-12 mb-3">
-                            <h6>Disciplinas:</h6>
-                            {solicitacao.disciplinas?.length > 0 ? (
-                                <ul>
-                                    {solicitacao.disciplinas.map((d, i) => (
-                                        <li key={i}>{d.nome}</li>
-                                    ))}
-                                </ul>
-                            ) : (
-                                <p>Nenhuma disciplina informada.</p>
-                            )}
-                        </div>
-
-                        <div className="col-md-6 mb-3">
-                            <h6>Motivo da Solicitação:</h6>
-                            <p>{formatarMotivo(solicitacao.motivo_solicitacao)}</p>
-                        </div>
-
-                        {solicitacao.motivo_solicitacao === "outro" && (
                             <div className="col-md-6 mb-3">
-                                <h6>Outro Motivo:</h6>
-                                <p>{solicitacao.outro_motivo}</p>
+                                <h6>Curso:</h6>
+                                <p>{formatarCurso(solicitacao.curso)}</p>
                             </div>
-                        )}
 
-                        <div className="col-md-6 mb-3">
-                            <h6>Data de Início do Afastamento:</h6>
-                            <p>{formatarData(solicitacao.data_inicio_afastamento)}</p>
-                        </div>
-
-                        <div className="col-md-6 mb-3">
-                            <h6>Data de Fim do Afastamento:</h6>
-                            <p>{formatarData(solicitacao.data_fim_afastamento)}</p>
-                        </div>
-
-                        <div className="col-md-6 mb-3">
-                            <h6>Período de Afastamento (dias):</h6>
-                            <p>{calcularDiasAfastamento(solicitacao.data_inicio_afastamento, solicitacao.data_fim_afastamento)}</p>
-                        </div>
-
-                        <div className="col-md-6 mb-3">
-                            <h6>Documento Apresentado:</h6>
-                            <p>{formatarDocumentoApresentado(solicitacao.documento_apresentado)}</p>
-                        </div>
-
-                        {solicitacao.documento_apresentado === "outro" && (
                             <div className="col-md-6 mb-3">
-                                <h6>Outro Documento:</h6>
-                                <p>{solicitacao.outro_documento}</p>
+                                <h6>Período:</h6>
+                                <p>{formatarPeriodo(solicitacao.periodo)}</p>
                             </div>
-                        )}
 
-                        {solicitacao.arquivos && (
                             <div className="col-md-12 mb-3">
-                                <h6>Anexo:</h6>
-                                <a href={solicitacao.arquivos} target="_blank" rel="noopener noreferrer">
-                                    Visualizar Documento
-                                </a>
+                                <h6>Disciplinas:</h6>
+                                {solicitacao.disciplinas.length > 0 ? (
+                                    <ul>
+                                        {solicitacao.disciplinas.map((d, i) => (
+                                            <li key={i}>{d}</li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p>Nenhuma disciplina informada.</p>
+                                )}
                             </div>
-                        )}
 
-                        <div className="col-md-6 mb-3">
-                            <h6>Consegue realizar atividades remotas?</h6>
-                            <p>{solicitacao.consegue_realizar_atividades ? "Sim" : "Não"}</p>
+                            <div className="col-md-6 mb-3">
+                                <h6>Motivo da Solicitação:</h6>
+                                <p>{formatarMotivo(solicitacao.motivo_solicitacao)}</p>
+                            </div>
+
+                            {solicitacao.motivo_solicitacao === "outro" && (
+                                <div className="col-md-6 mb-3">
+                                    <h6>Outro Motivo:</h6>
+                                    <p>{solicitacao.outro_motivo}</p>
+                                </div>
+                            )}
+
+                            <div className="col-md-6 mb-3">
+                                <h6>Data de Início do Afastamento:</h6>
+                                <p>{formatarData(solicitacao.data_inicio_afastamento)}</p>
+                            </div>
+
+                            <div className="col-md-6 mb-3">
+                                <h6>Data de Fim do Afastamento:</h6>
+                                <p>{formatarData(solicitacao.data_fim_afastamento)}</p>
+                            </div>
+
+                            <div className="col-md-6 mb-3">
+                                <h6>Período de Afastamento (dias):</h6>
+                                <p>{calcularDiasAfastamento(solicitacao.data_inicio_afastamento, solicitacao.data_fim_afastamento)}</p>
+                            </div>
+
+                            <div className="col-md-6 mb-3">
+                                <h6>Documento Apresentado:</h6>
+                                <p>{formatarDocumentoApresentado(solicitacao.documento_apresentado)}</p>
+                            </div>
+
+                            {solicitacao.documento_apresentado === "outro" && (
+                                <div className="col-md-6 mb-3">
+                                    <h6>Outro Documento:</h6>
+                                    <p>{solicitacao.outro_documento}</p>
+                                </div>
+                            )}
+
+                            {solicitacao.arquivos && (
+                                <div className="col-md-12 mb-3">
+                                    <h6>Anexo:</h6>
+                                    <a href={solicitacao.arquivos} target="_blank" rel="noopener noreferrer">
+                                        Visualizar Documento
+                                    </a>
+                                </div>
+                            )}
+
+                            <div className="col-md-6 mb-3">
+                                <h6>Consegue realizar atividades remotas?</h6>
+                                <p>{solicitacao.consegue_realizar_atividades ? "Sim" : "Não"}</p>
+                            </div>
                         </div>
+
                     </div>
                 );
 
@@ -441,7 +525,14 @@ export default function DetalhesSolicitacao() {
     // Condição para exibir o botão de alterar prazo
     const podeAlterarPrazo = solicitacao &&
         solicitacao.tipo === "EXERCICIOSDOMICILIARES" &&
-        solicitacao.status === "Aprovado";
+        solicitacao.status === "Aprovado" &&
+        grupo === "aluno";
+
+
+    const coordenadorPodeAvaliar = solicitacao &&
+        grupo === "coordenador" &&
+        solicitacao.status === "Em Análise" &&
+        solicitacao.posse_solicitacao === "Coordenação";
 
     return (
         <div className="page-container">
@@ -458,7 +549,7 @@ export default function DetalhesSolicitacao() {
                     <div className="card-body row">
                         <div className="col-md-6 mb-3">
                             <h6><i className="bi bi-file-earmark-text me-2"></i>Documento Solicitado:</h6>
-                            <p>{solicitacao.tipo || 'Não informado'}</p>
+                            <p>{formatarTipoFormulario(solicitacao.nome_formulario)}</p>
                         </div>
                         <div className="col-md-6 mb-3">
                             <h6><i className="bi bi-person me-2"></i>Responsável:</h6>
@@ -490,7 +581,7 @@ export default function DetalhesSolicitacao() {
                         </div>
                     </div>
                 )}
-                
+
                 {renderizarCamposPorTipo()}
 
                 <div className="text-center">
@@ -498,6 +589,23 @@ export default function DetalhesSolicitacao() {
                         <button className="btn btn-primary me-2" onClick={handleAlterarPrazo}>
                             <i className="bi bi-calendar-range me-2"></i>Alterar Prazo de Afastamento
                         </button>
+                    )}
+                </div>
+
+                <div className="text-center">
+                    {coordenadorPodeAvaliar && (
+                        <><button
+                            style={{ backgroundColor: "green", color: "white", marginRight: "5px", padding: "5px", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                            onClick={() => alterarStatus(solicitacao.id, MAPA_TIPO_FORMULARIO[solicitacao.nome_formulario], "Aprovado")}
+                        >
+                            Aprovar
+                        </button><button
+                            style={{ backgroundColor: "red", color: "white", padding: "5px", border: "none", borderRadius: "4px", cursor: "pointer" }}
+                            onClick={() => alterarStatus(solicitacao.id, MAPA_TIPO_FORMULARIO[solicitacao.nome_formulario], "Reprovado")}
+                        >
+                                Reprovar
+                            </button></>
+                        
                     )}
                     <BotaoVoltar onClick={() => navigate("/solicitacoes")} />
                 </div>

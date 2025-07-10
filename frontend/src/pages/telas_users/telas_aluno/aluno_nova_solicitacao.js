@@ -2,27 +2,11 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import "../../../components/styles/telas_opcoes.css";
-import { getAvailableForms, getUserRole, shouldDisableForm } from "../../../utils/permissions";
 import { PermissionDebugInfo } from "../../../components/PermissionWrapper";
+import { verificarGrupo, getCookie } from '../../../services/authUtils'; 
 
-const AlunoNovaSolicitacao = () => {
-  const [solicitacoes, setSolicitacoes] = useState([]);
-  const [hoveredCard, setHoveredCard] = useState(null);
-  const [availableForms, setAvailableForms] = useState([]);
-  const userRole = getUserRole();
 
-  useEffect(() => {
-    axios
-      .get("http://127.0.0.1:8000/solicitacoes/")
-      .then((res) => setSolicitacoes(res.data))
-      .catch((err) => console.error("Erro ao buscar solicitações:", err));
-    
-    // Carrega os formulários disponíveis para o usuário atual
-    setAvailableForms(getAvailableForms());
-  }, []);
-
-  // Definição de todos os formulários com suas informações
-  const allForms = [
+const allForms = [
     {
       id: 'trancamento_matricula',
       name: 'Trancamento de Matrícula',
@@ -56,7 +40,7 @@ const AlunoNovaSolicitacao = () => {
       name: 'Dispensa de Educação Física',
       path: '/dispensa_ed_fisica',
       icon: 'bi bi-person-arms-up form-icon',
-      allowedRoles: ['aluno', 'responsavel'] 
+      allowedRoles: ['aluno', 'responsavel']
     },
     {
       id: 'abono_falta',
@@ -74,14 +58,91 @@ const AlunoNovaSolicitacao = () => {
     }
   ];
 
+
+// Funções que você precisa definir ou importar de outro lugar
+// Se getAvailableForms e shouldDisableForm dependem da userRole, elas precisarão ser adaptadas.
+// Por enquanto, vamos assumir que elas serão definidas aqui ou em um novo arquivo de utilitários.
+
+// --- NOVAS FUNÇÕES OU ADAPTAÇÕES ---
+// Adapte estas funções para usar a 'userRole' que será obtida de forma assíncrona.
+
+// Função para obter a role do usuário do cookie 'userRole'
+const getUserRoleFromCookie = () => {
+  return getCookie('userRole'); // getCookie vem de authUtils
+};
+
+// Adapte getAvailableForms para receber a role como argumento
+const getAvailableFormsByRole = (role) => {
+  // Sua lógica original de getAvailableForms aqui, mas usando 'role'
+  // Exemplo:
+  const allForms = [ /* ... sua lista allForms ... */ ]; // Copie a lista allForms para cá ou passe-a
+  return allForms.filter(form => form.allowedRoles.includes(role));
+};
+
+// Adapte shouldDisableForm para receber a role como argumento
+const shouldDisableFormByRole = (formId, role) => {
+  // Sua lógica original de shouldDisableForm aqui, mas usando 'role'
+  // Exemplo:
+  const form = allForms.find(f => f.id === formId); // allForms precisa estar acessível
+  if (!form) return true; // Formulário não encontrado
+  return !form.allowedRoles.includes(role);
+};
+// --- FIM DAS NOVAS FUNÇÕES OU ADAPTAÇÕES ---
+
+
+const AlunoNovaSolicitacao = () => {
+  const [solicitacoes, setSolicitacoes] = useState([]);
+  const [hoveredCard, setHoveredCard] = useState(null);
+  const [availableForms, setAvailableForms] = useState([]);
+  const [userRole, setUserRole] = useState(null); // <-- userRole agora é um estado
+
+  // Definição de todos os formulários com suas informações
+  // Mova esta lista para fora do componente ou passe-a como prop,
+  // ou defina-a dentro do useEffect se ela for estática e não mudar.
+  // Para simplificar, vou deixá-la aqui por enquanto, mas o ideal é que seja uma constante fora.
+  
+
+  useEffect(() => {
+    // Função assíncrona para carregar a role e os formulários
+    const loadData = async () => {
+      // 1. Obter a role do usuário
+      const roleFromCookie = getUserRoleFromCookie(); // Tenta ler do cookie primeiro
+      if (roleFromCookie) {
+        setUserRole(roleFromCookie);
+      } else {
+        // Se não estiver no cookie, tenta verificar com o backend (assíncrono)
+        const roleFromBackend = await verificarGrupo();
+        setUserRole(roleFromBackend);
+      }
+
+      // 2. Carregar solicitações
+      axios
+        .get("http://127.0.0.1:8000/solicitacoes/" )
+        .then((res) => setSolicitacoes(res.data))
+        .catch((err) => console.error("Erro ao buscar solicitações:", err));
+    };
+
+    loadData();
+  }, []); // <-- Array de dependências vazio para rodar apenas na montagem
+
+  // Use um segundo useEffect para atualizar availableForms quando userRole mudar
+  useEffect(() => {
+    if (userRole) {
+      // Filtra os formulários com base na role do usuário
+      const formsFiltered = allForms.filter(form => form.allowedRoles.includes(userRole));
+      setAvailableForms(formsFiltered);
+    }
+  }, [userRole]); // <-- Depende de userRole
+
   // Função para renderizar um card de formulário
   const renderFormCard = (form) => {
-    const isDisabled = shouldDisableForm(form.id);
-    
+    // Agora shouldDisableFormByRole precisa da userRole
+    const isDisabled = shouldDisableFormByRole(form.id, userRole); // <-- Passe userRole
+
     // Se o formulário deve ser desabilitado, renderiza o card desabilitado
     if (isDisabled) {
       return (
-        <div 
+        <div
           key={form.id}
           className={`colunas-link disabled-form ${hoveredCard === form.id ? 'hovered' : ''}`}
           onMouseEnter={() => setHoveredCard(form.id)}
@@ -108,9 +169,9 @@ const AlunoNovaSolicitacao = () => {
 
     // Se o usuário tem permissão, renderiza o card normal
     return (
-      <Link 
+      <Link
         key={form.id}
-        className="colunas-link" 
+        className="colunas-link"
         to={form.path}
         onMouseEnter={() => setHoveredCard(form.id)}
         onMouseLeave={() => setHoveredCard(null)}
@@ -123,8 +184,14 @@ const AlunoNovaSolicitacao = () => {
   };
 
   // Separa os formulários em duas fileiras
-  const firstRowForms = allForms.slice(0, 4);
-  const secondRowForms = allForms.slice(4, 7);
+  // Use availableForms aqui, não allForms, se você quer que apenas os disponíveis sejam renderizados
+  const firstRowForms = availableForms.slice(0, 4);
+  const secondRowForms = availableForms.slice(4, 7);
+
+  // Adicione um estado de carregamento para a role, se necessário
+  if (!userRole) {
+    return <p>Carregando permissões...</p>; // Ou um spinner
+  }
 
   return (
     <div className="colunas-container">
@@ -136,8 +203,8 @@ const AlunoNovaSolicitacao = () => {
             <div className="grid-colunas">
               {firstRowForms.map(renderFormCard)}
             </div>
-          </section>  
-          
+          </section>
+
           {/* SEGUNDA FILEIRA: 3 Formulários */}
           <section className="colunas-section">
             <div className="grid-colunas">
@@ -154,5 +221,3 @@ const AlunoNovaSolicitacao = () => {
 };
 
 export default AlunoNovaSolicitacao;
-
-

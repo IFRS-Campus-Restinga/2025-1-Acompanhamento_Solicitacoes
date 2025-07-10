@@ -69,6 +69,8 @@ from .views.solicitacao_view import MinhasSolicitacoesListView
 
 from .views.historico_afastamento_view import HistoricoAfastamentoViewList
 
+from .views.solicitacao_view import SolicitacaoListAllView
+
 
 ## URLS IMPORTCOES NOVAS:
 from .views import (
@@ -206,7 +208,7 @@ urlpatterns = [
 
     path('detalhes-formulario/<int:solicitacao_id>/', DetalhesFormularioView.as_view()),
 
-    path("atualizar-status/<int:id>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
+    path("atualizar-status/<str:form_type_key>/<int:pk>/", AtualizarStatusSolicitacaoView.as_view(), name="atualizar-status"),
     
     path('solicitacoes/permissoes/', PermissaoListView.as_view()),
 
@@ -218,6 +220,7 @@ urlpatterns = [
 
     path('coordenador/listar-solicitacoes/', SolicitacoesDoCoordenador.as_view(), name="listar_solicitacoes_coordenador"),
 
+    path('cre/listar-solicitacoes/', SolicitacaoListAllView.as_view(), name="listar-solicitacoes-cre" ),
     
     path('notifications/', include('solicitacoes_app.notifications.urls')),
   
