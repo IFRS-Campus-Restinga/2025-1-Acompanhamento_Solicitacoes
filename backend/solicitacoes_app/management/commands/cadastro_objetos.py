@@ -47,38 +47,45 @@ class Command(BaseCommand):
         curso1, _ = Curso.objects.get_or_create(
             codigo="ads",
             tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
+            tipo_curso=Curso.TipoCurso.SUP,
             defaults={"nome": "Análise e Desenvolvimento de Sistemas"}
         )
         curso2, _ = Curso.objects.get_or_create(
             codigo="gdl",
             tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
+             tipo_curso=Curso.TipoCurso.SUP,
             defaults={"nome": "Gestão Desportiva e Lazer"}
         )
         curso3, _ = Curso.objects.get_or_create(
             codigo="tur",
             tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
+             tipo_curso=Curso.TipoCurso.SUP,
             defaults={"nome": "Turismo"}
         )
         curso4, _ = Curso.objects.get_or_create(
             codigo="esw",
             tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
+             tipo_curso=Curso.TipoCurso.SUP,
             defaults={"nome": "Engenharia de Software"}
         )
         curso5, _ = Curso.objects.get_or_create(
             codigo="cc",
             tipo_periodo=Curso.TipoPeriodo.SEMESTRAL,
+             tipo_curso=Curso.TipoCurso.SUP,
             defaults={"nome": "Ciência da Computação"}
         )
         
         curso6, _ = Curso.objects.get_or_create(
             codigo="tecinfo",
             tipo_periodo=Curso.TipoPeriodo.ANUAL,
+            tipo_curso=Curso.TipoCurso.SUCON,
             defaults={"nome": "Técnico de Informática"}
         )
         
         curso7, _ = Curso.objects.get_or_create(
             codigo="art",
             tipo_periodo=Curso.TipoPeriodo.ANUAL,
+            tipo_curso=Curso.TipoCurso.EMI,
             defaults={"nome": "Artesanato"}
         )
 
