@@ -2,6 +2,7 @@ from rest_framework import generics, serializers
 from ...models.forms.form_interprete_libras import FormInterpreteLibras
 from rest_framework.permissions import IsAuthenticated
 from ...models.aluno import Aluno
+from ...serializers.forms.form_interprete_libras_serializer import FormInterpreteLibrasSerializer
 
 
 class FormInterpreteLibrasListCreateView(generics.ListCreateAPIView):
