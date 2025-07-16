@@ -93,6 +93,8 @@ import ExternoNovaSolicitacao from "../pages/telas_users/tela_externo/externo_no
 //Tela de gerenciamento de Exercícios Domiciliares
 import GerenciarExercDomicilares from "../pages/exerc_domiciliares/gerenciar.js";
 
+import FormularioInterpreteLibras from "../pages/forms/interprete_libras/formulario.js";
+
 const token = localStorage.getItem("token");
 
 const routes = [
@@ -181,6 +183,7 @@ const routes = [
   <Route path="/dispensa_ed_fisica" element={<DispensaEdFisica />} key="dispensa_ed_fisica" /> ,
   <Route path="/trancamento_disciplina" element={<FormTrancDisciplina />} key="trancamento_disciplina" />,
   <Route path="/formulario_trancamento_disciplina/disciplinas/:curso_codigo/" element={<Formulario />}  key="formulario-disciplina-curso"/>,
+  <Route path="/interprete_libras" element={<FormularioInterpreteLibras />} key="interprete-libras" />,
 
 
   <Route path="/disponibilidades" element={<ListarDisponibilidades />} key="disponibilidade-listar" />,
