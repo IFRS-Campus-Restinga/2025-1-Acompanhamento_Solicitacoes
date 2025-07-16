@@ -8,6 +8,7 @@ from .models.forms.form_desistencia_vaga import FormDesistenciaVaga
 from .models.forms.form_exercicio_domiciliar import FormExercicioDomiciliar
 from .models.forms.form_entrega_ativ_compl import FormEntregaAtivCompl
 from .models.forms.historico_afastamento import HistoricoAfastamento
+from .models.forms.form_interprete_libras import FormInterpreteLibras
 
 from .models.campos_solic_models.motivo_abono import MotivoAbono
 from .models.campos_solic_models.motivo_dispensa import MotivoDispensa
@@ -32,6 +33,7 @@ admin.site.register(FormTrancDisciplina)
 admin.site.register(FormDesistenciaVaga)
 admin.site.register(FormExercicioDomiciliar)
 admin.site.register(Nome)
+admin.site.register(FormInterpreteLibras)
 # admin.site.register(Solicitacao)
 admin.site.register(Disponibilidade)
 admin.site.register(PeriodoDisponibilidade)
@@ -46,6 +48,7 @@ admin.site.register(MotivoAbono)
 admin.site.register(MotivoDesistencia)
 admin.site.register(MotivoDispensa)
 admin.site.register(MotivoExercicios)
+
 
 # Customização do admin para o modelo Usuario
 @admin.register(Usuario)

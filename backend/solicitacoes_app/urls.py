@@ -43,6 +43,7 @@ from .views.campos_solic_views.motivo_dispensa_view import *
 from .views.campos_solic_views.motivo_exercicios_view import *
 from .views.campos_solic_views.motivo_desistencia_view import *
 from .views.campos_solic_views.atividade_complementar_view import *
+from .views.forms.form_interprete_libras_view import *
 
 from .views.disponibilidade_view import (
     DisponibilidadeListCreateView,
@@ -223,6 +224,8 @@ urlpatterns = [
     path('cre/listar-solicitacoes/', SolicitacaoListAllView.as_view(), name="listar-solicitacoes-cre" ),
     
     path('notifications/', include('solicitacoes_app.notifications.urls')),
+
+    path('form_interp_libras/', FormInterpreteLibrasListCreateView.as_view(), name="interprete-libras-list-create-view")
   
 ]
 
